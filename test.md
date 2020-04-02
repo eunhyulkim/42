@@ -2,7 +2,13 @@
 by **eunhkim**
 
 ---
-## what is factorization?
+## Problem
+[서브젝트](https://docs.google.com/document/d/1utPkD1rfZIes4dv-Q1qKJThB8bmmQk8u7O1FGjhdO2Y)에 따르면,
+
+> 어떤 숫자 하나를 명령어 라인에서 인자로 입력했을 때, 해당 숫자를 **소인수 분해**하여 **결과적으로 나오는 소수**들을 **작은 수에서 큰 수의 순서대로 딱 한번씩만 차례로 출력**하는 프로그램을 짜야 합니다.
+
+---
+## What is factorization?
 [나무위키](https://namu.wiki/w/%EC%86%8C%EC%9D%B8%EC%88%98%EB%B6%84%ED%95%B4)에 따르면,
 
 > 1. **소인수분해**란 **합성수**를 **소수**들의 곱으로 나타내는 것을 말한다.
@@ -10,13 +16,7 @@ by **eunhkim**
 > 3. **소수**란 1과 자기 자신으로밖에 나누어지지 않는 정수를 말한다.
 
 ---
-## what is subject?
-[서브젝트](https://docs.google.com/document/d/1utPkD1rfZIes4dv-Q1qKJThB8bmmQk8u7O1FGjhdO2Y)에 따르면,
-
-> 어떤 숫자 하나를 명령어 라인에서 인자로 입력했을 때, 해당 숫자를 **소인수 분해**하여 **결과적으로 나오는 소수**들을 **작은 수에서 큰 수의 순서대로 딱 한번씩만 차례로 출력**하는 프로그램을 짜야 합니다.
-
----
-## what is error?
+## Warning
 [서브젝트](https://docs.google.com/document/d/1utPkD1rfZIes4dv-Q1qKJThB8bmmQk8u7O1FGjhdO2Y)에 따르면,
 
 > 입력되는 수는 **1보다 큰 32bit unsigned integer**로, 즉 **2부터 2^32-1까지**입니다. **그 밖의 입력**에 대해서는 에러 메시지를 출력하세요. 그리고 **기타 가능한 모든 경우의 에러**에 대해서도 합당한 에러 메시지를 출력하세요.
