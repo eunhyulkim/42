@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test.c                                             :+:      :+:    :+:   */
+/*   factorization.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/02 03:09:34 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/04/02 17:13:53 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/04/02 17:33:00 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@
 #define SKIP	0
 #define SUCCESS	1
 
+/*
+** On exception, program exit with an error message.
+*/
 void			leave(char *err_msg)
 {
 	int		len;
@@ -30,6 +33,11 @@ void			leave(char *err_msg)
 	exit(1);
 }
 
+/*
+** Argument is converted to an unsigned int.
+** For exceptions occurring in the process,
+** Program exit with an error message.
+*/
 unsigned int	ft_atoui(char *str)
 {
 	long long	nb;
@@ -67,6 +75,11 @@ void			ft_putnbr(unsigned int nb)
 	write(1, &c, 1);
 }
 
+/*
+** If the given number proves to be prime,
+** it ends without printing.
+** Otherwise, it is printed starting from the smallest number.
+*/
 int				ft_factorization(unsigned int nb)
 {
 	unsigned int	i;
