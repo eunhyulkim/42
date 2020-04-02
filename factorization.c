@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   factorization.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/02 03:09:34 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/04/02 17:33:00 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/04/02 19:48:25 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 /*
 ** On exception, program exit with an error message.
 */
-void			leave(char *err_msg)
+void	leave(char *err_msg)
 {
 	int		len;
 
@@ -41,7 +41,7 @@ void			leave(char *err_msg)
 unsigned int	ft_atoui(char *str)
 {
 	long long	nb;
-	int			idx;
+	int		idx;
 
 	if (!str || !(*str))
 		leave("argument is not exists");
@@ -65,7 +65,7 @@ unsigned int	ft_atoui(char *str)
 	return ((unsigned int)nb);
 }
 
-void			ft_putnbr(unsigned int nb)
+void	ft_putnbr(unsigned int nb)
 {
 	char	c;
 
@@ -80,7 +80,7 @@ void			ft_putnbr(unsigned int nb)
 ** it ends without printing.
 ** Otherwise, it is printed starting from the smallest number.
 */
-int				ft_factorization(unsigned int nb)
+int	ft_factorization(unsigned int nb)
 {
 	unsigned int	i;
 	unsigned int	origin;
@@ -109,7 +109,7 @@ int				ft_factorization(unsigned int nb)
 	return (SUCCESS);
 }
 
-int				main(int ac, char *av[])
+int	main(int ac, char *av[])
 {
 	unsigned int	nb;
 
