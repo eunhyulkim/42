@@ -6,14 +6,13 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/02 03:09:34 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/04/02 17:04:53 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/04/02 17:13:53 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <stdlib.h>
 #include <limits.h>
-#include <stdio.h>
 
 #define ERROR	0
 #define SKIP	0
@@ -38,7 +37,8 @@ unsigned int	ft_atoui(char *str)
 
 	if (!str || !(*str))
 		leave("argument is not exists");
-	nb = (idx = 0);
+	nb = 0;
+	idx = 0;
 	if (str[idx] == '-')
 		leave("factorization does not treat negative number");
 	if (str[idx] == '+')
@@ -59,32 +59,12 @@ unsigned int	ft_atoui(char *str)
 
 void			ft_putnbr(unsigned int nb)
 {
-	char			c;
+	char	c;
 
 	if (nb >= 10)
 		ft_putnbr(nb / 10);
 	c = (nb % 10) + '0';
 	write(1, &c, 1);
-}
-
-int				ft_isprime(unsigned int nb)
-{
-	int		i;
-
-	if (nb < 2)
-		return (ERROR);
-	if (nb == 2 || nb == 3)
-		return (SUCCESS);
-	if (nb % 2 == 0)
-		return (ERROR);
-	i = 3;
-	while (i * i <= nb)
-	{
-		if (nb % i == 0)
-			return (ERROR);
-		i = i + 2;
-	}
-	return (SUCCESS);
 }
 
 int				ft_factorization(unsigned int nb)
@@ -116,7 +96,7 @@ int				ft_factorization(unsigned int nb)
 	return (SUCCESS);
 }
 
-int		main(int ac, char *av[])
+int				main(int ac, char *av[])
 {
 	unsigned int	nb;
 
