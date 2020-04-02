@@ -59,7 +59,7 @@ unsigned int	ft_atoui(char *str)
 			leave("argument contains non-numeric character");
 		nb = nb * 10 + (str[idx] - '0');
 		if (nb > UINT_MAX)
-			leave("argument exceeded the range of unsigned int");
+			leave("argument is out of range");
 		idx++;
 	}
 	return ((unsigned int)nb);
@@ -117,7 +117,7 @@ int	main(int ac, char *av[])
 		leave("argument count is invalid");
 	nb = ft_atoui(av[1]);
 	if (nb == 0 || nb == 1)
-		leave("argument range is a number greater than 1");
+		leave("argument must be greater than 1");
 	ft_factorization(nb);
 	return (0);
 }
