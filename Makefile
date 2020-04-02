@@ -27,8 +27,6 @@ clean:
 	@echo "$(RED)DONE"
 
 fclean: clean
-	@echo "$(RED)Cleaning your .o files"
-	@${RM} ${OBJS}
 	@echo "$(RED)Removing factorization"
 	@${RM} ${NAME}
 	@echo "$(RED)DONE"
