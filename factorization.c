@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   factorization.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>      +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>      +#+  +:+       +#+         */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/02 03:09:34 by eunhkim           #+#    #+#             */
 /*   Updated: 2020/04/02 19:48:25 by eunhkim          ###   ########.fr       */
