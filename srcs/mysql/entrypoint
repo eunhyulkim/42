@@ -1,0 +1,45 @@
+#!/bin/sh
+
+#Setup DB
+if [ ! -d /app/mysql/mysql ]
+then
+	echo "Try command mysql_install_db..."
+	mysql_install_db --user=root > /dev/null
+	echo "Done!"
+fi
+
+#Setup mysqld invironment
+if [ ! -d /run/mysqld ]
+then
+	echo "Create mysqld directory..."
+	mkdir -p /run/mysqld
+	echo "Done!"
+fi
+
+#Setup bootstrap file
+tfile=`mktemp`
+if [ ! -f "$tfile" ]
+then
+	echo "Failed to creat temp file with command mktmep."
+	exit 1
+fi
+
+echo "Root password is $MYSQL_ROOT_PASSWORD"
+
+cat << EOF > $tfile
+FLUSH PRIVILEGES;
+GRANT ALL PRIVILEGES ON *.* TO "$MYSQL_ROOT"@'%' IDENTIFIED BY "$MYSQL_ROOT_PASSWORD" WITH GRANT OPTION;
+EOF
+
+#Boostrap
+echo "Bootstraping with tfile..."
+if ! /usr/bin/mysqld --user=root --bootstrap --verbose=0 < $tfile
+then
+	echo "Failed bootsrap!"
+	exit 1
+fi
+rm -f $tfile
+echo "done!"
+
+echo "Launching mysql server..."
+exec /usr/bin/mysqld --user=root --console
