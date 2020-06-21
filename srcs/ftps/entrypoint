@@ -9,6 +9,11 @@ if [[ -z ${FTP_PASSWORD} ]]; then
   echo "Generated password for user 'files': ${FTP_PASSWORD}"
 fi
 
+#Create dummy file for evaluation
+if [[ ! -f "/home/${FTP_USER}/FOR_EVAL.txt" ]]; then
+  touch "/home/${FTP_USER}/FOR_EVAL.txt"
+fi
+
 #Set ftp password
 echo "${FTP_USER}:${FTP_PASSWORD}" | /usr/sbin/chpasswd
 

@@ -28,4 +28,4 @@ sed -i 's/^exec .*//' /usr/local/bin/docker-entrypoint.sh
 docker-entrypoint.sh php-fpm
 
 #Run
-/usr/sbin/nginx && /usr/local/sbin/php-fpm
+php-fpm & nginx -g 'daemon off;'
