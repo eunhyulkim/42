@@ -1,5 +1,13 @@
-FROM nginx:alpine
+FROM alpine
+
+#UPDATE
+RUN apk update
+RUN apk upgrade
+
 RUN apk add --update openssh
+
+#INSTALL NGINX
+RUN apk add --update nginx
 
 #SSH keys setting
 COPY ssh/sshd_config /sshd_config
@@ -12,6 +20,8 @@ COPY ssl/nginx.key /etc/nginx/ssl/nginx.key
 
 #Nginx setup
 COPY nginx.conf /etc/nginx/nginx.conf
+RUN mkdir -p usr/share/nginx
+COPY html usr/share/nginx/html
 
 #Entrypoint
 COPY entrypoint /entrypoint

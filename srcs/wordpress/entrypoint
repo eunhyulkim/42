@@ -23,9 +23,5 @@ then
 		( $MYSQL -e 'DROP DATABASE wordpress;'; conn_error)
 fi
 
-#Setup
-sed -i 's/^exec .*//' /usr/local/bin/docker-entrypoint.sh
-docker-entrypoint.sh php-fpm
-
 #Run
-php-fpm & nginx -g 'daemon off;'
+php -S 0.0.0.0:5050 -t /www/html

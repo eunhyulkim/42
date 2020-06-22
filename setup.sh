@@ -32,6 +32,8 @@ else
     export MINIKUBE_IP=$(minikube ip)
     cp -f srcs/ftps/vsftpd_sub.conf srcs/ftps/vsftpd.conf
     sed -i '' "s/##MINIKUBE_IP##/$MINIKUBE_IP/g" srcs/ftps/vsftpd.conf
+    # cp srcs/phpmyadmin/entrypoint_dump srcs/phpmyadmin/entrypoint
+    # sed -i '' "s/##MINIKUBE_IP##/$MINIKUBE_IP/g" srcs/phpmyadmin/entrypoint
     cp srcs/wordpress/wordpress_dump.sql srcs/wordpress/wordpress_dump-target.sql
     sed -i '' "s/##MINIKUBE_IP##/$MINIKUBE_IP/g" srcs/wordpress/wordpress_dump-target.sql
     cp srcs/telegraf/telegraf.conf srcs/telegraf/telegraf-target.conf
