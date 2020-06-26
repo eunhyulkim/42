@@ -11,5 +11,6 @@
 char	**g_env;
 
 void	init_env(char **env);
+char	*get_env(char *key);
 
 # endif
