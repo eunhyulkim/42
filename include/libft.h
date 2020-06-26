@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/26 19:34:35 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/06/26 20:57:36 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,5 +43,9 @@ int								ft_len_doublestr(char **arr);
 char							**ft_dup_doublestr(char **arr);
 void							ft_free_doublestr(char **double_arr);
 int								ft_startswith(const char *str, const char *sub);
+
+// iwoo
+
+void							ft_putstr_fd(char *str, int fd);
 
 #endif

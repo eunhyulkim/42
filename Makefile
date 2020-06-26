@@ -7,15 +7,18 @@ CFLAGS = -Wall -Wextra -Werror
 LIB_DIR = libft/
 LIBLARY = libft.a
 
-MAIN_FILES = 	main env
+MAIN_FILES = 	main env display
 # BIN_FILES =
+GNL_FILES = get_next_line get_next_line_utils
 
 SRCS_PATH = $(MAIN_FILES)
 SRCS_PATH += $(addprefix bin/, $(BIN_FILES))
+SRCS_PATH += $(addprefix get_next_line/, $(GNL_FILES))
 SRCS = $(addprefix srcs/, $(addsuffix .c, $(SRCS_PATH)))
 
 OBJS = $(addsuffix .o, $(MAIN_FILES))
 OBJS += $(addsuffix .o, $(BIN_FILES))
+OBJS += $(addsuffix .o, $(GNL_FILES))
 
 GREEN = \033[0;32m
 RED = \033[0;31m
