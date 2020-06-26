@@ -30,7 +30,9 @@ int		set_env(char *key, char *val)
 	if (idx != -1)
 	{
 		free(g_env[idx]);
-		g_env[idx] = ft_strjoin(ft_strjoin(key, "="), val);
+		item = ft_strjoin(key, "=");
+		g_env[idx] = ft_strjoin(item, val);
+		free(item);
 	}
 	else
 	{
