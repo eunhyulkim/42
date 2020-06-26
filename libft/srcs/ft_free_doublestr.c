@@ -1,28 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   ft_free_doublestr.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/06/26 19:21:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/26 19:21:31 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/06/26 17:06:55 by iwoo              #+#    #+#             */
+/*   Updated: 2020/06/26 19:24:58 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "libft.h"
 
-# include <stdio.h>
-# include <stdlib.h>
-# include "libft.h"
+void	ft_free_doublestr(char **doublestr)
+{
+	int i;
 
-# define TRUE	 1
-# define FALSE	 0
-
-char	**g_env;
-
-void	init_env(char **env);
-char	*get_env(char *key);
-
-# endif
+	if (!doublestr)
+		return ;
+	i = -1;
+	while (doublestr[++i])
+		free(doublestr[i]);
+	free(doublestr);
+}

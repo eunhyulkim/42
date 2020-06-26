@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/26 17:17:06 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/06/26 19:34:35 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,16 @@ typedef struct					s_list
 
 char							*ft_strchr(const char *s, int c);
 int								ft_strlen(const char *str);
+char							**ft_split(char const *s, char c);
 char							*ft_strdup(const char *src);
+void							*ft_memset(void *data, int c, size_t len);
+void							*ft_calloc(size_t size, size_t count);
+char							*ft_strnstr(const char *s1, const char *s2, size_t len);
 
-void							free_double_arr(char **double_arr);
+// bonus
+int								ft_len_doublestr(char **arr);
+char							**ft_dup_doublestr(char **arr);
+void							ft_free_doublestr(char **double_arr);
+int								ft_startswith(const char *str, const char *sub);
 
 #endif

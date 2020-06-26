@@ -7,7 +7,7 @@ CFLAGS = -Wall -Wextra -Werror
 LIB_DIR = libft/
 LIBLARY = libft.a
 
-MAIN_FILES = 	main
+MAIN_FILES = 	main env
 # BIN_FILES =
 
 SRCS_PATH = $(MAIN_FILES)

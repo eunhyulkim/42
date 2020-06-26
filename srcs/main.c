@@ -12,6 +12,8 @@ int				main(int ac, char *av[], char **env)
 	char	**lines;
 	t_line	*line;
 
+	(void)ac;
+	(void)av;
 	init_shell();
 	init_env(env);
 	while (TRUE)
@@ -25,6 +27,6 @@ int				main(int ac, char *av[], char **env)
 			excute_line(line);
 		}
 	}
-	free_double_err(g_env);
+	ft_free_doublestr(g_env);
 	return (0);
 }

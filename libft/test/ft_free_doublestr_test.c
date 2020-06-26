@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test.c                                             :+:      :+:    :+:   */
+/*   ft_free_doublestr_test.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 16:54:40 by iwoo              #+#    #+#             */
-/*   Updated: 2020/06/26 17:26:37 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/06/26 19:20:08 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int main(void)
 	lines[1] = line_2;
 	lines[2] = line_3;
 	lines[3] = NULL;
-	
+
 	int i = -1;
 	while (lines[++i])
 		printf("%s\n", lines[i]);
@@ -40,7 +40,7 @@ int main(void)
 //		free(lines[i]);
 //	free(lines);
 
-	free_double_arr(lines);
+	ft_free_doublestr(lines);
 //	free(line_1);
 //  free(line_2);
 //	free(line_3);

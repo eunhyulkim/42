@@ -1,28 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   ft_dup_doublestr.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/06/26 19:21:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/26 19:21:31 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/02/26 02:29:00 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/06/26 18:25:02 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "libft.h"
 
-# include <stdio.h>
-# include <stdlib.h>
-# include "libft.h"
+char	**ft_dup_doublestr(char **str)
+{
+	char	**ret;
+	int		len;
 
-# define TRUE	 1
-# define FALSE	 0
-
-char	**g_env;
-
-void	init_env(char **env);
-char	*get_env(char *key);
-
-# endif
+	len = ft_len_doublestr(str);
+	if (!(ret = ft_calloc(sizeof(char *), len + 1)))
+		return (0);
+	while (len--)
+		if (!(ret[len] = ft_strdup(str[len])))
+			return (0);
+	return (ret);
+}

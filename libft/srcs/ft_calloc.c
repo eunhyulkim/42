@@ -1,23 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free_double_arr.c                                  :+:      :+:    :+:   */
+/*   ft_calloc.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/06/26 17:06:55 by iwoo              #+#    #+#             */
-/*   Updated: 2020/06/26 17:07:38 by iwoo             ###   ########.fr       */
+/*   Created: 2020/02/26 01:57:45 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/06/26 11:23:41 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	free_double_arr(char **double_arr)
+void	*ft_calloc(size_t size, size_t count)
 {
-	int i;
+	void		*addr;
 
-	i = -1;
-	while (double_arr[++i])
-		free(double_arr[i]);
-	free(double_arr);
+	if (!(addr = malloc(size * count)))
+		return (0);
+	ft_memset(addr, 0, size * count);
+	return (addr);
 }
