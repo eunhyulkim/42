@@ -14,11 +14,15 @@ int				main(int ac, char *av[], char **env)
 
 	(void)ac;
 	(void)av;
-	init_shell();
+	display_logo();
 	init_env(env);
-//	while (TRUE)
-//	{
-//		prompt();
+	while (TRUE)
+	{
+		display_prompt();
+		// test funciton first
+		char buf;
+		read(1, &buf, 1);
+		// test funciton end
 //		if (!(lines = readlines()))
 //			continue;
 //		while (*lines)
@@ -26,7 +30,7 @@ int				main(int ac, char *av[], char **env)
 // 			line = parselines(*lines++);
 //			excute_line(line);
 //		}
-//	}
+	}
 	ft_free_doublestr(g_env);
 	return (0);
 }

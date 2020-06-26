@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 19:21:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/26 21:35:15 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/06/26 22:07:58 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,9 @@ char	**g_env;
 void	init_env(char **env);
 char	*get_env(char *key);
 
+void	clear_terminal(void);
 int		print_ascii_art(void);
-void	init_shell(void);
+void	display_logo(void);
+void	display_prompt(void);
 
 # endif
