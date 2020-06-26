@@ -6,11 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 19:21:30 by eunhkim           #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2020/06/26 21:42:48 by eunhkim          ###   ########.fr       */
-=======
-/*   Updated: 2020/06/26 22:07:58 by iwoo             ###   ########.fr       */
->>>>>>> c4cdd7242e00f8011db377588cd55dd821381fcb
+/*   Updated: 2020/06/27 03:12:18 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +23,14 @@
 # define TRUE	 1
 # define FALSE	 0
 
-char	**g_env;
+typedef struct  s_lexer_tab
+{
+	int			idx;
+	int			start;
+	char		quote;
+}				t_lexer_tab;
+
+char			**g_env;
 
 /*
 ** display functions
@@ -36,6 +39,11 @@ void	clear_terminal(void);
 int		print_ascii_art(void);
 void	display_logo(void);
 void	display_prompt(void);
+
+/*
+** lexer function
+*/
+char	**lexer(char *line);
 
 /*
 ** bin/env functions
