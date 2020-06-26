@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 19:21:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/26 19:21:31 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/06/26 21:35:15 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,10 @@
 
 # include <stdio.h>
 # include <stdlib.h>
+# include <fcntl.h>
+# include <unistd.h>
 # include "libft.h"
+# include "get_next_line.h"
 
 # define TRUE	 1
 # define FALSE	 0
@@ -24,5 +27,8 @@ char	**g_env;
 
 void	init_env(char **env);
 char	*get_env(char *key);
+
+int		print_ascii_art(void);
+void	init_shell(void);
 
 # endif
