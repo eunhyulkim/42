@@ -1,20 +1,5 @@
 #include "minishell.h"
 
-// void	init_env(char **env)
-// {
-// 	int		i;
-// 	char	*mid;
-
-// 	i = 0;
-// 	while (env[i])
-// 	{
-// 		mid = ft_strchr(env[i], '=');
-// 		g_env[i][0] = ;
-// 		g_env[i][1] = ;
-// 		i++;
-// 	}
-// }
-
 static void		excute_line(t_line *line)
 {
 	if (!excute_redirects(line))
