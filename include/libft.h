@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/26 22:22:37 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/06/26 22:40:49 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ char							*ft_strcpy(char *dest, const char *src);
 char							*ft_strcat(char *dest, const char *src);
 char							*ft_strjoin(char const *s1, char const *s2);
 char							*ft_strsub(char const *s, unsigned int start, size_t len);
-
+void							ft_putstr_fd(char *str, int fd);
 
 // bonus
 int								ft_len_doublestr(char **arr);
