@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 19:21:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/26 19:21:31 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/06/26 21:42:48 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,11 @@
 
 char	**g_env;
 
+/*
+** bin/env functions
+*/
 void	init_env(char **env);
 char	*get_env(char *key);
+int		set_env(char *key, char *val);
 
 # endif

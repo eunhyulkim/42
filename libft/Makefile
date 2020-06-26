@@ -4,13 +4,18 @@ CC = gcc
 RM = rm -f
 CFLAGS = -Wall -Wextra -Werror
 
-MAIN_FILES = ft_strchr ft_strlen ft_split ft_strdup ft_dup_doublestr \
-			 ft_memset ft_calloc ft_len_doublestr ft_free_doublestr \
-			 ft_startswith
+MAIN_FILES = ft_strchr ft_strlen ft_split ft_strdup ft_calloc \
+			 ft_memset ft_strcat ft_strcpy ft_strjoin ft_strnew \
+			 ft_strsub
+
+BONUS_FILES = ft_dup_doublestr ft_len_doublestr ft_free_doublestr \
+			  ft_realloc_doublestr ft_startswith
 
 SRCS_PATH = $(MAIN_FILES)
+SRCS_PATH += $(BONUS_FILES)
 SRCS = $(addprefix srcs/, $(addsuffix .c, $(SRCS_PATH)))
 OBJS = $(addsuffix .o, $(MAIN_FILES))
+OBJS += $(addsuffix .o, $(BONUS_FILES))
 
 GREEN = \033[0;32m
 RED = \033[0;31m

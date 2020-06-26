@@ -1,27 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_dup_doublestr.c                                 :+:      :+:    :+:   */
+/*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/26 02:29:00 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/26 20:07:07 by eunhkim          ###   ########.fr       */
+/*   Created: 2019/05/21 08:52:21 by fremoor           #+#    #+#             */
+/*   Updated: 2020/06/26 21:56:44 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	**ft_dup_doublestr(char **str)
+char	*ft_strjoin(char const *s1, char const *s2)
 {
-	char	**ret;
-	int		len;
+	char	*str;
+	size_t	len;
 
-	len = ft_len_doublestr(str);
-	if (!(ret = (char **)ft_calloc(sizeof(char *), len + 1)))
-		return (0);
-	while (len--)
-		if (!(ret[len] = ft_strdup(str[len])))
-			return (0);
-	return (ret);
+	if (!s1 || !s2)
+		return (NULL);
+	len = ft_strlen(s1) + ft_strlen(s2) + 1;
+	if (!(str = (char *)malloc(sizeof(char) * len)))
+		return (NULL);
+	ft_strcpy(str, s1);
+	ft_strcat(str, s2);
+	return (str);
 }
