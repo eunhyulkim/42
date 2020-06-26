@@ -12,7 +12,7 @@ char	*get_env(char *key)
 	idx = 0;
 	while (g_env[idx])
 	{
-		if (ft_strnstr(g_env[idx], key, ft_strlen(g_env[idx])))
+		if (ft_startswith(g_env[idx], key))
 			if (*(g_env[idx] + ft_strlen(key)) == '=')
 				return (g_env[idx] + ft_strlen(key) + 1);
 		idx++;
