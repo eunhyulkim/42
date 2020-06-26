@@ -1,27 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_dup_doublestr.c                                 :+:      :+:    :+:   */
+/*   ft_strcpy.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/26 02:29:00 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/26 20:07:07 by eunhkim          ###   ########.fr       */
+/*   Created: 2019/05/21 08:48:44 by fremoor           #+#    #+#             */
+/*   Updated: 2020/06/26 21:56:32 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	**ft_dup_doublestr(char **str)
+char	*ft_strcpy(char *dest, const char *src)
 {
-	char	**ret;
-	int		len;
+	int i;
 
-	len = ft_len_doublestr(str);
-	if (!(ret = (char **)ft_calloc(sizeof(char *), len + 1)))
-		return (0);
-	while (len--)
-		if (!(ret[len] = ft_strdup(str[len])))
-			return (0);
-	return (ret);
+	i = 0;
+	while (src[i] != '\0')
+	{
+		dest[i] = src[i];
+		i++;
+	}
+	dest[i] = '\0';
+	return (dest);
 }

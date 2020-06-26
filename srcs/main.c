@@ -16,6 +16,7 @@ int				main(int ac, char *av[], char **env)
 	(void)av;
 	display_logo();
 	init_env(env);
+
 	while (TRUE)
 	{
 		display_prompt();
