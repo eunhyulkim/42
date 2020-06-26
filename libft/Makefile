@@ -1,5 +1,5 @@
 NAME =	libft.a
-INCLUDES = -I./includes/
+INCLUDES = -I ../include/
 CC = gcc
 RM = rm -f
 CFLAGS = -Wall -Wextra -Werror

@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/26 17:04:11 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/06/26 17:17:06 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,5 +32,8 @@ typedef struct					s_list
 
 char							*ft_strchr(const char *s, int c);
 int								ft_strlen(const char *str);
+char							*ft_strdup(const char *src);
+
+void							free_double_arr(char **double_arr);
 
 #endif
