@@ -1,10 +1,10 @@
 NAME =	libft.a
-INCLUDES = -I./includes/
+INCLUDES = -I ../include/
 CC = gcc
 RM = rm -f
 CFLAGS = -Wall -Wextra -Werror
 
-MAIN_FILES = ft_strchr ft_strlen
+MAIN_FILES = ft_strchr ft_strlen ft_strdup free_double_arr
 
 SRCS_PATH = $(MAIN_FILES)
 SRCS = $(addprefix srcs/, $(addsuffix .c, $(SRCS_PATH)))
