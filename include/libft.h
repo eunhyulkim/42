@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/26 18:51:36 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/06/26 19:21:21 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,11 @@ char							**ft_split(char const *s, char c);
 char							*ft_strdup(const char *src);
 void							*ft_memset(void *data, int c, size_t len);
 void							*ft_calloc(size_t size, size_t count);
+char							*ft_strnstr(const char *s1, const char *s2, size_t len);
+
+// bonus
 int								ft_len_doublestr(char **arr);
 char							**ft_dup_doublestr(char **arr);
-char							*ft_strnstr(const char *s1, const char *s2, size_t len);
+void							ft_free_doublestr(char **double_arr);
 
 #endif

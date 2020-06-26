@@ -1,5 +1,8 @@
 #include "minishell.h"
 
+// if key exist in env but value is not, return empty string pointer
+// if key not in env, return null
+
 char	*get_env(char *key)
 {
 	int		idx;
