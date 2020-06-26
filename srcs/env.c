@@ -22,7 +22,6 @@ int		set_env(char *key, char *val)
 {
 	int		idx;
 	char	*item;
-	char	**new_env;
 
 	if (!key || !(*key))
 		return (0);
@@ -37,9 +36,7 @@ int		set_env(char *key, char *val)
 	}
 	else
 	{
-		new_env = ft_realloc_doublestr(g_env, item);
-		ft_free_doublestr(g_env);
-		g_env = new_env;
+		ft_realloc_doublestr(&g_env, item);
 		free(item);
 	}
 	return (1);
