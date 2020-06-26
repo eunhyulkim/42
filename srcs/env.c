@@ -27,14 +27,16 @@ int		set_env(char *key, char *val)
 	if (!key || !(*key))
 		return (0);
 	idx = get_key_idx(key);
+	key = ft_strjoin(key, "=");
+	item = ft_strjoin(key, val);
+	free(key);
 	if (idx != -1)
 	{
 		free(g_env[idx]);
-		g_env[idx] = ft_strjoin(ft_strjoin(key, "="), val);
+		g_env[idx] = item;
 	}
 	else
 	{
-		item = ft_strjoin(ft_strjoin(key, "="), val);
 		new_env = ft_realloc_doublestr(g_env, item);
 		ft_free_doublestr(g_env);
 		g_env = new_env;
