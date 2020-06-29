@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/27 03:18:14 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/06/28 11:23:07 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,15 @@ char							*ft_strcpy(char *dest, const char *src);
 char							*ft_strcat(char *dest, const char *src);
 char							*ft_strjoin(char const *s1, char const *s2);
 char							*ft_strsub(char const *s, unsigned int start, size_t len);
+int								ft_strcmp(const char *s1, const char *s2);
+int								ft_strncmp(const char *s1, const char *s2, size_t n);
 void							ft_putstr_fd(char *str, int fd);
 int								ft_isspace(int c);
+int								ft_isascii(int c);
+int								ft_isalpha(int c);
+int								ft_isnum(t_llint c);
+int								ft_isprint(int c);
+int								ft_isset(int c, char *set);
 
 // bonus
 int								ft_len_doublestr(char **arr);
@@ -51,5 +58,8 @@ void							ft_free_doublestr(char **double_arr);
 char							**ft_realloc_doublestr(char ***strs_ref, char *item);
 int								ft_startswith(const char *str, const char *sub);
 char							*ft_strnew(size_t size);
+int								ft_in(char *item, char *list);
+int								ft_isitem(char *item, char **list);
+int								ft_isformat(char *str, char *format);
 
 #endif

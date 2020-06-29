@@ -8,15 +8,20 @@
 # include "libft.h"
 # include "get_next_line.h"
 
-# define TRUE	 1
-# define FALSE	 0
+# define TRUE	 	1
+# define FALSE	 	0
 
-typedef struct  s_lexer_tab
+# define OPENED		1
+# define UNOPENED	0
+
+typedef int		bool;
+typedef struct  s_tokenizer
 {
 	int			idx;
 	int			start;
+	int			prev;
 	char		quote;
-}				t_lexer_tab;
+}				t_tokenizer;
 
 char			**g_env;
 
@@ -29,9 +34,9 @@ void	display_logo(void);
 void	display_prompt(void);
 
 /*
-** lexer function
+** tokenizer function
 */
-char	**lexer(char *line);
+char	**tokenzier(char *line);
 
 /*
 ** bin/env functions
