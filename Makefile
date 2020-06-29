@@ -7,8 +7,8 @@ CFLAGS = -Wall -Wextra -Werror
 LIB_DIR = libft/
 LIBLARY = libft.a
 
-MAIN = test/tokenizer_test
-MAIN_FILES = display tokenizer
+MAIN = test/lexer_test
+MAIN_FILES = display tokenizer lexer
 BIN_FILES = env
 GNL_FILES = get_next_line get_next_line_utils
 

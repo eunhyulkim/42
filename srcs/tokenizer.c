@@ -63,7 +63,7 @@ static	int		is_end(char *line, t_tokenizer *tab)
 	if (!line || tab->start == -1)
 		return (FALSE);
 	if (line[i] == tab->quote && tab->start != i)
-		tab->quote = UNOPENED;
+		tab->quote = 0;
 	if (!line[i + 1] || (!tab->quote && line[i] == '\n'))
 		return (TRUE);
 	if (tab->quote)

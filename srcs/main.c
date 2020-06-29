@@ -1,13 +1,13 @@
 #include "minishell.h"
 
-static void		excute_line(char *line)
+static void		process_line(char *line)
 {
 	char		**tokens;
 	// t_table		*table;
 
 	tokens = tokenizer(line);
-	// if (!(tokens = lexer(line)))
-	// 	return ;
+	if (!lexer(tokens))
+		return ;
 	// if (!(table = parser(tokens)))
 	// 	return ;
 	// ft_free_doublestr(tokens);

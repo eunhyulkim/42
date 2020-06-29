@@ -11,9 +11,6 @@
 # define TRUE	 	1
 # define FALSE	 	0
 
-# define OPENED		1
-# define UNOPENED	0
-
 typedef int		bool;
 typedef struct  s_tokenizer
 {
@@ -37,6 +34,11 @@ void	display_prompt(void);
 ** tokenizer function
 */
 char	**tokenizer(char *line);
+
+/*
+** lexer function
+*/
+int		lexer(char **tokens);
 
 /*
 ** bin/env functions
