@@ -7,18 +7,24 @@ CFLAGS = -Wall -Wextra -Werror
 LIB_DIR = libft/
 LIBLARY = libft.a
 
-MAIN_FILES = main env display lexer
-# BIN_FILES =
+MAIN = test_main
+MAIN_FILES = display lexer
+BIN_FILES = env
 GNL_FILES = get_next_line get_next_line_utils
 
-SRCS_PATH = $(MAIN_FILES)
+SRCS_PATH = $(MAIN)
+SRCS_PATH += $(MAIN_FILES)
 SRCS_PATH += $(addprefix bin/, $(BIN_FILES))
 SRCS_PATH += $(addprefix get_next_line/, $(GNL_FILES))
 SRCS = $(addprefix srcs/, $(addsuffix .c, $(SRCS_PATH)))
 
-OBJS = $(addsuffix .o, $(MAIN_FILES))
+OBJS = $(addsuffix .o, $(MAIN))
+OBJS += $(addsuffix .o, $(MAIN_FILES))
 OBJS += $(addsuffix .o, $(BIN_FILES))
 OBJS += $(addsuffix .o, $(GNL_FILES))
+
+TEST_SRCS = ${SRCS}
+TEST_SRCS += srcs/test_main.c
 
 GREEN = \033[0;32m
 RED = \033[0;31m
@@ -51,6 +57,11 @@ fclean: clean
 	@${RM} $(NAME)
 	@echo "$(RED)fclean DONE"
 
-re: fclean all
+re: fclean ${OBJS}
+
+libft_test:
+	@echo "$(GREEN)TEST START$(RESET)"
+	@make -C libft/ test
+	@echo "$(GREEN)DONE"
 
 .PHONY:	all clean fclean re bonus
