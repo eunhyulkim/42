@@ -25,6 +25,29 @@ typedef struct  s_tokenizer
 
 char			**g_env;
 
+typedef struct		s_command
+{
+	char				*cmd;
+	char				*argu;
+	struct s_command	*next;
+}					t_command;
+
+typedef struct		s_redi
+{
+	char				*redi;
+	char				*argu;
+	struct	s_redi		*next;
+}					t_redi;
+
+typedef struct		s_table
+{
+	t_command		*cmd_list;
+	t_redi			*redi_list;
+	int				input_fd;
+	int				output_fd;
+	struct s_table	*next;
+}					t_table;
+
 /*
 ** display functions
 */
@@ -44,5 +67,11 @@ char	**tokenzier(char *line);
 void	init_env(char **env);
 char	*get_env(char *key);
 int		set_env(char *key, char *val);
+
+/*
+** execute functions
+*/
+
+int		execute_redirection(t_table *table);
 
 # endif

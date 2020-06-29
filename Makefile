@@ -7,8 +7,8 @@ CFLAGS = -Wall -Wextra -Werror
 LIB_DIR = libft/
 LIBLARY = libft.a
 
-MAIN = srcs/main
-MAIN_FILES = display
+MAIN = test/test_redirections
+MAIN_FILES = display excute
 BIN_FILES = env
 GNL_FILES = get_next_line get_next_line_utils
 
