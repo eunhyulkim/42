@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include "libft.h"
 
 int	init_line(char **line)
 {
@@ -49,6 +50,15 @@ int	is_last_line_eof(int fd, t_buf *buf)
 	return (1);
 }
 
+int	add_newline_return(char **line)
+{
+	char *str;
+	str = ft_strjoin(*line, "\n");
+	free(*line);
+	*line = str;
+	return (1);
+}
+
 int	get_next_line(int fd, char **line)
 {
 	static t_buf	buf;
@@ -70,7 +80,7 @@ int	get_next_line(int fd, char **line)
 		else
 		{
 			buf.idx++;
-			return (1);
+			return (add_newline_return(line));
 		}
 	}
 	return (0);

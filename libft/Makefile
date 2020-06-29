@@ -13,6 +13,8 @@ BONUS_FILES = ft_dup_doublestr ft_len_doublestr ft_free_doublestr \
 			  ft_realloc_doublestr ft_startswith ft_isformat ft_in \
 			  ft_isitem
 
+# TEST_FILE = test/
+
 SRCS_PATH = $(MAIN_FILES)
 SRCS_PATH += $(BONUS_FILES)
 SRCS = $(addprefix srcs/, $(addsuffix .c, $(SRCS_PATH)))
@@ -42,7 +44,7 @@ fclean:	clean
 re:	fclean all
 
 test: fclean all
-	@${CC} ${CFLAGS} ${INCLUDES} -lft -L. test.c -o testfile
+	@${CC} ${CFLAGS} ${INCLUDES} -lft -L. ${TEST_FILE} -o testfile
 	@./testfile
 
 

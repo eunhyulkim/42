@@ -2,37 +2,41 @@
 
 static void		excute_line(char *line)
 {
-	char		**tokens;
-	t_table		*table;
+	(void)line;
+	// char		**tokens;
+	// t_table		*table;
 
-	if (!(tokens = lexer(line)))
-		return ;
-	if (!(table = parser(tokens)))
-		return ;
-	ft_free_doublestr(tokens);
-	if (!excute_redirects(table))
-		return ;
-	excute_commands(table);
+	// if (!(tokens = lexer(line)))
+	// 	return ;
+	// if (!(table = parser(tokens)))
+	// 	return ;
+	// ft_free_doublestr(tokens);
+	// if (!excute_redirects(table))
+	// 	return ;
+	// excute_commands(table);
 }
 
 int				main(int ac, char *av[], char **env)
 {
-	char	**lines;
+	char	*line;
 	int		idx;
 
 	display_logo();
 	init_env(env);
 
+	(void)ac;
+	(void)av;
 	while (TRUE)
 	{
 		display_prompt();
-		lines = 0;
-		if (!(lines = readlines()))
+		line = 0;
+		int fd;
+		if (!(fd = get_next_line(1, &line)))
 			continue;
 		idx = 0;
-		while (lines[idx])
-			excute_line(lines[idx++]);
-		ft_free_doublestr(lines);
+		printf("[%s] -> %d\n", line, fd);
+		excute_line(line);
+		free(line);
 	}
 	ft_free_doublestr(g_env);
 	return (0);

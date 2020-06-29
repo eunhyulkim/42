@@ -7,24 +7,20 @@ CFLAGS = -Wall -Wextra -Werror
 LIB_DIR = libft/
 LIBLARY = libft.a
 
-MAIN = test_main
-MAIN_FILES = display lexer
+MAIN = srcs/main
+MAIN_FILES = display
 BIN_FILES = env
 GNL_FILES = get_next_line get_next_line_utils
 
-SRCS_PATH = $(MAIN)
+MAIN_PATH = $(addsuffix .c, $(MAIN))
 SRCS_PATH += $(MAIN_FILES)
 SRCS_PATH += $(addprefix bin/, $(BIN_FILES))
 SRCS_PATH += $(addprefix get_next_line/, $(GNL_FILES))
 SRCS = $(addprefix srcs/, $(addsuffix .c, $(SRCS_PATH)))
 
-OBJS = $(addsuffix .o, $(MAIN))
 OBJS += $(addsuffix .o, $(MAIN_FILES))
 OBJS += $(addsuffix .o, $(BIN_FILES))
 OBJS += $(addsuffix .o, $(GNL_FILES))
-
-TEST_SRCS = ${SRCS}
-TEST_SRCS += srcs/test_main.c
 
 GREEN = \033[0;32m
 RED = \033[0;31m
@@ -38,7 +34,7 @@ ${NAME}: ${OBJS}
 	@echo "$(RESET)Copying ${LIBLARY} to root."
 	@cp ${LIB_DIR}${LIBLARY} .
 	@echo "$(RESET)Compiling ${NAME} to root."
-	@${CC} ${CFLAGS} ${INCLUDES} -lft -L. ${OBJS} -o ${NAME}
+	@${CC} ${CFLAGS} ${INCLUDES} -lft -L. ${OBJS} ${MAIN_PATH} -o ${NAME}
 	@echo "$(GREEN)DONE"
 
 ${OBJS}: ${SRCS}
@@ -46,7 +42,7 @@ ${OBJS}: ${SRCS}
 
 clean:
 	@echo "$(RESET)Cleaning your mongshell .o files$(RESET)"
-	@${RM} $(OBJS)
+	@${RM} $(OBJS) 
 	@echo "Cleaning your libft files"
 	@make -C libft/ fclean
 	@${RM} ${LIBLARY}
