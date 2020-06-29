@@ -32,58 +32,53 @@ static char 	get_quote(char *line, int idx)
 	return (quote);
 }
 
-' '
-'\''
-'\"'
-'>', '>>'
-'<', '<<'
-';'
-'%c', '%s'
-'%d'
-'&', '&&'
-
-COMMAND, ARGUMENT, PIPE, FD, GREATER, DGREATER, LESS, DLESS, FILENAME, SEMICOLON, SPACE // QUOTE, DQUOTE
-
 static	int		is_start(char *line, t_tokenizer *tab)
 {
-	if (!line || !line[tab->idx] || tab->quote)
+	int		i;
+
+	i = tab->idx;
+	if (!line || !line[i] || tab->quote)
 		return (FALSE);
-	tab->quote = get_quote(line, tab->idx);
-	if (!tab->idx)
+	tab->quote = get_quote(line, i);
+	if (!i || line[i] == '\n')
 		return (TRUE);
-	if (ft_isspace(line[tab->idx]))
-		return (ft_isspace(line[tab->idx - 1]) ? FALSE : TRUE);
-	if (ft_isset(line[tab->idx], "|><;&"))
+	if (ft_isspace(line[i]))
+		return (ft_isspace(line[i - 1]) ? FALSE : TRUE);
+	if (ft_isset(line[i], "><|;&"))
 	{
-		if (line[tab->idx - 1] == line[tab->idx])
-			return(tab->duple = !tab->duple);
-		return (tab->duple = 1);
+		if (tab->prev == line[i])
+			return (FALSE);
+		tab->prev = line[i];
+		return (TRUE);
 	}
-	return (ft_isspace(line[tab->idx - 1]))
+	tab->prev = 0;
+	return (ft_isspace(line[i - 1]) || ft_isset(line[i - 1], "><|;&"));
 }
 
 static	int		is_end(char *line, t_tokenizer *tab)
 {
-	int		j;
+	int		i;
 
-	if (!line || tab->start == -1 || ft_isspace(line[tab->idx]))
+	i = tab->idx;
+	if (!line || tab->start == -1)
 		return (FALSE);
-	if (line[tab->idx] == tab->quote && tab->start != tab->idx)
-		tab->quote = 0;
-	if (!line[tab->idx + 1])
+	if (line[i] == tab->quote && tab->start != i)
+		tab->quote = UNOPENED;
+	if (!line[i + 1] || (!tab->quote && line[i] == '\n'))
 		return (TRUE);
 	if (tab->quote)
 		return (FALSE);
-	if (ft_isspace(line[tab->idx + 1] || ft_isset(line[tab->idx + 1], "><")))
+	if (ft_isspace(line[i]))
+		return (!ft_isspace(line[i + 1]));
+	if (ft_isspace(line[i + 1]))
 		return (TRUE);
-	if (!ft_isnum(line[tab->idx + 1]))
-		return (FALSE);
-	j = 2;
-	while (ft_isnum(line[tab->idx + j]))
-		j++;
-	if (ft_isset(line[tab->idx + j], "><"))
-		return (TRUE);
-	return (FALSE);
+	if (ft_isset(line[i], "><|;&"))
+	{
+		if (line[i] != line[i + 1])
+			return (TRUE);
+		return ((tab->prev == line[i] && tab->start != i) ? TRUE : FALSE);
+	}
+	return (ft_isset(line[i + 1], "><|;&") ? TRUE : FALSE);
 }
 
 char			**tokenizer(char *line)
@@ -104,7 +99,7 @@ char			**tokenizer(char *line)
 			ft_realloc_doublestr(&tokens, token);
 			free(token);
 			tab.start = -1;
-			tab.quote = UNOPEND;
+			tab.prev = 0;
 		}
 		tab.idx++;
 	}

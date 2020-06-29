@@ -7,8 +7,8 @@ CFLAGS = -Wall -Wextra -Werror
 LIB_DIR = libft/
 LIBLARY = libft.a
 
-MAIN = srcs/main
-MAIN_FILES = display
+MAIN = test/tokenizer_test
+MAIN_FILES = display tokenizer
 BIN_FILES = env
 GNL_FILES = get_next_line get_next_line_utils
 
@@ -53,7 +53,7 @@ fclean: clean
 	@${RM} $(NAME)
 	@echo "$(RED)fclean DONE"
 
-re: fclean ${OBJS}
+re: fclean all
 
 libft_test:
 	@echo "$(GREEN)TEST START$(RESET)"

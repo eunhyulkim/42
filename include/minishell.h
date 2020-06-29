@@ -36,7 +36,7 @@ void	display_prompt(void);
 /*
 ** tokenizer function
 */
-char	**tokenzier(char *line);
+char	**tokenizer(char *line);
 
 /*
 ** bin/env functions
