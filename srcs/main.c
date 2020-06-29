@@ -2,10 +2,10 @@
 
 static void		excute_line(char *line)
 {
-	(void)line;
-	// char		**tokens;
+	char		**tokens;
 	// t_table		*table;
 
+	tokens = tokenizer(line);
 	// if (!(tokens = lexer(line)))
 	// 	return ;
 	// if (!(table = parser(tokens)))
@@ -19,7 +19,6 @@ static void		excute_line(char *line)
 int				main(int ac, char *av[], char **env)
 {
 	char	*line;
-	int		idx;
 
 	display_logo();
 	init_env(env);
@@ -30,12 +29,9 @@ int				main(int ac, char *av[], char **env)
 	{
 		display_prompt();
 		line = 0;
-		int fd;
-		if (!(fd = get_next_line(1, &line)))
+		if (!(get_next_line(1, &line)))
 			continue;
-		idx = 0;
-		printf("[%s] -> %d\n", line, fd);
-		excute_line(line);
+		process_line(line);
 		free(line);
 	}
 	ft_free_doublestr(g_env);
