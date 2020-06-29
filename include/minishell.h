@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/06/26 19:21:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/26 21:42:48 by eunhkim          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -23,7 +11,14 @@
 # define TRUE	 1
 # define FALSE	 0
 
-char	**g_env;
+typedef struct  s_lexer_tab
+{
+	int			idx;
+	int			start;
+	char		quote;
+}				t_lexer_tab;
+
+char			**g_env;
 
 /*
 ** display functions
@@ -32,6 +27,11 @@ void	clear_terminal(void);
 int		print_ascii_art(void);
 void	display_logo(void);
 void	display_prompt(void);
+
+/*
+** lexer function
+*/
+char	**lexer(char *line);
 
 /*
 ** bin/env functions

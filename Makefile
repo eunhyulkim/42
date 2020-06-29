@@ -7,7 +7,7 @@ CFLAGS = -Wall -Wextra -Werror
 LIB_DIR = libft/
 LIBLARY = libft.a
 
-MAIN_FILES = main env display
+MAIN_FILES = main env display lexer
 # BIN_FILES =
 GNL_FILES = get_next_line get_next_line_utils
 

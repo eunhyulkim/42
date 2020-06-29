@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/26 22:40:49 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/06/27 03:18:14 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,13 @@ char							*ft_strcat(char *dest, const char *src);
 char							*ft_strjoin(char const *s1, char const *s2);
 char							*ft_strsub(char const *s, unsigned int start, size_t len);
 void							ft_putstr_fd(char *str, int fd);
+int								ft_isspace(int c);
 
 // bonus
 int								ft_len_doublestr(char **arr);
 char							**ft_dup_doublestr(char **arr);
 void							ft_free_doublestr(char **double_arr);
-char							**ft_realloc_doublestr(char **strs, char *item);
+char							**ft_realloc_doublestr(char ***strs_ref, char *item);
 int								ft_startswith(const char *str, const char *sub);
 char							*ft_strnew(size_t size);
 

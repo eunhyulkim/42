@@ -1,25 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_len_doublestr.c                                 :+:      :+:    :+:   */
+/*   ft_isspace.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/26 02:29:00 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/27 03:44:25 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/03/20 02:58:52 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/04/08 00:39:41 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int		ft_len_doublestr(char **str)
+int				ft_isspace(int c)
 {
-	int		idx;
-
-	idx = 0;
-	if (!str || !(*str))
-		return (0);
-	while (*str++)
-		idx++;
-	return (idx);
+	if (c == '\t' || c == '\n' || c == '\r' || \
+	c == '\v' || c == '\f' || c == ' ')
+		return (1);
+	return (0);
 }
