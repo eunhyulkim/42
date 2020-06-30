@@ -72,8 +72,16 @@ static void		process_line(char *line)
 	t_table *table;
 	
 	table = make_test_table();
-	test_table(table);
+	//test_table(table);
 
+	execute_redirection(table);
+	printf("output_fd: %d\n", table->output_fd);
+	printf("input_fd: %d\n", table->input_fd);
+
+	int res;
+
+	res = execute_command(table);
+	printf("res: %d\n", res);
 // tables 실행구조 초안
 //	while (table)
 //	{
@@ -120,8 +128,6 @@ static void		process_line(char *line)
 //		}
 //		table = table->next;
 //	}
-	printf("output_fd: %d\n", table->output_fd);
-	printf("input_fd: %d\n", table->input_fd);
 //	if (!excute_redirection(table))
 //	 	return ;
 	// excute_commands(table);

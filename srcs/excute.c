@@ -32,6 +32,23 @@ int	execute_redirection(t_table *table)
 
 int	execute_command(t_table *table)
 {
-	(void)table;
+	t_command	*cmd;
+	pid_t		pid;
+	int			fd[2];
+
+	cmd = table->cmd;
+	set_fd(fd);
+	if ((pid = fork()) < 0)
+	{
+		ft_putstr_fd("Pid error\n", 2);
+		return (0);
+	}
+	if (pid == 0)
+	{
+
+	}
+	else
+	{
+	}
 	return (1);
 }
