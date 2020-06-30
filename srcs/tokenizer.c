@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/29 14:45:07 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/29 14:48:57 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/06/30 13:02:04 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static	int		is_start(char *line, t_tokenizer *tab)
 	if (!line || !line[i] || tab->quote)
 		return (FALSE);
 	tab->quote = get_quote(line, i);
-	if (!i || line[i] == '\n')
+	if (line[i] == '\n')
 		return (TRUE);
 	if (ft_isspace(line[i]))
 		return (ft_isspace(line[i - 1]) ? FALSE : TRUE);
@@ -52,6 +52,8 @@ static	int		is_start(char *line, t_tokenizer *tab)
 		return (TRUE);
 	}
 	tab->prev = 0;
+	if (!tab->idx)
+		return (TRUE);
 	return (ft_isspace(line[i - 1]) || ft_isset(line[i - 1], "><|;&"));
 }
 

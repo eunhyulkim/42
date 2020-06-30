@@ -1,58 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
+/*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/28 13:42:16 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/06/30 13:13:02 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-# define    PIPE        1
-# define    OR          2
-# define    AND         3
-# define    SEMI        4
-# define    DSEMI       5
-# define    GREATER     6    
-# define    DGREATER    7    
-# define    LESS        8    
-# define    DLESS       9    
-# define    SPACE       10    
-# define    NUMBER      11    
-# define    STRING      12
+# define    PIPE        'P' // !P-O-*, !P-SO-*, !P-*-X
+# define    OR          'O'
+# define    AND         'A'
+# define    SEMI        'Y'
+# define    DSEMI       'Z'
+# define    GREATER     'G'
+# define    DGREATER    'H'
+# define    LESS        'L'
+# define    DLESS       'M'
+# define    SPACE       'S'
+# define    EMPER       'E'
+# define    NUMBER      'N'
+# define    STRING      'C'
+# define    ENTER       'F'
 
-
-// # define    COMMAND					4;
-// # define    ARGUMENT				5;
-// # define    PIPE					10;
-// # define    REDIRECT				6;
-// # define    FILENAME				7;
-// # define    COMMAND_PARSE_MASK		5;
-// # define    REDIRECT_PARSE_MASK		7;
-
-/*
-** command [arguments] | cmd [arguments] | ... | redirects filename
-*/
-
-/*
-** ERROR_CASE(has_cmd, has_redirect)
-** PIPE		5	0
-** ARGUMENT	10	0
-** COMMAND	4	1
-** REDIRECT	6		1
-** FILENAME	7		0
-*/
-
-static int	check_type(char **tokens, int idx)
+static char	type(char **tokens, int idx)
 {
 	if (!ft_strcmp(tokens[idx], "|"))
 		return (PIPE);
     if (!ft_strcmp(tokens[idx], "||"))
         return (OR);
+    if (!ft_strcmp(tokens[idx], "&"))
+        return (EMPER);
     if (!ft_strcmp(tokens[idx], "&&"))
         return (AND);
     if (!ft_strcmp(tokens[idx], ";"))
@@ -71,49 +53,88 @@ static int	check_type(char **tokens, int idx)
         return (SPACE);
     if (ft_isformat(tokens[idx], "d+"))
         return (NUMBER);
-    return (STRING);
+    return (!ft_strcmp(tokens[idx], "\n") ? ENTER : STRING);
 }
 
-static int	is_valid_token(char **tokens, int idx, int type)
+static int  check_order(char **tokens, int midx, char *format, char opt)
 {
-    int     prev;
-    int     pprev;
+    int     i;
+    int     len;
 
-    prev = (idx) ? check_type(tokens[idx - 1]) : 0;
-    pprev = (idx - 1) ? check_type(tokens[idx - 2]) : 0;
+    i = 0;
+    len = ft_len_doublestr(tokens);
+    format = (opt == 'L') ? ft_strreverse(format) : format;
+    while (format[i])
+    {
+        if (opt == 'L' && (midx - i - 1) < 0 && ft_free(format))
+            return ((format[i] == 'X') ? TRUE : FALSE);
+        if (opt == 'R' && (midx + i + 1) >= len)
+            return ((format[i] == 'X') ? TRUE : FALSE);
+        if (opt == 'L' && format[i] != type(tokens, midx - i - 1))
+            if (!ft_isset(format[i], "W*") && ft_free(format))
+                return (FALSE);
+        if (opt == 'R' && format[i] != type(tokens, midx + i + 1))
+            if (!ft_isset(format[i], "W*"))
+                return (FALSE);
+        i++;
+    }
+    if (opt == 'L')
+        free(format);
+    return (TRUE);
+}
+
+static int  token_in(char **tokens, int idx, char mid_type, char *format)
+{
+    int     i;
+    char    **formats;
+    char    **parts;
+
+    i = -1;
+    formats = ft_split(format, ',');
+    while (formats[++i])
+    {
+        if (*(ft_strchr(formats[i], '-') + 1) != mid_type)
+            continue;
+        parts = ft_split(formats[i], '-');
+        if (check_order(tokens, idx, parts[0], 'L'))
+            if (check_order(tokens, idx, parts[2], 'R'))
+                if (ft_free_doublestr(parts))
+                    return (TRUE);
+        ft_free_doublestr(parts);
+    }
+    ft_free_doublestr(formats);
+    return (0);
+}
+
+static int	is_valid_token(char **tokens, int idx, char type)
+{
     if (type == DSEMI)
         return (FALSE);
-    if (type == PIPE && prev == SEMI || (prev == SPACE && pprev == SEMI)
+    if (token_in(tokens, idx, type, \
+    "X-P-*,XS-P-*,*-P-X,*-P-SX,*-P-F,*-P-SF,\
+    O-P-*,\
+    OS-P-*,*-P-X"))
+        return (FALSE);
     return (TRUE);
-
-	// err = FALSE;
-	// if (type == COMMAND && table->has_cmd == TRUE)
-	// 	err = TRUE;
-	// else if ((type == PIPE || type == ARGUMENT) && table->has_cmd == FALSE)
-	// 	err = TRUE;
-	// else if (type == REDIRECT && table->has_redirect == TRUE)
-	// 	err = TRUE;
-	// else if (type == FILENAME && table->has_redirect == FALSE)
-	// 	err = TRUE;
-	// write(1, "syntax error near unexp")
-	// return (err) ? TRUE : FALSE;
 }
 
 int     lexer(char **tokens)
 {
 	int			idx;
-	int			type;
+	char		mid_type;
 
 	idx = 0;
 	while (tokens[idx])
 	{
-		type = check_type(tokens, idx);
-        printf("[%d]", type);
-		if (is_valid_token(tokens, idx, type))
+		mid_type = type(tokens, idx);
+        write(1, "[", 1);
+        write(1, &mid_type, 1);
+        write(1, "]", 1);
+		if (!is_valid_token(tokens, idx, mid_type))
         {
-            write(1, "syntax error near unexpected token `", 36);
+            write(1, "\nsyntax error near unexpected token `", 37);
             write(1, tokens[idx], ft_strlen(tokens[idx]));
-            write(1, "\'\n", 2);
+            write(1, "\n", 1);
 			return (FALSE);
         }
         idx++;

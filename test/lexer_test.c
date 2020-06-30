@@ -5,7 +5,9 @@ static void		process_line(char *line)
 	char		**tokens;
 	// t_table		*table;
 
-	tokens = tokenizer(line);
+	write(1, "\n", 1);
+	if (!(tokens = tokenizer(line)))
+		return ;
 	int i = 0;
 	while (tokens && tokens[i])
 	{
@@ -18,8 +20,8 @@ static void		process_line(char *line)
 			printf("[%s]", tokens[i++]);
 	}
 	printf("\n");
-	if (tokens)
-		lexer(tokens);
+	lexer(tokens);
+	ft_free_doublestr(tokens);
 }
 
 int				main(int ac, char *av[], char **env)
@@ -29,49 +31,40 @@ int				main(int ac, char *av[], char **env)
 
 	(void)ac;
 	(void)av;
-	printf("[TOKENIZING RESULT]\n");
-	process_line("");
-	printf("\n");
-	process_line("  ");
-	printf("\n");
-	process_line("NORMAL_TEXT");
-	printf("\n");
-	process_line("NORMAL TEXT  ");
-	printf("\n");
-	process_line("NO;RMAL");
-	printf("\n");
-	process_line("NO;;RMAL");
-	printf("\n");
-	process_line("NO;;;RMAL");
-	printf("\n");
-	process_line("NO&&&&&RMAL");
-	printf("\n");
-	process_line("NO&&|||&RMAL");
-	printf("\n");
-	process_line("NO;|;RMAL");
-	printf("\n");
-	process_line("NO& &&|&&RMAL");
-	printf("\n");
-	process_line("\'asd'");
-	printf("\n");
-	process_line("\'as\'\"d\"");
-	printf("\n");
-	process_line("\'as\' \"d\"");
-	printf("\n");
-	process_line("\'as\' \"d\"\n");
-	printf("\n");
-	process_line("\'as;\' |\"d|\"& \n");
-	printf("\n");
-	process_line("\'as;\' |\"d|& \n");
-	printf("\n");
-	printf("'\n'");
-	printf("\n");
-	process_line(">213 \n adsf < || dk &&sdahjf1>2><3\a 1> a 2>>> b");
-	printf("\n");
-	process_line("| || && ; > >> < << 342 abc");
-	printf("\n");
-	process_line("| || && ;; > >> < << 342 abc 24a");
-	printf("\n");
+	printf("[LEXER RESULT]\n");
+	process_line("|||||\n");
+	process_line("&&&&&\n");
+	process_line(";;;;;\n");
+	process_line("|\n");
+	process_line("a|\n");
+	process_line(" |\n");
+	process_line("a |\n");
+	process_line("|b\n");
+	process_line("| \n");
+	process_line("| b\n");
+	process_line("a|b\n");
+	process_line("a | b\n");
+	process_line("a| b\n");
+	process_line("a |b\n");
+	process_line("a | \n");
+	process_line("a| \n");
+	process_line(" | b\n");
+	process_line(" |b\n");
+	process_line("a | ;\n");
+	process_line("a |;\n");
+	process_line("a|;\n");
+	process_line("a| ;\n");
+	process_line(";| a\n");
+	process_line(";|a\n");
+	process_line("; |a\n");
+	process_line("; | a\n");
+	process_line("; | ;\n");
+	process_line("; |;\n");
+	process_line(";| ;\n");
+	process_line(";|;\n");
+	process_line("|||;\n");
+	process_line("a| ");
+
 	ft_free_doublestr(g_env);
 	return (0);
 }
