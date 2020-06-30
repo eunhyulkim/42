@@ -30,25 +30,43 @@ int	execute_redirection(t_table *table)
 	return (1);
 }
 
-int	execute_command(t_table *table)
-{
-	t_command	*cmd;
-	pid_t		pid;
-	int			fd[2];
-
-	cmd = table->cmd;
-	set_fd(fd);
-	if ((pid = fork()) < 0)
-	{
-		ft_putstr_fd("Pid error\n", 2);
-		return (0);
-	}
-	if (pid == 0)
-	{
-
-	}
-	else
-	{
-	}
-	return (1);
-}
+//TODO: make complete structure. This is just draft.
+ //int	execute_command_list(t_table *table)
+ //{
+ //	t_command	*cmd;
+ //	pid_t		pid;
+ //	int			fd[2];
+ //	int			input_fd;
+ //
+ //	cmd = table->cmd;
+ //	whlie (cmd != NULL)
+ //	{
+ //		pipe(fd);
+ //		if ((pid = fork()) == -1)
+ //		{
+ //			ft_putstr_fd("Pid error\n", 2);
+ //			return (FALSE);
+ //		}
+ //		else if (pid == 0)
+ //		{
+ //			dup2(fd[1], 1);
+ //			if (*(cmd + 1) != NULL)
+ //				dup2(fd[1], 1);
+ //			close(fd[0]);
+ //			if (run_cmd(cmd) == -1)
+ //			{
+ //				printf("mongshell: %s: command not found", cmd->cmd);
+ //				return (FALSE);
+ //			}
+ //			exit();
+ //		}
+ //		else
+ //		{
+ //			wait(NULL);
+ //			close(fd[1]);
+ //			input_fd = p[0];
+ //			cmd = cmd->next;
+ //		}
+ //	}
+ //	return (TRUE);
+ //}
