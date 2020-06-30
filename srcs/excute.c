@@ -32,4 +32,6 @@ int	execute_redirection(t_table *table)
 
 int	execute_command(t_table *table)
 {
+	(void)table;
+	return (1);
 }

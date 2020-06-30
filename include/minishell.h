@@ -46,6 +46,9 @@ typedef struct		s_table
 	int				input_fd;
 	int				output_fd;
 	struct s_table	*next;
+	struct s_table	*before;
+	int				res;			// table 연산이 끝났는지,  끝났다면 결과가 True/False 여부 저장
+	int				sep_state;		// &&, ||, ; 중 어느 sep로 나누어진 table인지 저장
 }					t_table;
 
 /*
