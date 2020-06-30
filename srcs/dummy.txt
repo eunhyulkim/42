@@ -1,0 +1,28 @@
+# define    PIPE        'P'
+A) B) 1) 2) 3) 4) 6) 7) 8) 9) 11)
+# define    OR          'O'
+A) B) 1) 2) 3) 4) 6) 7) 8) 9) 11)
+# define    AND         'A'
+A) B) 1) 2) 3) 4) 6) 7) 8) 9) 11)
+# define    SEMI        'Y'
+A) B) 1) 2) 3) 4) 6) 7) 8) 9) 11)
+# define    DSEMI       'Z'
+# define    GREATER     'G'
+# define    DGREATER    'H'
+# define    LESS        'L'
+# define    DLESS       'M'
+# define    SPACE       'S'
+# define    EMPER       'E'
+A) B)
+# define    NUMBER      'N'
+# define    STRING      'C'
+# define    ENTER       'F'
+
+COMMAND, ARGUMENT, PIPE, FD, GREATER, DGREATER, LESS, DLESS, FILENAME, SEMICOLON, SPACE // QUOTE, DQUOTE
+
+A) NO FRONT ARG		XS-*, X-*
+B) NO BACK ARG 		*-X, *-SX, *-F, *-SF
+
+
+3) FRONT SEMICOLON	Y-*, YS-*
+4) BACK SEMICOLON	*-Y, *-SY

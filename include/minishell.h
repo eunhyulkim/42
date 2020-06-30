@@ -15,6 +15,7 @@ typedef int		bool;
 typedef struct  s_tokenizer
 {
 	int			idx;
+	int			qidx;
 	int			start;
 	int			prev;
 	char		quote;

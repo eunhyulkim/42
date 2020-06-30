@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/29 14:45:07 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/30 13:02:04 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/06/30 19:10:33 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 static void		tab_init(t_tokenizer *tab)
 {
 	tab->idx = 0;
+	tab->qidx = 0;
 	tab->start = -1;
 	tab->prev = 0;
 	tab->quote = 0;
@@ -39,7 +40,8 @@ static	int		is_start(char *line, t_tokenizer *tab)
 	i = tab->idx;
 	if (!line || !line[i] || tab->quote)
 		return (FALSE);
-	tab->quote = get_quote(line, i);
+	if ((tab->quote = get_quote(line, i)))
+		tab->qidx = i;
 	if (line[i] == '\n')
 		return (TRUE);
 	if (ft_isspace(line[i]))
@@ -64,7 +66,7 @@ static	int		is_end(char *line, t_tokenizer *tab)
 	i = tab->idx;
 	if (!line || tab->start == -1)
 		return (FALSE);
-	if (line[i] == tab->quote && tab->start != i)
+	if (line[i] == tab->quote && tab->qidx != i)
 		tab->quote = 0;
 	if (!line[i + 1] || (!tab->quote && line[i] == '\n'))
 		return (TRUE);

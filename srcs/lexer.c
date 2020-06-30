@@ -3,29 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/30 13:13:02 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/06/30 22:38:43 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-# define    PIPE        'P' // !P-O-*, !P-SO-*, !P-*-X
-# define    OR          'O'
-# define    AND         'A'
-# define    SEMI        'Y'
-# define    DSEMI       'Z'
-# define    GREATER     'G'
-# define    DGREATER    'H'
-# define    LESS        'L'
-# define    DLESS       'M'
-# define    SPACE       'S'
-# define    EMPER       'E'
-# define    NUMBER      'N'
-# define    STRING      'C'
-# define    ENTER       'F'
+#include "lexer.h"
 
 static char	type(char **tokens, int idx)
 {
@@ -56,89 +42,105 @@ static char	type(char **tokens, int idx)
     return (!ft_strcmp(tokens[idx], "\n") ? ENTER : STRING);
 }
 
-static int  check_order(char **tokens, int midx, char *format, char opt)
+static int  check_seq(char **tokens, t_lexer *lex)
 {
-    int     i;
-    int     len;
-
-    i = 0;
-    len = ft_len_doublestr(tokens);
-    format = (opt == 'L') ? ft_strreverse(format) : format;
-    while (format[i])
+	int		i;
+	int		j;
+	char	c;
+	
+    i = -1;
+    while (++i < 2)
     {
-        if (opt == 'L' && (midx - i - 1) < 0 && ft_free(format))
-            return ((format[i] == 'X') ? TRUE : FALSE);
-        if (opt == 'R' && (midx + i + 1) >= len)
-            return ((format[i] == 'X') ? TRUE : FALSE);
-        if (opt == 'L' && format[i] != type(tokens, midx - i - 1))
-            if (!ft_isset(format[i], "W*") && ft_free(format))
-                return (FALSE);
-        if (opt == 'R' && format[i] != type(tokens, midx + i + 1))
-            if (!ft_isset(format[i], "W*"))
-                return (FALSE);
-        i++;
+		j = -1;
+		while (lex->format[i][++j])
+		{
+			c = lex->format[i][j];
+			if (lex->res == TRUE || lex->res == FALSE)
+				break ;
+			if ((i == 0 && (lex->idx - j - 1) < 0) \
+			|| (i == 1 && (lex->idx + j + 1) >= lex->len))
+				lex->res = (c == 'X') ? TRUE : FALSE;
+			else if ((i == 0 && c != type(tokens, lex->idx - j - 1)) \
+			|| (i == 1 && c != type(tokens, lex->idx + j + 1)))
+				lex->res = (!ft_isset(c, "W*")) ? FALSE : -1;
+		}
+		if (lex->res == FALSE)
+			break ;
     }
-    if (opt == 'L')
-        free(format);
-    return (TRUE);
+	ft_free_doublestr(lex->format);
+    return (lex->res != FALSE);
 }
 
-static int  token_in(char **tokens, int idx, char mid_type, char *format)
+static int  token_in(char **tokens, t_lexer *lex, char *format)
 {
-    int     i;
-    char    **formats;
-    char    **parts;
-
-    i = -1;
-    formats = ft_split(format, ',');
-    while (formats[++i])
+    lex->i = -1;
+    lex->seqs = ft_split(format, ';');
+    while (lex->seqs[++lex->i])
     {
-        if (*(ft_strchr(formats[i], '-') + 1) != mid_type)
-            continue;
-        parts = ft_split(formats[i], '-');
-        if (check_order(tokens, idx, parts[0], 'L'))
-            if (check_order(tokens, idx, parts[2], 'R'))
-                if (ft_free_doublestr(parts))
-                    return (TRUE);
-        ft_free_doublestr(parts);
+		if (*lex->seqs[lex->i] != lex->type)
+			continue;
+        lex->seq = ft_split(lex->seqs[lex->i] + 2, ',');
+		lex->j = 0;
+		while (lex->seq[lex->j])
+		{
+			lex->format = ft_split(lex->seq[lex->j], '-');
+			lex->res = -1;
+			if (check_seq(tokens, lex))
+				if (ft_free_doublestr(lex->seq))
+					return (ft_free_doublestr(lex->seqs));
+			lex->j++;
+		}
+		ft_free_doublestr(lex->seq);
     }
-    ft_free_doublestr(formats);
+    ft_free_doublestr(lex->seqs);
     return (0);
 }
 
-static int	is_valid_token(char **tokens, int idx, char type)
+static int	is_valid_token(char **tokens, t_lexer *lex)
 {
-    if (type == DSEMI)
+    if (lex->type == DSEMI)
         return (FALSE);
-    if (token_in(tokens, idx, type, \
-    "X-P-*,XS-P-*,*-P-X,*-P-SX,*-P-F,*-P-SF,\
-    O-P-*,\
-    OS-P-*,*-P-X"))
-        return (FALSE);
-    return (TRUE);
+	if (lex->type == STRING && !ft_isright_quote(tokens[lex->idx]))
+		return (FALSE);
+	if (lex->type == ENTER)
+		return (!token_in(tokens, lex, "F:"FRONT_REDIR));
+	if (ft_isset(lex->type, "NCSGHLM"))
+		return (TRUE);
+    if (token_in(tokens, lex, \
+	"P:"NO_BACK_ARG";""E:"NO_BACK_ARG";""O:"NO_BACK_ARG";"\
+	"A:"NO_BACK_ARG";""Y:"NO_BACK_ARG";"))
+	    return (FALSE);
+    if (!token_in(tokens, lex, \
+	"P:"FRONT_ALNUM";""E:"FRONT_ALNUM";""O:"FRONT_ALNUM";"\
+	"A:"FRONT_ALNUM";""Y:"FRONT_ALNUM";"))
+	    return (FALSE);
+	return (TRUE);
 }
 
 int     lexer(char **tokens)
 {
-	int			idx;
-	char		mid_type;
+	t_lexer		*lex;
 
-	idx = 0;
-	while (tokens[idx])
+	if (!(lex = ft_calloc(sizeof(t_lexer), 1)))
+		return (0);
+	lex->len = ft_len_doublestr(tokens);
+	while (tokens[lex->idx])
 	{
-		mid_type = type(tokens, idx);
+		lex->type = type(tokens, lex->idx);
         write(1, "[", 1);
-        write(1, &mid_type, 1);
+        write(1, &lex->type, 1);
         write(1, "]", 1);
-		if (!is_valid_token(tokens, idx, mid_type))
+		if (!is_valid_token(tokens, lex))
         {
             write(1, "\nsyntax error near unexpected token `", 37);
-            write(1, tokens[idx], ft_strlen(tokens[idx]));
+            write(1, tokens[lex->idx], ft_strlen(tokens[lex->idx]));
             write(1, "\n", 1);
 			return (FALSE);
         }
-        idx++;
+        lex->idx++;
 	}
     printf("\n");
+	free(lex);
+	printf("Lexer Success\n");
 	return (TRUE);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/30 11:47:54 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/06/30 18:44:38 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,5 +63,6 @@ int								ft_isitem(char *item, char **list);
 int								ft_isformat(char *str, char *format);
 char							*ft_strreverse(char *src);
 int								ft_free(char *str);
+int								ft_isright_quote(char *src);
 
 #endif

@@ -10,7 +10,7 @@ static void		process_line(char *line)
 		return ;
 	// if (!(table = parser(tokens)))
 	// 	return ;
-	// ft_free_doublestr(tokens);
+	ft_free_doublestr(tokens);
 	// if (!excute_redirects(table))
 	// 	return ;
 	// excute_commands(table);
