@@ -7,6 +7,7 @@ CFLAGS = -Wall -Wextra -Werror
 LIB_DIR = libft/
 LIBLARY = libft.a
 
+
 MAIN = test/cmd_echo_test
 MAIN_FILES = display excute 
 BIN_FILES = env
