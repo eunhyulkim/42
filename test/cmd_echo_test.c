@@ -14,13 +14,14 @@ t_table				*make_test_table(void)
 	cmd2 = (t_command *)malloc(sizeof(t_command) * 1);
 	redi1 = (t_redi *)malloc(sizeof(t_redi) * 1);
 	redi2 = (t_redi *)malloc(sizeof(t_redi) * 1);
-	argu_list1 = (char **)malloc(sizeof(char *) * 2);
+	argu_list1 = (char **)malloc(sizeof(char *) * 3);
 
 	test_table->cmd_list = cmd1;
 	test_table->redi_list = redi1;
 	test_table->input_fd = 0;
 	test_table->output_fd = 1;
 
+	/*
 	//cmd_echo test 1
 	cmd1->cmd = "echo";
 	argu_list1[0] = "abc";
@@ -29,16 +30,69 @@ t_table				*make_test_table(void)
 	cmd1->next = NULL;
 
 	redi1 = NULL;
+	*/
 
 	/*
-	redi1->redi = "<";
+	//cmd_echo test 2
+	cmd1->cmd = "echo";
+	argu_list1[0] = "abc";
+	argu_list1[1] = "ABCD";
+	argu_list1[2] = NULL;
+	cmd1->argu_list = argu_list1;
+	cmd1->next = NULL;
+
+	redi1 = NULL;
+	*/
+
+	/*
+	//cmd_echo test 3
+	cmd1->cmd = "echo";
+	argu_list1[0] = "abc";
+	argu_list1[1] = "ABCD";
+	argu_list1[2] = NULL;
+	cmd1->argu_list = argu_list1;
+	cmd1->next = NULL;
+
+	redi1->redi = ">";
 	redi1->argu = "r.txt";
 	redi1->next = redi2;
 
-	redi2->redi = "<";
+	redi2->redi = ">";
 	redi2->argu = "r123.txt";
 	redi2->next = NULL;
 	*/
+
+	/*
+	//cmd_echo test 4
+	cmd1->cmd = "echo";
+	argu_list1[0] = "-n";
+	argu_list1[1] = "ABCD";
+	argu_list1[2] = NULL;
+	cmd1->argu_list = argu_list1;
+	cmd1->next = NULL;
+
+	redi1->redi = ">";
+	redi1->argu = "r.txt";
+	redi1->next = redi2;
+
+	redi2->redi = ">";
+	redi2->argu = "r123.txt";
+	redi2->next = NULL;
+	*/
+
+	//cmd_echo test 5
+	cmd1->cmd = "echo";
+	argu_list1[0] = NULL;
+	cmd1->argu_list = argu_list1;
+	cmd1->next = NULL;
+
+	redi1->redi = ">";
+	redi1->argu = "r.txt";
+	redi1->next = redi2;
+
+	redi2->redi = ">";
+	redi2->argu = "r123.txt";
+	redi2->next = NULL;
 
 	test_table->next = NULL;
 	return (test_table);
@@ -89,9 +143,10 @@ static void		process_line(char *line)
 	table = make_test_table();
 	//test_table(table);
 
-//	execute_redirection(table);
+	execute_redirection(table);
 	printf("output_fd: %d\n", table->output_fd);
 	printf("input_fd: %d\n", table->input_fd);
+	dup2(table->output_fd, 1);
 	execute_command(table->cmd_list);
 }
 

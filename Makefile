@@ -56,7 +56,8 @@ fclean: clean
 	@${RM} $(NAME)
 	@echo "$(RED)fclean DONE"
 
-re: fclean ${OBJS}
+re: fclean ${OBJS} \
+	all
 
 libft_test:
 	@echo "$(GREEN)TEST START$(RESET)"
