@@ -8,8 +8,9 @@
 # include "libft.h"
 # include "get_next_line.h"
 
-# define TRUE	 	1
-# define FALSE	 	0
+# define DEBUG_MODE		1
+# define TRUE	 		1
+# define FALSE	 		0
 
 typedef int		bool;
 typedef struct  s_tokenizer

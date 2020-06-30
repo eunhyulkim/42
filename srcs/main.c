@@ -3,11 +3,12 @@
 static void		process_line(char *line)
 {
 	char		**tokens;
-	// t_table		*table;
+	t_table		*table;
 
-	tokens = tokenizer(line);
-	if (!lexer(tokens))
+	tokens = tokenizer(line)
+	if (!(lexer(tokens)))
 		return ;
+	table = parser(tokens);
 	// if (!(table = parser(tokens)))
 	// 	return ;
 	ft_free_doublestr(tokens);

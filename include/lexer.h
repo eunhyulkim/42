@@ -36,4 +36,8 @@ typedef struct	s_lexer
 	int			res;
 }				t_lexer;
 
+char	type(char **tokens, int idx);
+int  	check_seq(char **tokens, t_lexer *lex);
+int  	token_in(char **tokens, t_lexer *lex, char *format);
+
 #endif

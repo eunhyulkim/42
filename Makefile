@@ -7,7 +7,7 @@ CFLAGS = -Wall -Wextra -Werror
 LIB_DIR = libft/
 LIBLARY = libft.a
 
-MAIN = test/lexer_test
+MAIN = srcs/main
 MAIN_FILES = display tokenizer lexer
 BIN_FILES = env
 GNL_FILES = get_next_line get_next_line_utils
@@ -42,7 +42,7 @@ ${OBJS}: ${SRCS}
 
 clean:
 	@echo "$(RESET)Cleaning your mongshell .o files$(RESET)"
-	@${RM} $(OBJS) 
+	@${RM} $(OBJS)
 	@echo "Cleaning your libft files"
 	@make -C libft/ fclean
 	@${RM} ${LIBLARY}
