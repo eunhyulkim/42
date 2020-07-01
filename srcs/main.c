@@ -1,16 +1,17 @@
 #include "minishell.h"
 
-static void		excute_line(char *line)
+static void		process_line(char *line)
 {
 	char		**tokens;
-	// t_table		*table;
+	t_table		*table;
 
-	tokens = tokenizer(line);
-	// if (!(tokens = lexer(line)))
-	// 	return ;
+	tokens = tokenizer(line)
+	if (!(lexer(tokens)))
+		return ;
+	table = parser(tokens);
 	// if (!(table = parser(tokens)))
 	// 	return ;
-	// ft_free_doublestr(tokens);
+	ft_free_doublestr(tokens);
 	// if (!excute_redirects(table))
 	// 	return ;
 	// excute_commands(table);

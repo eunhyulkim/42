@@ -1,26 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_free_doublestr.c                                :+:      :+:    :+:   */
+/*   ft_isright_quote.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/06/26 17:06:55 by iwoo              #+#    #+#             */
-/*   Updated: 2020/06/30 11:26:59 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/06/30 18:40:52 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/06/30 18:49:35 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int		ft_free_doublestr(char **doublestr)
+int		ft_isright_quote(char *src)
 {
-	int i;
+	int		idx;
+	int		quote;
 
-	if (!doublestr)
-		return (0);
-	i = -1;
-	while (doublestr[++i])
-		free(doublestr[i]);
-	free(doublestr);
-	return (1);
+	idx = 0;
+	quote = 0;
+	while (src[idx])
+	{
+		if (ft_isset(src[idx], "\'\""))
+		{
+			if (!quote)
+				quote = src[idx];
+			else if (quote == src[idx])
+				quote = 0;	
+		}
+		idx++;
+	}
+	return (quote == 0);
 }

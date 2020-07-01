@@ -6,11 +6,13 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/28 13:42:16 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/01 00:56:22 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "lexer.h"
+#include "parser.h"
 
 typedef COMMAND					4;
 typedef ARGUMENT				5;
@@ -53,41 +55,12 @@ typedef struct  		s_table
 ** FILENAME	7		0
 */
 
-int			check_type(t_table *table, char **tokens, int idx)
-{
-	int		front;
-	int		current;
-
-	if (!ft_strcmp(tokens[idx], "|"))
-		return (PIPE);
-	front = (idx) ? check_type(table, tokens, idx - 1) : 0;
-	if (ft_in)
-}
-
-int			is_syntax_error(t_table *table, char **tokens, int idx, int type)
-{
-	int		err;
-
-	err = FALSE;
-	if (type == COMMAND && table->has_cmd == TRUE)
-		err = TRUE;
-	else if ((type == PIPE || type == ARGUMENT) && table->has_cmd == FALSE)
-		err = TRUE;
-	else if (type == REDIRECT && table->has_redirect == TRUE)
-		err = TRUE;
-	else if (type == FILENAME && table->has_redirect == FALSE)
-		err = TRUE;
-	write(1, "syntax error near unexp")
-	return (err) ? TRUE : FALSE;
-}
-
 t_table		*parser(char **tokens)
 {
-	int			idx;
-	int			type;
+	t_parser	*parser;
+	t_lexer		*lexer;
 	t_table		*table;
 
-	idx = -1;
 	if (!(table = (t_table *)ft_calloc(sizeof(t_table), 1)))
 		return (0);
 	while (tokens[++idx])

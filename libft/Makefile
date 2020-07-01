@@ -11,9 +11,9 @@ MAIN_FILES = ft_strchr ft_strlen ft_split ft_strdup ft_calloc \
 
 BONUS_FILES = ft_dup_doublestr ft_len_doublestr ft_free_doublestr \
 			  ft_realloc_doublestr ft_startswith ft_isformat ft_in \
-			  ft_isitem
+			  ft_isitem ft_strreverse ft_free ft_isright_quote
 
-# TEST_FILE = test/
+TEST_FILE = test/ft_split_test.c
 
 SRCS_PATH = $(MAIN_FILES)
 SRCS_PATH += $(BONUS_FILES)

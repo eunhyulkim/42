@@ -7,9 +7,8 @@ CFLAGS = -Wall -Wextra -Werror
 LIB_DIR = libft/
 LIBLARY = libft.a
 
-
-MAIN = test/cmd_echo_test
-MAIN_FILES = display excute 
+MAIN = srcs/main
+MAIN_FILES = display tokenizer lexer excute
 BIN_FILES = env
 GNL_FILES = get_next_line get_next_line_utils
 COMMANDS_FILES = cmd_echo
@@ -46,7 +45,7 @@ ${OBJS}: ${SRCS}
 
 clean:
 	@echo "$(RESET)Cleaning your mongshell .o files$(RESET)"
-	@${RM} $(OBJS) 
+	@${RM} $(OBJS)
 	@echo "Cleaning your libft files"
 	@make -C libft/ fclean
 	@${RM} ${LIBLARY}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/28 11:23:07 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/06/30 18:44:38 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,12 +54,15 @@ int								ft_isset(int c, char *set);
 // bonus
 int								ft_len_doublestr(char **arr);
 char							**ft_dup_doublestr(char **arr);
-void							ft_free_doublestr(char **double_arr);
+int								ft_free_doublestr(char **double_arr);
 char							**ft_realloc_doublestr(char ***strs_ref, char *item);
 int								ft_startswith(const char *str, const char *sub);
 char							*ft_strnew(size_t size);
 int								ft_in(char *item, char *list);
 int								ft_isitem(char *item, char **list);
 int								ft_isformat(char *str, char *format);
+char							*ft_strreverse(char *src);
+int								ft_free(char *str);
+int								ft_isright_quote(char *src);
 
 #endif

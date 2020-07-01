@@ -1,26 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_free_doublestr.c                                :+:      :+:    :+:   */
+/*   test.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/06/26 17:06:55 by iwoo              #+#    #+#             */
-/*   Updated: 2020/06/30 11:26:59 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/06/30 18:23:35 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/06/30 21:20:06 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include <stdio.h>
+#include <unistd.h>
 
-int		ft_free_doublestr(char **doublestr)
+int		main(void)
 {
-	int i;
-
-	if (!doublestr)
-		return (0);
-	i = -1;
-	while (doublestr[++i])
-		free(doublestr[i]);
-	free(doublestr);
-	return (1);
+	int fd;
+	fd = open("result.txt", O_WRONLY | O_APPEND);
+	printf("HELLO");
+	printf("ERROR");
+	return (0);
 }
+
+// PIPE

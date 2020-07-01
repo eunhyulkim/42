@@ -9,16 +9,15 @@
 # include "get_next_line.h"
 # include "execute.h"
 
-# define TRUE	 	1
-# define FALSE	 	0
-
-# define OPENED		1
-# define UNOPENED	0
+# define DEBUG_MODE		1
+# define TRUE	 		1
+# define FALSE	 		0
 
 typedef int		bool;
 typedef struct  s_tokenizer
 {
 	int			idx;
+	int			qidx;
 	int			start;
 	int			prev;
 	char		quote;
@@ -38,6 +37,11 @@ void	display_prompt(void);
 ** tokenizer function
 */
 char	**tokenizer(char *line);
+
+/*
+** lexer function
+*/
+int		lexer(char **tokens);
 
 /*
 ** bin/env functions
