@@ -3,77 +3,87 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/01 00:56:22 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/01 14:08:41 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
 #include "lexer.h"
 #include "parser.h"
+#include "minishell.h"
 
-typedef COMMAND					4;
-typedef ARGUMENT				5;
-typedef PIPE					10;
-typedef REDIRECT				6;
-typedef FILENAME				7;
-typedef COMMAND_PARSE_MASK		5;
-typedef REDIRECT_PARSE_MASK		7;
-
-typedef struct 			s_command
+static void		parse_number(char **tokens, t_lexer *lexer, \
+				t_parser *parser, t_table *table)
 {
-	struct s_command	*next;
-}						t_command;
+	if (token_in(tokens, lexer, "N:"X_BACK_REDIR))
+		return ; // input_fd
+	else if (token_in(tokens, lexer, "N:"FRONT_EMP_REDIR))
+		set_redir_outfd();
+	else if (token_in(tokens, lexer, "N:"FRONT_REDIR))
+		set_redir_outfile();
+	else if (parser->command)
+		set_cmd_argument();
+	else
+		set_cmd_command();
+}
 
-typedef struct 			s_redirect
+static void		parse_string(char **tokens, t_lexer *lexer, \
+				t_parser *parser, t_table *table)
 {
-	struct s_redirect	*next;
-}						t_redirect;
+	if (token_in(tokens, lexer, "C:"FRONT_REDIR))
+		set_redir_outfile();
+	else if (parser->command)
+		set_cmd_argument();
+	else
+		set_cmd_command();
+}
 
-typedef struct  		s_table
+static void		parse_emper(char **tokens, t_lexer *lexer, \
+				t_parser *parser, t_table *table)
 {
-	struct s_command	*commands;
-	struct s_redirect	*redirects;
-	bool				has_cmd;
-	bool				has_redirect;
-	int					in_fd;
-	int					out_fd;
-}						t_table;
+	
+	if (token_in(tokens, lexer, "E:"BACK_NUM_REDIR))
+}
 
-/*
-** command [arguments] | cmd [arguments] | ... | redirects filename
-*/
-
-/*
-** ERROR_CASE(has_cmd, has_redirect)
-** PIPE		5	0
-** ARGUMENT	10	0
-** COMMAND	4	1
-** REDIRECT	6		1
-** FILENAME	7		0
-*/
-
-t_table		*parser(char **tokens)
+static void		parse(char **tokens, t_lexer *lexer, t_parser *parser, \
+				t_table *table)
 {
-	t_parser	*parser;
+	if (ft_isset(lexer->type, "SF")) // SPCAE + NEWLINE
+		return ;
+	if (ft_isset(lexer->type, "GHLM")) // (D)GREAT, (D)LESS
+		create_redir(tokens, lexer, parser, table);
+	else if (ft_isset(lexer->type, "OAYP")) // OR,AND,SEMI,PIPE
+		create_table(tokens, lexer, parser, table);
+	else if (lexer->type == NUMBER)
+		parse_number(tokens, lexer, parser, table);
+	else if (lexer->type == STRING)
+		parse_string(tokens, lexer, parser, table);
+	else if (lexer->type == EMPER)
+		parse_emper(tokens, lexer, parser, table);
+}
+
+t_table			*parser(char **tokens)
+{
 	t_lexer		*lexer;
+	t_parser	*parser;
 	t_table		*table;
 
+	if (!(lexer = (t_lexer *)ft_calloc(sizeof(t_lexer), 1)))
+		return (0);
+	if (!(parser = (t_parser *)ft_calloc(sizeof(t_parser), 1)))
+		return (0);
 	if (!(table = (t_table *)ft_calloc(sizeof(t_table), 1)))
 		return (0);
-	while (tokens[++idx])
+	lexer->len = ft_len_doublestr(tokens);
+	while (lexer->idx)
 	{
-		type = check_type(table, tokens, idx);
-		if (is_syntax_error(table, tokens, idx, type))
-			break ;
-		if (type == COMMAND || type == ARGUMENT)
-			register_command(table, tokens[idx], type);
-		else if (type == REDIRECT || type == FILENAME)
-			register_redirect(table, tokens[idx], type);
-		else if (type == PIPE)
-			table->has_cmd = FALSE;
+		lexer->type = type(tokens, lexer->idx);
+		parse(tokens, lexer, parser, table);
+		lexer->idx++;
 	}
+	ft_free(lexer);
+	ft_free(parser);
 	return (table);
 }

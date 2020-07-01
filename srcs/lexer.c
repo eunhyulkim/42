@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/01 00:52:15 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/01 14:26:42 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,25 +74,17 @@ int     check_seq(char **tokens, t_lexer *lex)
 int     token_in(char **tokens, t_lexer *lex, char *format)
 {
     lex->i = -1;
-    lex->seqs = ft_split(format, ';');
-    while (lex->seqs[++lex->i])
-    {
-		if (*lex->seqs[lex->i] != lex->type)
-			continue;
-        lex->seq = ft_split(lex->seqs[lex->i] + 2, ',');
-		lex->j = 0;
-		while (lex->seq[lex->j])
-		{
-			lex->format = ft_split(lex->seq[lex->j], '-');
-			lex->res = -1;
-			if (check_seq(tokens, lex))
-				if (ft_free_doublestr(lex->seq))
-					return (ft_free_doublestr(lex->seqs));
-			lex->j++;
-		}
-		ft_free_doublestr(lex->seq);
-    }
-    ft_free_doublestr(lex->seqs);
+    lex->seqs = ft_split(format + 2, ',');
+	lex->j = 0;
+	while (lex->seqs[lex->j])
+	{
+		lex->format = ft_split(lex->seqs[lex->j], '-');
+		lex->res = -1;
+		if (check_seq(tokens, lex))
+			return (ft_free_doublestr(lex->seqs));
+		lex->j++;
+	}
+	ft_free_doublestr(lex->seqs);
     return (0);
 }
 
@@ -102,9 +94,9 @@ static int	is_valid_token(char **tokens, t_lexer *lex)
         return (FALSE);
 	if (lex->type == STRING && !ft_isright_quote(tokens[lex->idx]))
 		return (FALSE);
-	if (lex->type == ENTER)
+	if (ft_isset(lex->type, "GHLMF"))
 		return (!token_in(tokens, lex, "F:"FRONT_REDIR));
-	if (ft_isset(lex->type, "NCSGHLM"))
+	if (ft_isset(lex->type, "NCS"))
 		return (TRUE);
     if (token_in(tokens, lex, \
 	"P:"NO_BACK_ARG";""E:"NO_BACK_ARG";""O:"NO_BACK_ARG";"\
