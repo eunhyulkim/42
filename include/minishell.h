@@ -7,6 +7,7 @@
 # include <unistd.h>
 # include "libft.h"
 # include "get_next_line.h"
+# include "execute.h"
 
 # define DEBUG_MODE		1
 # define TRUE	 		1

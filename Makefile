@@ -8,19 +8,22 @@ LIB_DIR = libft/
 LIBLARY = libft.a
 
 MAIN = srcs/main
-MAIN_FILES = display tokenizer lexer
+MAIN_FILES = display tokenizer lexer excute
 BIN_FILES = env
 GNL_FILES = get_next_line get_next_line_utils
+COMMANDS_FILES = cmd_echo
 
 MAIN_PATH = $(addsuffix .c, $(MAIN))
 SRCS_PATH += $(MAIN_FILES)
 SRCS_PATH += $(addprefix bin/, $(BIN_FILES))
 SRCS_PATH += $(addprefix get_next_line/, $(GNL_FILES))
+SRCS_PATH += $(addprefix commands/, $(COMMANDS_FILES))
 SRCS = $(addprefix srcs/, $(addsuffix .c, $(SRCS_PATH)))
 
 OBJS += $(addsuffix .o, $(MAIN_FILES))
 OBJS += $(addsuffix .o, $(BIN_FILES))
 OBJS += $(addsuffix .o, $(GNL_FILES))
+OBJS += $(addsuffix .o, $(COMMANDS_FILES))
 
 GREEN = \033[0;32m
 RED = \033[0;31m
@@ -53,7 +56,8 @@ fclean: clean
 	@${RM} $(NAME)
 	@echo "$(RED)fclean DONE"
 
-re: fclean all
+re: fclean ${OBJS} \
+	all
 
 libft_test:
 	@echo "$(GREEN)TEST START$(RESET)"
