@@ -74,8 +74,8 @@ int     check_seq(char **tokens, t_lexer *lex)
 int     token_in(char **tokens, t_lexer *lex, char *format)
 {
     lex->i = -1;
-    lex->seqs = ft_split(format + 2, ',');
-	lex->j = 0;
+    lex->seqs = ft_split(format, ',');
+    lex->j = 0;
 	while (lex->seqs[lex->j])
 	{
 		lex->format = ft_split(lex->seqs[lex->j], '-');
@@ -95,16 +95,12 @@ static int	is_valid_token(char **tokens, t_lexer *lex)
 	if (lex->type == STRING && !ft_isright_quote(tokens[lex->idx]))
 		return (FALSE);
 	if (ft_isset(lex->type, "GHLMF"))
-		return (!token_in(tokens, lex, "F:"FRONT_REDIR));
+		return (!token_in(qtokens, lex, FRONT_REDIR));
 	if (ft_isset(lex->type, "NCS"))
 		return (TRUE);
-    if (token_in(tokens, lex, \
-	"P:"NO_BACK_ARG";""E:"NO_BACK_ARG";""O:"NO_BACK_ARG";"\
-	"A:"NO_BACK_ARG";""Y:"NO_BACK_ARG";"))
+    if (token_in(tokens, lex, NO_BACK_ARG))
 	    return (FALSE);
-    if (!token_in(tokens, lex, \
-	"P:"FRONT_ALNUM";""E:"FRONT_ALNUM";""O:"FRONT_ALNUM";"\
-	"A:"FRONT_ALNUM";""Y:"FRONT_ALNUM";"))
+    if (!token_in(tokens, lex, FRONT_ALNUM))
 	    return (FALSE);
 	return (TRUE);
 }
