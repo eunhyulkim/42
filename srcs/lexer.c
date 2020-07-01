@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/01 00:52:15 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/01 01:46:22 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,9 +102,9 @@ static int	is_valid_token(char **tokens, t_lexer *lex)
         return (FALSE);
 	if (lex->type == STRING && !ft_isright_quote(tokens[lex->idx]))
 		return (FALSE);
-	if (lex->type == ENTER)
+	if (ft_isset(lex->type, "GHLMF"))
 		return (!token_in(tokens, lex, "F:"FRONT_REDIR));
-	if (ft_isset(lex->type, "NCSGHLM"))
+	if (ft_isset(lex->type, "NCS"))
 		return (TRUE);
     if (token_in(tokens, lex, \
 	"P:"NO_BACK_ARG";""E:"NO_BACK_ARG";""O:"NO_BACK_ARG";"\

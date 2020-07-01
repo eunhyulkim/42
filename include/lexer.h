@@ -6,10 +6,10 @@
 */
 # define    DSEMI       'Z'
 # define    PIPE        'P' // !P-O-*, !P-SO-*, !P-*-X
-# define    EMPER       'E'
 # define    OR          'O'
 # define    AND         'A'
 # define    SEMI        'Y'
+# define    EMPER       'E'
 # define    GREATER     'G'
 # define    DGREATER    'H'
 # define    LESS        'L'
