@@ -37,14 +37,16 @@ typedef struct 			s_redir
 	struct s_redir		*next;
 }						t_redir;
 
+struct s_redirect		nredir_list;
+{
+
+
+}
+
 typedef struct  		s_table
 {
-	struct s_command	*cmd_list;
-	struct s_redirect	*redir_list;
-	int					input_fd;
-	int					output_fd;
+	struct s_job		*job_list;
 	struct s_table		*next;
-	struct s_table		*before;
 	int					res; // table 연산이 끝났는지,  끝났다면 결과가 True/False 여부 저장
 	int					sep_state; // &&, ||, ; 중 어느 sep로 나누어진 table인지 저장
 }						t_table;

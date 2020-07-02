@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/01 14:26:42 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/02 14:20:32 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,12 +90,12 @@ int     token_in(char **tokens, t_lexer *lex, char *format)
 
 static int	is_valid_token(char **tokens, t_lexer *lex)
 {
-    if (lex->type == DSEMI)
+    if (lex->type == DSEMI || lex->type == EMPER)
         return (FALSE);
 	if (lex->type == STRING && !ft_isright_quote(tokens[lex->idx]))
 		return (FALSE);
 	if (ft_isset(lex->type, "GHLMF"))
-		return (!token_in(qtokens, lex, FRONT_REDIR));
+		return (!token_in(tokens, lex, FRONT_REDIR));
 	if (ft_isset(lex->type, "NCS"))
 		return (TRUE);
     if (token_in(tokens, lex, NO_BACK_ARG))
@@ -123,12 +123,9 @@ int     lexer(char **tokens)
         }
 		if (!is_valid_token(tokens, lex))
         {
-            if (DEBUG_MODE)
-            {
-                write(1, "\nmongshell: syntax error near unexpected token `", 48);
+			write(1, "\nmongshell: syntax error near unexpected token `", 48);
                 write(1, tokens[lex->idx], ft_strlen(tokens[lex->idx]));
                 write(1, "\n", 1);
-            }
             free(lex);
 			return (FALSE);
         }

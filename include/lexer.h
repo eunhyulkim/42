@@ -29,7 +29,6 @@ typedef struct	s_lexer
 	int			idx;
 	char		type;
 	char		**seqs;
-	char		**seq;
 	char		**format;
 	int			i;
 	int			j;
