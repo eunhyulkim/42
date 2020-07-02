@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/30 18:44:38 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/02 23:24:00 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ int								ft_isalpha(int c);
 int								ft_isnum(t_llint c);
 int								ft_isprint(int c);
 int								ft_isset(int c, char *set);
+int								ft_atoi(char *str);
 
 // bonus
 int								ft_len_doublestr(char **arr);

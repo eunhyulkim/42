@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/02 14:20:32 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/03 03:39:42 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ static int	is_valid_token(char **tokens, t_lexer *lex)
 		return (!token_in(tokens, lex, FRONT_REDIR));
 	if (ft_isset(lex->type, "NCS"))
 		return (TRUE);
-    if (token_in(tokens, lex, NO_BACK_ARG))
+    if (lex->type != SEMI && token_in(tokens, lex, NO_BACK_ARG))
 	    return (FALSE);
     if (!token_in(tokens, lex, FRONT_ALNUM))
 	    return (FALSE);
