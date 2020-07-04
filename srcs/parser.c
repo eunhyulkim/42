@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/03 03:43:28 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/04 16:15:00 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ static void		create_job(t_parser *parser, t_table *table)
 	t_job		*last_job;
 	t_job		*new_job;
 
-	if (DEBUG_MODE)
-		printf("CREATE_JOB\n");
+	if (DEBUG_PARSER || DEBUG_ALL)
+		write(1, "[CJ]", 4);
 	if (!(new_job = (t_job *)ft_calloc(sizeof(t_job), 1)))
 		return ;
 	new_job->fd[1] = STDOUT;
@@ -42,8 +42,8 @@ static void		create_table(char **tokens, t_lexer *lexer, t_parser *parser, t_tab
 	t_table		*last_table;
 	t_table		*new_table;
 
-	if (DEBUG_MODE)
-		printf("CREATE_TABLE\n");
+	if (DEBUG_PARSER || DEBUG_ALL)
+		write(1, "[CT]", 4);
 	if (lexer->type == 'Y' && token_in(tokens, lexer, NO_BACK_ARG))
 		return ; // semiconlon in line end
 	if (!(new_table = (t_table *)ft_calloc(sizeof(t_table), 1)))
@@ -63,13 +63,15 @@ static void		create_redir(char **tokens, t_lexer *lexer, \
 	t_redir		*last_redir;
 	t_redir		*new_redir;
 
-	if (DEBUG_MODE)
-		printf("CREATE_REDIR\n");
+	if (DEBUG_PARSER || DEBUG_ALL)
+		write(1, "[CR]", 4);
 	if (!(new_redir = (t_redir *)ft_calloc(sizeof(t_redir), 1)))
 		return ;
 	new_redir->sign = ft_strdup(tokens[lexer->idx]);
 	if (parser->fd == TRUE)
 		new_redir->fd = ft_atoi(tokens[lexer->idx - 1]);
+	else
+		new_redir->fd = 1;
 	parser->fd = FALSE;
 	last_redir = get_last_redir(table);
 	if (!last_redir)
@@ -119,6 +121,8 @@ t_table			*parser(char **tokens)
 		return (0);
 	if (!(table = (t_table *)ft_calloc(sizeof(t_table), 1)))
 		return (0);
+	if (DEBUG_PARSER || DEBUG_ALL)
+		write(1, "D-2. PARSER: [CT]", 17);
 	create_job(parser, table);
 	lexer->len = ft_len_doublestr(tokens);
 	lexer->idx = 0;
@@ -128,6 +132,8 @@ t_table			*parser(char **tokens)
 		parse(tokens, lexer, parser, table);
 		lexer->idx++;
 	}
+	if (DEBUG_PARSER || DEBUG_ALL)
+		write(1, "\n", 1);
 	free(lexer);
 	free(parser);
 	return (table);

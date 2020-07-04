@@ -7,9 +7,9 @@ CFLAGS = -Wall -Wextra -Werror
 LIB_DIR = libft/
 LIBLARY = libft.a
 
-MAIN = test/parser_test
+MAIN = srcs/main
 MAIN_FILES = display tokenizer lexer parser parser_get_utils \
-			 parser_set_utils free
+			 parser_set_utils free debug
 BIN_FILES = env
 GNL_FILES = get_next_line get_next_line_utils
 # COMMANDS_FILES = cmd_echo

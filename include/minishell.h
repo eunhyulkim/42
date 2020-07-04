@@ -8,7 +8,11 @@
 # include "libft.h"
 # include "get_next_line.h"
 
-# define DEBUG_MODE		1
+# define DEBUG_ALL		0
+# define DEBUG_LEXER	0
+# define DEBUG_PARSER	0
+# define DEBUG_TABLE	0
+
 # define TRUE	 		1
 # define FALSE	 		0
 
@@ -89,5 +93,11 @@ int				set_env(char *key, char *val);
 ** free functions
 */
 void			free_table(t_table *table);
+
+/*
+** debug functions
+*/
+
+void			print_table(t_table *table);
 
 # endif

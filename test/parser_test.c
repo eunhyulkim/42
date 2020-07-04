@@ -30,7 +30,7 @@ static void		print_table(t_table *table)
 			printf("arg:[");
 			arg = job->command.arg_list;
 			idx = 0;
-			while (arg[idx])
+			while (arg && arg[idx])
 			{
 				printf("%s,", arg[idx]);
 				idx++;

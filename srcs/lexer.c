@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/03 03:39:42 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/04 14:53:19 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,8 +94,10 @@ static int	is_valid_token(char **tokens, t_lexer *lex)
         return (FALSE);
 	if (lex->type == STRING && !ft_isright_quote(tokens[lex->idx]))
 		return (FALSE);
-	if (ft_isset(lex->type, "GHLMF"))
+	if (ft_isset(lex->type, "GHLM"))
 		return (!token_in(tokens, lex, FRONT_REDIR));
+	if (ft_isset(lex->type, "F"))
+		return (!token_in(tokens, lex, FRONT_REDIR_BACK_X));
 	if (ft_isset(lex->type, "NCS"))
 		return (TRUE);
     if (lex->type != SEMI && token_in(tokens, lex, NO_BACK_ARG))
@@ -112,10 +114,12 @@ int     lexer(char **tokens)
 	if (!tokens || !(lex = ft_calloc(sizeof(t_lexer), 1)))
 		return (0);
 	lex->len = ft_len_doublestr(tokens);
+	if (DEBUG_LEXER || DEBUG_ALL)
+		write(1, "\nD-1. TOKENIZER: ", 16);
 	while (tokens[lex->idx])
 	{
 		lex->type = type(tokens, lex->idx);
-        if (DEBUG_MODE)
+        if (DEBUG_LEXER || DEBUG_ALL)
         {
             write(1, "[", 1);
             write(1, &lex->type, 1);
@@ -124,14 +128,18 @@ int     lexer(char **tokens)
 		if (!is_valid_token(tokens, lex))
         {
 			write(1, "\nmongshell: syntax error near unexpected token `", 48);
-                write(1, tokens[lex->idx], ft_strlen(tokens[lex->idx]));
-                write(1, "\n", 1);
+			if (!ft_strcmp(tokens[lex->idx], "\n"))
+				write(1, "newline", 7);
+			else
+            	write(1, tokens[lex->idx], ft_strlen(tokens[lex->idx]));
+            write(1, "'\n", 2);
             free(lex);
 			return (FALSE);
         }
         lex->idx++;
 	}
-    write(1, "\n", 1);
+	if (DEBUG_LEXER || DEBUG_ALL)
+    	write(1, "\n", 1);
 	free(lex);
 	return (TRUE);
 }
