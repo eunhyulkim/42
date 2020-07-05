@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/26 12:32:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/04/06 00:34:52 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/05 17:11:01 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,6 @@ char		**ft_split(char const *s, char c)
 {
 	char	**words;
 	int		*lens;
-	int		i;
 
 	if (!s)
 		return (0);
@@ -102,7 +101,6 @@ char		**ft_split(char const *s, char c)
 		return (0);
 	if (!(split_process(s, words, c, lens)))
 		return (0);
-	i = 0;
 	free(lens);
 	return (words);
 }
