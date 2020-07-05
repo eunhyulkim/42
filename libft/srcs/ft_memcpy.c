@@ -1,25 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   ft_memcpy.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/24 21:34:59 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/04 22:07:52 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/02/24 22:21:22 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/04/06 00:29:54 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int		ft_strlen(const char *str)
+void	*ft_memcpy(void *dst, const void *src, size_t n)
 {
-	int		cnt;
+	t_uchar		*uc_dst;
+	t_uchar		*uc_src;
+	size_t		index;
 
-	if (!str)
+	if (!dst && !src)
 		return (0);
-	cnt = 0;
-	while (str[cnt] != '\0')
-		cnt++;
-	return (cnt);
+	uc_dst = (t_uchar *)dst;
+	uc_src = (t_uchar *)src;
+	index = 0;
+	while (index < n)
+	{
+		uc_dst[index] = uc_src[index];
+		index++;
+	}
+	return (dst);
 }

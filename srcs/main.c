@@ -4,13 +4,13 @@ static void		process_line(char *line)
 {
 	char		**tokens;
 	t_table		*table;
-	static int	count;
 
 	tokens = tokenizer(line);
-	if (!(lexer(tokens)))
+	if (!lexer(tokens) || !(table = parser(tokens)))
 		return ;
-	table = parser(tokens);
-	if (table && (DEBUG_ALL || DEBUG_TABLE))
+	if (DEBUG_ALL || DEBUG_CONVERT || !DEBUG_TABLE)
+		converter(table);
+	if (DEBUG_ALL || DEBUG_TABLE || DEBUG_CONVERT)
 		print_table(table);
 	// if (!(table = parser(tokens)))
 	// 	return ;
