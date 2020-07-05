@@ -8,7 +8,7 @@
 # include "libft.h"
 # include "get_next_line.h"
 
-# define DEBUG_ALL		0
+# define DEBUG_ALL		1
 # define DEBUG_LEXER	0
 # define DEBUG_PARSER	0
 # define DEBUG_TABLE	0
