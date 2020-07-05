@@ -11,6 +11,8 @@
 # define    LESS        'L'
 # define    DLESS       'M'
 
+# define	SUCCESS_RES	0
+
 # include "minishell.h"
 # include "sys/wait.h"
 
@@ -29,6 +31,7 @@ void	execute_table_with_single_job(t_table *table);
 **	in commands directory
 */
 
-void	cmd_echo(t_command *cmd_list);	
+void	cmd_echo(t_command *cmd_list);
+void	cmd_env(t_command *command);
 
 # endif

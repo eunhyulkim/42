@@ -11,7 +11,7 @@ void		print_table(t_table *table)
 	if (!table)
 		return ;
 	int tno = 0;
-	printf("%s%-10s%-6s%-8s%-16s%-25s%s\n", KCYN, "TABLE_NO", "TYPE", "JOB_NO", \
+	printf("\n%s%-10s%-6s%-8s%-16s%-25s%s\n", KCYN, "TABLE_NO", "TYPE", "JOB_NO", \
 	"CMD", "ARG", "REDIRECT");
 	while (table)
 	{

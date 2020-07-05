@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/05 19:09:40 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/06 00:04:26 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,13 @@ int	execute_redirection(t_job *job, int pipes[2])
 	return (TRUE);
 }
 
-void		execute_command(t_command *cmd_list)
+void		execute_command(t_command *command)
 {
 	//TODO: add commands
-	if (!ft_strcmp(cmd_list->cmd, "echo"))
-		cmd_echo(cmd_list);
+	if (!ft_strcmp(command->cmd, "echo"))
+		cmd_echo(command);
+	else if (!ft_strcmp(command->cmd, "env"))
+		cmd_env(command);
 }
 
 int			count_job(t_job *job)
@@ -170,12 +172,12 @@ void	execute_table_with_single_job(t_table *table)
 {
 	if (table->sep_type == AND)
 	{
-		if (g_res == TRUE)
+		if (g_res == SUCCESS_RES)
 			execute_single_job(table->job_list);
 	}
 	else if (table->sep_type == OR)
 	{
-		if (g_res == FALSE)
+		if (g_res != SUCCESS_RES)
 			execute_single_job(table->job_list);
 	}
 	else

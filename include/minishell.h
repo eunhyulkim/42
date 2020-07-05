@@ -17,11 +17,11 @@
 # define KCYN  "\x1B[36m"
 # define KWHT  "\x1B[37m"
 
-# define DEBUG_ALL		1
+# define DEBUG_ALL		0
 # define DEBUG_LEXER	0
 # define DEBUG_PARSER	0
 # define DEBUG_TABLE	0
-# define DEBUG_CONVERT	0
+# define DEBUG_CONVERT	1
 
 # define TRUE	 		1
 # define FALSE	 		0
