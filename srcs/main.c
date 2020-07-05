@@ -9,22 +9,19 @@ static void		process_line(char *line)
 	tokens = tokenizer(line);
 	if (!lexer(tokens) || !(table = parser(tokens)))
 		return ;
-	if (DEBUG_ALL || DEBUG_CONVERT || !DEBUG_TABLE)
-		converter(table);
-	if (DEBUG_ALL || DEBUG_TABLE || DEBUG_CONVERT)
-		print_table(table);
-	// if (!(table = parser(tokens)))
-	// 	return ;
 	first_table = table;
 	while (table)
 	{
-		converter(table);
-		execute_table(table);
+		if (DEBUG_ALL || DEBUG_CONVERT || !DEBUG_TABLE)
+			converter(table);
+		excute_table(table);
 		wait(NULL);
 		table = table->next;
 	}
+	if (DEBUG_ALL || DEBUG_TABLE || DEBUG_CONVERT)
+		print_table(start);
 	ft_free_doublestr(tokens);
-	free_table(first_table);
+	free_table(start);
 }
 
 int				main(int ac, char *av[], char **env)

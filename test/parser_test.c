@@ -49,7 +49,6 @@ static void		print_table(t_table *table)
 					redir = redir->next;
 				}
 			}
-			printf("job_fd: [%d][%d]\n", job->fd[0], job->fd[1]);
 			job = job->next;
 		}
 		table = table->next;

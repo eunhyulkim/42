@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/05 14:21:39 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/05 19:15:06 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ int								ft_isset(int c, char *set);
 int								ft_atoi(char *str);
 char							*ft_realloc(char **ptr, char c);
 void							*ft_memcpy(void *dst, const void *src, size_t n);
+char							*ft_itoa(t_llint n);
 
 // bonus
 int								ft_len_doublestr(char **arr);

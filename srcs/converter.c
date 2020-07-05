@@ -1,6 +1,21 @@
 #include "minishell.h"
 
-static void		convert_env(char **ret, char *str, int *i)
+static void		convert_res(char **ret, char *str, int *i, int first)
+{
+	char	*val;
+	int		j;
+
+	val = (first) ? ft_strdup("0") : ft_itoa(g_res);
+	j = (str[*i + 1] == '{') ? *i + 3 : *i + 1;
+	*i = 0;
+	while (val && val[*i])
+		ft_realloc(ret, val[(*i)++]);
+	*i = j;
+	ft_free(val);
+	return ;
+}
+
+static void		convert_env(char **ret, char *str, int *i, int first)
 {
 	char	*name;
 	char	*val;
@@ -8,6 +23,8 @@ static void		convert_env(char **ret, char *str, int *i)
 	int		j;
 	char	end;
 
+	if (str[*i + 1] == '?' || (str[*i + 1] == '{' && str[*i + 2] == '?'))
+		return (convert_res(ret, str, i, first));
 	j = *i + 1;
 	if (!str[j])
 		return ;
@@ -25,10 +42,9 @@ static void		convert_env(char **ret, char *str, int *i)
 		ft_realloc(ret, val[(*i)++]);
 	ft_free(name);
 	*i = j;
-	return ;
 }
 
-static void		convert(char **src)
+static void		convert(char **src, int first)
 {
 	int		i;
 	int		opened;
@@ -48,7 +64,7 @@ static void		convert(char **src)
 			opened = 0;
 		else if (opened != '\'' && str[i] == '$' \
 			&& str[i + 1] && !ft_isset(str[i + 1], " \'\""))
-				convert_env(&ret, str, &i);
+				convert_env(&ret, str, &i, first);
 		else
 			ft_realloc(&ret, str[i]);
 		i++;
@@ -57,18 +73,18 @@ static void		convert(char **src)
 	*src = ret;
 }
 
-static void		convert_job(t_job *job)
+static void		convert_job(t_job *job, int first)
 {
 	int			i;
 	t_redir		*redir;
 
 	if (job->command.cmd)
-		convert(&job->command.cmd);
+		convert(&job->command.cmd, first);
 	if (job->command.arg_list)
 	{
 		i = 0;
 		while (job->command.arg_list[i])
-			convert(&job->command.arg_list[i++]);
+			convert(&job->command.arg_list[i++], first);
 	}
 	if (job->redir_list)
 	{
@@ -76,9 +92,9 @@ static void		convert_job(t_job *job)
 		while (redir)
 		{
 			if (redir->sign)
-				convert(&redir->sign);
+				convert(&redir->sign, first);
 			if (redir->arg)
-				convert(&redir->arg);
+				convert(&redir->arg, first);
 			redir = redir->next;
 		}
 	}
@@ -88,16 +104,15 @@ static void		convert_job(t_job *job)
 void			converter(t_table *table)
 {
 	t_job	*job;
+	int		first;
 
-	while (table)
+	first = 1;
+	job = table->job_list;
+	while (job)
 	{
-		job = table->job_list;
-		while (job)
-		{
-			convert_job(job);
-			job = job->next;
-		}
-		table = table->next;
+		convert_job(job, first);
+		job = job->next;
+		first = 0;
 	}
 	return ;
 }
