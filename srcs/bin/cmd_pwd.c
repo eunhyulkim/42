@@ -5,8 +5,7 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/07/05 19:12:37 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/05 22:23:06 by iwoo             ###   ########.fr       */
+/*   Created: 2020/07/05 19:12:37 by iwoo              #+#    #+#             */ /*   Updated: 2020/07/05 22:47:17 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +21,14 @@ void	cmd_pwd(t_command *command)
 		ft_putstr_fd("pwd can't get any arguments\n", 2);
 		exit(-1);
 	}
-	path = get_env("PWD");
+	path = getcwd(NULL, PWD_BUFFER_SIZE);
 	if (!path)
 	{
-		ft_putstr_fd("Failed to get path\n", 2);
+		ft_putstr_fd("Failed to get path, please check 'PWD_BUFFER_SIZE'\n", 2);
 		exit(-1);
 	}
 	ft_putstr_fd(path, 1);
 	ft_putstr_fd("\n", 1);
+	free(path);
 	exit(0);
 }
