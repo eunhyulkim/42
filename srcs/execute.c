@@ -6,7 +6,7 @@
 /*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/05 19:09:40 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/05 22:30:04 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ void		execute_command(t_command *cmd_list)
 	//TODO: add commands
 	if (!ft_strcmp(cmd_list->cmd, "echo"))
 		cmd_echo(cmd_list);
+	if (!ft_strcmp(cmd_list->cmd, "pwd"))
+		cmd_pwd(cmd_list);
 }
 
 int			count_job(t_job *job)
@@ -60,8 +62,7 @@ int			count_job(t_job *job)
 
 	i = 0;
 	while (job)
-	{
-		i++;
+	{ i++;
 		job = job->next;
 	}
 	return (i);

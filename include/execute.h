@@ -2,6 +2,7 @@
 # define EXECUTE_H
 
 # define N_OPTION -2
+# define PWD_BUFFER_SIZE 300
 
 # define    OR          'O'
 # define    AND         'A'
@@ -26,9 +27,10 @@ void	execute_table(t_table *table);
 void	execute_table_with_single_job(t_table *table);
 
 /*
-**	in commands directory
+**	in bin directory
 */
 
 void	cmd_echo(t_command *cmd_list);	
+void	cmd_pwd(t_command *command);
 
 # endif
