@@ -6,7 +6,7 @@
 /*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/05 18:41:55 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/05 19:09:40 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ void	execute_table(t_table *table)
 		if (g_res == FALSE)
 			execute_job(table->job_list);
 	}
-	else if (table->sep_type == SEMI)
+	else
 		execute_job(table->job_list);
 }
 
@@ -178,6 +178,6 @@ void	execute_table_with_single_job(t_table *table)
 		if (g_res == FALSE)
 			execute_single_job(table->job_list);
 	}
-	else if (table->sep_type == SEMI)
+	else
 		execute_single_job(table->job_list);
 }
