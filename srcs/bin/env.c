@@ -44,7 +44,8 @@ int		set_env(char *key, char *val)
 
 char	*get_env(char *wild_key)
 {
-	int		idx;
+	int		key_idx;
+	int		val_idx;
 	char	*key;
 
 	if (!g_env || !wild_key || !(*wild_key))
@@ -52,10 +53,15 @@ char	*get_env(char *wild_key)
 	if ((key = ft_strchr(wild_key, '=')))
 		key = ft_strsub(wild_key, 0, key - wild_key);
 	else
-		key = wild_key;
-	if ((idx = get_key_idx(key)) == -1)
+		key = ft_strdup(wild_key);
+	if ((key_idx = get_key_idx(key)) == -1)
+	{
+		free(key);
 		return (0);
-	return (g_env[idx] + ft_strlen(key) + 1);
+	}
+	val_idx = ft_strlen(key) + 1;
+	free(key);
+	return (g_env[key_idx] + val_idx);
 }
 
 void	init_env(char **env)
