@@ -48,9 +48,6 @@ static int		check_char(char **str, char **format)
 
 static int		check_string(char **str, char **format)
 {
-	char		c;
-
-	c = *(*format);
 	if (!check_char(str, format))
 		return (0);
 	*format = *format - 1;

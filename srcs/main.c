@@ -4,6 +4,7 @@ static void		process_line(char *line)
 {
 	char		**tokens;
 	t_table		*table;
+	t_table		*first_table;
 
 	tokens = tokenizer(line);
 	if (!lexer(tokens) || !(table = parser(tokens)))
@@ -14,11 +15,16 @@ static void		process_line(char *line)
 		print_table(table);
 	// if (!(table = parser(tokens)))
 	// 	return ;
+	first_table = table;
+	while (table)
+	{
+		converter(table);
+		execute_table(table);
+		wait(NULL);
+		table = table->next;
+	}
 	ft_free_doublestr(tokens);
-	free_table(table);
-	// if (!excute_redirects(table))
-	// 	return ;
-	// excute_commands(table);
+	free_table(first_table);
 }
 
 int				main(int ac, char *av[], char **env)
