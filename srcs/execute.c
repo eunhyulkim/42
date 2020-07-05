@@ -6,7 +6,7 @@
 /*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/05 18:38:08 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/05 18:41:55 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,22 +129,18 @@ void		execute_job(t_job *job)
 
 void	execute_table(t_table *table)
 {
-	while (table)
+	if (table->sep_type == AND)
 	{
-		if (table->sep_type == AND)
-		{
-			if (g_res == TRUE)
-				execute_job(table->job_list);
-		}
-		else if (table->sep_type == OR)
-		{
-			if (g_res == FALSE)
-				execute_job(table->job_list);
-		}
-		else if (table->sep_type == SEMI)
+		if (g_res == TRUE)
 			execute_job(table->job_list);
-		table = table->next;
 	}
+	else if (table->sep_type == OR)
+	{
+		if (g_res == FALSE)
+			execute_job(table->job_list);
+	}
+	else if (table->sep_type == SEMI)
+		execute_job(table->job_list);
 }
 
 //========================temp codes to make builtin cmds========================
