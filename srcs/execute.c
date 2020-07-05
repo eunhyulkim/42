@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/06 00:04:26 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/06 00:21:42 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,7 @@ int			count_job(t_job *job)
 
 	i = 0;
 	while (job)
-	{
-		i++;
+	{ i++;
 		job = job->next;
 	}
 	return (i);
