@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/01 00:52:15 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/04 14:53:19 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,45 +74,35 @@ int     check_seq(char **tokens, t_lexer *lex)
 int     token_in(char **tokens, t_lexer *lex, char *format)
 {
     lex->i = -1;
-    lex->seqs = ft_split(format, ';');
-    while (lex->seqs[++lex->i])
-    {
-		if (*lex->seqs[lex->i] != lex->type)
-			continue;
-        lex->seq = ft_split(lex->seqs[lex->i] + 2, ',');
-		lex->j = 0;
-		while (lex->seq[lex->j])
-		{
-			lex->format = ft_split(lex->seq[lex->j], '-');
-			lex->res = -1;
-			if (check_seq(tokens, lex))
-				if (ft_free_doublestr(lex->seq))
-					return (ft_free_doublestr(lex->seqs));
-			lex->j++;
-		}
-		ft_free_doublestr(lex->seq);
-    }
-    ft_free_doublestr(lex->seqs);
+    lex->seqs = ft_split(format, ',');
+    lex->j = 0;
+	while (lex->seqs[lex->j])
+	{
+		lex->format = ft_split(lex->seqs[lex->j], '-');
+		lex->res = -1;
+		if (check_seq(tokens, lex))
+			return (ft_free_doublestr(lex->seqs));
+		lex->j++;
+	}
+	ft_free_doublestr(lex->seqs);
     return (0);
 }
 
 static int	is_valid_token(char **tokens, t_lexer *lex)
 {
-    if (lex->type == DSEMI)
+    if (lex->type == DSEMI || lex->type == EMPER)
         return (FALSE);
 	if (lex->type == STRING && !ft_isright_quote(tokens[lex->idx]))
 		return (FALSE);
-	if (lex->type == ENTER)
-		return (!token_in(tokens, lex, "F:"FRONT_REDIR));
-	if (ft_isset(lex->type, "NCSGHLM"))
+	if (ft_isset(lex->type, "GHLM"))
+		return (!token_in(tokens, lex, FRONT_REDIR));
+	if (ft_isset(lex->type, "F"))
+		return (!token_in(tokens, lex, FRONT_REDIR_BACK_X));
+	if (ft_isset(lex->type, "NCS"))
 		return (TRUE);
-    if (token_in(tokens, lex, \
-	"P:"NO_BACK_ARG";""E:"NO_BACK_ARG";""O:"NO_BACK_ARG";"\
-	"A:"NO_BACK_ARG";""Y:"NO_BACK_ARG";"))
+    if (lex->type != SEMI && token_in(tokens, lex, NO_BACK_ARG))
 	    return (FALSE);
-    if (!token_in(tokens, lex, \
-	"P:"FRONT_ALNUM";""E:"FRONT_ALNUM";""O:"FRONT_ALNUM";"\
-	"A:"FRONT_ALNUM";""Y:"FRONT_ALNUM";"))
+    if (!token_in(tokens, lex, FRONT_ALNUM))
 	    return (FALSE);
 	return (TRUE);
 }
@@ -124,10 +114,12 @@ int     lexer(char **tokens)
 	if (!tokens || !(lex = ft_calloc(sizeof(t_lexer), 1)))
 		return (0);
 	lex->len = ft_len_doublestr(tokens);
+	if (DEBUG_LEXER || DEBUG_ALL)
+		write(1, "\nD-1. TOKENIZER: ", 16);
 	while (tokens[lex->idx])
 	{
 		lex->type = type(tokens, lex->idx);
-        if (DEBUG_MODE)
+        if (DEBUG_LEXER || DEBUG_ALL)
         {
             write(1, "[", 1);
             write(1, &lex->type, 1);
@@ -135,18 +127,19 @@ int     lexer(char **tokens)
         }
 		if (!is_valid_token(tokens, lex))
         {
-            if (DEBUG_MODE)
-            {
-                write(1, "\nmongshell: syntax error near unexpected token `", 48);
-                write(1, tokens[lex->idx], ft_strlen(tokens[lex->idx]));
-                write(1, "\n", 1);
-            }
+			write(1, "\nmongshell: syntax error near unexpected token `", 48);
+			if (!ft_strcmp(tokens[lex->idx], "\n"))
+				write(1, "newline", 7);
+			else
+            	write(1, tokens[lex->idx], ft_strlen(tokens[lex->idx]));
+            write(1, "'\n", 2);
             free(lex);
 			return (FALSE);
         }
         lex->idx++;
 	}
-    write(1, "\n", 1);
+	if (DEBUG_LEXER || DEBUG_ALL)
+    	write(1, "\n", 1);
 	free(lex);
 	return (TRUE);
 }

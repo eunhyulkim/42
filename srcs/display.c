@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   display.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 21:34:17 by iwoo              #+#    #+#             */
-/*   Updated: 2020/06/26 22:08:06 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/04 15:14:33 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ int				print_ascii_art(void)
 	{
 		ft_putstr_fd(line, 1);
 		free(line);
-		ft_putstr_fd("\n", 1);
 	}
 	ft_putstr_fd(line, 1);
 	ft_putstr_fd("\n", 1);

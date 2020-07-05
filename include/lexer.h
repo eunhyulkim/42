@@ -6,10 +6,10 @@
 */
 # define    DSEMI       'Z'
 # define    PIPE        'P' // !P-O-*, !P-SO-*, !P-*-X
-# define    EMPER       'E'
 # define    OR          'O'
 # define    AND         'A'
 # define    SEMI        'Y'
+# define    EMPER       'E'
 # define    GREATER     'G'
 # define    DGREATER    'H'
 # define    LESS        'L'
@@ -19,9 +19,10 @@
 # define    STRING      'C'
 # define    ENTER       'F'
 
-# define	FRONT_REDIR		"G-*,SG-*,H-*,SH-*,L-*,SL-*,M-*,SM-*"
-# define 	NO_BACK_ARG		"*-X,*-SX,*-F,*-SF"
-# define	FRONT_ALNUM		"N-*,C-*,SN-*,SC-*"
+# define	FRONT_REDIR			"G-*,SG-*,H-*,SH-*,L-*,SL-*,M-*,SM-*"
+# define	FRONT_REDIR_BACK_X	"G-X,SG-X,H-X,SH-X,L-X,SL-X,M-X,SM-X"
+# define 	NO_BACK_ARG			"*-X,*-SX,*-F,*-SF"
+# define	FRONT_ALNUM			"N-*,C-*,SN-*,SC-*"
 
 typedef struct	s_lexer
 {
@@ -29,7 +30,6 @@ typedef struct	s_lexer
 	int			idx;
 	char		type;
 	char		**seqs;
-	char		**seq;
 	char		**format;
 	int			i;
 	int			j;

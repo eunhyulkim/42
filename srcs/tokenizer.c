@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/29 14:45:07 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/30 19:10:33 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/03 03:16:49 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,8 @@ static	int		is_end(char *line, t_tokenizer *tab)
 	if (line[i] == tab->quote && tab->qidx != i)
 		tab->quote = 0;
 	if (!line[i + 1] || (!tab->quote && line[i] == '\n'))
+		return (TRUE);
+	if (!tab->quote && line[i + 1] == '\n')
 		return (TRUE);
 	if (tab->quote)
 		return (FALSE);

@@ -4,14 +4,18 @@ static void		process_line(char *line)
 {
 	char		**tokens;
 	t_table		*table;
+	static int	count;
 
-	tokens = tokenizer(line)
+	tokens = tokenizer(line);
 	if (!(lexer(tokens)))
 		return ;
 	table = parser(tokens);
+	if (table && (DEBUG_ALL || DEBUG_TABLE))
+		print_table(table);
 	// if (!(table = parser(tokens)))
 	// 	return ;
 	ft_free_doublestr(tokens);
+	free_table(table);
 	// if (!excute_redirects(table))
 	// 	return ;
 	// excute_commands(table);

@@ -2,7 +2,7 @@
 
 int	execute_redirection(t_table *table)
 {
-	t_redi	*redi_list;
+	t_redir	*redi_list;
 	int		fd;
 
 	if (!table || !(redi_list = table->redi_list))
