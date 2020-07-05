@@ -7,24 +7,21 @@ CFLAGS = -Wall -Wextra -Werror
 LIB_DIR = libft/
 LIBLARY = libft.a
 
-MAIN = srcs/main
+MAIN = test/execute_single_job_test
 MAIN_FILES = display tokenizer lexer parser parser_get_utils \
-			 parser_set_utils free converter debug
-BIN_FILES = env
+			 parser_set_utils free converter debug execute
+BIN_FILES = env cmd_echo
 GNL_FILES = get_next_line get_next_line_utils
-# COMMANDS_FILES = cmd_echo
 
 MAIN_PATH = $(addsuffix .c, $(MAIN))
 SRCS_PATH += $(MAIN_FILES)
 SRCS_PATH += $(addprefix bin/, $(BIN_FILES))
 SRCS_PATH += $(addprefix get_next_line/, $(GNL_FILES))
-SRCS_PATH += $(addprefix commands/, $(COMMANDS_FILES))
 SRCS = $(addprefix srcs/, $(addsuffix .c, $(SRCS_PATH)))
 
 OBJS += $(addsuffix .o, $(MAIN_FILES))
 OBJS += $(addsuffix .o, $(BIN_FILES))
 OBJS += $(addsuffix .o, $(GNL_FILES))
-OBJS += $(addsuffix .o, $(COMMANDS_FILES))
 
 GREEN = \033[0;32m
 RED = \033[0;31m
@@ -38,7 +35,7 @@ ${NAME}: ${OBJS}
 	@echo "$(RESET)Copying ${LIBLARY} to root."
 	@cp ${LIB_DIR}${LIBLARY} .
 	@echo "$(RESET)Compiling ${NAME} to root."
-	@${CC} ${CFLAGS} ${INCLUDES} -lft -L. ${OBJS} ${MAIN_PATH} -o ${NAME}
+	@${CC} ${CFLAGS} ${INCLUDES} ${OBJS} ${MAIN_PATH} -o ${NAME} -lft -L.
 	@echo "$(GREEN)DONE"
 
 ${OBJS}: ${SRCS}

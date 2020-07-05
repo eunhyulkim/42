@@ -4,18 +4,18 @@ static void		process_line(char *line)
 {
 	char		**tokens;
 	t_table		*table;
-	t_table		*start;
+	t_table		*first_table;
 
 	tokens = tokenizer(line);
 	if (!lexer(tokens) || !(table = parser(tokens)))
 		return ;
-	start = table;
+	first_table = table;
 	while (table)
 	{
 		if (DEBUG_ALL || DEBUG_CONVERT || !DEBUG_TABLE)
 			converter(table);
-		// excute_table(table);
-		// wait(NULL);
+		excute_table(table);
+		wait(NULL);
 		table = table->next;
 	}
 	if (DEBUG_ALL || DEBUG_TABLE || DEBUG_CONVERT)

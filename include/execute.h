@@ -1,28 +1,29 @@
 #ifndef EXECUTE_H
 # define EXECUTE_H
 
-# include <stdio.h>
-# include <stdlib.h>
-# include <fcntl.h>
-# include <unistd.h>
-# include "libft.h"
+# define N_OPTION -2
 
-# define TRUE	 	1
-# define FALSE	 	0
+# define    OR          'O'
+# define    AND         'A'
+# define    SEMI        'Y'
+# define    GREATER     'G'
+# define    DGREATER    'H'
+# define    LESS        'L'
+# define    DLESS       'M'
 
-# define OPENED		1
-# define UNOPENED	0
-
-# define N_OPTION	-2
-
-typedef int		bool;
+# include "minishell.h"
+# include "sys/wait.h"
 
 /*
 ** execute functions
 */
 
-int		execute_redirection(t_table *table);
-int		execute_command_list(t_table *table);
+int		execute_redirection(t_job *job, int pipes[2]);
+void	execute_job(t_job *job);
+void	execute_table(t_table *table);
+
+//temp functions
+void	execute_table_with_single_job(t_table *table);
 
 /*
 **	in commands directory
