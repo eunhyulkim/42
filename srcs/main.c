@@ -4,21 +4,24 @@ static void		process_line(char *line)
 {
 	char		**tokens;
 	t_table		*table;
+	t_table		*start;
 
 	tokens = tokenizer(line);
 	if (!lexer(tokens) || !(table = parser(tokens)))
 		return ;
-	if (DEBUG_ALL || DEBUG_CONVERT || !DEBUG_TABLE)
-		converter(table);
+	start = table;
+	while (table)
+	{
+		if (DEBUG_ALL || DEBUG_CONVERT || !DEBUG_TABLE)
+			converter(table);
+		// excute_table(table);
+		// wait(NULL);
+		table = table->next;
+	}
 	if (DEBUG_ALL || DEBUG_TABLE || DEBUG_CONVERT)
-		print_table(table);
-	// if (!(table = parser(tokens)))
-	// 	return ;
+		print_table(start);
 	ft_free_doublestr(tokens);
-	free_table(table);
-	// if (!excute_redirects(table))
-	// 	return ;
-	// excute_commands(table);
+	free_table(start);
 }
 
 int				main(int ac, char *av[], char **env)

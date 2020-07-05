@@ -8,7 +8,16 @@
 # include "libft.h"
 # include "get_next_line.h"
 
-# define DEBUG_ALL		0
+# define KNRM  "\x1B[0m"
+# define KRED  "\x1B[31m"
+# define KGRN  "\x1B[32m"
+# define KYEL  "\x1B[33m"
+# define KBLU  "\x1B[34m"
+# define KMAG  "\x1B[35m"
+# define KCYN  "\x1B[36m"
+# define KWHT  "\x1B[37m"
+
+# define DEBUG_ALL		1
 # define DEBUG_LEXER	0
 # define DEBUG_PARSER	0
 # define DEBUG_TABLE	0
@@ -46,7 +55,6 @@ typedef struct			s_job
 {
 	struct s_command	command;
 	struct s_redir		*redir_list;
-	int					fd[2];
 	struct s_job		*next;
 }						t_job;
 

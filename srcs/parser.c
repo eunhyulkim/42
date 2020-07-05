@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/04 16:15:00 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/05 17:00:08 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ static void		create_job(t_parser *parser, t_table *table)
 		write(1, "[CJ]", 4);
 	if (!(new_job = (t_job *)ft_calloc(sizeof(t_job), 1)))
 		return ;
-	new_job->fd[1] = STDOUT;
 	last_job = get_last_job(table);
 	if (!last_job)
 	{

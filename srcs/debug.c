@@ -11,8 +11,8 @@ void		print_table(t_table *table)
 	if (!table)
 		return ;
 	int tno = 0;
-	printf("%-10s%-6s%-8s%-16s%-25s%-10s%s\n", "TABLE_NO", "TYPE", "JOB_NO", \
-	"CMD", "ARG", "FD", "REDIRECT");
+	printf("%s%-10s%-6s%-8s%-16s%-25s%s\n", KCYN, "TABLE_NO", "TYPE", "JOB_NO", \
+	"CMD", "ARG", "REDIRECT");
 	while (table)
 	{
 		tno++;
@@ -20,7 +20,7 @@ void		print_table(t_table *table)
 		int jno = 1;
 		while (job)
 		{
-			printf("%-10d", tno);
+			printf("%s%-10d", KNRM, tno);
 			if (!table->sep_type)
 				printf("%-6s", "START");
 			else if (table->sep_type == AND)
@@ -30,10 +30,15 @@ void		print_table(t_table *table)
 			else if (table->sep_type == SEMI)
 				printf("%-6s", "SEMI");
 			printf("%-8d", jno++);
-			printf("%-16s", job->command.cmd);
+			if (job->command.cmd)
+				printf("%-16s", job->command.cmd);
+			else
+				printf("%s%-16s%s", KYEL, "Null", KNRM);
 			arg = job->command.arg_list;
 			idx = 0;
 			int len = 0;
+			if (!arg && (len = 25))
+				printf("%s%-25s%s", KYEL, "Null", KNRM);
 			while (arg && arg[idx])
 			{
 				printf("%s,", arg[idx]);
@@ -43,17 +48,8 @@ void		print_table(t_table *table)
 			len = 25 - len;
 			while (len--)
 				printf(" ");
-			printf("[%d][%d]", job->fd[0], job->fd[1]);
-			len = 0;
-			len += (job->fd[0] >= 10) ? 2 : 1;
-			len += (job->fd[0] >= 100) ? 1 : 0;
-			len += (job->fd[1] >= 10) ? 2 : 1;
-			len += (job->fd[1] >= 100) ? 1 : 0;
-			len = 10 - len - 4;
-			while (len--)
-				printf(" ");
 			if (!job->redir_list)
-				printf("%s\n", "Null");
+				printf("%s%s%s\n", KYEL, "Null", KNRM);
 			else
 			{
 				redir = job->redir_list;

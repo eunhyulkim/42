@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/30 18:40:52 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/05 14:52:01 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/05 19:16:33 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ int			ft_isright_envbracket(char *src)
 		if (!(src[idx] == '$' && src[idx + 1] == '{' && quote != '\''))
 			continue;
 		idx += 2;
+		if (src[idx] == '?' && src[idx + 1] != '}')
+			return (0);
 		while (src[idx] && !ft_isset(src[idx], "{}\'\""))
 			idx++;
 		if (!src[idx] || src[idx] != '}')
