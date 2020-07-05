@@ -81,7 +81,12 @@ static void		process_line(char *line)
 	t_table *table;
 	
 	table = make_test_table();
-	execute_table_with_single_job(table);
+	while (table)
+	{
+		execute_table_with_single_job(table);
+		wait(NULL);
+		table = table->next;
+	}
 }
 
 int				main(int ac, char *av[], char **env)
