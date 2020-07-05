@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/04 14:53:19 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/05 14:21:45 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,8 @@ static int	is_valid_token(char **tokens, t_lexer *lex)
     if (lex->type == DSEMI || lex->type == EMPER)
         return (FALSE);
 	if (lex->type == STRING && !ft_isright_quote(tokens[lex->idx]))
+		return (FALSE);
+	if (lex->type == STRING && !ft_isright_envbracket(tokens[lex->idx]))
 		return (FALSE);
 	if (ft_isset(lex->type, "GHLM"))
 		return (!token_in(tokens, lex, FRONT_REDIR));

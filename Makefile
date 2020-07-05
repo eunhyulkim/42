@@ -9,7 +9,7 @@ LIBLARY = libft.a
 
 MAIN = srcs/main
 MAIN_FILES = display tokenizer lexer parser parser_get_utils \
-			 parser_set_utils free debug
+			 parser_set_utils free converter debug
 BIN_FILES = env
 GNL_FILES = get_next_line get_next_line_utils
 # COMMANDS_FILES = cmd_echo

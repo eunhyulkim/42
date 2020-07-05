@@ -12,6 +12,7 @@
 # define DEBUG_LEXER	0
 # define DEBUG_PARSER	0
 # define DEBUG_TABLE	0
+# define DEBUG_CONVERT	0
 
 # define TRUE	 		1
 # define FALSE	 		0
@@ -81,6 +82,11 @@ int				lexer(char **tokens);
 ** parser functions
 */
 t_table			*parser(char **tokens);
+
+/*
+** converter
+*/
+void			converter(t_table *table);
 
 /*
 ** bin/env functions
