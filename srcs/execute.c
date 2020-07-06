@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/06 22:51:57 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/07 00:12:18 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ static void		save_standard_fd(t_table *table)
 {
 	table->fd[0] = dup(0);
 	table->fd[1] = dup(1);
+	g_stdin = table->fd[1];
 	table->fd[2] = dup(2);
 }
 
@@ -56,6 +57,7 @@ static void		restore_standard_fd(t_table *table)
 {
 	dup2(table->fd[0], 0);
 	dup2(table->fd[1], 1);
+	g_stdin = 1;
 	dup2(table->fd[1], 2);
 	close(table->fd[0]);
 	close(table->fd[1]);
@@ -80,7 +82,7 @@ static void		dup_pipe(t_job *job, int *pipes, int pidx)
 static int			get_fd(t_redir *redir)
 {
 	int		fd;
-	
+
 	fd = -1;
 	if (!(ft_strcmp(redir->sign, ">")))
 		fd = open(redir->arg, O_RDWR | O_CREAT | O_TRUNC, 0644);
@@ -99,12 +101,12 @@ static void		excute_redirection(t_table *table, t_job *job)
 {
 	t_redir *redir;
 	int		fd;
-	
+
 	if (!(job->next))
 	{
 		dup2(table->fd[1], 1);
 		dup2(table->fd[2], 2);
-	}	
+	}
 	if (!(redir = job->redir_list))
 		return ;
 	while (redir)
@@ -114,7 +116,7 @@ static void		excute_redirection(t_table *table, t_job *job)
 			if (*(redir->sign) == '>')
 				dup2(fd, redir->fd);
 			else
-				dup2(fd, 0);			
+				dup2(fd, 0);
 		}
 		redir = redir->next;
 	}
@@ -135,14 +137,14 @@ static int		execute_command(t_command *command)
 	else if (!ft_strcmp(command->cmd, "cd"))
 		cmd_cd(command);
 	else if (!ft_strcmp(command->cmd, "exit"))
-		return (cmd_exit(command));	
+		return (cmd_exit(command));
 	return (TRUE);
 }
 
 static int		execute_job(t_table *table, t_job *job, int *pipes)
 {
 	int		pidx;
-	
+
 	pidx = 0;
 	while (job)
 	{
@@ -158,17 +160,14 @@ static int		execute_job(t_table *table, t_job *job, int *pipes)
 void	close_fd(void)
 {
 	while (g_maxfd > 2)
-	{
-		dprintf(2, "%d\n", g_maxfd);	
-		close(g_maxfd--);	
-	}
+		close(g_maxfd--);
 }
 
 int			execute_table(t_table *table)
 {
 	int		*pipes;
 	int 	res;
-	
+
 	if (!table || !table->job_list)
 		return (1);
 	save_standard_fd(table);

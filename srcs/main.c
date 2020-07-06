@@ -44,9 +44,9 @@ int				main(int ac, char *av[], char **env)
 	{
 		display_prompt();
 		line = 0;
-		if (!(get_next_line(1, &line)))
+		if (!get_next_line(0, &line))
 			continue;
-		if (!process_line(line))
+		if (ft_strcmp(line, "\n") && !process_line(line))
 			break ;
 		free(line);
 	}
