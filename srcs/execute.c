@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/06 14:51:53 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/06 15:00:44 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,6 +169,8 @@ void	execute_single_job(t_job *job)
 		cmd_export(command);
 	else if (!ft_strcmp(command->cmd, "unset"))
 		cmd_unset(command);
+	else if (!ft_strcmp(command->cmd, "cd"))
+		cmd_cd(command);
 }
 
 void	execute_table_with_single_job(t_table *table)
