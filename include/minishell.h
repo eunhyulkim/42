@@ -23,11 +23,13 @@
 # define DEBUG_LEXER	0
 # define DEBUG_PARSER	0
 # define DEBUG_TABLE	0
-# define DEBUG_CONVERT	0
+# define DEBUG_CONVERT	1
 # define DEBUG_excute	0
 
 # define TRUE	 		1
 # define FALSE	 		0
+
+# define TEMP_PATH		"config/temp.txt"
 
 typedef int				bool;
 
@@ -100,6 +102,7 @@ t_table			*parser(char **tokens);
 ** converter
 */
 void			converter(t_table *table);
+void			convert_heredoc(t_redir *redir);
 
 /*
 ** bin/env functions
