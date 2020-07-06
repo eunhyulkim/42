@@ -71,6 +71,7 @@ typedef struct  		s_table
 
 char					**g_env;
 int						g_res;
+int						g_maxfd;
 
 /*
 ** display functions

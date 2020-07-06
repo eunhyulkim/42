@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/06 20:25:41 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/06 21:39:31 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,6 +173,9 @@ static int			get_fd(t_redir *redir)
 		fd = open(redir->arg, O_RDWR);
 	// else if (!(ft_strcmp(redir->sign, "<<")))
 	// 	fd = open(TEMP_PATH, O_RDWR);
+	dprintf(2, "get_fd is [%d][%s]\n", fd, redir->arg);
+	if (fd > g_maxfd)
+		g_maxfd = fd;
 	return (fd);
 }
 
@@ -180,22 +183,23 @@ static void		excute_redirection(t_table *table, t_job *job)
 {
 	t_redir *redir;
 	int		fd;
-
-	if (!(redir = job->redir_list))
-		return ;
+	
 	if (!(job->next))
 	{
 		dup2(table->fd[1], 1);
 		dup2(table->fd[2], 2);
 	}	
+	if (!(redir = job->redir_list))
+		return ;
 	while (redir)
 	{
-		if ((fd = get_fd(redir)) < 0)
-			return ;
-		if (*(redir->sign) == '>')
-			dup2(fd, redir->fd);
-		else
-			dup2(fd, 0);
+		if ((fd = get_fd(redir)) >= 0)
+		{
+			if (*(redir->sign) == '>')
+				dup2(fd, redir->fd);
+			else
+				dup2(fd, 0);			
+		}
 		redir = redir->next;
 	}
 }
@@ -235,6 +239,12 @@ static int		execute_job(t_table *table, t_job *job, int *pipes)
 	return (TRUE);
 }
 
+void	close_fd(void)
+{
+	while (g_maxfd > 2)
+		close(g_maxfd--);	
+}
+
 int			execute_table(t_table *table)
 {
 	int		*pipes;
@@ -251,7 +261,7 @@ int			execute_table(t_table *table)
 		res = execute_job(table, table->job_list, pipes);
 	else if (table->sep_type == SEMI || table->sep_type == START)
 		res = execute_job(table, table->job_list, pipes);
-	// close_pipes(pipes);
 	restore_standard_fd(table);
+	close_fd();
 	return (res);
 }

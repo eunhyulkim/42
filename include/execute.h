@@ -22,6 +22,7 @@
 ** execute functions
 */
 
+void	close_fd(void);
 int		execute_table(t_table *table);
 
 /*
