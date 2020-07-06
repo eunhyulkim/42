@@ -34,11 +34,13 @@ int		set_env(char *key, char *val)
 	{
 		free(g_env[idx]);
 		g_env[idx] = item;
+		printf("IDX FOUND, SET %s\n", g_env[idx]);
 	}
 	else
 	{
 		ft_realloc_doublestr(&g_env, item);
 		free(item);
+		printf("IDX NOT FOUND, SET %s\n", item);
 	}
 	return (1);
 }
@@ -81,7 +83,7 @@ void	cmd_env(t_command *command)
 		ft_putstr_fd(command->arg_list[0], 1);
 		ft_putstr_fd(": env working with no argument and option.\n", 1);
 		g_res = 127;
-		exit(127);
+		return ;
 	}
 	i = 0;
 	while (g_env[i])
@@ -90,5 +92,5 @@ void	cmd_env(t_command *command)
 		ft_putstr_fd("\n", 1);
 	}
 	g_res = 0;
-	exit(0);
+	return ;
 }

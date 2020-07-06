@@ -8,12 +8,12 @@ MAIN_FILES = ft_strchr ft_strlen ft_split ft_strdup ft_calloc \
 			 ft_memset ft_strcat ft_strcpy ft_strjoin ft_strnew \
 			 ft_strsub ft_putstr_fd ft_isspace ft_strcmp ft_strncmp \
 			 ft_isalpha ft_isascii ft_isnum ft_isprint ft_isset \
-			 ft_atoi ft_realloc ft_memcpy ft_itoa
+			 ft_atoi ft_realloc ft_memcpy ft_itoa ft_putendl_fd
 
 BONUS_FILES = ft_dup_doublestr ft_len_doublestr ft_free_doublestr \
 			  ft_realloc_doublestr ft_startswith ft_isformat ft_in \
 			  ft_isitem ft_strreverse ft_free ft_isright_quote \
-			  ft_isright_envbracket
+			  ft_isright_envbracket ft_sort_doublestr
 
 TEST_FILE = test/ft_split_test.c
 

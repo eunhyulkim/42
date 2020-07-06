@@ -35,5 +35,6 @@ void	execute_table_with_single_job(t_table *table);
 void	cmd_echo(t_command *command);
 void	cmd_env(t_command *command);
 void	cmd_pwd(t_command *command);
+void	cmd_export(t_command *command);
 
 # endif

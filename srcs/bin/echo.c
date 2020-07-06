@@ -18,9 +18,9 @@ void	print_echo_args(char **arg_list, int option)
 		is_first_argu = FALSE;
 	}
 	if (option == N_OPTION)
-		exit(0);
+		return ;
 	ft_putstr_fd("\n", 1);
-	exit(0);
+	return ;
 }
 
 void	cmd_echo(t_command *cmd)
@@ -35,12 +35,12 @@ void	cmd_echo(t_command *cmd)
 	if (argu_era == 0)
 	{
 		ft_putstr_fd("\n", 1);
-		exit(0);
+		return ;
 	}
 	if (!ft_strcmp(cmd->arg_list[0], "-n"))
 	{
 		if (argu_era == 1)
-			exit(0);
+			return ;
 		option = N_OPTION;
 		start_argu++;
 	}

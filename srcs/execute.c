@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/06 00:21:42 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/06 09:59:32 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,12 @@ void		execute_command(t_command *command)
 		cmd_echo(command);
 	else if (!ft_strcmp(command->cmd, "env"))
 		cmd_env(command);
+	else if (!ft_strcmp(command->cmd, "pwd"))
+		cmd_pwd(command);
+	else if (!ft_strcmp(command->cmd, "export"))
+		cmd_export(command);
+	else
+		exit(0);
 }
 
 int			count_job(t_job *job)
@@ -148,23 +154,19 @@ void	execute_table(t_table *table)
 
 void	execute_single_job(t_job *job)
 {
-	pid_t	pid;
+	t_command *command;
 
 	if (!job)
 		return ;
-	while (job)
-	{
-		pid = fork();
-		if (pid == -1)
-		{
-			ft_putstr_fd("Fork error\n", 2);
-			break;
-		}
-		else if (pid == 0)
-			execute_command(&job->command);
-		else
-			job = job->next;
-	}
+	command = &job->command;
+	if (!ft_strcmp(command->cmd, "echo"))
+		cmd_echo(command);
+	else if (!ft_strcmp(command->cmd, "env"))
+		cmd_env(command);
+	else if (!ft_strcmp(command->cmd, "pwd"))
+		cmd_pwd(command);
+	else if (!ft_strcmp(command->cmd, "export"))
+		cmd_export(command);
 }
 
 void	execute_table_with_single_job(t_table *table)
