@@ -11,7 +11,7 @@ void		print_table(t_table *table)
 	if (!table)
 		return ;
 	int tno = 0;
-	printf("\n%s%-10s%-6s%-8s%-16s%-25s%s\n", KCYN, "TABLE_NO", "TYPE", "JOB_NO", \
+	printf("\n%s%-10s%-6s%-8s%-16s%-50s%s\n", KCYN, "TABLE_NO", "TYPE", "JOB_NO", \
 	"CMD", "ARG", "REDIRECT");
 	while (table)
 	{
@@ -37,15 +37,17 @@ void		print_table(t_table *table)
 			arg = job->command.arg_list;
 			idx = 0;
 			int len = 0;
-			if (!arg && (len = 25))
-				printf("%s%-25s%s", KYEL, "Null", KNRM);
+			if (!arg && (len = 50))
+				printf("%s%-50s%s", KYEL, "Null", KNRM);
 			while (arg && arg[idx])
 			{
 				printf("%s,", arg[idx]);
 				len += ft_strlen(arg[idx]) + 1;
 				idx++;
 			}
-			len = 25 - len;
+			len = 50 - len;
+			if (len < 0)
+				len = 0;
 			while (len--)
 				printf(" ");
 			if (!job->redir_list)

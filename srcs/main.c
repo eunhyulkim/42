@@ -1,7 +1,7 @@
 #include "minishell.h"
 #include "execute.h"
 
-static void		process_line(char *line)
+static int		process_line(char *line)
 {
 	char		**tokens;
 	t_table		*table;
@@ -9,14 +9,18 @@ static void		process_line(char *line)
 
 	tokens = tokenizer(line);
 	if (!lexer(tokens) || !(table = parser(tokens)))
-		return ;
+		return (TRUE);
 	first_table = table;
 	while (table)
 	{
 		if (DEBUG_ALL || DEBUG_CONVERT || !DEBUG_TABLE)
 			converter(table);
-		//TODO: CHANGE TO 'excute_table'
-		execute_table_with_single_job(table);
+		if (!execute_table(table))
+		{
+			ft_free_doublestr(tokens);
+			free_table(first_table);
+			return (FALSE);
+		}
 		wait(NULL);
 		table = table->next;
 	}
@@ -24,6 +28,7 @@ static void		process_line(char *line)
 		print_table(first_table);
 	ft_free_doublestr(tokens);
 	free_table(first_table);
+	return (TRUE);
 }
 
 int				main(int ac, char *av[], char **env)
@@ -41,7 +46,8 @@ int				main(int ac, char *av[], char **env)
 		line = 0;
 		if (!(get_next_line(1, &line)))
 			continue;
-		process_line(line);
+		if (!process_line(line))
+			break ;
 		free(line);
 	}
 	ft_free_doublestr(g_env);
