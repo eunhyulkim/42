@@ -19,16 +19,19 @@ void	cmd_pwd(t_command *command)
 	if (command->arg_list)
 	{
 		ft_putstr_fd("pwd can't get any arguments\n", 2);
-		exit(-1);
+		g_res = 127;
+		return ;
 	}
 	path = getcwd(NULL, PWD_BUFFER_SIZE);
 	if (!path)
 	{
 		ft_putstr_fd("Failed to get path, please check 'PWD_BUFFER_SIZE'\n", 2);
-		exit(-1);
+		g_res = 127;
+		free(path);
+		return ;
 	}
 	ft_putstr_fd(path, 1);
 	ft_putstr_fd("\n", 1);
 	free(path);
-	exit(0);
+	return ;
 }

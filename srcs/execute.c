@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/06 18:43:57 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/06 20:25:41 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,6 +212,8 @@ static int		execute_command(t_command *command)
 		cmd_export(command);
 	else if (!ft_strcmp(command->cmd, "unset"))
 		cmd_unset(command);
+	else if (!ft_strcmp(command->cmd, "cd"))
+		cmd_cd(command);
 	else if (!ft_strcmp(command->cmd, "exit"))
 		return (cmd_exit(command));	
 	return (TRUE);

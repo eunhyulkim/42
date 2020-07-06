@@ -3,6 +3,8 @@
 
 # include <stdio.h>
 # include <stdlib.h>
+# include <string.h>
+# include <errno.h>
 # include <fcntl.h>
 # include <unistd.h>
 # include "libft.h"
@@ -21,8 +23,8 @@
 # define DEBUG_LEXER	0
 # define DEBUG_PARSER	0
 # define DEBUG_TABLE	0
-# define DEBUG_CONVERT	1
-# define DEBUG_excute	1
+# define DEBUG_CONVERT	0
+# define DEBUG_excute	0
 
 # define TRUE	 		1
 # define FALSE	 		0

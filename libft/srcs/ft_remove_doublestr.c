@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/26 02:29:00 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/06 12:00:57 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/06 12:52:50 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ char	**ft_remove_doublestr(char **str, int idx)
 	j = 0;
 	while (i < len)
 	{
-		if (i != idx && !(ret[i] = ft_strdup(str[j++])))
+		if (i != idx && !(ret[j++] = ft_strdup(str[i])))
 			return (0);
 		i++;
 	}

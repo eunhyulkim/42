@@ -34,5 +34,6 @@ void	cmd_pwd(t_command *command);
 void	cmd_export(t_command *command);
 void	cmd_unset(t_command *command);
 int		cmd_exit(t_command *command);
+void	cmd_cd(t_command *command);
 
 # endif

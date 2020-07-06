@@ -7,7 +7,6 @@ static int		unset_arg(char *key)
 
 	if (!key || !(*key) || ft_strchr(key, '='))
 		return (FALSE);
-	idx = 10;
 	if ((idx = get_key_idx(key)) == -1)
 		return (TRUE);
 	if (!(g_env = ft_remove_doublestr(g_env, idx)))
