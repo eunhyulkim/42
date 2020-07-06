@@ -23,7 +23,7 @@
 # define DEBUG_LEXER	0
 # define DEBUG_PARSER	0
 # define DEBUG_TABLE	0
-# define DEBUG_CONVERT	1
+# define DEBUG_CONVERT	0
 
 # define TRUE	 		1
 # define FALSE	 		0
