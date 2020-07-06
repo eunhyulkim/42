@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/07 00:12:18 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/07 01:01:47 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,7 +168,7 @@ int			execute_table(t_table *table)
 	int		*pipes;
 	int 	res;
 
-	if (!table || !table->job_list)
+	if (!table || !table->job_list || !table->job_list->command.cmd)
 		return (1);
 	save_standard_fd(table);
 	pipes = make_pipes(table->job_list);
