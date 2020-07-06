@@ -34,13 +34,11 @@ int		set_env(char *key, char *val)
 	{
 		free(g_env[idx]);
 		g_env[idx] = item;
-		printf("IDX FOUND, SET %s\n", g_env[idx]);
 	}
 	else
 	{
 		ft_realloc_doublestr(&g_env, item);
 		free(item);
-		printf("IDX NOT FOUND, SET %s\n", item);
 	}
 	return (1);
 }
