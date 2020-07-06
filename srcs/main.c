@@ -15,9 +15,9 @@ static int		process_line(char *line)
 	{
 		if (DEBUG_ALL || DEBUG_CONVERT || !DEBUG_TABLE)
 			converter(table);
-		//TODO: CHANGE TO 'excute_table'
-		if (!execute_table_with_single_job(table))
+		if (!execute_table(table))
 		{
+			ft_free_doublestr(tokens);
 			free_table(first_table);
 			return (FALSE);
 		}

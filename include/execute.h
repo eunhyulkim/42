@@ -11,6 +11,7 @@
 # define    DGREATER    'H'
 # define    LESS        'L'
 # define    DLESS       'M'
+# define	START		0
 
 # define	SUCCESS_RES	0
 
@@ -21,13 +22,7 @@
 ** execute functions
 */
 
-int		execute_redirection(t_job *job, int pipes[2]);
-void	execute_job(t_job *job);
-void	execute_table(t_table *table);
-
-//temp functions
-int		execute_single_job(t_job *job);
-int		execute_table_with_single_job(t_table *table);
+int		execute_table(t_table *table);
 
 /*
 **	in bin directory

@@ -22,6 +22,7 @@
 # define DEBUG_PARSER	0
 # define DEBUG_TABLE	0
 # define DEBUG_CONVERT	1
+# define DEBUG_excute	1
 
 # define TRUE	 		1
 # define FALSE	 		0
@@ -62,6 +63,7 @@ typedef struct  		s_table
 {
 	struct s_job		*job_list;
 	int					sep_type; // &&, ||, ; 중 어느 sep로 나누어진 table인지 저장
+	int					fd[3];
 	struct s_table		*next;
 }						t_table;
 
