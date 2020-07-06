@@ -26,7 +26,8 @@ void	execute_job(t_job *job);
 void	execute_table(t_table *table);
 
 //temp functions
-void	execute_table_with_single_job(t_table *table);
+int		execute_single_job(t_job *job);
+int		execute_table_with_single_job(t_table *table);
 
 /*
 **	in bin directory
@@ -37,5 +38,6 @@ void	cmd_env(t_command *command);
 void	cmd_pwd(t_command *command);
 void	cmd_export(t_command *command);
 void	cmd_unset(t_command *command);
+int		cmd_exit(t_command *command);
 
 # endif

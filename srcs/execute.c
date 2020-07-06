@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/06 11:38:48 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/06 13:05:50 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,12 +152,12 @@ void	execute_table(t_table *table)
 
 //========================temp codes to make builtin cmds========================
 
-void	execute_single_job(t_job *job)
+int		execute_single_job(t_job *job)
 {
 	t_command *command;
 
 	if (!job)
-		return ;
+		return (TRUE);
 	command = &job->command;
 	if (!ft_strcmp(command->cmd, "echo"))
 		cmd_echo(command);
@@ -169,20 +169,27 @@ void	execute_single_job(t_job *job)
 		cmd_export(command);
 	else if (!ft_strcmp(command->cmd, "unset"))
 		cmd_unset(command);
+	else if (!ft_strcmp(command->cmd, "exit"))
+		return (cmd_exit(command));
+	return (TRUE);
 }
 
-void	execute_table_with_single_job(t_table *table)
+int		execute_table_with_single_job(t_table *table)
 {
 	if (table->sep_type == AND)
 	{
 		if (g_res == SUCCESS_RES)
-			execute_single_job(table->job_list);
+			if (!execute_single_job(table->job_list))
+				return (FALSE);
 	}
 	else if (table->sep_type == OR)
 	{
 		if (g_res != SUCCESS_RES)
-			execute_single_job(table->job_list);
+			if (!execute_single_job(table->job_list))
+				return (FALSE);
 	}
 	else
-		execute_single_job(table->job_list);
+		if (!execute_single_job(table->job_list))
+			return (FALSE);
+	return (TRUE);
 }
