@@ -23,7 +23,7 @@
 # define DEBUG_LEXER	0
 # define DEBUG_PARSER	0
 # define DEBUG_TABLE	0
-# define DEBUG_CONVERT	0
+# define DEBUG_CONVERT	1
 
 # define TRUE	 		1
 # define FALSE	 		0
@@ -101,6 +101,7 @@ void			converter(t_table *table);
 /*
 ** bin/env functions
 */
+int				get_key_idx(char *key);
 void			init_env(char **env);
 char			*get_env(char *key);
 int				set_env(char *key, char *val);

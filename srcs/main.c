@@ -1,4 +1,5 @@
 #include "minishell.h"
+#include "execute.h"
 
 static void		process_line(char *line)
 {
@@ -14,14 +15,15 @@ static void		process_line(char *line)
 	{
 		if (DEBUG_ALL || DEBUG_CONVERT || !DEBUG_TABLE)
 			converter(table);
-		excute_table(table);
+		//TODO: CHANGE TO 'excute_table'
+		execute_table_with_single_job(table);
 		wait(NULL);
 		table = table->next;
 	}
 	if (DEBUG_ALL || DEBUG_TABLE || DEBUG_CONVERT)
-		print_table(start);
+		print_table(first_table);
 	ft_free_doublestr(tokens);
-	free_table(start);
+	free_table(first_table);
 }
 
 int				main(int ac, char *av[], char **env)

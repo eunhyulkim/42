@@ -1,35 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_realloc_doublestr.c                             :+:      :+:    :+:   */
+/*   ft_remove_doublestr.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/06/26 21:45:20 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/06 10:01:02 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/02/26 02:29:00 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/06 12:52:50 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include <stdio.h>
 
-char	**ft_realloc_doublestr(char ***strs_ref, char *item)
+char	**ft_remove_doublestr(char **str, int idx)
 {
 	char	**ret;
-	char	**strs;
 	int		len;
+	int		i;
+	int		j;
 
-	strs = *strs_ref;
-	if (!item)
-		return (strs);
-	len = ft_len_doublestr(strs) + 2;
-	if (!(ret = (char **)ft_calloc(sizeof(char *), len--)))
+	len = ft_len_doublestr(str);
+	if (!(ret = (char **)ft_calloc(sizeof(char *), len)))
 		return (0);
-	ret[--len] = ft_strdup(item);
-	while (len--)
-		if (!(ret[len] = ft_strdup(strs[len])))
+	i = 0;
+	j = 0;
+	while (i < len)
+	{
+		if (i != idx && !(ret[j++] = ft_strdup(str[i])))
 			return (0);
-	*strs_ref = ret;
-	ft_free_doublestr(strs);
+		i++;
+	}
+	ft_free_doublestr(str);
 	return (ret);
 }
