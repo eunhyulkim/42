@@ -7,6 +7,7 @@
 # include <errno.h>
 # include <fcntl.h>
 # include <unistd.h>
+# include <signal.h>
 # include "libft.h"
 # include "get_next_line.h"
 
@@ -119,5 +120,10 @@ void			free_table(t_table *table);
 */
 
 void			print_table(t_table *table);
+
+/*
+** signal functions
+*/
+void			signal_handler(int signo);
 
 # endif
