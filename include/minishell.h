@@ -99,6 +99,7 @@ void			converter(t_table *table);
 /*
 ** bin/env functions
 */
+int				get_key_idx(char *key);
 void			init_env(char **env);
 char			*get_env(char *key);
 int				set_env(char *key, char *val);
