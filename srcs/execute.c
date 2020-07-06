@@ -6,7 +6,7 @@
 /*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/05 22:30:04 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/06 10:12:58 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,13 @@ int	execute_redirection(t_job *job, int pipes[2])
 	return (TRUE);
 }
 
-void		execute_command(t_command *cmd_list)
+void		execute_command(t_command *command)
 {
 	//TODO: add commands
-	if (!ft_strcmp(cmd_list->cmd, "echo"))
-		cmd_echo(cmd_list);
-	if (!ft_strcmp(cmd_list->cmd, "pwd"))
-		cmd_pwd(cmd_list);
+	if (!ft_strcmp(command->cmd, "echo"))
+		cmd_echo(command);
+	if (!ft_strcmp(command->cmd, "pwd"))
+		cmd_pwd(command);
 }
 
 int			count_job(t_job *job)
@@ -161,9 +161,16 @@ void	execute_single_job(t_job *job)
 			break;
 		}
 		else if (pid == 0)
+		{
 			execute_command(&job->command);
+			break;
+		}
 		else
-			job = job->next;
+		{
+			if (!ft_strcmp(job->command.cmd, "cd"))
+				cmd_cd(&job->command);
+		}
+		job = job->next;
 	}
 }
 

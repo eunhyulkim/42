@@ -30,7 +30,8 @@ void	execute_table_with_single_job(t_table *table);
 **	in bin directory
 */
 
-void	cmd_echo(t_command *cmd_list);	
+void	cmd_echo(t_command *command);	
 void	cmd_pwd(t_command *command);
+void	cmd_cd(t_command *command);
 
 # endif

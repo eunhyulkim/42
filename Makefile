@@ -10,7 +10,7 @@ LIBLARY = libft.a
 MAIN = test/cmd_pwd_test
 MAIN_FILES = display tokenizer lexer parser parser_get_utils \
 			 parser_set_utils free converter debug execute
-BIN_FILES = env cmd_echo cmd_pwd
+BIN_FILES = env cmd_echo cmd_pwd cmd_cd
 GNL_FILES = get_next_line get_next_line_utils
 
 MAIN_PATH = $(addsuffix .c, $(MAIN))

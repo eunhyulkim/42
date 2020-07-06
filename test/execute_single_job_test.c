@@ -108,5 +108,6 @@ int				main(int ac, char *av[], char **env)
 		free(line);
 	}
 	ft_free_doublestr(g_env);
+	exit(0);
 	return (0);
 }
