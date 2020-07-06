@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/06 14:49:36 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/06 14:51:53 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,6 @@ void		execute_command(t_command *command)
 	//TODO: add commands
 	if (!ft_strcmp(command->cmd, "echo"))
 		cmd_echo(command);
-<<<<<<< HEAD
-	if (!ft_strcmp(command->cmd, "pwd"))
-		cmd_pwd(command);
-=======
 	else if (!ft_strcmp(command->cmd, "env"))
 		cmd_env(command);
 	else if (!ft_strcmp(command->cmd, "pwd"))
@@ -64,7 +60,6 @@ void		execute_command(t_command *command)
 		cmd_export(command);
 	else
 		exit(0);
->>>>>>> ac443dafc77c6e0762230f6fb187f6579bac07c2
 }
 
 int			count_job(t_job *job)
