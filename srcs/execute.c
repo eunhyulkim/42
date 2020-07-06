@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/05 22:30:04 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/06 09:59:32 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,19 @@ int	execute_redirection(t_job *job, int pipes[2])
 	return (TRUE);
 }
 
-void		execute_command(t_command *cmd_list)
+void		execute_command(t_command *command)
 {
 	//TODO: add commands
-	if (!ft_strcmp(cmd_list->cmd, "echo"))
-		cmd_echo(cmd_list);
-	if (!ft_strcmp(cmd_list->cmd, "pwd"))
-		cmd_pwd(cmd_list);
+	if (!ft_strcmp(command->cmd, "echo"))
+		cmd_echo(command);
+	else if (!ft_strcmp(command->cmd, "env"))
+		cmd_env(command);
+	else if (!ft_strcmp(command->cmd, "pwd"))
+		cmd_pwd(command);
+	else if (!ft_strcmp(command->cmd, "export"))
+		cmd_export(command);
+	else
+		exit(0);
 }
 
 int			count_job(t_job *job)
@@ -148,35 +154,31 @@ void	execute_table(t_table *table)
 
 void	execute_single_job(t_job *job)
 {
-	pid_t	pid;
+	t_command *command;
 
 	if (!job)
 		return ;
-	while (job)
-	{
-		pid = fork();
-		if (pid == -1)
-		{
-			ft_putstr_fd("Fork error\n", 2);
-			break;
-		}
-		else if (pid == 0)
-			execute_command(&job->command);
-		else
-			job = job->next;
-	}
+	command = &job->command;
+	if (!ft_strcmp(command->cmd, "echo"))
+		cmd_echo(command);
+	else if (!ft_strcmp(command->cmd, "env"))
+		cmd_env(command);
+	else if (!ft_strcmp(command->cmd, "pwd"))
+		cmd_pwd(command);
+	else if (!ft_strcmp(command->cmd, "export"))
+		cmd_export(command);
 }
 
 void	execute_table_with_single_job(t_table *table)
 {
 	if (table->sep_type == AND)
 	{
-		if (g_res == TRUE)
+		if (g_res == SUCCESS_RES)
 			execute_single_job(table->job_list);
 	}
 	else if (table->sep_type == OR)
 	{
-		if (g_res == FALSE)
+		if (g_res != SUCCESS_RES)
 			execute_single_job(table->job_list);
 	}
 	else

@@ -37,6 +37,6 @@ void		set_command_arg(char **tokens, t_lexer *lexer, \
 		write(1, "[SCA]", 5);
 	job = get_last_job(table);
 	arg = &job->command.arg_list;
-		ft_realloc_doublestr(arg, tokens[lexer->idx]);
+	ft_realloc_doublestr(arg, tokens[lexer->idx]);
 	return ;
 }
