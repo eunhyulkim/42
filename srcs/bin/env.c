@@ -4,7 +4,7 @@
 // if key exist in env but value is not, return empty string pointer
 // if key not in env, return null
 
-static	int		get_key_idx(char *key)
+int		get_key_idx(char *key)
 {
 	int		idx;
 
@@ -12,8 +12,10 @@ static	int		get_key_idx(char *key)
 	while (g_env[idx])
 	{
 		if (ft_startswith(g_env[idx], key))
+		{
 			if (*(g_env[idx] + ft_strlen(key)) == '=')
 				return (idx);
+		}
 		idx++;
 	}
 	return (-1);

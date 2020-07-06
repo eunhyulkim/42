@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/06 01:12:24 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/06 11:20:05 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,5 +71,6 @@ char							*ft_strreverse(char *src);
 int								ft_free(char *str);
 int								ft_isright_quote(char *src);
 int								ft_isright_envbracket(char *src);
+char							**ft_remove_doublestr(char **str, int idx);
 
 #endif
