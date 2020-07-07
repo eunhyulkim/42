@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/07 01:01:47 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/07 02:40:07 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,6 +138,8 @@ static int		execute_command(t_command *command)
 		cmd_cd(command);
 	else if (!ft_strcmp(command->cmd, "exit"))
 		return (cmd_exit(command));
+	// else
+	// 	cmd_execve(&command);
 	return (TRUE);
 }
 
