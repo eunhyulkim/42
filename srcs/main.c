@@ -37,10 +37,10 @@ int				main(int ac, char *av[], char **env)
 	display_logo();
 	init_env(env, ac, av);
 
-	signal(SIGINT, (void *)signal_handler);
-	signal(SIGQUIT, (void *)signal_handler);
 	while (TRUE)
 	{
+		signal(SIGINT, (void *)signal_handler);
+		signal(SIGQUIT, (void *)signal_handler);
 		display_prompt();
 		line = 0;
 		if (!(get_next_line(0, &line)))
