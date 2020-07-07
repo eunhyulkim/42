@@ -8,6 +8,8 @@
 # include <fcntl.h>
 # include <unistd.h>
 # include <signal.h>
+# include <sys/types.h>
+# include <sys/stat.h>
 # include "libft.h"
 # include "get_next_line.h"
 
@@ -29,6 +31,8 @@
 
 # define TRUE	 		1
 # define FALSE	 		0
+
+# define TEMP_PATH		"config/temp.txt"
 
 typedef int				bool;
 
@@ -73,6 +77,7 @@ typedef struct  		s_table
 char					**g_env;
 int						g_res;
 int						g_maxfd;
+int						g_stdin;
 
 /*
 ** display functions
@@ -101,6 +106,7 @@ t_table			*parser(char **tokens);
 ** converter
 */
 void			converter(t_table *table);
+void			convert_heredoc(t_redir *redir);
 
 /*
 ** bin/env functions

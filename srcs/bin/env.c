@@ -71,6 +71,7 @@ void	init_env(char **env, int ac, char *av[])
 {
 	(void)ac;
 	(void)av;
+	g_stdin = 1;
 	g_res = 0;
 	g_maxfd = 2;
 	g_env = (char **)ft_dup_doublestr(env);

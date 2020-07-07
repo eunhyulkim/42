@@ -21,7 +21,6 @@ static int		process_line(char *line)
 			free_table(first_table);
 			return (FALSE);
 		}
-		wait(NULL);
 		table = table->next;
 	}
 	if (DEBUG_ALL || DEBUG_TABLE || DEBUG_CONVERT)

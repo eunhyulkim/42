@@ -9,7 +9,7 @@ LIBLARY = libft.a
 
 MAIN = srcs/main
 MAIN_FILES = display tokenizer lexer parser parser_get_utils \
-			 parser_set_utils free converter debug execute signal
+			 parser_set_utils free converter debug execute heredoc execve signal
 BIN_FILES = env echo pwd export unset exit cd
 GNL_FILES = get_next_line get_next_line_utils
 
@@ -36,7 +36,7 @@ ${NAME}: ${OBJS}
 	@cp ${LIB_DIR}${LIBLARY} .
 	@echo "$(RESET)Compiling ${NAME} to root."
 	@${CC} ${CFLAGS} ${INCLUDES} ${OBJS} ${MAIN_PATH} -o ${NAME} -lft -L.
-	@echo "$(GREEN)DONE"
+	@echo "$(GREEN)DONE$(RESET)"
 
 ${OBJS}: ${SRCS}
 	@${CC} ${CFLAGS} ${INCLUDES} -c ${SRCS}
@@ -52,14 +52,13 @@ clean:
 fclean: clean
 	@echo "$(RESET)Removing mongshell"
 	@${RM} $(NAME)
-	@echo "$(RED)fclean DONE"
+	@echo "$(RED)fclean DONE$(RESET)"
 
-re: fclean ${OBJS} \
-	all
+re: fclean all
 
 libft_test:
 	@echo "$(GREEN)TEST START$(RESET)"
 	@make -C libft/ test
-	@echo "$(GREEN)DONE"
+	@echo "$(GREEN)DONE$(RESET)"
 
 .PHONY:	all clean fclean re bonus

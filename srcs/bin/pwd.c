@@ -30,6 +30,7 @@ void	cmd_pwd(t_command *command)
 		free(path);
 		return ;
 	}
+	set_env("PWD", path);
 	ft_putstr_fd(path, 1);
 	ft_putstr_fd("\n", 1);
 	free(path);

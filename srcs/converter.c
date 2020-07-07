@@ -5,7 +5,7 @@ static void		convert_res(char **ret, char *str, int *i, int first)
 	char	*val;
 	int		j;
 
-	val = (first) ? ft_strdup("0") : ft_itoa(g_res);
+	val = (first) ? ft_itoa(g_res) : ft_strdup("0");
 	j = (str[*i + 1] == '{') ? *i + 3 : *i + 1;
 	*i = 0;
 	while (val && val[*i])
@@ -80,25 +80,26 @@ static void		convert_job(t_job *job, int first)
 
 	if (job->command.cmd)
 		convert(&job->command.cmd, first);
+	i = 0;
 	if (job->command.arg_list)
-	{
-		i = 0;
 		while (job->command.arg_list[i])
 			convert(&job->command.arg_list[i++], first);
-	}
-	if (job->redir_list)
+	if (!job->redir_list)
+		return ;
+	redir = job->redir_list;
+	while (redir)
 	{
-		redir = job->redir_list;
-		while (redir)
+		if (!ft_strcmp(redir->sign, "<<"))
+			convert_heredoc(redir);
+		else
 		{
 			if (redir->sign)
 				convert(&redir->sign, first);
 			if (redir->arg)
 				convert(&redir->arg, first);
-			redir = redir->next;
 		}
+		redir = redir->next;
 	}
-	return ;
 }
 
 void			converter(t_table *table)

@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/06 11:20:05 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/07 20:03:15 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ char							*ft_realloc(char **ptr, char c);
 void							*ft_memcpy(void *dst, const void *src, size_t n);
 char							*ft_itoa(t_llint n);
 void							ft_putendl_fd(char *s, int fd);
+char							*ft_strrchr(const char *s, int c);
 
 // bonus
 void							ft_sort_doublestr(char **strs, int start, int last);
@@ -72,5 +73,6 @@ int								ft_free(char *str);
 int								ft_isright_quote(char *src);
 int								ft_isright_envbracket(char *src);
 char							**ft_remove_doublestr(char **str, int idx);
+char							*ft_strsjoin(char *s1, char *s2, char *s3, char *s4);
 
 #endif
