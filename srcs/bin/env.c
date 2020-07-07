@@ -67,8 +67,10 @@ char	*get_env(char *wild_key)
 	return (g_env[key_idx] + val_idx);
 }
 
-void	init_env(char **env)
+void	init_env(char **env, int ac, char *av[])
 {
+	(void)ac;
+	(void)av;
 	g_res = 0;
 	g_maxfd = 2;
 	g_env = (char **)ft_dup_doublestr(env);
