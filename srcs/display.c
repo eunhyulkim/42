@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 21:34:17 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/04 15:14:33 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/07 00:54:03 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,7 @@ void			display_logo(void)
 
 void			display_prompt(void)
 {
-	char *prompt_str;
-
-	prompt_str = "mongshell$ ";
-	ft_putstr_fd(prompt_str, 1);
+	ft_putstr_fd("mongshell$ ", 1);
 }
 
 

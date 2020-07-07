@@ -21,7 +21,6 @@ static int		process_line(char *line)
 			free_table(first_table);
 			return (FALSE);
 		}
-		wait(NULL);
 		table = table->next;
 	}
 	if (DEBUG_ALL || DEBUG_TABLE || DEBUG_CONVERT)
@@ -44,9 +43,9 @@ int				main(int ac, char *av[], char **env)
 	{
 		display_prompt();
 		line = 0;
-		if (!(get_next_line(1, &line)))
+		if (!get_next_line(0, &line))
 			continue;
-		if (!process_line(line))
+		if (ft_strcmp(line, "\n") && !process_line(line))
 			break ;
 		free(line);
 	}
