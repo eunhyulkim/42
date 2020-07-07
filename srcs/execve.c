@@ -124,7 +124,11 @@ void				cmd_execve(t_command *command)
 		else if (stat.st_mode & S_IXUSR)
 			return (run_exec(command));
 	}
-	ft_putstr_fd("mongshell: command not found: ", 1);
-	ft_putendl_fd(command->cmd, 1);
+	ft_putstr_fd("mongshell: ", 1);
+	ft_putstr_fd(command->cmd, 1);
+	if (!ft_strchr(command->cmd, '/'))
+		ft_putendl_fd(": command not found", 1);
+	else
+		ft_putendl_fd(": No such file or directory", 1);
 	return ;
 }
