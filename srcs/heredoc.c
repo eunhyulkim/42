@@ -11,7 +11,7 @@ char	*get_content(t_redir *redir)
 	line = 0;
 	doc = ft_strdup("");
 	write(1, "> ", 2);
-	while (get_next_line(1, &line) > 0)
+	while (get_next_line(0, &line) > 0)
 	{
 		if (!ft_strcmp(line, endstr))
 			break ;
@@ -30,8 +30,9 @@ void	convert_heredoc(t_redir *redir)
 	int		fd;
 
 	heredoc = get_content(redir);
-	if ((fd = open("config/temq.txt", O_RDWR | O_CREAT | O_TRUNC, 0644)) < 0)
+	if ((fd = open(TEMP_PATH, O_RDWR | O_CREAT | O_TRUNC, 0644)) < 0)
 		return ;
+	write(fd, heredoc, ft_strlen(heredoc));
 	close(fd);
 	return ;
 }
