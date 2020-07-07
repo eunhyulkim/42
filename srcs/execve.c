@@ -20,13 +20,13 @@ static char		**get_args(t_command *command)
 	int		idx;
 
 	args = 0;
-	if (!(filename = strrchr(command->cmd, '/')))
-		filename = ft_strdup(filename);
+	if (!(filename = ft_strrchr(command->cmd, '/')))
+		filename = ft_strdup(command->cmd);
 	else
-	filename = ft_strdup(command->cmd);
+		filename = ft_strdup(filename);
 	ft_realloc_doublestr(&args, filename);
 	idx = 0;
-	while (command->arg_list[idx])
+	while (command->arg_list && command->arg_list[idx])
 		ft_realloc_doublestr(&args, command->arg_list[idx++]);
 	return (args);
 }
@@ -52,36 +52,37 @@ static void     run_exec(t_command *command)
     return ;
 }
 
-static char     *check_bins(char *cmd)
+static char			*check_bins(char *cmd)
 {
-    char            **path;
-    char            *bin_path;
-    struct stat     stat;
-    int             idx;
+	char			**path;
+	char			*bin_path;
+	struct stat		stat;
+	int 			idx;
 
-    path = ft_split(get_env("PATH"), ':');
-    idx = 0;
-    while (path[idx])
-    {
-        if (ft_startswith(cmd, path[idx]))
-            bin_path = ft_strdup(cmd);
-        else
-            bin_path = ft_strjoin(path[idx], cmd);
-        if (lstat(bin_path, &stat) != -1)
-            free(bin_path);
-        else if (stat.st_mode & S_IFREG)
-        {
-            ft_free_doublestr(path);
-            return (bin_path);
-        }
-    }
-    ft_free_doublestr(path);
-    return (0);
+	path = ft_split(get_env("PATH"), ':');
+	idx = 0;
+	while (path[idx])
+	{
+		if (ft_startswith(cmd, path[idx]))
+			bin_path = ft_strdup(cmd);
+		else
+			bin_path = ft_strsjoin(path[idx], "/", cmd, 0);
+		if (lstat(bin_path, &stat) != -1)
+			free(bin_path);
+		else if (stat.st_mode & S_IFREG)
+		{
+			ft_free_doublestr(path);
+			return (bin_path);
+		}
+		idx++;
+	}
+	ft_free_doublestr(path);
+	return (0);
 }
 
 static void		run_exec_bin(char *path, t_command *command)
 {
-    struct stat     stat;
+	struct stat		stat;
 
     lstat(path, &stat);
     ft_free(command->cmd);
@@ -97,21 +98,22 @@ static void		run_exec_bin(char *path, t_command *command)
     return ;
 }
 
-void            cmd_exec(t_command *command)
+void				cmd_execve(t_command *command)
 {
-    struct stat     stat;
-    char            *path;
+	struct stat		stat;
+	char			*path;
 
-    if ((path = check_bins(command->cmd)))
-        return (run_exec_bin(path, command));
-    if (lstat(command->cmd, &stat) != -1)
-    {
-        if (stat.st_mode & S_IFDIR)
-            return (cmd_cd(command));
-        else if (stat.st_mode & S_IXUSR)
-            return (run_exec(command));
-    }
-    ft_putstr_fd("mongshell: command not found: ", 1);
-    ft_putendl_fd(command->cmd, 1);
-    return ;
+	path = 0;
+	if ((path = check_bins(command->cmd)))
+		return (run_exec_bin(path, command));
+	if (lstat(command->cmd, &stat) != -1)
+	{
+		if (stat.st_mode & S_IFDIR)
+			return (cmd_cd(command));
+		else if (stat.st_mode & S_IXUSR)
+			return (run_exec(command));
+	}
+	ft_putstr_fd("mongshell: command not found: ", 1);
+	ft_putendl_fd(command->cmd, 1);
+	return ;
 }
