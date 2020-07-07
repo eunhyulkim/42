@@ -37,4 +37,6 @@ void	cmd_unset(t_command *command);
 int		cmd_exit(t_command *command);
 void	cmd_cd(t_command *command);
 
+void	cmd_execve(t_command *command);
+
 # endif

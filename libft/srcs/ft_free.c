@@ -2,6 +2,7 @@
 
 int		ft_free(char *str)
 {
-	free(str);
+	if (str)
+		free(str);
 	return (1);
 }
