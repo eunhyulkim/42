@@ -41,6 +41,7 @@ int				main(int ac, char *av[], char **env)
 	(void)ac;
 	(void)av;
 	signal(SIGINT, (void *)signal_handler);
+	signal(SIGQUIT, (void *)signal_handler);
 	while (TRUE)
 	{
 		display_prompt();
