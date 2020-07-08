@@ -39,7 +39,6 @@ static void     run_exec(t_command *command)
     char    **args;
 
     path = ft_strdup(command->cmd);
-	printf("[%p -> %p]\n", command->cmd, path);
     args = get_args(command);
     pid = fork();
     // signal(SIGINT, proc_signal_handler);
