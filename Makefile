@@ -9,7 +9,8 @@ LIBLARY = libft.a
 
 MAIN = srcs/main
 MAIN_FILES = display tokenizer lexer parser parser_get_utils \
-			 parser_set_utils free converter debug execute heredoc execve
+			 parser_set_utils free converter debug execute heredoc execve \
+			 expander expander_utils
 BIN_FILES = env echo pwd export unset exit cd
 GNL_FILES = get_next_line get_next_line_utils
 

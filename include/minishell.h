@@ -9,6 +9,8 @@
 # include <unistd.h>
 # include <sys/types.h>
 # include <sys/stat.h>
+#include <dirent.h>
+#include <string.h>
 # include "libft.h"
 # include "get_next_line.h"
 
@@ -44,10 +46,19 @@ typedef struct  		s_tokenizer
 	char				quote;
 }						t_tokenizer;
 
+typedef struct			s_mask
+{
+	char				*mask;
+	int					idx;
+	int					opened;
+	char				c;
+}						t_mask;
+
 typedef struct 			s_redir
 {
 	char				*sign;
 	int					fd;
+	int					error;
 	char				*arg;
 	struct s_redir		*next;
 }						t_redir;
@@ -104,6 +115,8 @@ t_table			*parser(char **tokens);
 /*
 ** converter
 */
+char			**get_paths(char *src);
+void			expander(t_table *table);
 void			converter(t_table *table);
 void			convert_heredoc(t_redir *redir);
 
