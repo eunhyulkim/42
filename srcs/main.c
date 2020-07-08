@@ -7,6 +7,8 @@ static int		process_line(char *line)
 	t_table		*table;
 	t_table		*first_table;
 
+	if (*line == '\n')
+		return (TRUE);
 	tokens = tokenizer(line);
 	if (!lexer(tokens) || !(table = parser(tokens)))
 		return (TRUE);
