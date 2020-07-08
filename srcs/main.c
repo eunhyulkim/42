@@ -13,6 +13,7 @@ static int		process_line(char *line)
 	first_table = table;
 	while (table)
 	{
+		expander(table);
 		if (DEBUG_ALL || DEBUG_CONVERT || !DEBUG_TABLE)
 			converter(table);
 		if (!execute_table(table))

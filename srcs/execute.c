@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/07 19:29:04 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/08 11:37:53 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,8 @@ static int			get_fd(t_redir *redir)
 	int		fd;
 
 	fd = -1;
+	if (!redir->arg)
+		return (-1);
 	if (!(ft_strcmp(redir->sign, ">")))
 		fd = open(redir->arg, O_RDWR | O_CREAT | O_TRUNC, 0644);
 	else if (!(ft_strcmp(redir->sign, ">>")))
@@ -97,7 +99,7 @@ static int			get_fd(t_redir *redir)
 	return (fd);
 }
 
-static void		excute_redirection(t_table *table, t_job *job)
+static int		excute_redirection(t_table *table, t_job *job)
 {
 	t_redir *redir;
 	int		fd;
@@ -108,7 +110,7 @@ static void		excute_redirection(t_table *table, t_job *job)
 		dup2(table->fd[2], 2);
 	}
 	if (!(redir = job->redir_list))
-		return ;
+		return (1);
 	while (redir)
 	{
 		if ((fd = get_fd(redir)) >= 0)
@@ -118,8 +120,16 @@ static void		excute_redirection(t_table *table, t_job *job)
 			else
 				dup2(fd, 0);
 		}
+		else
+		{
+			ft_putstr_fd("mongshell: ", 1);
+			ft_putstr_fd(redir->arg, 1);
+			ft_putendl_fd(": ambiguous redirect", 1);
+			return (0);
+		}
 		redir = redir->next;
 	}
+	return (1);
 }
 
 static int		execute_command(t_command *command)
@@ -151,7 +161,11 @@ static int		execute_job(t_table *table, t_job *job, int *pipes)
 	while (job)
 	{
 		dup_pipe(job, pipes, pidx);
-		excute_redirection(table, job);
+		if (!excute_redirection(table, job))
+		{
+			job = job->next;
+			continue;
+		}
 		if (!(execute_command(&job->command)))
 			return (FALSE);
 		job = job->next;

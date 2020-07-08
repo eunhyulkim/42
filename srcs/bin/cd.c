@@ -8,15 +8,7 @@ void	cmd_cd(t_command *command)
 	int		argc;
 
 	argc = ft_len_doublestr(command->arg_list);
-	if (argc > 1)
-	{
-		ft_putstr_fd("mongshell: ", 2);
-		ft_putstr_fd("cd: ", 2);
-		ft_putstr_fd("too many arguments\n", 2);
-		g_res = 127;
-		return ;
-	}
-	else if (argc == 0)
+	if (argc == 0)
 	{
 		home_path = get_env("HOME");
 		if (chdir(home_path) == -1)
@@ -27,6 +19,7 @@ void	cmd_cd(t_command *command)
 			g_res = 127;
 			return ;
 		}
+		set_env("PWD", home_path);
 		g_res = 0;
 		return ;
 	}
@@ -42,5 +35,6 @@ void	cmd_cd(t_command *command)
 		g_res = 127;
 		return ;
 	}
+	set_env("PWD", command->arg_list[0]);
 	g_res = 0;
 }
