@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/26 05:44:00 by jrameau           #+#    #+#             */
-/*   Updated: 2020/07/08 12:32:15 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/08 16:45:20 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ static void			run_exec_bin(char *path, t_command *command)
 		command->cmd = path;
 		return (run_exec(command));
 	}
-	ft_putstr_fd("mongshell: permission denied: ", 1);
+	ft_putstr_fd("mongshell: permission denied: ", 2);
 	ft_putendl_fd(path, 1);
 	return ;
 }
@@ -124,11 +124,13 @@ void				cmd_execve(t_command *command)
 		else if (stat.st_mode & S_IXUSR)
 			return (run_exec(command));
 	}
-	ft_putstr_fd("mongshell: ", 1);
-	ft_putstr_fd(command->cmd, 1);
+	ft_putstr_fd("mongshell: ", 2);
+	ft_putstr_fd(command->cmd, 2);
 	if (!ft_strchr(command->cmd, '/'))
-		ft_putendl_fd(": command not found", 1);
+		ft_putendl_fd(": command not found", 2);
+	else if (!(stat.st_mode & S_IXUSR))
+		ft_putendl_fd(": Permission denied", 2);
 	else
-		ft_putendl_fd(": No such file or directory", 1);
+		ft_putendl_fd(": No such file or directory", 2);
 	return ;
 }
