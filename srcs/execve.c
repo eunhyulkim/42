@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec_command.c                                     :+:      :+:    :+:   */
+/*   execve.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/26 05:44:00 by jrameau           #+#    #+#             */
-/*   Updated: 2017/05/21 01:01:53 by jrameau          ###   ########.fr       */
+/*   Updated: 2020/07/08 12:32:15 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,10 @@ static void     run_exec(t_command *command)
     path = ft_strdup(command->cmd);
     args = get_args(command);
     pid = fork();
-    // signal(SIGINT, proc_signal_handler);
+	signal(SIGINT, signal_handler_in_run_exec);
+   	signal(SIGQUIT, signal_handler_in_run_exec);
     if (pid == 0)
-        execve(path, args, g_env);
+		execve(path, args, g_env);
     else if (pid < 0)
     {
         ft_putendl_fd("Fork failed for new process", 1);

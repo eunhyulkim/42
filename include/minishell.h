@@ -7,6 +7,7 @@
 # include <errno.h>
 # include <fcntl.h>
 # include <unistd.h>
+# include <signal.h>
 # include <sys/types.h>
 # include <sys/stat.h>
 #include <dirent.h>
@@ -124,7 +125,7 @@ void			convert_heredoc(t_redir *redir);
 ** bin/env functions
 */
 int				get_key_idx(char *key);
-void			init_env(char **env);
+void			init_env(char **env, int ac, char *av[]);
 char			*get_env(char *key);
 int				set_env(char *key, char *val);
 
@@ -138,5 +139,11 @@ void			free_table(t_table *table);
 */
 
 void			print_table(t_table *table);
+
+/*
+** signal functions
+*/
+void			signal_handler(int signo);
+void			signal_handler_in_run_exec(int signo);
 
 # endif

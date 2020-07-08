@@ -36,17 +36,21 @@ int				main(int ac, char *av[], char **env)
 	char	*line;
 
 	display_logo();
-	init_env(env);
+	init_env(env, ac, av);
 
-	(void)ac;
-	(void)av;
 	while (TRUE)
 	{
+		signal(SIGINT, (void *)signal_handler);
+		signal(SIGQUIT, (void *)signal_handler);
 		display_prompt();
 		line = 0;
-		if (!get_next_line(0, &line))
-			continue;
-		if (ft_strcmp(line, "\n") && !process_line(line))
+		if (!(get_next_line(0, &line)))
+		{
+			free(line);
+			ft_putstr_fd("exit\n", 1);
+			break;
+		}
+		if (!process_line(line))
 			break ;
 		free(line);
 	}
