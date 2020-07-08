@@ -131,6 +131,6 @@ void			print_table(t_table *table);
 ** signal functions
 */
 void			signal_handler(int signo);
-void			signal_handler_of_child(int signo);
+void			signal_handler_in_run_exec(int signo);
 
 # endif

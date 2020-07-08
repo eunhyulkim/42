@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/26 05:44:00 by jrameau           #+#    #+#             */
-/*   Updated: 2020/07/08 12:07:53 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/08 12:32:15 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,10 @@ static void     run_exec(t_command *command)
     path = ft_strdup(command->cmd);
     args = get_args(command);
     pid = fork();
+	signal(SIGINT, signal_handler_in_run_exec);
+   	signal(SIGQUIT, signal_handler_in_run_exec);
     if (pid == 0)
-	{
-		signal(SIGINT, signal_handler_of_child);
-   		signal(SIGQUIT, signal_handler_of_child);
-    	execve(path, args, g_env);
-	}
+		execve(path, args, g_env);
     else if (pid < 0)
     {
         ft_putendl_fd("Fork failed for new process", 1);

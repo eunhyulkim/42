@@ -1,19 +1,20 @@
 #include "minishell.h"
 
 //TODO: make core dump when get SIGQUIT
-void	signal_handler_of_child(int signo)
+void	signal_handler_in_run_exec(int signo)
 {
 	if (signo == SIGINT)
 	{
 		ft_putstr_fd("\n", 1);
 		g_res = 130;
+		signal(SIGINT, signal_handler);
 	}
 	else if (signo == SIGQUIT)
 	{
 		ft_putstr_fd("Quit: 3\n", 2);
 		g_res = 131;
+		signal(SIGQUIT, signal_handler);
 	}
-	exit(-1);
 }
 
 void	signal_handler(int signo)
