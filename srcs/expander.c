@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 21:56:13 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/09 22:04:23 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/09 22:22:55 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ static void		expand_argument(t_command *command)
 			while (entries[j])
 				ft_realloc_doublestr(&new_args, entries[j++]);
 		}
+		ft_free_doublestr(entries);
+		entries = NULL;
 		i++;
 	}
 	if (!new_args)
@@ -58,7 +60,7 @@ static void		expand_redirection(t_redir *redir)
 	if (!(entries = get_entries(redir->arg)))
 		return ;
 	if (ft_len_doublestr(entries) > 1)
-		redir->error = 1;
+		redir->error = TRUE;
 	else
 		redir->arg = ft_strdup(entries[0]);
 	ft_free_doublestr(entries);

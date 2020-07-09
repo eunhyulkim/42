@@ -11,7 +11,7 @@ static int		has_wild(char *str)
 
 char			**get_entries(char *mask)
 {
-	char			**paths;
+	char			**entries;
     struct dirent	*item;
     DIR				*dp;
 
@@ -20,14 +20,14 @@ char			**get_entries(char *mask)
     if (!(dp = opendir(get_env("PWD"))))
 		return (0);
 	item = readdir(dp);
-	paths = 0;
+	entries = 0;
 	while (TRUE)
 	{
 		if (!(item = readdir(dp)))
 			break ;
 		if (*item->d_name != '.' && ft_isformat2(item->d_name, mask))
-			ft_realloc_doublestr(&paths, item->d_name);
+			ft_realloc_doublestr(&entries, item->d_name);
 	}
 	closedir(dp);
-	return (paths);
+	return (entries);
 }

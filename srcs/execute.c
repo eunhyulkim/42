@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/09 20:47:37 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/09 22:13:29 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ static int			get_fd(t_redir *redir)
 	int		fd;
 
 	fd = -1;
-	if (!redir->arg)
+	if (redir->error)
 		return (-2);
 	if (!(ft_strcmp(redir->sign, ">")))
 		fd = open(redir->arg, O_RDWR | O_CREAT | O_TRUNC, 0644);
