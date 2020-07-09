@@ -48,7 +48,7 @@ clean:
 	@echo "Cleaning your libft files"
 	@make -C libft/ fclean
 	@${RM} ${LIBLARY}
-	@echo "$(RED)clean DONE"
+	@echo "$(RED)clean DONE$(RESET)"
 
 fclean: clean
 	@echo "$(RESET)Removing mongshell"

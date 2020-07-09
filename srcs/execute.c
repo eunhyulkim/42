@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/08 11:37:53 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/09 16:58:10 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,21 +28,20 @@ static int			count_job(t_job *job)
 
 static int			*make_pipes(t_job *job)
 {
-	int		*pipes;
 	int		pipe_count;
 	int		i;
 
 	if (!(pipe_count = count_job(job) - 1))
 		return (0);
-	if (!(pipes = ft_calloc(sizeof(int), pipe_count * 2)))
+	if (!(g_pipes = (int *)ft_calloc(sizeof(int), pipe_count * 2)))
 		return (0);
 	i = 0;
 	while (i < pipe_count)
 	{
-		pipe(&pipes[i * 2]);
+		pipe(&g_pipes[i * 2]);
 		i++;
 	}
-	return (pipes);
+	return (g_pipes);
 }
 
 static void		save_standard_fd(t_table *table)
@@ -64,18 +63,20 @@ static void		restore_standard_fd(t_table *table)
 	close(table->fd[2]);
 }
 
-static void		dup_pipe(t_job *job, int *pipes, int pidx)
+static void		dup_pipe(t_job *job, int pidx)
 {
 	if (pidx == 0 && !job->next)
 		return ;
 	if (pidx == 0)
-		dup2(pipes[pidx * 2 + 1], 1);
+	{
+		dup2(g_pipes[pidx * 2 + 1], 1);
+	}
 	else if (!(job->next))
-		dup2(pipes[pidx * 2], 0);
+		dup2(g_pipes[(pidx - 1) * 2], 0);
 	else
 	{
-		dup2(pipes[pidx * 2], 0);
-		dup2(pipes[pidx * 2 + 1], 1);
+		dup2(g_pipes[(pidx - 1) * 2], 0);
+		dup2(g_pipes[pidx * 2 + 1], 1);
 	}
 }
 
@@ -85,7 +86,7 @@ static int			get_fd(t_redir *redir)
 
 	fd = -1;
 	if (!redir->arg)
-		return (-1);
+		return (-2);
 	if (!(ft_strcmp(redir->sign, ">")))
 		fd = open(redir->arg, O_RDWR | O_CREAT | O_TRUNC, 0644);
 	else if (!(ft_strcmp(redir->sign, ">>")))
@@ -120,11 +121,20 @@ static int		excute_redirection(t_table *table, t_job *job)
 			else
 				dup2(fd, 0);
 		}
-		else
+		else if (fd == -2)
 		{
+			g_res = 1;
 			ft_putstr_fd("mongshell: ", 1);
 			ft_putstr_fd(redir->arg, 1);
 			ft_putendl_fd(": ambiguous redirect", 1);
+			return (0);
+		}
+		else
+		{
+			g_res = 1;
+			ft_putstr_fd("mongshell: ", 1);
+			ft_putstr_fd(redir->arg, 1);
+			ft_putendl_fd(": No such file or directory", 1);
 			return (0);
 		}
 		redir = redir->next;
@@ -153,14 +163,14 @@ static int		execute_command(t_command *command)
 	return (TRUE);
 }
 
-static int		execute_job(t_table *table, t_job *job, int *pipes)
+static int		execute_job(t_table *table, t_job *job)
 {
 	int		pidx;
 
 	pidx = 0;
 	while (job)
 	{
-		dup_pipe(job, pipes, pidx);
+		dup_pipe(job, pidx);
 		if (!excute_redirection(table, job))
 		{
 			job = job->next;
@@ -168,34 +178,38 @@ static int		execute_job(t_table *table, t_job *job, int *pipes)
 		}
 		if (!(execute_command(&job->command)))
 			return (FALSE);
+		pidx++;
 		job = job->next;
 	}
 	return (TRUE);
 }
 
-void	close_fd(void)
+void	close_fd_and_pipes(void)
 {
 	while (g_maxfd > 2)
 		close(g_maxfd--);
+	ft_free(g_pipes);
 }
 
 int			execute_table(t_table *table)
 {
-	int		*pipes;
 	int 	res;
+	int		status;
 
 	if (!table || !table->job_list || !table->job_list->command.cmd)
 		return (1);
 	save_standard_fd(table);
-	pipes = make_pipes(table->job_list);
+	g_pipes = make_pipes(table->job_list);
 	res = TRUE;
-	if (table->sep_type == AND && g_res == TRUE)
-		res = execute_job(table, table->job_list, pipes);
-	else if (table->sep_type == OR && g_res == FALSE)
-		res = execute_job(table, table->job_list, pipes);
+	if (table->sep_type == AND && g_res == 0)
+		res = execute_job(table, table->job_list);
+	else if (table->sep_type == OR && g_res != 0)
+		res = execute_job(table, table->job_list);
 	else if (table->sep_type == SEMI || table->sep_type == START)
-		res = execute_job(table, table->job_list, pipes);
+		res = execute_job(table, table->job_list);
+	while (wait(&status) > 0)
+		g_res = WEXITSTATUS(status);
 	restore_standard_fd(table);
-	close_fd();
+	close_fd_and_pipes();
 	return (res);
 }

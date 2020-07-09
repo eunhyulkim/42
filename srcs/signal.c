@@ -1,6 +1,5 @@
 #include "minishell.h"
 
-//TODO: make core dump when get SIGQUIT
 void	signal_handler_in_run_exec(int signo)
 {
 	if (signo == SIGINT)
@@ -21,6 +20,7 @@ void	signal_handler(int signo)
 {
 	if (signo == SIGINT)
 	{
+		ft_putstr_fd("\b\b  \b\b", 1);
 		ft_putstr_fd("\n", 1);
 		display_prompt();
 		g_res = 1;

@@ -7,6 +7,8 @@ static int		process_line(char *line)
 	t_table		*table;
 	t_table		*first_table;
 
+	if (*line == '\n')
+		return (TRUE);
 	tokens = tokenizer(line);
 	if (!lexer(tokens) || !(table = parser(tokens)))
 		return (TRUE);
@@ -36,8 +38,7 @@ int				main(int ac, char *av[], char **env)
 	char	*line;
 
 	display_logo();
-	init_env(env, ac, av);
-
+	init_env(ac, av, env);
 	while (TRUE)
 	{
 		signal(SIGINT, (void *)signal_handler);
@@ -50,7 +51,7 @@ int				main(int ac, char *av[], char **env)
 			ft_putstr_fd("exit\n", 1);
 			break;
 		}
-		if (!process_line(line))
+		if (ft_strcmp(line, "\n") && !process_line(line))
 			break ;
 		free(line);
 	}

@@ -1,8 +1,8 @@
 #include "libft.h"
 
-int		ft_free(char *str)
+int		ft_free(void *ptr)
 {
-	if (str)
-		free(str);
+	if (ptr)
+		free(ptr);
 	return (1);
 }

@@ -68,6 +68,7 @@ typedef struct 			s_command
 {
 	char				*cmd;
 	char				**arg_list;
+	int					idx;
 }						t_command;
 
 typedef struct			s_job
@@ -89,6 +90,7 @@ char					**g_env;
 int						g_res;
 int						g_maxfd;
 int						g_stdin;
+int						*g_pipes;
 
 /*
 ** display functions
@@ -125,7 +127,7 @@ void			convert_heredoc(t_redir *redir);
 ** bin/env functions
 */
 int				get_key_idx(char *key);
-void			init_env(char **env, int ac, char *av[]);
+void			init_env(int ac, char *av[], char **env);
 char			*get_env(char *key);
 int				set_env(char *key, char *val);
 

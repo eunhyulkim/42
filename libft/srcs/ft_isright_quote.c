@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/30 18:40:52 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/06/30 18:49:35 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/09 17:04:06 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int		ft_isright_quote(char *src)
 			if (!quote)
 				quote = src[idx];
 			else if (quote == src[idx])
-				quote = 0;	
+				quote = 0;
 		}
 		idx++;
 	}
