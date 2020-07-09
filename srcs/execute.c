@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/09 12:00:18 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/09 12:37:56 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,7 +207,8 @@ int			execute_table(t_table *table)
 		res = execute_job(table, table->job_list);
 	else if (table->sep_type == SEMI || table->sep_type == START)
 		res = execute_job(table, table->job_list);
-	waitpid(0, &status, 0);
+	while (wait(&status) > 0)
+		;
 	g_res = WEXITSTATUS(status);
 	restore_standard_fd(table);
 	close_fd_and_pipes();

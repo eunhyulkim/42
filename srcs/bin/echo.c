@@ -12,8 +12,7 @@ void	print_echo_args(char **arg_list, int option)
 	i = -1;
 	while (arg_list[++i])
 	{
-		if (is_first_argu == FALSE)
-			ft_putstr_fd(" ", 1);
+		if (is_first_argu == FALSE) ft_putstr_fd(" ", 1);
 		ft_putstr_fd(arg_list[i], 1);
 		is_first_argu = FALSE;
 	}

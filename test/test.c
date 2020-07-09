@@ -3,7 +3,7 @@
 
 int main(void)
 {
-	sleep(3);
+	sleep(2);
 	dprintf(2, "task 1\n");
 	return (0);
 }
