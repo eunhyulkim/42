@@ -16,7 +16,7 @@ void	cmd_cd(t_command *command)
 			ft_putstr_fd("mongshell: ", 2);
 			ft_putstr_fd("cd: ", 2);
 			ft_putstr_fd(strerror(errno), 2);
-			g_res = 127;
+			g_res = 1;
 			return ;
 		}
 		set_env("PWD", home_path);
@@ -32,7 +32,7 @@ void	cmd_cd(t_command *command)
 		error_msg = strerror(errno);
 		ft_putstr_fd(error_msg, 2);
 		ft_putstr_fd("\n", 2);
-		g_res = 127;
+		g_res = 1;
 		return ;
 	}
 	set_env("PWD", command->arg_list[0]);

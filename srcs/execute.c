@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/09 12:37:56 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/09 16:58:10 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,15 +201,14 @@ int			execute_table(t_table *table)
 	save_standard_fd(table);
 	g_pipes = make_pipes(table->job_list);
 	res = TRUE;
-	if (table->sep_type == AND && g_res == TRUE)
+	if (table->sep_type == AND && g_res == 0)
 		res = execute_job(table, table->job_list);
-	else if (table->sep_type == OR && g_res == FALSE)
+	else if (table->sep_type == OR && g_res != 0)
 		res = execute_job(table, table->job_list);
 	else if (table->sep_type == SEMI || table->sep_type == START)
 		res = execute_job(table, table->job_list);
 	while (wait(&status) > 0)
-		;
-	g_res = WEXITSTATUS(status);
+		g_res = WEXITSTATUS(status);
 	restore_standard_fd(table);
 	close_fd_and_pipes();
 	return (res);
