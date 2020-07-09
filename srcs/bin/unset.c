@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include "execute.h"
 
 static int		unset_arg(char *key)
 {

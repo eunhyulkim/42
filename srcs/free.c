@@ -39,7 +39,7 @@ static void		free_job_list(t_job *job)
 
 }
 
-void			free_table(t_table *table)
+void			free_tables(t_table *table)
 {
 	t_table		*temp;
 

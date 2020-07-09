@@ -6,12 +6,11 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/09 16:58:10 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/09 20:47:37 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "execute.h"
 
 static int			count_job(t_job *job)
 {
@@ -142,7 +141,7 @@ static int		excute_redirection(t_table *table, t_job *job)
 	return (1);
 }
 
-static int		execute_command(t_command *command)
+static void		execute_command(t_command *command)
 {
 	if (!ft_strcmp(command->cmd, "echo"))
 		cmd_echo(command);
@@ -157,13 +156,13 @@ static int		execute_command(t_command *command)
 	else if (!ft_strcmp(command->cmd, "cd"))
 		cmd_cd(command);
 	else if (!ft_strcmp(command->cmd, "exit"))
-		return (cmd_exit(command));
+		cmd_exit(command);
 	else
 		cmd_execve(command);
-	return (TRUE);
+	return ;
 }
 
-static int		execute_job(t_table *table, t_job *job)
+static void	execute_job(t_table *table, t_job *job)
 {
 	int		pidx;
 
@@ -176,12 +175,11 @@ static int		execute_job(t_table *table, t_job *job)
 			job = job->next;
 			continue;
 		}
-		if (!(execute_command(&job->command)))
-			return (FALSE);
+		execute_command(&job->command);
 		pidx++;
 		job = job->next;
 	}
-	return (TRUE);
+	return ;
 }
 
 void	close_fd_and_pipes(void)
@@ -191,25 +189,23 @@ void	close_fd_and_pipes(void)
 	ft_free(g_pipes);
 }
 
-int			execute_table(t_table *table)
+void		execute_table(t_table *table)
 {
-	int 	res;
 	int		status;
 
 	if (!table || !table->job_list || !table->job_list->command.cmd)
-		return (1);
+		return ;
 	save_standard_fd(table);
 	g_pipes = make_pipes(table->job_list);
-	res = TRUE;
 	if (table->sep_type == AND && g_res == 0)
-		res = execute_job(table, table->job_list);
+		execute_job(table, table->job_list);
 	else if (table->sep_type == OR && g_res != 0)
-		res = execute_job(table, table->job_list);
-	else if (table->sep_type == SEMI || table->sep_type == START)
-		res = execute_job(table, table->job_list);
+		execute_job(table, table->job_list);
+	else if (table->sep_type == SEMI || table->sep_type == NONE)
+		execute_job(table, table->job_list);
 	while (wait(&status) > 0)
 		g_res = WEXITSTATUS(status);
 	restore_standard_fd(table);
 	close_fd_and_pipes();
-	return (res);
+	return ;
 }

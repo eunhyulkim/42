@@ -10,142 +10,104 @@
 # include <signal.h>
 # include <sys/types.h>
 # include <sys/stat.h>
-#include <dirent.h>
-#include <string.h>
+# include <dirent.h>
+# include <string.h>
 # include "libft.h"
 # include "get_next_line.h"
+# include "macro.h"
+# include "types.h"
 
-# define KNRM  "\x1B[0m"
-# define KRED  "\x1B[31m"
-# define KGRN  "\x1B[32m"
-# define KYEL  "\x1B[33m"
-# define KBLU  "\x1B[34m"
-# define KMAG  "\x1B[35m"
-# define KCYN  "\x1B[36m"
-# define KWHT  "\x1B[37m"
-
-# define DEBUG_ALL		0
-# define DEBUG_LEXER	0
-# define DEBUG_PARSER	0
-# define DEBUG_TABLE	0
-# define DEBUG_CONVERT	0
-# define DEBUG_excute	0
-
-# define TRUE	 		1
-# define FALSE	 		0
-
-# define TEMP_PATH		"config/temp.txt"
-
-typedef int				bool;
-
-typedef struct  		s_tokenizer
-{
-	int					idx;
-	int					qidx;
-	int					start;
-	int					prev;
-	char				quote;
-}						t_tokenizer;
-
-typedef struct			s_mask
-{
-	char				*mask;
-	int					idx;
-	int					opened;
-	char				c;
-}						t_mask;
-
-typedef struct 			s_redir
-{
-	char				*sign;
-	int					fd;
-	int					error;
-	char				*arg;
-	struct s_redir		*next;
-}						t_redir;
-
-typedef struct 			s_command
-{
-	char				*cmd;
-	char				**arg_list;
-	int					idx;
-}						t_command;
-
-typedef struct			s_job
-{
-	struct s_command	command;
-	struct s_redir		*redir_list;
-	struct s_job		*next;
-}						t_job;
-
-typedef struct  		s_table
-{
-	struct s_job		*job_list;
-	int					sep_type; // &&, ||, ; 중 어느 sep로 나누어진 table인지 저장
-	int					fd[3];
-	struct s_table		*next;
-}						t_table;
-
-char					**g_env;
-int						g_res;
-int						g_maxfd;
-int						g_stdin;
-int						*g_pipes;
+char	**g_env;
+int		g_res;
+int		g_maxfd;
+int		g_stdin;
+int		*g_pipes;
 
 /*
 ** display functions
 */
-void			clear_terminal(void);
-int				print_ascii_art(void);
-void			display_logo(void);
-void			display_prompt(void);
+void	display_logo(void);
+void	display_prompt(void);
 
 /*
 ** tokenizer function
 */
-char			**tokenizer(char *line);
+char	**tokenizer(char *line);
 
 /*
 ** lexer function
 */
-int				lexer(char **tokens);
+char	type(char **tokens, int idx);
+int  	token_in(char **tokens, t_lexer *lex, char *format);
+int		lexer(char **tokens);
 
 /*
 ** parser functions
 */
-t_table			*parser(char **tokens);
+t_table	*get_last_table(t_table *table);
+t_job	*get_last_job(t_table *table);
+t_redir	*get_last_redir(t_table *table);
+void	set_redir_file(char **tokens, t_lexer *lexer, \
+		t_table *table);
+void	set_command_cmd(char **tokens, t_lexer *lexer, \
+		t_parser *parser, t_table *table);
+void	set_command_arg(char **tokens, t_lexer *lexer, \
+		t_table *table);
+t_table	*parser(char **tokens);
 
 /*
 ** converter
 */
-char			**get_paths(char *src);
-void			expander(t_table *table);
-void			converter(t_table *table);
-void			convert_heredoc(t_redir *redir);
+char	**get_entries(char *src);
+void	expander(t_table *table);
+void	converter(t_table *table);
+void	convert_heredoc(t_redir *redir);
 
 /*
 ** bin/env functions
 */
-int				get_key_idx(char *key);
-void			init_env(int ac, char *av[], char **env);
-char			*get_env(char *key);
-int				set_env(char *key, char *val);
+int		get_key_idx(char *key);
+void	init_env(int ac, char *av[], char **env);
+char	*get_env(char *key);
+int		set_env(char *key, char *val);
 
 /*
-** free functions
+** bin/builtin functions
 */
-void			free_table(t_table *table);
+void	cmd_echo(t_command *command);
+void	cmd_env(t_command *command);
+void	cmd_pwd(t_command *command);
+void	cmd_export(t_command *command);
+void	cmd_unset(t_command *command);
+void	cmd_exit(t_command *command);
+void	cmd_cd(t_command *command);
 
 /*
-** debug functions
+** execute functions
 */
-
-void			print_table(t_table *table);
+void	close_fd_and_pipes(void);
+void	execute_table(t_table *table);
+void	cmd_execve(t_command *command);
+void	ft_exit(char *line, int status);
 
 /*
 ** signal functions
 */
-void			signal_handler(int signo);
-void			signal_handler_in_run_exec(int signo);
+void	set_builtin_signal(void);
+void	set_exec_signal(void);
 
+/*
+** free functions
+*/
+void	free_tables(t_table *table);
+
+/*
+** print functions
+*/
+void	print_error(char *error_token, char *msg, int res);
+
+/*
+** debug functions
+*/
+void	print_table(t_table *table);
 # endif

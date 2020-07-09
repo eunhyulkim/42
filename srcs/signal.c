@@ -1,22 +1,6 @@
 #include "minishell.h"
 
-void	signal_handler_in_run_exec(int signo)
-{
-	if (signo == SIGINT)
-	{
-		ft_putstr_fd("\n", 1);
-		g_res = 130;
-		signal(SIGINT, signal_handler);
-	}
-	else if (signo == SIGQUIT)
-	{
-		ft_putstr_fd("Quit: 3\n", 2);
-		g_res = 131;
-		signal(SIGQUIT, signal_handler);
-	}
-}
-
-void	signal_handler(int signo)
+static void		signal_handler_builtin(int signo)
 {
 	if (signo == SIGINT)
 	{
@@ -27,4 +11,34 @@ void	signal_handler(int signo)
 	}
 	else if (signo == SIGQUIT)
 		ft_putstr_fd("\b\b  \b\b", 1);
+}
+
+static void		signal_handler_exec(int signo)
+{
+	if (signo == SIGINT)
+	{
+		ft_putstr_fd("\n", 1);
+		g_res = 130;
+		signal(SIGINT, signal_handler_builtin);
+	}
+	else if (signo == SIGQUIT)
+	{
+		ft_putstr_fd("Quit: 3\n", 2);
+		g_res = 131;
+		signal(SIGQUIT, signal_handler_builtin);
+	}
+}
+
+void			set_exec_signal(void)
+{
+	signal(SIGINT, signal_handler_exec);
+   	signal(SIGQUIT, signal_handler_exec);
+	return ;
+}
+
+void			set_builtin_signal(void)
+{
+	signal(SIGINT, (void *)signal_handler_builtin);
+	signal(SIGQUIT, (void *)signal_handler_builtin);
+	return ;
 }

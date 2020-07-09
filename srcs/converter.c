@@ -19,7 +19,7 @@ static void		convert_env(char **ret, char *str, int *i, int first)
 {
 	char	*name;
 	char	*val;
-	bool	bracket;
+	t_bool	bracket;
 	int		j;
 	char	end;
 

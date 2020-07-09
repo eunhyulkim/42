@@ -3,15 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/09 01:04:25 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/09 21:49:06 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "lexer.h"
-#include "parser.h"
 #include "minishell.h"
 
 static void		create_job(t_parser *parser, t_table *table)
@@ -20,8 +18,6 @@ static void		create_job(t_parser *parser, t_table *table)
 	t_job		*last_job;
 	t_job		*new_job;
 
-	if (DEBUG_PARSER || DEBUG_ALL)
-		write(1, "[CJ]", 4);
 	if (!(new_job = (t_job *)ft_calloc(sizeof(t_job), 1)))
 		return ;
 	last_job = get_last_job(table);
@@ -38,15 +34,14 @@ static void		create_job(t_parser *parser, t_table *table)
 	return ;
 }
 
-static void		create_table(char **tokens, t_lexer *lexer, t_parser *parser, t_table *table)
+static void		create_table(char **tokens, t_lexer *lexer, \
+				t_parser *parser, t_table *table)
 {
 	t_table		*last_table;
 	t_table		*new_table;
 
-	if (DEBUG_PARSER || DEBUG_ALL)
-		write(1, "[CT]", 4);
 	if (lexer->type == 'Y' && token_in(tokens, lexer, NO_BACK_ARG))
-		return ; // semiconlon in line end
+		return ;
 	if (!(new_table = (t_table *)ft_calloc(sizeof(t_table), 1)))
 		return ;
 	new_table->sep_type = lexer->type;
@@ -64,8 +59,6 @@ static void		create_redir(char **tokens, t_lexer *lexer, \
 	t_redir		*last_redir;
 	t_redir		*new_redir;
 
-	if (DEBUG_PARSER || DEBUG_ALL)
-		write(1, "[CR]", 4);
 	if (!(new_redir = (t_redir *)ft_calloc(sizeof(t_redir), 1)))
 		return ;
 	new_redir->sign = ft_strdup(tokens[lexer->idx]);
@@ -81,24 +74,24 @@ static void		create_redir(char **tokens, t_lexer *lexer, \
 		last_job->redir_list = new_redir;
 		return ;
 	}
-	last_redir->next = new_redir ;
+	last_redir->next = new_redir;
 	return ;
 }
 
 static void		parse(char **tokens, t_lexer *lexer, t_parser *parser, \
 				t_table *table)
 {
-	if (ft_isset(lexer->type, "SF")) // SPCAE + NEWLINE
+	if (ft_isset(lexer->type, "SF"))
 		return ;
-	if (ft_isset(lexer->type, "YOA") && !token_in(tokens, lexer, NO_BACK_ARG)) // SEMI, OR, AND
+	if (ft_isset(lexer->type, "YOA") && !token_in(tokens, lexer, NO_BACK_ARG))
 		create_table(tokens, lexer, parser, table);
-	else if (ft_isset(lexer->type, "P")) // PIPE
+	else if (ft_isset(lexer->type, "P"))
 		create_job(parser, table);
-	else if (ft_isset(lexer->type, "GHLM")) // (D)GREAT, (D)LESS
+	else if (ft_isset(lexer->type, "GHLM"))
 		create_redir(tokens, lexer, parser, table);
 	else if (ft_isset(lexer->type, "NC"))
 	{
-		if (lexer->type == 'N' && token_in(tokens, lexer, X_BACK_GREAT))
+		if (lexer->type == 'N' && token_in(tokens, lexer, BACK_X_GREAT))
 			parser->fd = TRUE;
 		else if (token_in(tokens, lexer, FRONT_REDIR))
 			set_redir_file(tokens, lexer, table);
@@ -122,8 +115,6 @@ t_table			*parser(char **tokens)
 		return (0);
 	if (!(table = (t_table *)ft_calloc(sizeof(t_table), 1)))
 		return (0);
-	if (DEBUG_PARSER || DEBUG_ALL)
-		write(1, "D-2. PARSER: [CT]", 17);
 	create_job(parser, table);
 	lexer->len = ft_len_doublestr(tokens);
 	lexer->idx = 0;
@@ -133,9 +124,7 @@ t_table			*parser(char **tokens)
 		parse(tokens, lexer, parser, table);
 		lexer->idx++;
 	}
-	if (DEBUG_PARSER || DEBUG_ALL)
-		write(1, "\n", 1);
-	free(lexer);
-	free(parser);
+	ft_free(lexer);
+	ft_free(parser);
 	return (table);
 }

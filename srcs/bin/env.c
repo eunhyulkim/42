@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include "execute.h"
 
 // if key exist in env but value is not, return empty string pointer
 // if key not in env, return null

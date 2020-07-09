@@ -1,7 +1,6 @@
 #include "minishell.h"
-#include "execute.h"
 
-void	print_echo_args(char **arg_list, int option)
+void	print_echo_args(char **arg_list, int n_option)
 {
 	int i;
 	int	is_first_argu;
@@ -17,7 +16,7 @@ void	print_echo_args(char **arg_list, int option)
 		is_first_argu = FALSE;
 	}
 	g_res = 0;
-	if (option == N_OPTION)
+	if (n_option)
 		return ;
 	ft_putstr_fd("\n", 1);
 }
@@ -26,11 +25,11 @@ void	cmd_echo(t_command *cmd)
 {
 	int		argu_era;
 	char	**start_argu;
-	int		option;
+	int		n_option;
 
 	argu_era = ft_len_doublestr(cmd->arg_list);
 	start_argu = cmd->arg_list;
-	option = FALSE;
+	n_option = FALSE;
 	if (argu_era == 0)
 	{
 		ft_putstr_fd("\n", 1);
@@ -41,8 +40,8 @@ void	cmd_echo(t_command *cmd)
 	{
 		if (argu_era == 1)
 			return ;
-		option = N_OPTION;
+		n_option = TRUE;
 		start_argu++;
 	}
-	print_echo_args(start_argu, option);
+	print_echo_args(start_argu, n_option);
 }

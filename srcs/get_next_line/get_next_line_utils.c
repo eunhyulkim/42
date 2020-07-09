@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/29 23:51:17 by iwoo              #+#    #+#             */
-/*   Updated: 2020/06/26 21:07:01 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/09 18:42:44 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,4 +46,14 @@ char	*ft_strjoin_bfnl(char *s1, char *s2)
 	res[len1 + i] = '\0';
 	free(s1);
 	return (res);
+}
+
+int		add_newline_return(char **line)
+{
+	char *str;
+
+	str = ft_strjoin(*line, "\n");
+	free(*line);
+	*line = str;
+	return (1);
 }

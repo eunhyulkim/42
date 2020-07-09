@@ -3,26 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   display.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 21:34:17 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/07 00:54:03 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/09 20:38:54 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void			clear_terminal(void)
-{
-	ft_putstr_fd("\033[H\033[J", 1);
-}
+// static void		clear_terminal(void)
+// {
+// 	ft_putstr_fd("\033[H\033[J", 1);
+// }
 
-int				print_ascii_art(void)
+static int		print_ascii_art(void)
 {
 	char	*line;
 	int		fd;
 
-	if ((fd = open("config/mongshell_ascii_art", O_RDONLY)) < 0)
+	if ((fd = open(ASCIIART_PATH, O_RDONLY)) < 0)
 		return (0);
 	while (get_next_line(fd, &line))
 	{

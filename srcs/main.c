@@ -1,5 +1,33 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/09 19:50:08 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/09 21:37:42 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-#include "execute.h"
+
+static t_bool	is_empty_line(char *line)
+{
+	int		i;
+
+	if (!line)
+		return (TRUE);
+	i = 0;
+	while (ft_isspace(line[i]))
+		i++;
+	if (line[i] == '\n' && !line[i + 1])
+	{
+		ft_free(line);
+		return (TRUE);
+	}
+	return (FALSE);
+}
 
 static int		process_line(char *line)
 {
@@ -7,8 +35,6 @@ static int		process_line(char *line)
 	t_table		*table;
 	t_table		*first_table;
 
-	if (*line == '\n')
-		return (TRUE);
 	tokens = tokenizer(line);
 	if (!lexer(tokens) || !(table = parser(tokens)))
 		return (TRUE);
@@ -16,20 +42,12 @@ static int		process_line(char *line)
 	while (table)
 	{
 		expander(table);
-		if (DEBUG_ALL || DEBUG_CONVERT || !DEBUG_TABLE)
-			converter(table);
-		if (!execute_table(table))
-		{
-			ft_free_doublestr(tokens);
-			free_table(first_table);
-			return (FALSE);
-		}
+		converter(table);
+		execute_table(table);
 		table = table->next;
 	}
-	if (DEBUG_ALL || DEBUG_TABLE || DEBUG_CONVERT)
-		print_table(first_table);
 	ft_free_doublestr(tokens);
-	free_table(first_table);
+	free_tables(first_table);
 	return (TRUE);
 }
 
@@ -41,20 +59,15 @@ int				main(int ac, char *av[], char **env)
 	init_env(ac, av, env);
 	while (TRUE)
 	{
-		signal(SIGINT, (void *)signal_handler);
-		signal(SIGQUIT, (void *)signal_handler);
+		set_builtin_signal();
 		display_prompt();
 		line = 0;
 		if (!(get_next_line(0, &line)))
-		{
-			free(line);
-			ft_putstr_fd("exit\n", 1);
-			break;
-		}
-		if (ft_strcmp(line, "\n") && !process_line(line))
-			break ;
-		free(line);
+			ft_exit(line, 0);
+		else if (is_empty_line(line))
+			continue;
+		process_line(line);
+		ft_free(line);
 	}
-	ft_free_doublestr(g_env);
 	return (0);
 }

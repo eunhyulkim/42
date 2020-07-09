@@ -6,12 +6,11 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 17:03:11 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/09 17:03:37 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/09 20:48:08 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "execute.h"
 
 static	int		ft_isnumber(char *str)
 {
@@ -25,7 +24,16 @@ static	int		ft_isnumber(char *str)
 	return (*str == '\0');
 }
 
-int		cmd_exit(t_command *command)
+void	ft_exit(char *line, int status)
+{
+	ft_free(line);
+	ft_putstr_fd("exit\n", 1);
+	ft_free_doublestr(g_env);
+	exit(status);
+	return ;
+}
+
+void		cmd_exit(t_command *command)
 {
 	close_fd_and_pipes();
 	(void)command;
@@ -51,5 +59,5 @@ int		cmd_exit(t_command *command)
 			g_res = ft_atoi(command->arg_list[0]);
 	}	
 	exit(g_res);
-	return (0);
+	return ;
 }

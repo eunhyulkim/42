@@ -9,7 +9,7 @@ static int		has_wild(char *str)
 	return (1);
 }
 
-char			**get_paths(char *mask)
+char			**get_entries(char *mask)
 {
 	char			**paths;
     struct dirent	*item;

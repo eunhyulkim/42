@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strsub.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/05/21 10:36:52 by fremoor           #+#    #+#             */
-/*   Updated: 2020/06/26 22:15:45 by eunhkim          ###   ########.fr       */
+/*   Created: 2019/05/21 10:36:52 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/09 21:01:10 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,9 @@ char	*ft_strsub(char const *s, unsigned int start, size_t len)
 	size_t	i;
 
 	if (!s)
-		return (NULL);
-	str = ft_strnew(len);
-	if (str == NULL)
-		return (NULL);
+		return (0);
+	if (!(str = (char *)ft_calloc(sizeof(char), len + 1)))
+		return (0);
 	i = 0;
 	while (i < len)
 	{

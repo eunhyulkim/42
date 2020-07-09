@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "execute.h"
 
 static char		**get_args(t_command *command)
 {
@@ -41,9 +40,8 @@ static void     run_exec(t_command *command)
     path = ft_strdup(command->cmd);
     args = get_args(command);
     pid = fork();
-	signal(SIGINT, signal_handler_in_run_exec);
-   	signal(SIGQUIT, signal_handler_in_run_exec);
-    if (pid == 0)
+	set_exec_signal();
+	if (pid == 0)
 	{
 		if (command->idx != 0)
 			close(g_pipes[command->idx * 2 - 1]);

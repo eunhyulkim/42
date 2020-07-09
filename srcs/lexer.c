@@ -3,17 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/09 10:48:28 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/09 21:38:12 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "lexer.h"
 
-char	type(char **tokens, int idx)
+char		type(char **tokens, int idx)
 {
 	if (!ft_strcmp(tokens[idx], "|"))
 		return (PIPE);
@@ -42,7 +41,7 @@ char	type(char **tokens, int idx)
     return (!ft_strcmp(tokens[idx], "\n") ? ENTER : STRING);
 }
 
-int     check_seq(char **tokens, t_lexer *lex)
+static int	check_seq(char **tokens, t_lexer *lex)
 {
 	int		i;
 	int		j;
@@ -71,7 +70,7 @@ int     check_seq(char **tokens, t_lexer *lex)
     return (lex->res != FALSE);
 }
 
-int     token_in(char **tokens, t_lexer *lex, char *format)
+int			token_in(char **tokens, t_lexer *lex, char *format)
 {
     lex->i = -1;
     lex->seqs = ft_split(format, ',');
@@ -109,40 +108,29 @@ static int	is_valid_token(char **tokens, t_lexer *lex)
 	return (TRUE);
 }
 
-int     lexer(char **tokens)
+int			lexer(char **tokens)
 {
 	t_lexer		*lex;
+	char		*error_token;
 
 	if (!tokens || !(lex = ft_calloc(sizeof(t_lexer), 1)))
 		return (0);
 	lex->len = ft_len_doublestr(tokens);
-	if (DEBUG_LEXER || DEBUG_ALL)
-		write(1, "\nD-1. TOKENIZER: ", 16);
 	while (tokens[lex->idx])
 	{
 		lex->type = type(tokens, lex->idx);
-        if (DEBUG_LEXER || DEBUG_ALL)
-        {
-            write(1, "[", 1);
-            write(1, &lex->type, 1);
-            write(1, "]", 1);
-        }
 		if (!is_valid_token(tokens, lex))
         {
-			g_res = 258;
-			write(1, "\nmongshell: syntax error near unexpected token `", 48);
 			if (!ft_strcmp(tokens[lex->idx], "\n"))
-				write(1, "newline", 7);
+				error_token = "newline";
 			else
-            	write(1, tokens[lex->idx], ft_strlen(tokens[lex->idx]));
-            write(1, "'\n", 2);
-            free(lex);
-			return (FALSE);
+				error_token = tokens[lex->idx];
+			print_error(error_token, LEXER_MSG, 258);
+            ft_free(lex);
+			return (FALSE);	
         }
         lex->idx++;
 	}
-	if (DEBUG_LEXER || DEBUG_ALL)
-    	write(1, "\n", 1);
-	free(lex);
+	ft_free(lex);
 	return (TRUE);
 }

@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include "execute.h"
 
 static void	print_sorted_env(void)
 {
