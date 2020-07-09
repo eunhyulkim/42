@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/05 17:00:08 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/09 01:04:25 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,11 @@ static void		create_job(t_parser *parser, t_table *table)
 	if (!last_job)
 	{
 		last_table = get_last_table(table);
+		new_job->command.idx = 0;
 		last_table->job_list = new_job;
 		return ;
 	}
+	new_job->command.idx = last_job->command.idx + 1;
 	last_job->next = new_job;
 	parser->command = FALSE;
 	return ;

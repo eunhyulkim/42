@@ -44,13 +44,19 @@ static void     run_exec(t_command *command)
 	signal(SIGINT, signal_handler_in_run_exec);
    	signal(SIGQUIT, signal_handler_in_run_exec);
     if (pid == 0)
+	{
+		if (command->idx != 0)
+			close(g_pipes[command->idx * 2 - 1]);
 		execve(path, args, g_env);
+	}
     else if (pid < 0)
     {
         ft_putendl_fd("Fork failed for new process", 1);
         return ;
     }
-    wait(&pid);
+	// printf("PARENT PID = %d\n", getpid());
+	if (command->idx != 0)
+		close(g_pipes[command->idx * 2 - 1]);
 	ft_free_doublestr(args);
     return ;
 }
@@ -120,8 +126,13 @@ void				cmd_execve(t_command *command)
 	if (lstat(command->cmd, &stat) != -1)
 	{
 		if (stat.st_mode & S_IFDIR)
-			return (cmd_cd(command));
-		else if (stat.st_mode & S_IXUSR)
+		{
+			ft_putstr_fd("mongshell: ", 1);
+			ft_putstr_fd(command->cmd, 1);
+			ft_putendl_fd(": is a directory", 1);
+			return ;
+		}
+		else if (*command->cmd == '.' && stat.st_mode & S_IXUSR)
 			return (run_exec(command));
 	}
 	ft_putstr_fd("mongshell: ", 1);
