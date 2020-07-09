@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/05 17:10:23 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/09 10:48:28 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,7 @@ int     lexer(char **tokens)
         }
 		if (!is_valid_token(tokens, lex))
         {
+			g_res = 258;
 			write(1, "\nmongshell: syntax error near unexpected token `", 48);
 			if (!ft_strcmp(tokens[lex->idx], "\n"))
 				write(1, "newline", 7);

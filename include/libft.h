@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/08 09:53:52 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/09 01:34:54 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ int								ft_in(char *item, char *list);
 int								ft_isitem(char *item, char **list);
 int								ft_isformat(char *str, char *format);
 char							*ft_strreverse(char *src);
-int								ft_free(char *str);
+int								ft_free(void *ptr);
 int								ft_isright_quote(char *src);
 int								ft_isright_envbracket(char *src);
 char							**ft_remove_doublestr(char **str, int idx);
