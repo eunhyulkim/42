@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   converter.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 22:30:27 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/09 22:36:29 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/10 19:46:41 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ static void		convert(char **src, int first)
 			ft_realloc(&ret, str[i]);
 		i++;
 	}
-	free(str);
+	ft_free(str);
 	*src = ret;
 }
 

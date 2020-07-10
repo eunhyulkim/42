@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 17:03:11 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/09 20:48:08 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/10 19:39:07 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,12 @@ static	int		ft_isnumber(char *str)
 	while (*str && *str >= 48 && *str <= 57)
 		str++;
 	return (*str == '\0');
+}
+
+void	set_res(int res)
+{
+	g_res = res;
+	return ;
 }
 
 void	ft_exit(char *line, int status)
@@ -57,7 +63,7 @@ void		cmd_exit(t_command *command)
 		}
 		else
 			g_res = ft_atoi(command->arg_list[0]);
-	}	
+	}
 	exit(g_res);
 	return ;
 }

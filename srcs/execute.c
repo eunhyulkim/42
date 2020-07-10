@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/10 10:35:55 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/10 19:34:59 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ static int		execute_redirection(t_table *table, t_job *job)
 		if ((fd = get_fd(redir)) >= STDNRM)
 			dup2(fd, redir->fd);
 		else if (fd == REDIRAMB)
-			print_error(redir->arg, REDIR_AMB_MSG, 1);
+			error_execute(redir->arg, REDIR_AMB_MSG, 1);
 		else if (fd == FDERR)
-			print_error(redir->arg, REDIR_FDERR_MSG, 1);
+			error_execute(redir->arg, NOT_FOUND_MSG, 1);
 		if (fd == REDIRAMB || fd == FDERR)
 			return (0);
 		redir = redir->next;
@@ -81,6 +81,7 @@ void			execute_table(t_table *table)
 {
 	int		status;
 
+	g_maxfd = 2;
 	if (!table || !table->job_list || !table->job_list->command.cmd)
 		return ;
 	save_standard_fd(table);

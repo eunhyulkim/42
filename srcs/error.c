@@ -1,20 +1,34 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   error.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/10 19:41:18 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/10 19:41:19 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-void	print_error(char *error_token, char *msg, int res)
+void	error_tokenizer(char *error_token, char *msg, int res)
 {
 	ft_putstr_fd(SHELL, 2);
-	if (msg == LEXER_MSG)
-	{
-		ft_putstr_fd(msg, 2);
-		ft_putstr_fd(error_token, 2);
-		ft_putendl_fd("\'", 2);
-	}
-	else if (msg == REDIR_AMB_MSG || msg == REDIR_FDERR_MSG
-	|| msg == PERMISSION_MSG)
+	ft_putstr_fd(msg, 2);
+	ft_putstr_fd(error_token, 2);
+	ft_putendl_fd("\'", 2);
+	set_res(res);
+}
+
+void	error_execute(char *error_token, char *msg, int res)
+{
+	ft_putstr_fd(SHELL, 2);
+	if (error_token)
 	{
 		ft_putstr_fd(error_token, 2);
 		ft_putstr_fd(": ", 2);
-		ft_putendl_fd(msg, 2);
 	}
-	g_res = res;
+	ft_putendl_fd(msg, 2);
+	set_res(res);
 }
