@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 19:41:18 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 21:57:13 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/10 22:11:57 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,19 @@ void	error_builtin(char *cmd, char *arg, char *msg)
 	error_num = errno;
 	ft_putstr_fd(SHELL, 2);
 	ft_putstr_fd(cmd, 2);
-	ft_putstr_fd(": ", 2);
+	if (!strcmp(cmd, "unset"))
+		ft_putstr_fd(": '", 2);
+	else
+		ft_putstr_fd(": ", 2);
 	ft_putstr_fd(arg, 2);
-	ft_putstr_fd(": ", 2);
-	if (!strcmp(cmd, "env") || !strcmp(cmd, "pwd") || !strcmp(cmd, "exit"))
+	if (!strcmp(cmd, "env") || !strcmp(cmd, "pwd") || !strcmp(cmd, "exit")
+			|| !strcmp(cmd, "unset"))
 		ft_putendl_fd(msg, 2);
 	else
+	{
+		ft_putstr_fd(": ", 2);
 		ft_putendl_fd(strerror(error_num), 2);
+	}
 	set_res(1);
 	return ;
 }
