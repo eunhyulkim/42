@@ -6,11 +6,17 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 17:03:11 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 15:41:35 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/10 19:45:02 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void			set_res(int res)
+{
+	g_res = res;
+	return ;
+}
 
 static	int		ft_isnumber(char *str)
 {

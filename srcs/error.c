@@ -16,17 +16,21 @@ void	print_error(char *error_token, char *msg, int res)
 		ft_putstr_fd(": ", 2);
 		ft_putendl_fd(msg, 2);
 	}
-	g_res = res;
+	set_res(res);
 }
 
-void	error_cmd(char *cmd, char *arg)
+void	error_builtin(char *cmd, char *arg)
 {
-	ft_putstr_fd("mongshell: ", 2);
+	int error_num;
+
+	error_num = errno;
+	ft_putstr_fd(SHELL, 2);
 	ft_putstr_fd(cmd, 2);
 	ft_putstr_fd(": ", 2);
 	ft_putstr_fd(arg, 2);
-	ft_putstr_fd(strerror(errno), 2);
+	ft_putstr_fd(": ", 2);
+	ft_putstr_fd(strerror(error_num), 2);
 	ft_putstr_fd("\n", 2);
-	g_res = 1;
+	set_res(1);
 	return ;
 }

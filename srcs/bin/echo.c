@@ -3,19 +3,20 @@
 void	print_echo_args(char **arg_list, int n_option)
 {
 	int i;
-	int	is_first_argu;
+	int	is_first_arg;
 
 	if (!arg_list)
 		return ;
-	is_first_argu = TRUE;
+	is_first_arg = TRUE;
 	i = -1;
 	while (arg_list[++i])
 	{
-		if (is_first_argu == FALSE) ft_putstr_fd(" ", 1);
+		if (is_first_arg == FALSE)
+			ft_putstr_fd(" ", 1);
 		ft_putstr_fd(arg_list[i], 1);
-		is_first_argu = FALSE;
+		is_first_arg = FALSE;
 	}
-	g_res = 0;
+	set_res(0);
 	if (n_option)
 		return ;
 	ft_putstr_fd("\n", 1);
@@ -23,25 +24,24 @@ void	print_echo_args(char **arg_list, int n_option)
 
 void	cmd_echo(t_command *cmd)
 {
-	int		argu_era;
-	char	**start_argu;
+	int		arg_era;
+	char	**start_arg;
 	int		n_option;
 
-	argu_era = ft_len_doublestr(cmd->arg_list);
-	start_argu = cmd->arg_list;
+	arg_era = ft_len_doublestr(cmd->arg_list);
+	start_arg = cmd->arg_list;
 	n_option = FALSE;
-	if (argu_era == 0)
+	if (arg_era == 0)
 	{
 		ft_putstr_fd("\n", 1);
-		g_res = 0;
-		return ;
+		return (set_res(0));
 	}
 	if (!ft_strcmp(cmd->arg_list[0], "-n"))
 	{
-		if (argu_era == 1)
+		if (arg_era == 1)
 			return ;
 		n_option = TRUE;
-		start_argu++;
+		start_arg++;
 	}
-	print_echo_args(start_argu, n_option);
+	print_echo_args(start_arg, n_option);
 }

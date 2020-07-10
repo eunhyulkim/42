@@ -1,9 +1,9 @@
 #include "minishell.h"
 
-static void	set_pwd_and_g_res(char *path)
+static void	set_pwd_and_res(char *path)
 {
 	set_env("PWD", path);
-	g_res = 0;
+	set_res(0);
 	return ;
 }
 
@@ -17,10 +17,10 @@ void		cmd_cd(t_command *command)
 	{
 		home_path = get_env("HOME");
 		if (chdir(home_path) == -1)
-			return (error_cmd("cd", ""));
-		return (set_pwd_and_g_res(home_path));
+			return (error_builtin("cd", ""));
+		return (set_pwd_and_res(home_path));
 	}
 	if (chdir(command->arg_list[0]) == -1)
-		return (error_cmd("cd", command->arg_list[0]));
-	return (set_pwd_and_g_res(command->arg_list[0]));
+		return (error_builtin("cd", command->arg_list[0]));
+	return (set_pwd_and_res(command->arg_list[0]));
 }
