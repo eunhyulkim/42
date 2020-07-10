@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 17:03:11 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 20:07:31 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/10 20:48:00 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,10 +53,11 @@ void			cmd_exit(t_command *command)
 		}
 		else if (!ft_isnumber(command->arg_list[0]))
 		{
-			g_res = 1;
-			ft_putstr_fd("mongshell: ", 2);
-			ft_putstr_fd("exit: ", 2);
-			ft_putendl_fd("numeric argument required", 2);
+			error_builtin("exit", command->arg_list[0], NUMERIC_ARG_REQUIRED);	
+//			g_res = 1;
+//			ft_putstr_fd("mongshell: ", 2);
+//			ft_putstr_fd("exit: ", 2);
+//			ft_putendl_fd("numeric argument required", 2);
 		}
 		else
 			g_res = ft_atoi(command->arg_list[0]);

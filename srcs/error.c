@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 19:41:18 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 20:36:08 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/10 20:49:14 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	error_execute(char *error_token, char *msg, int res)
 	set_res(res);
 }
 
-void	error_builtin(char *cmd, char *arg)
+void	error_builtin(char *cmd, char *arg, char *msg)
 {
 	int error_num;
 
@@ -43,10 +43,8 @@ void	error_builtin(char *cmd, char *arg)
 	ft_putstr_fd(": ", 2);
 	ft_putstr_fd(arg, 2);
 	ft_putstr_fd(": ", 2);
-	if (!strcmp(cmd, "env"))
-		ft_putendl_fd(TOO_MANY_ARG_ENV, 2);
-	else if (!strcmp(cmd, "pwd"))
-		ft_putendl_fd(FAIL_TO_GET_PATH, 2);
+	if (!strcmp(cmd, "env") || !strcmp(cmd, "pwd") || !strcmp(cmd, "exit"))
+		ft_putendl_fd(msg, 2);
 	else
 		ft_putendl_fd(strerror(error_num), 2);
 	set_res(1);

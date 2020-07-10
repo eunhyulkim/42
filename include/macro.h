@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 20:23:32 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 20:36:46 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/10 20:49:56 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@
 # define ISDRR_MSG			"is a directory"
 # define TOO_MANY_ARG_ENV	"env working with no argument and option."
 # define FAIL_TO_GET_PATH	"Faild to get path, please check 'PWD_BUFFER_SIZE'"
+# define NUMERIC_ARG_REQUIRED	"numeric argument required"
 
 /*
 ** builtin command flag
