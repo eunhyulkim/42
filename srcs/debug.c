@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include "lexer.h"
 
 void		print_table(t_table *table)
 {

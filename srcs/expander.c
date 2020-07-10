@@ -1,14 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expander.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/09 21:56:13 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/10 10:55:56 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static void		expand_command(t_command *command)
 {
-	char	**paths;
+	char	**entries;
 
-	if (!(paths = get_paths(command->cmd)))
+	if (!(entries = get_entries(command->cmd)))
 		return ;
 	ft_free(command->cmd);
-	command->cmd = ft_strdup(paths[0]);
-	ft_free_doublestr(paths);
+	command->cmd = ft_strdup(entries[0]);
+	ft_free_doublestr(entries);
 	return ;
 }
 
@@ -16,20 +28,22 @@ static void		expand_argument(t_command *command)
 {
 	int		i;
 	int		j;
-	char	**paths;
+	char	**entries;
 	char	**new_args;
 
 	i = 0;
-	paths = 0;
+	entries = 0;
 	new_args = 0;
 	while (command->arg_list[i])
 	{
-		if ((paths = get_paths(command->arg_list[i])))
+		if ((entries = get_entries(command->arg_list[i])))
 		{
 			j = 0;
-			while (paths[j])
-				ft_realloc_doublestr(&new_args, paths[j++]);
+			while (entries[j])
+				ft_realloc_doublestr(&new_args, entries[j++]);
 		}
+		ft_free_doublestr(entries);
+		entries = NULL;
 		i++;
 	}
 	if (!new_args)
@@ -41,15 +55,15 @@ static void		expand_argument(t_command *command)
 
 static void		expand_redirection(t_redir *redir)
 {
-	char	**paths;
+	char	**entries;
 
-	if (!(paths = get_paths(redir->arg)))
+	if (!(entries = get_entries(redir->arg)))
 		return ;
-	if (ft_len_doublestr(paths) > 1)
-		redir->error = 1;
+	if (ft_len_doublestr(entries) > 1)
+		redir->error = TRUE;
 	else
-		redir->arg = ft_strdup(paths[0]);
-	ft_free_doublestr(paths);
+		redir->arg = ft_strdup(entries[0]);
+	ft_free_doublestr(entries);
 	return ;
 }
 
@@ -63,8 +77,6 @@ static void		expand_job(t_job *job)
 		expand_command(command);
 	if (command->arg_list)
 		expand_argument(command);
-	if (!job->redir_list)
-		return ;
 	redir = job->redir_list;
 	while (redir)
 	{
@@ -72,11 +84,12 @@ static void		expand_job(t_job *job)
 			expand_redirection(redir);
 		redir = redir->next;
 	}
+	return ;
 }
 
-void	expander(t_table *table)
+void			expander(t_table *table)
 {
-	t_job 	*job;
+	t_job	*job;
 
 	job = table->job_list;
 	while (job)

@@ -1,24 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strnew.c                                        :+:      :+:    :+:   */
+/*   ft_mstrjoin.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/05/21 09:23:34 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/09 20:59:58 by eunhkim          ###   ########.fr       */
+/*   Created: 2019/05/21 08:52:21 by fremoor           #+#    #+#             */
+/*   Updated: 2020/07/10 02:11:01 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char		*ft_strnew(size_t size)
+char	*ft_mstrjoin(char *s1, char *s2)
 {
 	char	*str;
+	size_t	len;
 
-	str = (char *)malloc(size + 1);
-	if (str == NULL)
+	if (!s1 || !s2)
 		return (NULL);
-	ft_memset(str, (int)'\0', size + 1);
+	len = ft_strlen(s1) + ft_strlen(s2) + 1;
+	if (!(str = (char *)malloc(sizeof(char) * len)))
+		return (NULL);
+	ft_strcpy(str, s1);
+	ft_strcat(str, s2);
+	ft_free(s1);
+	ft_free(s2);
 	return (str);
 }

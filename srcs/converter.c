@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   converter.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/09 22:30:27 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/10 19:46:41 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static void		convert_res(char **ret, char *str, int *i, int first)
@@ -19,7 +31,7 @@ static void		convert_env(char **ret, char *str, int *i, int first)
 {
 	char	*name;
 	char	*val;
-	bool	bracket;
+	t_bool	bracket;
 	int		j;
 	char	end;
 
@@ -64,12 +76,12 @@ static void		convert(char **src, int first)
 			opened = 0;
 		else if (opened != '\'' && str[i] == '$' \
 			&& str[i + 1] && !ft_isset(str[i + 1], " \'\""))
-				convert_env(&ret, str, &i, first);
+			convert_env(&ret, str, &i, first);
 		else
 			ft_realloc(&ret, str[i]);
 		i++;
 	}
-	free(str);
+	ft_free(str);
 	*src = ret;
 }
 
@@ -107,13 +119,13 @@ void			converter(t_table *table)
 	t_job	*job;
 	int		first;
 
-	first = 1;
+	first = TRUE;
 	job = table->job_list;
 	while (job)
 	{
 		convert_job(job, first);
 		job = job->next;
-		first = 0;
+		first = FALSE;
 	}
 	return ;
 }

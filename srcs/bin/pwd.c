@@ -10,7 +10,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "execute.h"
 
 void	cmd_pwd(t_command *command)
 {

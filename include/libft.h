@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/09 01:34:54 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/10 19:53:37 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,19 +30,26 @@ typedef struct					s_list
 	struct s_list				*next;
 }								t_list;
 
+/*
+** basic functions
+*/
+
 char							*ft_strchr(const char *s, int c);
 int								ft_strlen(const char *str);
 char							**ft_split(char const *s, char c);
 char							*ft_strdup(const char *src);
 void							*ft_memset(void *data, int c, size_t len);
 void							*ft_calloc(size_t size, size_t count);
-char							*ft_strnstr(const char *s1, const char *s2, size_t len);
+char							*ft_strnstr(const char *s1, const char *s2, \
+								size_t len);
 char							*ft_strcpy(char *dest, const char *src);
 char							*ft_strcat(char *dest, const char *src);
 char							*ft_strjoin(char const *s1, char const *s2);
-char							*ft_strsub(char const *s, unsigned int start, size_t len);
+char							*ft_strsub(char const *s, unsigned int start, \
+								size_t len);
 int								ft_strcmp(const char *s1, const char *s2);
-int								ft_strncmp(const char *s1, const char *s2, size_t n);
+int								ft_strncmp(const char *s1, const char *s2, \
+								size_t n);
 void							ft_putstr_fd(char *str, int fd);
 int								ft_isspace(int c);
 int								ft_isascii(int c);
@@ -52,17 +59,23 @@ int								ft_isprint(int c);
 int								ft_isset(int c, char *set);
 int								ft_atoi(char *str);
 char							*ft_realloc(char **ptr, char c);
-void							*ft_memcpy(void *dst, const void *src, size_t n);
+void							*ft_memcpy(void *dst, const void *src, \
+								size_t n);
 char							*ft_itoa(t_llint n);
 void							ft_putendl_fd(char *s, int fd);
 char							*ft_strrchr(const char *s, int c);
 
-// bonus
-void							ft_sort_doublestr(char **strs, int start, int last);
+/*
+** special functinos
+*/
+
+void							ft_sort_doublestr(char **strs, int start, \
+								int last);
 int								ft_len_doublestr(char **arr);
 char							**ft_dup_doublestr(char **arr);
 int								ft_free_doublestr(char **double_arr);
-char							**ft_realloc_doublestr(char ***strs_ref, char *item);
+char							**ft_realloc_doublestr(char ***strs_ref, \
+								char *item);
 int								ft_startswith(const char *str, const char *sub);
 char							*ft_strnew(size_t size);
 int								ft_in(char *item, char *list);
@@ -73,7 +86,8 @@ int								ft_free(void *ptr);
 int								ft_isright_quote(char *src);
 int								ft_isright_envbracket(char *src);
 char							**ft_remove_doublestr(char **str, int idx);
-char							*ft_strsjoin(char *s1, char *s2, char *s3, char *s4);
+char							*ft_strsjoin(char *s1, char *s2, char *s3, \
+								char *s4);
 int								ft_isformat2(char *str, char *format);
-
+char							*ft_mstrjoin(char *s1, char *s2);
 #endif

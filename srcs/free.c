@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/10 11:56:58 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/10 19:43:35 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static void		free_redir_list(t_redir *redir)
@@ -9,11 +21,11 @@ static void		free_redir_list(t_redir *redir)
 	while (redir)
 	{
 		if (redir->sign)
-			free(redir->sign);
+			ft_free(redir->sign);
 		if (redir->arg)
-			free(redir->arg);
+			ft_free(redir->arg);
 		temp = redir->next;
-		free(redir);
+		ft_free(redir);
 		redir = temp;
 	}
 }
@@ -27,19 +39,18 @@ static void		free_job_list(t_job *job)
 	while (job)
 	{
 		if (job->command.cmd)
-			free(job->command.cmd);
+			ft_free(job->command.cmd);
 		if (job->command.arg_list)
 			ft_free_doublestr(job->command.arg_list);
 		if (job->redir_list)
 			free_redir_list(job->redir_list);
 		temp = job->next;
-		free(job);
+		ft_free(job);
 		job = temp;
 	}
-
 }
 
-void			free_table(t_table *table)
+void			free_tables(t_table *table)
 {
 	t_table		*temp;
 
@@ -50,9 +61,9 @@ void			free_table(t_table *table)
 		if (table->job_list)
 			free_job_list(table->job_list);
 		temp = table->next;
-		free(table);
+		ft_free(table);
 		table = temp;
 	}
-	free(table);
+	ft_free(table);
 	return ;
 }

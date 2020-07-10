@@ -1,11 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/10 02:14:07 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/10 09:28:23 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 char	*get_content(t_redir *redir)
 {
-	char 	*line;
-	char 	*endstr;
-	char 	*doc;
-	char	*temp;
+	char	*line;
+	char	*endstr;
+	char	*doc;
 
 	endstr = ft_strjoin(redir->arg, "\n");
 	line = 0;
@@ -15,18 +26,17 @@ char	*get_content(t_redir *redir)
 	{
 		if (!ft_strcmp(line, endstr))
 			break ;
-		temp = ft_strjoin(doc, line);
-		free(doc);
-		doc = temp;
+		doc = ft_mstrjoin(doc, line);
+		line = 0;
 		write(1, "> ", 2);
 	}
-	free(endstr);
+	ft_free(endstr);
 	return (doc);
 }
 
 void	convert_heredoc(t_redir *redir)
 {
-	char 	*heredoc;
+	char	*heredoc;
 	int		fd;
 
 	heredoc = get_content(redir);

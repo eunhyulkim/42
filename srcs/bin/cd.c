@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include "execute.h"
 
 void	cmd_cd(t_command *command)
 {

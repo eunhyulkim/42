@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/29 14:45:07 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/03 03:16:49 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/09 21:08:30 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ static void		tab_init(t_tokenizer *tab)
 	tab->qidx = 0;
 	tab->start = -1;
 	tab->prev = 0;
-	tab->quote = 0;
+	tab->quote = FALSE;
 }
 
-static char 	get_quote(char *line, int idx)
+static char		get_quote(char *line, int idx)
 {
 	char	quote;
 
@@ -67,7 +67,7 @@ static	int		is_end(char *line, t_tokenizer *tab)
 	if (!line || tab->start == -1)
 		return (FALSE);
 	if (line[i] == tab->quote && tab->qidx != i)
-		tab->quote = 0;
+		tab->quote = FALSE;
 	if (!line[i + 1] || (!tab->quote && line[i] == '\n'))
 		return (TRUE);
 	if (!tab->quote && line[i + 1] == '\n')
@@ -97,13 +97,14 @@ char			**tokenizer(char *line)
 	tab_init(&tab);
 	while (line[tab.idx])
 	{
+		token = 0;
 		if (is_start(line, &tab))
 			tab.start = tab.idx;
 		if (is_end(line, &tab))
 		{
 			token = ft_strsub(line, tab.start, tab.idx - tab.start + 1);
 			ft_realloc_doublestr(&tokens, token);
-			free(token);
+			ft_free(token);
 			tab.start = -1;
 			tab.prev = 0;
 		}
