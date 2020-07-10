@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 19:58:20 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 20:06:54 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/10 20:34:45 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ int		set_env(char *key, char *val);
 */
 void	cmd_echo(t_command *command);
 void	cmd_env(t_command *command);
-void	cmd_pwd(t_command *command);
+void	cmd_pwd(void);
 void	cmd_export(t_command *command);
 void	cmd_unset(t_command *command);
 void	cmd_exit(t_command *command);

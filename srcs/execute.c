@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/10 19:34:59 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/10 20:35:18 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static void		execute_command(t_command *command)
 	else if (!ft_strcmp(command->cmd, "env"))
 		cmd_env(command);
 	else if (!ft_strcmp(command->cmd, "pwd"))
-		cmd_pwd(command);
+		cmd_pwd();
 	else if (!ft_strcmp(command->cmd, "export"))
 		cmd_export(command);
 	else if (!ft_strcmp(command->cmd, "unset"))
