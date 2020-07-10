@@ -3,20 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 17:03:11 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 19:45:02 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/10 20:07:31 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void			set_res(int res)
-{
-	g_res = res;
-	return ;
-}
 
 static	int		ft_isnumber(char *str)
 {
@@ -27,7 +21,13 @@ static	int		ft_isnumber(char *str)
 	return (*str == '\0');
 }
 
-void	ft_exit(char *line, int status)
+void			set_res(int res)
+{
+	g_res = res;
+	return ;
+}
+
+void			ft_exit(char *line, int status)
 {
 	ft_free(line);
 	ft_putstr_fd("exit\n", 1);
@@ -36,7 +36,7 @@ void	ft_exit(char *line, int status)
 	return ;
 }
 
-void		cmd_exit(t_command *command)
+void			cmd_exit(t_command *command)
 {
 	close_fd_and_pipes();
 	(void)command;
@@ -60,7 +60,7 @@ void		cmd_exit(t_command *command)
 		}
 		else
 			g_res = ft_atoi(command->arg_list[0]);
-	}	
+	}
 	exit(g_res);
 	return ;
 }

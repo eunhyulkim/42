@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/10 19:58:20 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/10 20:06:54 by iwoo             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -39,7 +51,7 @@ char	**tokenizer(char *line);
 ** lexer function
 */
 char	type(char **tokens, int idx);
-int  	token_in(char **tokens, t_lexer *lex, char *format);
+int		token_in(char **tokens, t_lexer *lex, char *format);
 int		lexer(char **tokens);
 
 /*
@@ -105,6 +117,7 @@ void	execute_table(t_table *table);
 void	cmd_execve(t_command *command);
 void	set_res(int res);
 void	ft_exit(char *line, int status);
+void	set_res(int res);
 
 /*
 ** signal functions
@@ -120,11 +133,13 @@ void	free_tables(t_table *table);
 /*
 ** print functions
 */
-void	print_error(char *error_token, char *msg, int res);
 void	error_builtin(char *cmd, char *arg);
+void	error_tokenizer(char *error_token, char *msg, int res);
+void	error_execute(char *error_token, char *msg, int res);
 
 /*
 ** debug functions
 */
 void	print_table(t_table *table);
-# endif
+
+#endif
