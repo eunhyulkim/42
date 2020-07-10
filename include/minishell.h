@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/10 19:58:20 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/10 19:58:41 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -38,7 +50,7 @@ char	**tokenizer(char *line);
 ** lexer function
 */
 char	type(char **tokens, int idx);
-int  	token_in(char **tokens, t_lexer *lex, char *format);
+int		token_in(char **tokens, t_lexer *lex, char *format);
 int		lexer(char **tokens);
 
 /*
@@ -126,4 +138,5 @@ void	error_execute(char *error_token, char *msg, int res);
 ** debug functions
 */
 void	print_table(t_table *table);
-# endif
+
+#endif

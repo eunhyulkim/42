@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/29 22:41:06 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/09 18:41:59 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/10 19:50:05 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ int				get_next_line(int fd, char **line);
 */
 
 char			*ft_strjoin_bfnl(char *s1, char *s2);
-// void			*ft_memset(void *s, int c, size_t n);
 int				ft_strlen_bfnl(char *str);
 int				add_newline_return(char **line);
 
