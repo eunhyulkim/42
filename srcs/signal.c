@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signal.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/10 11:56:09 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/10 11:56:32 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static void		signal_handler_builtin(int signo)
@@ -32,7 +44,7 @@ static void		signal_handler_exec(int signo)
 void			set_exec_signal(void)
 {
 	signal(SIGINT, signal_handler_exec);
-   	signal(SIGQUIT, signal_handler_exec);
+	signal(SIGQUIT, signal_handler_exec);
 	return ;
 }
 

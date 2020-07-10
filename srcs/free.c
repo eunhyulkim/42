@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/10 11:56:58 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/10 11:57:03 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static void		free_redir_list(t_redir *redir)
@@ -36,7 +48,6 @@ static void		free_job_list(t_job *job)
 		free(job);
 		job = temp;
 	}
-
 }
 
 void			free_tables(t_table *table)

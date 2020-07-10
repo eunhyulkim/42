@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   macro.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 20:23:32 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/09 21:35:49 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/10 13:43:26 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,13 @@
 # define NONE			0
 
 /*
-** standard fd
+** fd
 */
 # define STDIN			0
 # define STDOUT			1
+# define STDNRM			0
+# define FDERR			-1
+# define REDIRAMB		-2
 
 /*
 ** file path
@@ -74,9 +77,11 @@
 /*
 ** error msg
 */
-# define	SHELL				"mongshell$ "
+# define	SHELL				"mongshell: "
 # define	LEXER_MSG			"syntax error near unexpected token `"
-
+# define	REDIR_AMB_MSG		"ambiguous redirect"
+# define	REDIR_FDERR_MSG		"No such file or directory"
+# define	PERMISSION_MSG		"permission denied"
 
 /*
 ** builtin command flag

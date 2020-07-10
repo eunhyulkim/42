@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 21:56:13 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/09 22:22:55 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/10 10:55:56 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,9 +87,9 @@ static void		expand_job(t_job *job)
 	return ;
 }
 
-void	expander(t_table *table)
+void			expander(t_table *table)
 {
-	t_job 	*job;
+	t_job	*job;
 
 	job = table->job_list;
 	while (job)

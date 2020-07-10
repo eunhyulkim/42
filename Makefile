@@ -7,20 +7,21 @@ CFLAGS = -Wall -Wextra -Werror
 LIB_DIR = libft/
 LIBLARY = libft.a
 
-MAIN = srcs/main
-MAIN_FILES = display tokenizer lexer parser parser_get_utils \
-			 parser_set_utils free converter debug execute heredoc execve \
-			 expander expander_utils signal error
-BIN_FILES = env echo pwd export unset exit cd
+MAIN_FILES = main display signal tokenizer lexer parser expander converter \
+			 heredoc execute execve free error debug
+UTILS_FILES = parser_get_utils parser_set_utils expander_utils \
+			 fd_utils pipe_utils
+BIN_FILES = cd echo env exit export pwd unset
 GNL_FILES = get_next_line get_next_line_utils
 
-MAIN_PATH = $(addsuffix .c, $(MAIN))
 SRCS_PATH += $(MAIN_FILES)
+SRCS_PATH += $(addprefix utils/, $(UTILS_FILES))
 SRCS_PATH += $(addprefix bin/, $(BIN_FILES))
 SRCS_PATH += $(addprefix get_next_line/, $(GNL_FILES))
 SRCS = $(addprefix srcs/, $(addsuffix .c, $(SRCS_PATH)))
 
-OBJS += $(addsuffix .o, $(MAIN_FILES))
+OBJS = $(addsuffix .o, $(MAIN_FILES))
+OBJS += $(addsuffix .o, $(UTILS_FILES))
 OBJS += $(addsuffix .o, $(BIN_FILES))
 OBJS += $(addsuffix .o, $(GNL_FILES))
 
@@ -36,7 +37,7 @@ ${NAME}: ${OBJS}
 	@echo "$(RESET)Copying ${LIBLARY} to root."
 	@cp ${LIB_DIR}${LIBLARY} .
 	@echo "$(RESET)Compiling ${NAME} to root."
-	@${CC} ${CFLAGS} ${INCLUDES} ${OBJS} ${MAIN_PATH} -o ${NAME} -lft -L.
+	@${CC} ${CFLAGS} ${INCLUDES} ${OBJS} -o ${NAME} -lft -L.
 	@echo "$(GREEN)DONE$(RESET)"
 
 ${OBJS}: ${SRCS}

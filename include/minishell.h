@@ -83,9 +83,23 @@ void	cmd_exit(t_command *command);
 void	cmd_cd(t_command *command);
 
 /*
-** execute functions
+** execute functions with fd
 */
+int		get_fd(t_redir *redir);
+void	save_standard_fd(t_table *table);
+void	redirect_stdout_fd(t_table *table);
+void	restore_standard_fd(t_table *table);
 void	close_fd_and_pipes(void);
+
+/*
+** execute functions with pipe
+*/
+void	dup_pipe(t_job *job, int pidx);
+int		*make_pipes(t_job *job);
+
+/*
+** main execute functions
+*/
 void	execute_table(t_table *table);
 void	cmd_execve(t_command *command);
 void	ft_exit(char *line, int status);

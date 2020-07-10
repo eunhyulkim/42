@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/09 21:38:12 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/10 10:58:42 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,29 +16,29 @@ char		type(char **tokens, int idx)
 {
 	if (!ft_strcmp(tokens[idx], "|"))
 		return (PIPE);
-    if (!ft_strcmp(tokens[idx], "||"))
-        return (OR);
-    if (!ft_strcmp(tokens[idx], "&"))
-        return (EMPER);
-    if (!ft_strcmp(tokens[idx], "&&"))
-        return (AND);
-    if (!ft_strcmp(tokens[idx], ";"))
-        return (SEMI);
-    if (!ft_strcmp(tokens[idx], ";;"))
-        return (DSEMI);
-    if (!ft_strcmp(tokens[idx], ">"))
-        return (GREATER);
-    if (!ft_strcmp(tokens[idx], ">>"))
-        return (DGREATER);
-    if (!ft_strcmp(tokens[idx], "<"))
-        return (LESS);
-    if (!ft_strcmp(tokens[idx], "<<"))
-        return (DLESS);
-    if (ft_isformat(tokens[idx], " +"))
-        return (SPACE);
-    if (ft_isformat(tokens[idx], "d+"))
-        return (NUMBER);
-    return (!ft_strcmp(tokens[idx], "\n") ? ENTER : STRING);
+	if (!ft_strcmp(tokens[idx], "||"))
+		return (OR);
+	if (!ft_strcmp(tokens[idx], "&"))
+		return (EMPER);
+	if (!ft_strcmp(tokens[idx], "&&"))
+		return (AND);
+	if (!ft_strcmp(tokens[idx], ";"))
+		return (SEMI);
+	if (!ft_strcmp(tokens[idx], ";;"))
+		return (DSEMI);
+	if (!ft_strcmp(tokens[idx], ">"))
+		return (GREATER);
+	if (!ft_strcmp(tokens[idx], ">>"))
+		return (DGREATER);
+	if (!ft_strcmp(tokens[idx], "<"))
+		return (LESS);
+	if (!ft_strcmp(tokens[idx], "<<"))
+		return (DLESS);
+	if (ft_isformat(tokens[idx], " +"))
+		return (SPACE);
+	if (ft_isformat(tokens[idx], "d+"))
+		return (NUMBER);
+	return (!ft_strcmp(tokens[idx], "\n") ? ENTER : STRING);
 }
 
 static int	check_seq(char **tokens, t_lexer *lex)
@@ -47,9 +47,9 @@ static int	check_seq(char **tokens, t_lexer *lex)
 	int		j;
 	char	c;
 
-    i = -1;
-    while (++i < 2)
-    {
+	i = -1;
+	while (++i < 2)
+	{
 		j = -1;
 		while (lex->format[i][++j])
 		{
@@ -65,16 +65,16 @@ static int	check_seq(char **tokens, t_lexer *lex)
 		}
 		if (lex->res == FALSE)
 			break ;
-    }
+	}
 	ft_free_doublestr(lex->format);
-    return (lex->res != FALSE);
+	return (lex->res != FALSE);
 }
 
 int			token_in(char **tokens, t_lexer *lex, char *format)
 {
-    lex->i = -1;
-    lex->seqs = ft_split(format, ',');
-    lex->j = 0;
+	lex->i = -1;
+	lex->seqs = ft_split(format, ',');
+	lex->j = 0;
 	while (lex->seqs[lex->j])
 	{
 		lex->format = ft_split(lex->seqs[lex->j], '-');
@@ -84,12 +84,12 @@ int			token_in(char **tokens, t_lexer *lex, char *format)
 		lex->j++;
 	}
 	ft_free_doublestr(lex->seqs);
-    return (0);
+	return (0);
 }
 
 static int	is_valid_token(char **tokens, t_lexer *lex)
 {
-    if (lex->type == DSEMI || lex->type == EMPER)
+	if (lex->type == DSEMI || lex->type == EMPER)
 		return (FALSE);
 	if (lex->type == STRING && !ft_isright_quote(tokens[lex->idx]))
 		return (FALSE);
@@ -101,10 +101,10 @@ static int	is_valid_token(char **tokens, t_lexer *lex)
 		return (!token_in(tokens, lex, FRONT_REDIR_BACK_X));
 	if (ft_isset(lex->type, "NCS"))
 		return (TRUE);
-    if (lex->type != SEMI && token_in(tokens, lex, NO_BACK_ARG))
-	    return (FALSE);
-    if (!token_in(tokens, lex, FRONT_ALNUM))
-	    return (FALSE);
+	if (lex->type != SEMI && token_in(tokens, lex, NO_BACK_ARG))
+		return (FALSE);
+	if (!token_in(tokens, lex, FRONT_ALNUM))
+		return (FALSE);
 	return (TRUE);
 }
 
@@ -120,16 +120,16 @@ int			lexer(char **tokens)
 	{
 		lex->type = type(tokens, lex->idx);
 		if (!is_valid_token(tokens, lex))
-        {
+		{
 			if (!ft_strcmp(tokens[lex->idx], "\n"))
 				error_token = "newline";
 			else
 				error_token = tokens[lex->idx];
 			print_error(error_token, LEXER_MSG, 258);
-            ft_free(lex);
-			return (FALSE);	
-        }
-        lex->idx++;
+			ft_free(lex);
+			return (FALSE);
+		}
+		lex->idx++;
 	}
 	ft_free(lex);
 	return (TRUE);

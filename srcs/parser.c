@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/09 21:49:06 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/10 10:23:44 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,10 @@ static void		create_redir(char **tokens, t_lexer *lexer, \
 	new_redir->sign = ft_strdup(tokens[lexer->idx]);
 	if (parser->fd == TRUE)
 		new_redir->fd = ft_atoi(tokens[lexer->idx - 1]);
-	else
+	else if (ft_isset(lexer->type, "GH"))
 		new_redir->fd = 1;
+	else
+		new_redir->fd = 0;
 	parser->fd = FALSE;
 	last_redir = get_last_redir(table);
 	if (!last_redir)
