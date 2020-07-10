@@ -103,6 +103,7 @@ int		*make_pipes(t_job *job);
 void	execute_table(t_table *table);
 void	cmd_execve(t_command *command);
 void	ft_exit(char *line, int status);
+void	set_res(int res);
 
 /*
 ** signal functions
@@ -118,7 +119,8 @@ void	free_tables(t_table *table);
 /*
 ** print functions
 */
-void	print_error(char *error_token, char *msg, int res);
+void	error_tokenizer(char *error_token, char *msg, int res);
+void	error_execute(char *error_token, char *msg, int res);
 
 /*
 ** debug functions

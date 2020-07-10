@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 20:23:32 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 13:43:26 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/10 19:00:11 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,8 +80,11 @@
 # define	SHELL				"mongshell: "
 # define	LEXER_MSG			"syntax error near unexpected token `"
 # define	REDIR_AMB_MSG		"ambiguous redirect"
-# define	REDIR_FDERR_MSG		"No such file or directory"
+# define	NOT_FOUND_MSG		"No such file or directory"
 # define	PERMISSION_MSG		"permission denied"
+# define	FORK_MSG			"Fork failed for new process"
+# define	NOT_CMD_MSG			"command not found"
+# define	ISDRR_MSG			"is a directory"
 
 /*
 ** builtin command flag
