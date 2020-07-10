@@ -6,7 +6,7 @@
 /*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 20:27:07 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/10 20:29:11 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/10 21:33:10 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ void	cmd_env(t_command *command)
 	int		i;
 
 	if (command->arg_list)
-		return (error_builtin("env", command->arg_list[0]));
+		return (error_builtin("env", command->arg_list[0], TOO_MANY_ARG));
 	i = 0;
 	while (g_env[i])
 		ft_putendl_fd(g_env[i++], 1);

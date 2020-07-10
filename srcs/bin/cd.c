@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cd.c                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/10 21:34:02 by iwoo              #+#    #+#             */
+/*   Updated: 2020/07/10 21:34:23 by iwoo             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static void	set_pwd_and_res(char *path)
@@ -17,10 +29,10 @@ void		cmd_cd(t_command *command)
 	{
 		home_path = get_env("HOME");
 		if (chdir(home_path) == -1)
-			return (error_builtin("cd", ""));
+			return (error_builtin("cd", "", ""));
 		return (set_pwd_and_res(home_path));
 	}
 	if (chdir(command->arg_list[0]) == -1)
-		return (error_builtin("cd", command->arg_list[0]));
+		return (error_builtin("cd", command->arg_list[0], ""));
 	return (set_pwd_and_res(command->arg_list[0]));
 }

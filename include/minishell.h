@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 19:58:20 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 20:34:45 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/10 20:50:49 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ void	free_tables(t_table *table);
 /*
 ** print functions
 */
-void	error_builtin(char *cmd, char *arg);
+void	error_builtin(char *cmd, char *arg, char *msg);
 void	error_tokenizer(char *error_token, char *msg, int res);
 void	error_execute(char *error_token, char *msg, int res);
 

@@ -6,7 +6,7 @@
 /*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 20:42:06 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/10 20:42:09 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/10 21:34:52 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@ void	cmd_pwd(void)
 
 	path = getcwd(NULL, PWD_BUFFER_SIZE);
 	if (!path)
-		return (error_builtin("env", ""));
+		return (error_builtin("env", "", FAIL_TO_GET_PATH));
 	ft_putendl_fd(path, 1);
 	ft_free(path);
-	return (set_res(0)); 
+	return (set_res(0));
 }
