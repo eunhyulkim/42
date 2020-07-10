@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 17:03:11 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/09 20:48:08 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/10 15:41:35 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,8 @@
 
 static	int		ft_isnumber(char *str)
 {
-	int		i;
-
 	if (!str || !(*str))
 		return (FALSE);
-	i = 0;
 	while (*str && *str >= 48 && *str <= 57)
 		str++;
 	return (*str == '\0');

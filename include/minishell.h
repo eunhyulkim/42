@@ -10,6 +10,7 @@
 # include <signal.h>
 # include <sys/types.h>
 # include <sys/stat.h>
+# include <sys/wait.h>
 # include <dirent.h>
 # include <string.h>
 # include "libft.h"
@@ -119,6 +120,7 @@ void	free_tables(t_table *table);
 ** print functions
 */
 void	print_error(char *error_token, char *msg, int res);
+void	error_cmd(char *cmd, char *arg);
 
 /*
 ** debug functions
