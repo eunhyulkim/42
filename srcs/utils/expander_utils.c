@@ -6,13 +6,13 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 10:52:31 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 10:52:31 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:08:47 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int		has_wild(char *str)
+static t_bool	has_wild(char *str)
 {
 	if (!ft_strchr(str, '*'))
 		return (0);

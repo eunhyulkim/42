@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/11 21:18:18 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:10:31 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ char		type(char **tokens, int idx)
 	return (!ft_strcmp(tokens[idx], "\n") ? ENTER : STRING);
 }
 
-static int	check_seq(char **tokens, t_lexer *lex)
+static t_bool	check_seq(char **tokens, t_lexer *lex)
 {
 	int		i;
 	int		j;
@@ -87,7 +87,7 @@ int			token_in(char **tokens, t_lexer *lex, char *format)
 	return (0);
 }
 
-static int	is_valid_token(char **tokens, t_lexer *lex)
+static t_bool	is_valid_token(char **tokens, t_lexer *lex)
 {
 	if (lex->type == DSEMI || lex->type == EMPER)
 		return (FALSE);
