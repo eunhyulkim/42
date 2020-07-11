@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 10:48:20 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/11 22:48:23 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 23:45:29 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 int		get_fd(t_redir *redir)
 {
 	int		fd;
+	char	*temp_path;
 
 	fd = -1;
 	if (redir->error)
@@ -26,7 +27,11 @@ int		get_fd(t_redir *redir)
 	else if (!(ft_strcmp(redir->sign, "<")))
 		fd = open(redir->arg, O_RDWR);
 	else if (!(ft_strcmp(redir->sign, "<<")))
-		fd = open(TEMP_PATH, O_RDWR);
+	{
+		temp_path = get_config_path(TEMP_PATH);
+		fd = open(temp_path, O_RDWR);
+		ft_free_str(&temp_path);
+	}
 	if (fd > g_maxfd)
 		g_maxfd = fd;
 	return (fd);

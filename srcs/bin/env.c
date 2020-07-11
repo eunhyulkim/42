@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 20:27:07 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/11 22:41:29 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 23:32:58 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,11 +75,17 @@ char	*get_env(char *wild_key)
 
 void	init_env(int ac, char *av[], char **env)
 {
+	char	*temp_root;
+
 	(void)ac;
 	(void)av;
 	set_res(0);
 	g_maxfd = 2;
 	g_env = (char **)ft_dup_doublestr(env);
+	temp_root = getcwd(NULL, PWD_BUFFER_SIZE);
+	set_env("TEMP_ROOT", temp_root);
+	ft_free_str(&temp_root);
+	return ;
 }
 
 void	cmd_env(t_command *command)
