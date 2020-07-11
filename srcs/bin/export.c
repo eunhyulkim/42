@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 22:37:39 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/10 22:43:33 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/11 21:51:59 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,7 @@ static int	export_arg(char *arg)
 	char	*key;
 	char	*val;
 
-	if (arg[0] >= '0' && arg[0] <= '9')
-		return (FALSE);
-	if (arg[0] == '=' || arg[0] == '+')
+	if (!arg || ft_isnum(arg[0]) || ft_isset(arg[0], "=+"))
 		return (FALSE);
 	if (!(mid = ft_strchr(arg, '=')))
 		return (TRUE);

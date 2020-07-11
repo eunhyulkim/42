@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 21:34:17 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/10 19:46:46 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 21:26:05 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ static int		print_ascii_art(void)
 
 	if ((fd = open(ASCIIART_PATH, O_RDONLY)) < 0)
 		return (0);
+	line = 0;
 	while (get_next_line(fd, &line))
 	{
 		ft_putstr_fd(line, 1);
@@ -46,7 +47,7 @@ static int		print_ascii_art(void)
 void			display_logo(void)
 {
 	if (!(print_ascii_art()))
-		ft_putstr_fd("Failed print ascii art\n", 1);
+		ft_putendl_fd(NOT_PRINT_ASCII, 1);
 }
 
 void			display_prompt(void)

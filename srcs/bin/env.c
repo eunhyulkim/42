@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 20:27:07 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/10 21:33:10 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/11 20:27:59 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,7 @@ int		set_env(char *key, char *val)
 	if (!key || !(*key))
 		return (FALSE);
 	idx = get_key_idx(key);
-	key = ft_strjoin(key, "=");
-	item = ft_strjoin(key, val);
-	ft_free(key);
+	item = ft_strsjoin(key, "=", val, 0);
 	if (idx == -1)
 	{
 		ft_realloc_doublestr(&g_env, item);
@@ -79,7 +77,6 @@ void	init_env(int ac, char *av[], char **env)
 {
 	(void)ac;
 	(void)av;
-	g_stdin = 1;
 	set_res(0);
 	g_maxfd = 2;
 	g_env = (char **)ft_dup_doublestr(env);

@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 21:56:13 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 10:55:56 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 20:56:29 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static void		expand_argument(t_command *command)
 				ft_realloc_doublestr(&new_args, entries[j++]);
 		}
 		ft_free_doublestr(entries);
-		entries = NULL;
+		entries = 0;
 		i++;
 	}
 	if (!new_args)
@@ -62,7 +62,10 @@ static void		expand_redirection(t_redir *redir)
 	if (ft_len_doublestr(entries) > 1)
 		redir->error = TRUE;
 	else
+	{
+		ft_free(redir->arg);
 		redir->arg = ft_strdup(entries[0]);
+	}
 	ft_free_doublestr(entries);
 	return ;
 }

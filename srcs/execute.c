@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/10 20:35:18 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/11 20:20:59 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ static int		execute_redirection(t_table *table, t_job *job)
 		if ((fd = get_fd(redir)) >= STDNRM)
 			dup2(fd, redir->fd);
 		else if (fd == REDIRAMB)
-			error_execute(redir->arg, REDIR_AMB_MSG, 1);
+			error_execute(redir->arg, REDIR_AMBIGOUS, 1);
 		else if (fd == FDERR)
-			error_execute(redir->arg, NOT_FOUND_MSG, 1);
+			error_execute(redir->arg, NO_SUCH_ENTRY, 1);
 		if (fd == REDIRAMB || fd == FDERR)
 			return (0);
 		redir = redir->next;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 21:34:30 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/10 21:34:31 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/11 21:48:28 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,21 +36,21 @@ void	print_echo_args(char **arg_list, int n_option)
 
 void	cmd_echo(t_command *cmd)
 {
-	int		arg_era;
+	int		len;
 	char	**start_arg;
 	int		n_option;
 
-	arg_era = ft_len_doublestr(cmd->arg_list);
+	len = ft_len_doublestr(cmd->arg_list);
 	start_arg = cmd->arg_list;
 	n_option = FALSE;
-	if (arg_era == 0)
+	if (len == 0)
 	{
 		ft_putstr_fd("\n", 1);
 		return (set_res(0));
 	}
 	if (!ft_strcmp(cmd->arg_list[0], "-n"))
 	{
-		if (arg_era == 1)
+		if (len == 1)
 			return ;
 		n_option = TRUE;
 		start_arg++;

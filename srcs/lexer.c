@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 19:35:16 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 21:18:18 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ int			lexer(char **tokens)
 				error_token = "newline";
 			else
 				error_token = tokens[lex->idx];
-			error_tokenizer(error_token, LEXER_MSG, 258);
+			error_tokenizer(error_token, LEXER_ERROR, 258);
 			ft_free(lex);
 			return (FALSE);
 		}

@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 19:53:37 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 20:26:17 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ void							*ft_memcpy(void *dst, const void *src, \
 char							*ft_itoa(t_llint n);
 void							ft_putendl_fd(char *s, int fd);
 char							*ft_strrchr(const char *s, int c);
+int								ft_isnumber(char *str);
 
 /*
 ** special functinos
