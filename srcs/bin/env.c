@@ -1,7 +1,16 @@
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/10 20:27:07 by iwoo              #+#    #+#             */
+/*   Updated: 2020/07/10 21:33:10 by iwoo             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-// if key exist in env but value is not, return empty string pointer
-// if key not in env, return null
+#include "minishell.h"
 
 int		get_key_idx(char *key)
 {
@@ -26,22 +35,22 @@ int		set_env(char *key, char *val)
 	char	*item;
 
 	if (!key || !(*key))
-		return (0);
+		return (FALSE);
 	idx = get_key_idx(key);
 	key = ft_strjoin(key, "=");
 	item = ft_strjoin(key, val);
-	free(key);
-	if (idx != -1)
+	ft_free(key);
+	if (idx == -1)
 	{
-		free(g_env[idx]);
-		g_env[idx] = item;
+		ft_realloc_doublestr(&g_env, item);
+		ft_free(item);
 	}
 	else
 	{
-		ft_realloc_doublestr(&g_env, item);
-		free(item);
+		ft_free(g_env[idx]);
+		g_env[idx] = item;
 	}
-	return (1);
+	return (TRUE);
 }
 
 char	*get_env(char *wild_key)
@@ -58,11 +67,11 @@ char	*get_env(char *wild_key)
 		key = ft_strdup(wild_key);
 	if ((key_idx = get_key_idx(key)) == -1)
 	{
-		free(key);
+		ft_free(key);
 		return (0);
 	}
 	val_idx = ft_strlen(key) + 1;
-	free(key);
+	ft_free(key);
 	return (g_env[key_idx] + val_idx);
 }
 
@@ -71,7 +80,7 @@ void	init_env(int ac, char *av[], char **env)
 	(void)ac;
 	(void)av;
 	g_stdin = 1;
-	g_res = 0;
+	set_res(0);
 	g_maxfd = 2;
 	g_env = (char **)ft_dup_doublestr(env);
 }
@@ -81,19 +90,9 @@ void	cmd_env(t_command *command)
 	int		i;
 
 	if (command->arg_list)
-	{
-		ft_putstr_fd("env: ", 1);
-		ft_putstr_fd(command->arg_list[0], 1);
-		ft_putstr_fd(": env working with no argument and option.\n", 1);
-		g_res = 127;
-		return ;
-	}
+		return (error_builtin("env", command->arg_list[0], TOO_MANY_ARG));
 	i = 0;
 	while (g_env[i])
-	{
-		ft_putstr_fd(g_env[i++], 1);
-		ft_putstr_fd("\n", 1);
-	}
-	g_res = 0;
-	return ;
+		ft_putendl_fd(g_env[i++], 1);
+	return (set_res(0));
 }

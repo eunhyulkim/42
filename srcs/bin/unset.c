@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   unset.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: iwoo <iwoo@student.42seoul.kr>             +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/10 22:12:34 by iwoo              #+#    #+#             */
+/*   Updated: 2020/07/10 22:12:47 by iwoo             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-static int		unset_arg(char *key)
+static int	unset_arg(char *key)
 {
 	int		idx;
 
@@ -26,12 +38,7 @@ void		cmd_unset(t_command *command)
 	while (command->arg_list[i])
 	{
 		if (!unset_arg(command->arg_list[i]))
-		{
-			ft_putstr_fd("mongshell: unset: `", 1);
-			ft_putstr_fd(command->arg_list[i], 1);
-			ft_putendl_fd("\': not a valid identifier", 1);
-			g_res = 1;
-		}
+			error_builtin("unset", command->arg_list[i], INVALID_IDENTIFIER);
 		else
 			g_res = (g_res == 1) ? 1 : 0;
 		i++;

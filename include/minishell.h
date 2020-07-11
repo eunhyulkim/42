@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 19:58:20 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 19:58:41 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 13:38:35 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # include <signal.h>
 # include <sys/types.h>
 # include <sys/stat.h>
+# include <sys/wait.h>
 # include <dirent.h>
 # include <string.h>
 # include "libft.h"
@@ -88,7 +89,7 @@ int		set_env(char *key, char *val);
 */
 void	cmd_echo(t_command *command);
 void	cmd_env(t_command *command);
-void	cmd_pwd(t_command *command);
+void	cmd_pwd(void);
 void	cmd_export(t_command *command);
 void	cmd_unset(t_command *command);
 void	cmd_exit(t_command *command);
@@ -114,8 +115,8 @@ int		*make_pipes(t_job *job);
 */
 void	execute_table(t_table *table);
 void	cmd_execve(t_command *command);
-void	ft_exit(char *line, int status);
 void	set_res(int res);
+void	ft_exit(char *line, int status);
 
 /*
 ** signal functions
@@ -131,6 +132,7 @@ void	free_tables(t_table *table);
 /*
 ** print functions
 */
+void	error_builtin(char *cmd, char *arg, char *msg);
 void	error_tokenizer(char *error_token, char *msg, int res);
 void	error_execute(char *error_token, char *msg, int res);
 

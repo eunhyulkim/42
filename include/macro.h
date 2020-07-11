@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 20:23:32 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 19:55:13 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/10 22:10:02 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,12 @@
 # define NOT_FOUND_MSG		"No such file or directory"
 # define PERMISSION_MSG		"permission denied"
 # define FORK_MSG			"Fork failed for new process"
-# define NOT_CMD_MSG			"command not found"
+# define NOT_CMD_MSG		"command not found"
 # define ISDRR_MSG			"is a directory"
+# define TOO_MANY_ARG		": too many arguments"
+# define FAIL_TO_GET_PATH	": Faild to get path, please check 'PWD_BUFFER_SIZE'"
+# define NUMERIC_REQUIRED	": numeric argument required"
+# define INVALID_IDENTIFIER	"\': not a valid identifier"
 
 /*
 ** builtin command flag
