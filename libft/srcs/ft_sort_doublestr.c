@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_sort_doublestr.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/11 22:13:49 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/11 22:13:49 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
 static void		swap(char **strs, int i, int j)
@@ -12,8 +24,8 @@ static void		swap(char **strs, int i, int j)
 static int		partition(char **strs, int left, int right)
 {
 	char	*pivot;
-	int 	low;
-	int 	high;
+	int		low;
+	int		high;
 
 	pivot = strs[left];
 	low = left + 1;
@@ -31,7 +43,7 @@ static int		partition(char **strs, int left, int right)
 	return (high);
 }
 
-void	ft_sort_doublestr(char **strs, int left, int right)
+void			ft_sort_doublestr(char **strs, int left, int right)
 {
 	int	pivot;
 

@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 20:23:32 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/11 21:29:58 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:11:50 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@
 # define NOT_CMD_FOUND		"command not found"
 # define EXECUTE_DRECTORY	"is a directory"
 # define TOO_MANY_ARG		": too many arguments"
-# define FAIL_TO_GET_PATH	": Faild to get path, please check 'PWD_BUFFER_SIZE'"
+# define FAIL_TO_GET_PATH	": Faild to get path, check 'PWD_BUFFER_SIZE'"
 # define NUMERIC_REQUIRED	": numeric argument required"
 # define INVALID_IDENTIFIER	"\': not a valid identifier"
 

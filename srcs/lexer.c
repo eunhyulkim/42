@@ -6,13 +6,13 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/11 22:10:31 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:15:17 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char		type(char **tokens, int idx)
+char			type(char **tokens, int idx)
 {
 	if (!ft_strcmp(tokens[idx], "|"))
 		return (PIPE);
@@ -70,7 +70,7 @@ static t_bool	check_seq(char **tokens, t_lexer *lex)
 	return (lex->res != FALSE);
 }
 
-int			token_in(char **tokens, t_lexer *lex, char *format)
+int				token_in(char **tokens, t_lexer *lex, char *format)
 {
 	lex->i = -1;
 	lex->seqs = ft_split(format, ',');
@@ -108,7 +108,7 @@ static t_bool	is_valid_token(char **tokens, t_lexer *lex)
 	return (TRUE);
 }
 
-int			lexer(char **tokens)
+int				lexer(char **tokens)
 {
 	t_lexer		*lex;
 	char		*error_token;
