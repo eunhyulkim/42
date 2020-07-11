@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 19:58:20 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 20:50:49 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/11 13:38:35 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,6 @@ void	execute_table(t_table *table);
 void	cmd_execve(t_command *command);
 void	set_res(int res);
 void	ft_exit(char *line, int status);
-void	set_res(int res);
 
 /*
 ** signal functions
