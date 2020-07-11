@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/29 14:45:07 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/11 20:44:06 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:41:29 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ char			**tokenizer(char *line)
 		{
 			token = ft_strsub(line, tab.start, tab.idx - tab.start + 1);
 			ft_realloc_doublestr(&tokens, token);
-			ft_free(token);
+			ft_free_str(&token);
 			tab.start = -1;
 			tab.prev = 0;
 		}

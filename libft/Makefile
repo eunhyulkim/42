@@ -15,7 +15,7 @@ BONUS_FILES = ft_dup_doublestr ft_len_doublestr ft_free_doublestr \
 			  ft_realloc_doublestr ft_startswith ft_isformat ft_in \
 			  ft_isitem ft_strreverse ft_free ft_isright_quote \
 			  ft_isright_envbracket ft_sort_doublestr ft_remove_doublestr \
-			  ft_strsjoin ft_isformat2 ft_mstrjoin
+			  ft_strsjoin ft_isformat2 ft_mstrjoin ft_free_str ft_free_intptr
 
 TEST_FILE = test/ft_isformat2_test.c
 
