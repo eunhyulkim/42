@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/26 02:29:00 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/06 12:52:50 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:49:49 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,6 @@ char	**ft_remove_doublestr(char **str, int idx)
 			return (0);
 		i++;
 	}
-	ft_free_doublestr(str);
+	ft_free_doublestr(&str);
 	return (ret);
 }

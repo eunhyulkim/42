@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 22:37:39 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/11 21:51:59 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:41:29 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void	print_sorted_env(void)
 		ft_putstr_fd("declare -x ", 1);
 		ft_putendl_fd(sort_env[i], 1);
 	}
-	ft_free_doublestr(sort_env);
+	ft_free_doublestr(&sort_env);
 	set_res(0);
 	return ;
 }
@@ -43,8 +43,8 @@ static int	export_arg(char *arg)
 	key = ft_strsub(arg, 0, mid - arg);
 	val = ft_strsub(arg, mid - arg + 1, ft_strlen(arg) - ft_strlen(key));
 	set_env(key, val);
-	ft_free(key);
-	ft_free(val);
+	ft_free_str(&key);
+	ft_free_str(&val);
 	return (TRUE);
 }
 

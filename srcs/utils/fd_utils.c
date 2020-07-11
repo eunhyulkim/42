@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 10:48:20 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 10:48:28 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:48:23 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,5 +59,5 @@ void	close_fd_and_pipes(void)
 {
 	while (g_maxfd > 2)
 		close(g_maxfd--);
-	ft_free(g_pipes);
+	ft_free_intptr(&g_pipes);
 }

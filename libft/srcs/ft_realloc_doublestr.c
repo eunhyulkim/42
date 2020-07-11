@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 21:45:20 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/06 10:01:02 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:38:50 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,6 @@ char	**ft_realloc_doublestr(char ***strs_ref, char *item)
 		if (!(ret[len] = ft_strdup(strs[len])))
 			return (0);
 	*strs_ref = ret;
-	ft_free_doublestr(strs);
+	ft_free_doublestr(&strs);
 	return (ret);
 }

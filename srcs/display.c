@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 21:34:17 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/11 21:26:05 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:41:29 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,11 @@ static int		print_ascii_art(void)
 	while (get_next_line(fd, &line))
 	{
 		ft_putstr_fd(line, 1);
-		ft_free(line);
+		ft_free_str(&line);
 	}
 	ft_putstr_fd(line, 1);
 	ft_putstr_fd("\n", 1);
-	ft_free(line);
+	ft_free_str(&line);
 	close(fd);
 	return (1);
 }

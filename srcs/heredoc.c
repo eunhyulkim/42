@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 02:14:07 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/11 22:01:08 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 23:05:07 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ char	*get_content(t_redir *redir)
 		line = 0;
 		write(1, "> ", 2);
 	}
-	ft_free(endstr);
+	ft_free_str(&line);
+	ft_free_str(&endstr);
 	return (doc);
 }
 
@@ -43,6 +44,7 @@ void	convert_heredoc(t_redir *redir)
 	if ((fd = open(TEMP_PATH, O_RDWR | O_CREAT | O_TRUNC, 0644)) < 0)
 		return ;
 	write(fd, heredoc, ft_strlen(heredoc));
+	ft_free_str(&heredoc);
 	close(fd);
 	return ;
 }

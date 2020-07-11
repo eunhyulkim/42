@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 20:27:07 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/11 20:27:59 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:41:29 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,11 @@ int		set_env(char *key, char *val)
 	if (idx == -1)
 	{
 		ft_realloc_doublestr(&g_env, item);
-		ft_free(item);
+		ft_free_str(&item);
 	}
 	else
 	{
-		ft_free(g_env[idx]);
+		ft_free_str(&g_env[idx]);
 		g_env[idx] = item;
 	}
 	return (TRUE);
@@ -65,11 +65,11 @@ char	*get_env(char *wild_key)
 		key = ft_strdup(wild_key);
 	if ((key_idx = get_key_idx(key)) == -1)
 	{
-		ft_free(key);
+		ft_free_str(&key);
 		return (0);
 	}
 	val_idx = ft_strlen(key) + 1;
-	ft_free(key);
+	ft_free_str(&key);
 	return (g_env[key_idx] + val_idx);
 }
 

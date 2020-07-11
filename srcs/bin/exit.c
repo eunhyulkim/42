@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 17:03:11 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/11 20:29:38 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:41:29 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@ void			set_res(int res)
 void			ft_exit(char *line, int status)
 {
 	close_fd_and_pipes();
-	ft_free(line);
+	ft_free_str(&line);
 	ft_putendl_fd("exit", 1);
-	ft_free_doublestr(g_env);
+	ft_free_doublestr(&g_env);
 	exit(status);
 }
 
