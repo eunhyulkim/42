@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 19:58:20 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/11 23:47:37 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/12 23:18:27 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,18 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <sys/wait.h>
+# include <sys/ioctl.h>
 # include <dirent.h>
 # include <string.h>
+// # include <term.h>
+// # include <termios.h>
+// # include <glob.h>
+# include <termcap.h>
 # include "libft.h"
 # include "get_next_line.h"
 # include "macro.h"
 # include "types.h"
+# include "termcaps_bonus.h"
 
 char	**g_env;
 int		*g_pipes;

@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/29 22:41:06 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/10 19:50:05 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/12 23:38:23 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ typedef struct	s_buf
 ** get_next_line.c
 */
 
-int				get_next_line(int fd, char **line);
+int				get_next_line(int fd, char **line, int ret_opt);
 
 /*
 ** get_next_line_util.c

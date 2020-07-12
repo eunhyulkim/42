@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 20:23:32 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/11 22:11:50 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/12 23:44:14 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 ** file path
 */
 # define TEMP_PATH		"config/temp.txt"
+# define HISTORY_PATH	"config/history.txt"
 # define ASCIIART_PATH	"config/mongshell_ascii_art"
 
 /*
@@ -100,13 +101,18 @@
 /*
 ** color
 */
-# define KNRM  "\x1B[0m"
-# define KRED  "\x1B[31m"
-# define KGRN  "\x1B[32m"
-# define KYEL  "\x1B[33m"
-# define KBLU  "\x1B[34m"
-# define KMAG  "\x1B[35m"
-# define KCYN  "\x1B[36m"
-# define KWHT  "\x1B[37m"
+# define KNRM "\x1B[0m"
+# define KRED "\x1B[31m"
+# define KGRN "\x1B[32m"
+# define KYEL "\x1B[33m"
+# define KBLU "\x1B[34m"
+# define KMAG "\x1B[35m"
+# define KCYN "\x1B[36m"
+# define KWHT "\x1B[37m"
+
+/*
+** termcaps bonus
+*/
+# define MAX_CMD_LEN	4096
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 19:55:27 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 19:57:45 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 00:36:03 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,4 +85,49 @@ typedef struct			s_table
 	struct s_table		*next;
 }						t_table;
 
+/* termcap */
+
+typedef struct			s_dlist
+{
+	void				*content;
+	size_t				content_size;
+	struct s_dlist		*next;
+	struct s_dlist		*prev;
+}						t_dlist;
+
+typedef struct			s_winsz
+{
+	size_t				row;
+	size_t				col;
+}						t_winsz;
+
+typedef struct			s_line
+{
+	t_dlist				*hist;
+	size_t				cursor;
+	size_t				length;
+	size_t				hist_depth;
+	size_t				hist_size;
+	t_winsz				winsz;
+	t_winsz 			start;
+	char				cmd[MAX_CMD_LEN];
+}						t_line;
+
+typedef struct			s_keymatch
+{
+	char				*key_code;
+	int					key_ret;
+}						t_keymatch;
+
+typedef struct			s_keymove
+{
+	int					key;
+	void				(*p)(t_line *line);
+}						t_keymove;
+
+typedef struct			s_keyhist
+{
+	int					key;
+	void				(*p)(t_line *line, t_dlist **hist);
+}						t_keyhist;
 #endif

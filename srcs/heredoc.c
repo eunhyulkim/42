@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 02:14:07 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/11 23:45:19 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/12 23:46:22 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ char		*get_content(t_redir *redir)
 	line = 0;
 	doc = ft_strdup("");
 	write(1, "> ", 2);
-	while (get_next_line(0, &line) > 0)
+	while (get_next_line(0, &line, TRUE) > 0)
 	{
 		if (!ft_strcmp(line, endstr))
 			break ;
