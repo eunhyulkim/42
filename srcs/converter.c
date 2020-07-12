@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 22:30:27 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 19:46:41 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:41:29 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static void		convert_res(char **ret, char *str, int *i, int first)
 	while (val && val[*i])
 		ft_realloc(ret, val[(*i)++]);
 	*i = j;
-	ft_free(val);
+	ft_free_str(&val);
 	return ;
 }
 
@@ -52,7 +52,7 @@ static void		convert_env(char **ret, char *str, int *i, int first)
 	*i = 0;
 	while (val && val[*i])
 		ft_realloc(ret, val[(*i)++]);
-	ft_free(name);
+	ft_free_str(&name);
 	*i = j;
 }
 
@@ -81,7 +81,7 @@ static void		convert(char **src, int first)
 			ft_realloc(&ret, str[i]);
 		i++;
 	}
-	ft_free(str);
+	ft_free_str(&str);
 	*src = ret;
 }
 

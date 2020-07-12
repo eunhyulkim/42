@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 19:50:08 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/09 21:37:42 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:46:32 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static t_bool	is_empty_line(char *line)
 		i++;
 	if (line[i] == '\n' && !line[i + 1])
 	{
-		ft_free(line);
+		ft_free_str(&line);
 		return (TRUE);
 	}
 	return (FALSE);
@@ -36,8 +36,10 @@ static int		process_line(char *line)
 	t_table		*first_table;
 
 	tokens = tokenizer(line);
+	ft_free_str(&line);
 	if (!lexer(tokens) || !(table = parser(tokens)))
 		return (TRUE);
+	ft_free_doublestr(&tokens);
 	first_table = table;
 	while (table)
 	{
@@ -46,7 +48,6 @@ static int		process_line(char *line)
 		execute_table(table);
 		table = table->next;
 	}
-	ft_free_doublestr(tokens);
 	free_tables(first_table);
 	return (TRUE);
 }
@@ -67,7 +68,6 @@ int				main(int ac, char *av[], char **env)
 		else if (is_empty_line(line))
 			continue;
 		process_line(line);
-		ft_free(line);
 	}
 	return (0);
 }

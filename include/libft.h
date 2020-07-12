@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 19:53:37 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:49:30 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ void							*ft_memcpy(void *dst, const void *src, \
 char							*ft_itoa(t_llint n);
 void							ft_putendl_fd(char *s, int fd);
 char							*ft_strrchr(const char *s, int c);
+int								ft_isnumber(char *str);
 
 /*
 ** special functinos
@@ -73,7 +74,7 @@ void							ft_sort_doublestr(char **strs, int start, \
 								int last);
 int								ft_len_doublestr(char **arr);
 char							**ft_dup_doublestr(char **arr);
-int								ft_free_doublestr(char **double_arr);
+int								ft_free_doublestr(char ***doublestr_addr);
 char							**ft_realloc_doublestr(char ***strs_ref, \
 								char *item);
 int								ft_startswith(const char *str, const char *sub);
@@ -83,6 +84,8 @@ int								ft_isitem(char *item, char **list);
 int								ft_isformat(char *str, char *format);
 char							*ft_strreverse(char *src);
 int								ft_free(void *ptr);
+int								ft_free_str(char **str_addr);
+int								ft_free_intptr(int **intptr_addr);
 int								ft_isright_quote(char *src);
 int								ft_isright_envbracket(char *src);
 char							**ft_remove_doublestr(char **str, int idx);

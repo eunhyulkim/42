@@ -3,24 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   ft_free_doublestr.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 17:06:55 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/09 21:55:01 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:35:19 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int		ft_free_doublestr(char **doublestr)
+int		ft_free_doublestr(char ***doublestr_addr)
 {
-	int i;
+	int 	i;
+	char	**doublestr;
 
-	if (!doublestr)
+	if (!doublestr_addr || !(*doublestr_addr))
 		return (0);
 	i = -1;
+	doublestr = *doublestr_addr;
 	while (doublestr[++i])
-		free(doublestr[i]);
-	free(doublestr);
+		ft_free_str(&doublestr[i]);
+	ft_free(doublestr);
+	*doublestr_addr = 0;
 	return (1);
 }

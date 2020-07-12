@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/10 19:34:59 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:41:29 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static char	**get_args(t_command *command)
 	idx = 0;
 	while (command->arg_list && command->arg_list[idx])
 		ft_realloc_doublestr(&args, command->arg_list[idx++]);
-	ft_free(filename);
+	ft_free_str(&filename);
 	return (args);
 }
 
@@ -47,12 +47,12 @@ static void	run_exec(t_command *command)
 	}
 	else if (pid < 0)
 	{
-		error_execute(0, FORK_MSG, 1);
+		error_execute(0, FORK_FAILED, 1);
 		return ;
 	}
 	if (command->idx != 0)
 		close(g_pipes[command->idx * 2 - 1]);
-	ft_free_doublestr(args);
+	ft_free_doublestr(&args);
 	return ;
 }
 
@@ -72,12 +72,12 @@ static char	*check_bins(char *cmd, char **bin_path)
 		else
 			path = ft_strsjoin(bin_path[idx], "/", cmd, 0);
 		if (lstat(path, &stat) == -1)
-			ft_free(path);
+			ft_free_str(&path);
 		else if ((stat.st_mode & S_IFREG) && (stat.st_mode & S_IXUSR))
 			return (path);
 		else if (stat.st_mode & S_IFREG)
 		{
-			ft_free(denied_path);
+			ft_free_str(&denied_path);
 			denied_path = path;
 		}
 		idx++;
@@ -91,14 +91,14 @@ static void	run_exec_bin(char *path, t_command *command)
 
 	if (lstat(path, &stat) == -1)
 	{
-		ft_free(path);
+		ft_free_str(&path);
 		return ;
 	}
-	ft_free(command->cmd);
+	ft_free_str(&command->cmd);
 	command->cmd = path;
 	if (stat.st_mode & S_IFREG && stat.st_mode & S_IXUSR)
 		return (run_exec(command));
-	error_execute(path, PERMISSION_MSG, 126);
+	error_execute(path, PERMISSION_DENIED, 126);
 	return ;
 }
 
@@ -110,21 +110,21 @@ void		cmd_execve(t_command *command)
 
 	bin_path = ft_split(get_env("PATH"), ':');
 	path = check_bins(command->cmd, bin_path);
-	ft_free_doublestr(bin_path);
+	ft_free_doublestr(&bin_path);
 	if (path)
 		return (run_exec_bin(path, command));
 	if (lstat(command->cmd, &stat) != -1)
 	{
 		if (stat.st_mode & S_IFDIR)
-			return (error_execute(command->cmd, ISDRR_MSG, 126));
+			return (error_execute(command->cmd, EXECUTE_DRECTORY, 126));
 		else if (*command->cmd == '.' && stat.st_mode & S_IXUSR)
 			return (run_exec(command));
 	}
 	if (!ft_strchr(command->cmd, '/'))
-		error_execute(command->cmd, NOT_CMD_MSG, 127);
+		error_execute(command->cmd, NOT_CMD_FOUND, 127);
 	else if (!(stat.st_mode & S_IXUSR))
-		error_execute(command->cmd, PERMISSION_MSG, 126);
+		error_execute(command->cmd, PERMISSION_DENIED, 126);
 	else
-		error_execute(command->cmd, NOT_FOUND_MSG, 127);
+		error_execute(command->cmd, NO_SUCH_ENTRY, 127);
 	return ;
 }

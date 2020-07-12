@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/26 11:24:25 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/07 19:50:24 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/12 00:00:45 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static char		*str_add(char *dst, char *src)
 	return (dst);
 }
 
-char	*ft_strsjoin(char *s1, char *s2, char *s3, char *s4)
+char			*ft_strsjoin(char *s1, char *s2, char *s3, char *s4)
 {
 	char	*str;
 	int		lens;

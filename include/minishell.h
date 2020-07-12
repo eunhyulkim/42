@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 19:58:20 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/11 13:38:35 by iwoo             ###   ########.fr       */
+/*   Updated: 2020/07/11 23:47:37 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,9 @@
 # include "types.h"
 
 char	**g_env;
+int		*g_pipes;
 int		g_res;
 int		g_maxfd;
-int		g_stdin;
-int		*g_pipes;
 
 /*
 ** display functions
@@ -74,6 +73,7 @@ t_table	*parser(char **tokens);
 char	**get_entries(char *src);
 void	expander(t_table *table);
 void	converter(t_table *table);
+char	*get_config_path(char *filepath);
 void	convert_heredoc(t_redir *redir);
 
 /*

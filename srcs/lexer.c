@@ -6,13 +6,13 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/10 19:35:16 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/11 22:47:21 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char		type(char **tokens, int idx)
+char			type(char **tokens, int idx)
 {
 	if (!ft_strcmp(tokens[idx], "|"))
 		return (PIPE);
@@ -41,7 +41,7 @@ char		type(char **tokens, int idx)
 	return (!ft_strcmp(tokens[idx], "\n") ? ENTER : STRING);
 }
 
-static int	check_seq(char **tokens, t_lexer *lex)
+static t_bool	check_seq(char **tokens, t_lexer *lex)
 {
 	int		i;
 	int		j;
@@ -66,11 +66,11 @@ static int	check_seq(char **tokens, t_lexer *lex)
 		if (lex->res == FALSE)
 			break ;
 	}
-	ft_free_doublestr(lex->format);
+	ft_free_doublestr(&lex->format);
 	return (lex->res != FALSE);
 }
 
-int			token_in(char **tokens, t_lexer *lex, char *format)
+int				token_in(char **tokens, t_lexer *lex, char *format)
 {
 	lex->i = -1;
 	lex->seqs = ft_split(format, ',');
@@ -80,14 +80,14 @@ int			token_in(char **tokens, t_lexer *lex, char *format)
 		lex->format = ft_split(lex->seqs[lex->j], '-');
 		lex->res = -1;
 		if (check_seq(tokens, lex))
-			return (ft_free_doublestr(lex->seqs));
+			return (ft_free_doublestr(&lex->seqs));
 		lex->j++;
 	}
-	ft_free_doublestr(lex->seqs);
+	ft_free_doublestr(&lex->seqs);
 	return (0);
 }
 
-static int	is_valid_token(char **tokens, t_lexer *lex)
+static t_bool	is_valid_token(char **tokens, t_lexer *lex)
 {
 	if (lex->type == DSEMI || lex->type == EMPER)
 		return (FALSE);
@@ -108,7 +108,7 @@ static int	is_valid_token(char **tokens, t_lexer *lex)
 	return (TRUE);
 }
 
-int			lexer(char **tokens)
+int				lexer(char **tokens)
 {
 	t_lexer		*lex;
 	char		*error_token;
@@ -125,8 +125,8 @@ int			lexer(char **tokens)
 				error_token = "newline";
 			else
 				error_token = tokens[lex->idx];
-			error_tokenizer(error_token, LEXER_MSG, 258);
-			ft_free(lex);
+			error_tokenizer(error_token, LEXER_ERROR, 258);
+			ft_free(&lex);
 			return (FALSE);
 		}
 		lex->idx++;
