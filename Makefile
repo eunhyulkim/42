@@ -2,7 +2,7 @@ NAME = mongshell
 INCLUDES = -I./include/
 CC = gcc
 RM = rm -f
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -g -Wall -Wextra -Werror
 
 LIB_DIR = libft/
 LIBLARY = libft.a

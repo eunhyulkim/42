@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 19:58:20 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/12 23:18:27 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 02:42:01 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ char	**g_env;
 int		*g_pipes;
 int		g_res;
 int		g_maxfd;
+int		g_fd;
 
 /*
 ** display functions

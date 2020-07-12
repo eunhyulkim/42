@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 19:55:27 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/13 00:36:03 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 02:28:39 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,9 +125,9 @@ typedef struct			s_keymove
 	void				(*p)(t_line *line);
 }						t_keymove;
 
-typedef struct			s_keyhist
+struct					s_keyhist
 {
 	int					key;
 	void				(*p)(t_line *line, t_dlist **hist);
-}						t_keyhist;
+};
 #endif

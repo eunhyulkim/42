@@ -1,0 +1,40 @@
+exit
+ls
+pwd
+cd ..
+ls
+echo 123 > a.txt
+ls
+exit
+echo 123 > a.txt
+ls
+exit
+ls
+exit
+ls
+echo 123 > aa.txt
+ls
+cd ..
+ls
+cd ..
+ls
+echo 123 > a.txt
+cd 42sh
+pwd
+cd ..
+ls
+echo 789 > b.txt
+exit
+ls
+cd ..
+ls
+cd 42sh
+ls
+cat < Makefile
+echo 123 > a.txt
+ls
+rm -rf a.txt
+ls
+asdad asd d2D2D2C2C2C2C2D2D2D2D2C2D22D2D2D ads 2D2Dasd exitD
+ls
+exit

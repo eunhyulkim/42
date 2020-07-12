@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 19:50:08 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/13 01:03:49 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 03:35:22 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ void	input_loop(t_line *line)
 {
 	int		key_pressed;
 
-	(void)line;
 	while (42)
 	{
 		key_pressed = get_key();
@@ -41,11 +40,15 @@ void	input_loop(t_line *line)
 		if (line->start.row + line->cursor / line->winsz.col > line->winsz.row)
 			line->start.row--;
 		match_move(key_pressed, line);
+		dprintf(g_fd, "pass match_move...\n");
 		match_hist(key_pressed, line);
+		dprintf(g_fd, "pass match_hist...\n");
 		if (key_pressed > 31 && key_pressed < 127)
 			insert_char(line, key_pressed);
+		dprintf(g_fd, "pass insert_char...\n");
 		if (key_pressed == KEY_DC || key_pressed == 127)
 			delete_char(line, key_pressed);
+		dprintf(g_fd, "pass delete_char...\n");
 		if (key_pressed == KEY_CTRLL)
 		{
 			tputs(tgoto(tgetstr("SF", NULL), 0, line->start.row - 1)
@@ -56,6 +59,7 @@ void	input_loop(t_line *line)
 		if (key_pressed == '\n')
 			break ;
 	}
+	dprintf(g_fd, "pass input_roop functions...\n");
 }
 
 char	*line_editing(char **cmd_line)
@@ -73,11 +77,7 @@ char	*line_editing(char **cmd_line)
 	ft_putchar_fd('\n', 1);
 	append_history(line.cmd);
 	ft_dlstdelstr(&line.hist);
-	*cmd_line = ft_strdup(line.cmd);
-	printf("%p\n", cmd_line);
-	printf("%s\n", *cmd_line);
-	while (1)
-		;
+	*cmd_line = ft_strjoin(line.cmd, "\n");
 	return (*cmd_line);
 }
 
@@ -87,6 +87,7 @@ static int		process_line(char *line)
 	t_table		*table;
 	t_table		*first_table;
 
+	dprintf(g_fd, "input line is [%s][%d]\n", line, ft_strlen(line));
 	tokens = tokenizer(line);
 	ft_free_str(&line);
 	if (!lexer(tokens) || !(table = parser(tokens)))
@@ -97,6 +98,7 @@ static int		process_line(char *line)
 	{
 		expander(table);
 		converter(table);
+		print_table(table);
 		execute_table(table);
 		table = table->next;
 	}
@@ -107,6 +109,10 @@ static int		process_line(char *line)
 int				main(int ac, char *av[], char **env)
 {
 	char	*line;
+
+	// DEBUG LOG FILE
+	if ((g_fd = open("config/log", O_RDWR | O_CREAT | O_TRUNC, 0644)) < 0)
+		return (0);
 
 	display_logo();
 	init_env(ac, av, env);
