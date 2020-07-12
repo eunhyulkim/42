@@ -2,7 +2,7 @@ NAME =	libft.a
 INCLUDES = -I ../include/
 CC = gcc
 RM = rm -f
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 
 MAIN_FILES = ft_strchr ft_strlen ft_split ft_strdup ft_calloc \
 			 ft_memset ft_strcat ft_strcpy ft_strjoin ft_strnew \
