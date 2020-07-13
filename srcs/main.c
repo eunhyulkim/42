@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 19:50:08 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/11 22:46:32 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 11:46:00 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ static int		process_line(char *line)
 	t_table		*table;
 	t_table		*first_table;
 
+	line = escaper(line);
 	tokens = tokenizer(line);
 	ft_free_str(&line);
 	if (!lexer(tokens) || !(table = parser(tokens)))

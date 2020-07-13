@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 19:58:20 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/11 23:47:37 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 12:04:14 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void	display_prompt(void);
 /*
 ** tokenizer function
 */
+char 	*escaper(char *old_line);
 char	**tokenizer(char *line);
 
 /*
