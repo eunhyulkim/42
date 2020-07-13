@@ -71,3 +71,40 @@ exit
 exit
 asbsa asd asd asd asd asasd assad as dasdexit
 exit
+Ca\\\exitDs
+ls
+exit
+asdasd
+sadasd
+exit
+ssd
+sadasd
+sad
+exit
+sad
+exit
+adfaf
+sadasd
+assdasd
+asdasdeexit
+exit
+ls
+sa
+ls
+echo 123
+exit
+ls
+exit
+ls
+cd ..
+ls
+cd test
+ls
+cat *.txt
+ls
+ls
+exit
+cd ../test
+ls
+cat *.txt
+exit

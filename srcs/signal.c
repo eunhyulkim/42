@@ -6,18 +6,18 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 11:56:09 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/13 16:34:59 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 17:19:38 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 static void		signal_handler_builtin(int signo)
-{
+{	
+	default_term_mode();
+	ft_putchar_fd('\n', 1);
 	if (signo == SIGINT)
 	{
-		ft_putstr_fd("\b\b  \b\b", 1);
-		ft_putstr_fd("\n", 1);
 		display_prompt();
 		set_res(1);
 	}
@@ -43,15 +43,14 @@ static void		signal_handler_exec(int signo)
 
 void			set_exec_signal(void)
 {
-	default_term_mode();
 	signal(SIGINT, signal_handler_exec);
 	signal(SIGQUIT, signal_handler_exec);
 	return ;
 }
 
-void			set_builtin_signal(void)
+void			set_builtin_signal(t_line *line)
 {
-	default_term_mode();
+	(void)line;
 	signal(SIGINT, (void *)signal_handler_builtin);
 	signal(SIGQUIT, (void *)signal_handler_builtin);
 	return ;

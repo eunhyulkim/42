@@ -51,22 +51,20 @@ void	input_loop(t_line *line)
 	dprintf(g_fd, "pass input_roop functions...\n");
 }
 
-char	*line_editing(char **cmd_line)
+char	*line_editing(char **cmd_line, t_line *line)
 {
-	t_line		line;
-
 	raw_term_mode();
-	ft_bzero(&line, sizeof(line));
-	line.hist = retrieve_history();
-	line.hist_size = ft_dlstsize(line.hist);
-	get_cursor_start_pos(&line);
-	input_loop(&line);
-	cursor_to_end(&line);
+	ft_bzero(line, sizeof(*line));
+	line->hist = retrieve_history();
+	line->hist_size = ft_dlstsize(line->hist);
+	get_cursor_start_pos(line);
+	input_loop(line);
+	cursor_to_end(line);
 	default_term_mode();
 	ft_putchar_fd('\n', 1);
-	append_history(line.cmd);
-	ft_dlstdelstr(&line.hist);
-	*cmd_line = ft_strjoin(line.cmd, "\n");
+	append_history(line->cmd);
+	ft_dlstdelstr(&line->hist);
+	*cmd_line = ft_strjoin(line->cmd, "\n");
 	return (*cmd_line);
 }
 
@@ -97,7 +95,8 @@ static int		process_line(char *line)
 
 int				main(int ac, char *av[], char **env)
 {
-	char	*line;
+	t_line	line;
+	char	*cmd_line;
 
 	// DEBUG LOG FILE
 	if ((g_fd = open("config/log", O_RDWR | O_CREAT | O_TRUNC, 0644)) < 0)
@@ -107,14 +106,14 @@ int				main(int ac, char *av[], char **env)
 	init_env(ac, av, env);
 	while (TRUE)
 	{
-		// set_builtin_signal();
+		set_builtin_signal(&line);
 		display_prompt();
-		line = 0;
-		if (!(line_editing(&line)))
-			ft_exit(line, 0);
-		else if (is_empty_line(line))
+		cmd_line = 0;
+		if (!(line_editing(&cmd_line, &line)))
+			ft_exit(cmd_line, 0);
+		else if (is_empty_line(cmd_line))
 			continue;
-		process_line(line);
+		process_line(cmd_line);
 	}
 	return (0);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 19:58:20 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/13 02:42:01 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 17:16:57 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ void	ft_exit(char *line, int status);
 /*
 ** signal functions
 */
-void	set_builtin_signal(void);
+void	set_builtin_signal(t_line *line);
 void	set_exec_signal(void);
 
 /*

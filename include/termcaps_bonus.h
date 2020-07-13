@@ -26,7 +26,7 @@
 
 # define KEY_CTRLL 12
 
-char		*line_editing(char **cmd_line);
+char		*line_editing(char **cmd_line, t_line *line);
 void		raw_term_mode(void);
 void		default_term_mode(void);
 t_dlist		*retrieve_history(void);
