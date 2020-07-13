@@ -10,7 +10,7 @@ LIBLARY = libft.a
 LFLAGS = -L. -lft -ltermcap
 
 MAIN_FILES = display tokenizer lexer parser expander converter \
-			 heredoc execute execve free error debug escaper
+			 heredoc execute execve free error escaper
 UTILS_FILES = parser_get_utils parser_set_utils expander_utils \
 			 fd_utils pipe_utils
 BIN_FILES = cd echo env exit export pwd unset
@@ -28,9 +28,8 @@ SRCS_PATH = $(COMMON_PATH)
 SRCS_PATH += $(DIFF_FILES)
 SRCS = $(addprefix srcs/, $(addsuffix .c, $(SRCS_PATH)))
 
-BSRCS_PATH = $(COMMON_PATH)
-BSRCS_PATH += $(addsuffix _bonus, $(DIFF_FILES))
-BSRCS_PATH += $(addprefix terms/, $(TERMS_FILES))
+BSRCS_PATH = $(addsuffix _bonus, $(DIFF_FILES))
+BSRCS_PATH += $(addprefix term/, $(TERM_FILES))
 BSRCS = $(addprefix srcs/, $(addsuffix .c, $(BSRCS_PATH)))
 
 COMMON_OBJS = $(addsuffix .o, $(MAIN_FILES))
@@ -43,7 +42,7 @@ OBJS += $(addsuffix .o, $(DIFF_FILES))
 
 BOBJS = $(COMMON_OBJS)
 BOBJS += $(addsuffix .o, $(TERM_FILES))
-BOBJS += $(addsuffix _bonus.o, $(DIFF_PATH))
+BOBJS += $(addsuffix _bonus.o, $(DIFF_FILES))
 
 GREEN = \033[0;32m
 RED = \033[0;31m
@@ -63,7 +62,7 @@ ${NAME}: ${OBJS}
 ${OBJS}: ${SRCS}
 	@${CC} ${CFLAGS} ${INCLUDES} -c ${SRCS}
 
-bonus: ${BOBJS}
+bonus: bonus_objs
 	@echo "$(GREEN)MONGSHELL_BONUS START$(RESET)"
 	@make -C ${LIB_DIR}
 	@echo "$(RESET)Copying ${LIBLARY} to root."
@@ -71,6 +70,9 @@ bonus: ${BOBJS}
 	@echo "$(RESET)Compiling ${BNAME} to root."
 	@${CC} ${CFLAGS} ${INCLUDES} ${BOBJS} -o ${BNAME} ${LFLAGS}
 	@echo "$(GREEN)DONE$(RESET)"
+
+bonus_objs: ${OBJS}
+	@${CC} ${CFLAGS} ${INCLUDES} -c ${BSRCS}
 
 clean:
 	@echo "$(RESET)Cleaning your mongshell .o files$(RESET)"

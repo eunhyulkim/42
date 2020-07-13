@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/13 18:14:21 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/13 18:19:54 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 19:12:37 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <curses.h>
 # include <sys/ioctl.h>
 
-char		*line_editing(char **cmd_line, t_line *line);
+char		*line_editing(char **cmd_line);
 void		raw_term_mode(void);
 void		default_term_mode(void);
 t_dlist		*retrieve_history(void);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 23:09:30 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/11 22:47:21 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 22:15:11 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ int				lexer(char **tokens)
 			else
 				error_token = tokens[lex->idx];
 			error_tokenizer(error_token, LEXER_ERROR, 258);
-			ft_free(&lex);
+			ft_free(lex);
 			return (FALSE);
 		}
 		lex->idx++;

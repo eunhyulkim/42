@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 21:34:02 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/13 18:05:31 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 22:21:15 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static void	set_pwd_and_res(char *path)
 void		cmd_cd(t_command *command)
 {
 	char	*home_path;
-	int		argc;	
+	int		argc;
 
 	argc = ft_len_doublestr(command->arg_list);
 	if (argc == 0)

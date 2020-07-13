@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 19:58:20 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/13 18:22:04 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 21:05:47 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ void	ft_exit(char *line, int status);
 /*
 ** signal functions
 */
-void	set_builtin_signal(t_line *line);
+void	set_builtin_signal(void);
 void	set_exec_signal(void);
 
 /*

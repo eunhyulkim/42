@@ -1,4 +1,16 @@
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pos.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/13 22:30:00 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/13 22:30:00 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell_bonus.h"
 
 void	get_cursor_start_pos(t_line *line)
 {
@@ -18,7 +30,7 @@ void	get_cursor_start_pos(t_line *line)
 
 void	match_move(int key_pressed, t_line *line)
 {
-	int						i;
+	int					i;
 	static t_keymove	keymove[8] = {
 		{KEY_RIGHT, &cursor_to_right},
 		{KEY_LEFT, &cursor_to_left},

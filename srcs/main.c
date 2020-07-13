@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/13 22:26:20 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/13 22:26:26 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static t_bool	is_empty_line(char *line)
@@ -52,7 +64,7 @@ int				main(int ac, char *av[], char **env)
 		set_builtin_signal();
 		display_prompt();
 		line = 0;
-		if (!(get_next_line(0, &line)))
+		if (!(get_next_line(0, &line, TRUE)))
 			ft_exit(line, 0);
 		else if (is_empty_line(line))
 			continue;

@@ -170,3 +170,96 @@ ls
 echo $HOME
 echo \$HOME
 exit
+ls
+cd ..
+sl
+ls
+cd test
+ls
+cat *.txt
+abc def ghi aaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ls
+echo asdf
+cat *.txt
+cd ..
+ls
+cd test
+ls
+asdf  2> a.txt
+cat a.txt
+ls
+cd ..
+ls
+cd minishell
+cd test
+./a.out
+./a.out
+./a.out
+exit
+cd test
+./a.out
+./a.out
+exit
+cd test
+./a.out
+exit
+cd test
+./a.out
+exit
+cd test
+exit
+cd test
+asjkldjaskl
+asadsas
+exit
+exit
+ls
+exit
+exit
+ls
+ls
+exit
+ls
+ls
+exit
+make bonus
+exit
+exit
+exit
+exit
+exit
+exit
+\\\\\
+aa
+a
+\\
+a
+a
+exit
+[D
+a
+a
+ls
+ls
+[D[C[C
+exit
+asdfsaa
+sad
+sad
+exit
+asa
+exit
+eixt
+exit
+exit
+\
+exit
+exit
+\
+exit
+exit
+i
+exit
+asjkd
+exit
+exit
