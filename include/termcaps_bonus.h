@@ -19,10 +19,10 @@
 # define KEY_CODE_HOME "\x1b\x5b\x48\0"
 # define KEY_CODE_END "\x1b\x5b\x46\0"
 
-# define KEY_CODE_SUP "\x1b\x1b\x5b\x41"
-# define KEY_CODE_SDO "\x1b\x1b\x5b\x42"
-# define KEY_CODE_SRI "\x1b\x1b\x5b\x43"
-# define KEY_CODE_SLE "\x1b\x1b\x5b\x44"
+# define KEY_CODE_SUP "\x1b\x5b\x31\x3b\x35\x41"
+# define KEY_CODE_SDO "\x1b\x5b\x31\x3b\x35\x42"
+# define KEY_CODE_SRI "\x1b\x66"
+# define KEY_CODE_SLE "\x1b\x62"
 
 # define KEY_CTRLL 12
 

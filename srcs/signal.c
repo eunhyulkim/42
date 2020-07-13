@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/10 11:56:09 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/11 20:36:48 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 16:34:59 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ static void		signal_handler_exec(int signo)
 
 void			set_exec_signal(void)
 {
+	default_term_mode();
 	signal(SIGINT, signal_handler_exec);
 	signal(SIGQUIT, signal_handler_exec);
 	return ;
@@ -50,6 +51,7 @@ void			set_exec_signal(void)
 
 void			set_builtin_signal(void)
 {
+	default_term_mode();
 	signal(SIGINT, (void *)signal_handler_builtin);
 	signal(SIGQUIT, (void *)signal_handler_builtin);
 	return ;

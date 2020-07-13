@@ -17,8 +17,15 @@ static int	match_key(char *key_str, int i)
 	};
 	i = 0;
 	while (i < 11)
-		if (!ft_memcmp(key_couple[i++].key_code, key_str, MAX_KEY_LEN))
-			return (key_couple[i - 1].key_ret);
+	{
+		if (i < 7 && !ft_memcmp(key_couple[i].key_code, key_str, MAX_KEY_LEN))
+			return (key_couple[i].key_ret);
+		if (i >= 7 && i < 9 && !ft_memcmp(key_couple[i].key_code, key_str, MAX_KEY_LEN - 2))
+			return (key_couple[i].key_ret);
+		if (i >= 9 && i < 11 && !ft_memcmp(key_couple[i].key_code, key_str, MAX_KEY_LEN + 2))
+			return (key_couple[i].key_ret);
+		i++;
+	}
 	return (key_str[0]);
 }
 
@@ -33,7 +40,10 @@ int			get_key(void)
 	read(0, key_str, 1);
 	if (*key_str == '\x1b')
 		read(0, key_str + 1, MAX_KEY_LEN - 1);
+	if (*(key_str + 1) == '\x5b')
+		read(0, key_str + 4, 2);
 	key_pressed = match_key(key_str, 0);
+	dprintf(g_fd, "KEY_PRESSED: [%d]\n", key_pressed);
 	free(key_str);
 	return (key_pressed);
 }
