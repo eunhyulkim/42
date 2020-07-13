@@ -8,7 +8,7 @@ LIB_DIR = libft/
 LIBLARY = libft.a
 
 MAIN_FILES = main display signal tokenizer lexer parser expander converter \
-			 heredoc execute execve free error debug
+			 heredoc execute execve free error debug escaper
 UTILS_FILES = parser_get_utils parser_set_utils expander_utils \
 			 fd_utils pipe_utils
 BIN_FILES = cd echo env exit export pwd unset

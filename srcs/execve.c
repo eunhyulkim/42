@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/11 22:41:29 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 12:12:27 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,8 +108,9 @@ void		cmd_execve(t_command *command)
 	char			**bin_path;
 	char			*path;
 
-	bin_path = ft_split(get_env("PATH"), ':');
-	path = check_bins(command->cmd, bin_path);
+	path = 0;
+	if ((bin_path = ft_split(get_env("PATH"), ':')))
+		path = check_bins(command->cmd, bin_path);
 	ft_free_doublestr(&bin_path);
 	if (path)
 		return (run_exec_bin(path, command));

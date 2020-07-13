@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/09 22:30:27 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/11 22:41:29 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 12:04:00 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,8 @@ static void		convert(char **src, int first)
 		else if (opened != '\'' && str[i] == '$' \
 			&& str[i + 1] && !ft_isset(str[i + 1], " \'\""))
 			convert_env(&ret, str, &i, first);
+		else if (str[i] < 0)
+			ft_realloc(&ret, str[i] * -1);
 		else
 			ft_realloc(&ret, str[i]);
 		i++;
