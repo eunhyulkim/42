@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   minishell_bonus.h                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/07/13 18:17:35 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/13 18:24:29 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/07/10 19:58:20 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/13 18:22:04 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#ifndef MINISHELL_BONUS_H
+# define MINISHELL_BONUS_H
 
 # include <stdio.h>
 # include <stdlib.h>
@@ -23,17 +23,21 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <sys/wait.h>
+# include <sys/ioctl.h>
 # include <dirent.h>
 # include <string.h>
+# include <termcap.h>
 # include "libft.h"
 # include "get_next_line.h"
-# include "macro.h"
-# include "types.h"
+# include "macro_bonus.h"
+# include "types_bonus.h"
+# include "termcaps_bonus.h"
 
 char	**g_env;
 int		*g_pipes;
 int		g_res;
 int		g_maxfd;
+int		g_fd;
 
 /*
 ** display functions
@@ -122,7 +126,7 @@ void	ft_exit(char *line, int status);
 /*
 ** signal functions
 */
-void	set_builtin_signal(void);
+void	set_builtin_signal(t_line *line);
 void	set_exec_signal(void);
 
 /*

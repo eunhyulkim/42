@@ -108,3 +108,65 @@ cd ../test
 ls
 cat *.txt
 exit
+ls
+ls
+cd ..
+ls
+cd test
+las
+ls
+cat *.txt
+pwd
+cat *.txt
+ls
+env
+s
+ls
+cat a.txt
+ls
+cat < *.txt
+cat *.txt
+exit
+cd ../test
+cat *.txt
+cat *.txt
+exit
+aasexitd asd  d asd
+ls
+exit
+asdcexit asd
+exit
+ls
+ls
+cd ..
+ls
+cd test
+ls
+cat *.txt
+pwd
+cat *.txt
+cat *.txt
+ls 
+cat Makefile
+cat a.txt
+cat *.txt
+cat *.txt
+ech $PWD
+echo $PWD
+cd
+pwd
+ls
+echo 123 > a.txt
+echo 456 > b.txt
+cat *.txt
+exit
+pwd
+cd ../test
+pwd
+cat *.txt
+exit
+unset PATH
+ls
+echo $HOME
+echo \$HOME
+exit

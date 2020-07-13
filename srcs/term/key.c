@@ -34,14 +34,22 @@ int			get_key(void)
 	char	*key_str;
 	int		key_pressed;
 
-	key_str = ft_strnew(MAX_KEY_LEN);
+	if (!(key_str = ft_calloc(sizeof(char), 7)))
+		return (-1);
 	if (!key_str)
 		return (-1);
 	read(0, key_str, 1);
 	if (*key_str == '\x1b')
-		read(0, key_str + 1, MAX_KEY_LEN - 1);
+		read(0, key_str + 1, 1);
 	if (*(key_str + 1) == '\x5b')
+		read(0, key_str + 2, 2);
+	if (*(key_str + 2) == '\x31' && *(key_str + 3) == '\x3b')
 		read(0, key_str + 4, 2);
+	int i = 0;
+	dprintf(g_fd, "INPUT_KEY: ");
+	while (key_str[i])
+		dprintf(g_fd, "[%d]", key_str[i++]);
+
 	key_pressed = match_key(key_str, 0);
 	dprintf(g_fd, "KEY_PRESSED: [%d]\n", key_pressed);
 	free(key_str);

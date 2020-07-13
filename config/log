@@ -1,0 +1,1401 @@
+retrieve_history fd is [4]
+line is [exit]
+line is [ls]
+line is [pwd]
+line is [cd ..]
+line is [ls]
+line is [echo 123 > a.txt]
+line is [ls]
+line is [exit]
+line is [echo 123 > a.txt]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [echo 123 > aa.txt]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [echo 123 > a.txt]
+line is [cd 42sh]
+line is [pwd]
+line is [cd ..]
+line is [ls]
+line is [echo 789 > b.txt]
+line is [exit]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd 42sh]
+line is [ls]
+line is [cat < Makefile]
+line is [echo 123 > a.txt]
+line is [ls]
+line is [rm -rf a.txt]
+line is [ls]
+line is [asdad asd d2D2D2C2C2C2C2D2D2D2D2C2D22D2D2D ads 2D2Dasd exitD]
+line is [ls]
+line is [exit]
+line is [exit]
+line is [asd asd asd asd asd asd asd ]
+line is [ls]
+line is [asd as das das asd a]
+line is [ls]
+line is [abc def ghi]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [sfd sdf dsf sdf sdf ]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [pwd]
+line is [unset PATH]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [sadexit]
+line is [exit]
+line is [exit]
+line is [exit]
+line is [asbsa asd asd asd asd asasd assad as dasdexit]
+line is [exit]
+line is [Ca\\\exitDs]
+line is [ls]
+line is [exit]
+line is [asdasd]
+line is [sadasd]
+line is [exit]
+line is [ssd]
+line is [sadasd]
+line is [sad]
+line is [exit]
+line is [sad]
+line is [exit]
+line is [adfaf]
+line is [sadasd]
+line is [assdasd]
+line is [asdasdeexit]
+line is [exit]
+line is [ls]
+line is [sa]
+line is [ls]
+line is [echo 123]
+line is [exit]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd test]
+line is [ls]
+line is [cat *.txt]
+line is [ls]
+line is [ls]
+line is [exit]
+line is [cd ../test]
+line is [ls]
+line is [cat *.txt]
+line is [exit]
+line is [ls]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd test]
+line is [las]
+line is [ls]
+line is [cat *.txt]
+line is [pwd]
+line is [cat *.txt]
+line is [ls]
+line is [env]
+line is [s]
+line is [ls]
+line is [cat a.txt]
+line is [ls]
+line is [cat < *.txt]
+line is [cat *.txt]
+line is [exit]
+line is [cd ../test]
+line is [cat *.txt]
+line is [cat *.txt]
+line is [exit]
+line is [aasexitd asd  d asd]
+line is [ls]
+line is [exit]
+line is [asdcexit asd]
+line is [exit]
+line is [ls]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd test]
+line is [ls]
+line is [cat *.txt]
+line is [pwd]
+line is [cat *.txt]
+line is [cat *.txt]
+line is [ls ]
+line is [cat Makefile]
+line is [cat a.txt]
+line is [cat *.txt]
+line is [cat *.txt]
+line is [ech $PWD]
+line is [echo $PWD]
+line is [cd]
+line is [pwd]
+line is [ls]
+line is [echo 123 > a.txt]
+line is [echo 456 > b.txt]
+line is [cat *.txt]
+line is [exit]
+line is [pwd]
+line is [cd ../test]
+line is [pwd]
+line is [cat *.txt]
+line is [exit]
+INPUT_KEY: [117]KEY_PRESSED: [117]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [110]KEY_PRESSED: [110]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [115]KEY_PRESSED: [115]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [101]KEY_PRESSED: [101]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [116]KEY_PRESSED: [116]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [32]KEY_PRESSED: [32]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [80]KEY_PRESSED: [80]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [65]KEY_PRESSED: [65]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [84]KEY_PRESSED: [84]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [72]KEY_PRESSED: [72]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [10]KEY_PRESSED: [10]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+pass input_roop functions...
+
+[36mTABLE_NO  TYPE  JOB_NO  CMD             ARG                                               REDIRECT
+[0m1         START 1       unset           PATH,                                             [33mNull[0m
+retrieve_history fd is [4]
+line is [exit]
+line is [ls]
+line is [pwd]
+line is [cd ..]
+line is [ls]
+line is [echo 123 > a.txt]
+line is [ls]
+line is [exit]
+line is [echo 123 > a.txt]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [echo 123 > aa.txt]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [echo 123 > a.txt]
+line is [cd 42sh]
+line is [pwd]
+line is [cd ..]
+line is [ls]
+line is [echo 789 > b.txt]
+line is [exit]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd 42sh]
+line is [ls]
+line is [cat < Makefile]
+line is [echo 123 > a.txt]
+line is [ls]
+line is [rm -rf a.txt]
+line is [ls]
+line is [asdad asd d2D2D2C2C2C2C2D2D2D2D2C2D22D2D2D ads 2D2Dasd exitD]
+line is [ls]
+line is [exit]
+line is [exit]
+line is [asd asd asd asd asd asd asd ]
+line is [ls]
+line is [asd as das das asd a]
+line is [ls]
+line is [abc def ghi]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [sfd sdf dsf sdf sdf ]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [pwd]
+line is [unset PATH]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [sadexit]
+line is [exit]
+line is [exit]
+line is [exit]
+line is [asbsa asd asd asd asd asasd assad as dasdexit]
+line is [exit]
+line is [Ca\\\exitDs]
+line is [ls]
+line is [exit]
+line is [asdasd]
+line is [sadasd]
+line is [exit]
+line is [ssd]
+line is [sadasd]
+line is [sad]
+line is [exit]
+line is [sad]
+line is [exit]
+line is [adfaf]
+line is [sadasd]
+line is [assdasd]
+line is [asdasdeexit]
+line is [exit]
+line is [ls]
+line is [sa]
+line is [ls]
+line is [echo 123]
+line is [exit]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd test]
+line is [ls]
+line is [cat *.txt]
+line is [ls]
+line is [ls]
+line is [exit]
+line is [cd ../test]
+line is [ls]
+line is [cat *.txt]
+line is [exit]
+line is [ls]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd test]
+line is [las]
+line is [ls]
+line is [cat *.txt]
+line is [pwd]
+line is [cat *.txt]
+line is [ls]
+line is [env]
+line is [s]
+line is [ls]
+line is [cat a.txt]
+line is [ls]
+line is [cat < *.txt]
+line is [cat *.txt]
+line is [exit]
+line is [cd ../test]
+line is [cat *.txt]
+line is [cat *.txt]
+line is [exit]
+line is [aasexitd asd  d asd]
+line is [ls]
+line is [exit]
+line is [asdcexit asd]
+line is [exit]
+line is [ls]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd test]
+line is [ls]
+line is [cat *.txt]
+line is [pwd]
+line is [cat *.txt]
+line is [cat *.txt]
+line is [ls ]
+line is [cat Makefile]
+line is [cat a.txt]
+line is [cat *.txt]
+line is [cat *.txt]
+line is [ech $PWD]
+line is [echo $PWD]
+line is [cd]
+line is [pwd]
+line is [ls]
+line is [echo 123 > a.txt]
+line is [echo 456 > b.txt]
+line is [cat *.txt]
+line is [exit]
+line is [pwd]
+line is [cd ../test]
+line is [pwd]
+line is [cat *.txt]
+line is [exit]
+line is [unset PATH]
+INPUT_KEY: [101]KEY_PRESSED: [101]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [110]KEY_PRESSED: [110]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [127]KEY_PRESSED: [127]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [127]KEY_PRESSED: [127]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [127]KEY_PRESSED: [127]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [108]KEY_PRESSED: [108]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [115]KEY_PRESSED: [115]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [10]KEY_PRESSED: [10]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+pass input_roop functions...
+
+[36mTABLE_NO  TYPE  JOB_NO  CMD             ARG                                               REDIRECT
+[0m1         START 1       ls              [33mNull                                              [0m[33mNull[0m
+retrieve_history fd is [4]
+line is [exit]
+line is [ls]
+line is [pwd]
+line is [cd ..]
+line is [ls]
+line is [echo 123 > a.txt]
+line is [ls]
+line is [exit]
+line is [echo 123 > a.txt]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [echo 123 > aa.txt]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [echo 123 > a.txt]
+line is [cd 42sh]
+line is [pwd]
+line is [cd ..]
+line is [ls]
+line is [echo 789 > b.txt]
+line is [exit]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd 42sh]
+line is [ls]
+line is [cat < Makefile]
+line is [echo 123 > a.txt]
+line is [ls]
+line is [rm -rf a.txt]
+line is [ls]
+line is [asdad asd d2D2D2C2C2C2C2D2D2D2D2C2D22D2D2D ads 2D2Dasd exitD]
+line is [ls]
+line is [exit]
+line is [exit]
+line is [asd asd asd asd asd asd asd ]
+line is [ls]
+line is [asd as das das asd a]
+line is [ls]
+line is [abc def ghi]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [sfd sdf dsf sdf sdf ]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [pwd]
+line is [unset PATH]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [sadexit]
+line is [exit]
+line is [exit]
+line is [exit]
+line is [asbsa asd asd asd asd asasd assad as dasdexit]
+line is [exit]
+line is [Ca\\\exitDs]
+line is [ls]
+line is [exit]
+line is [asdasd]
+line is [sadasd]
+line is [exit]
+line is [ssd]
+line is [sadasd]
+line is [sad]
+line is [exit]
+line is [sad]
+line is [exit]
+line is [adfaf]
+line is [sadasd]
+line is [assdasd]
+line is [asdasdeexit]
+line is [exit]
+line is [ls]
+line is [sa]
+line is [ls]
+line is [echo 123]
+line is [exit]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd test]
+line is [ls]
+line is [cat *.txt]
+line is [ls]
+line is [ls]
+line is [exit]
+line is [cd ../test]
+line is [ls]
+line is [cat *.txt]
+line is [exit]
+line is [ls]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd test]
+line is [las]
+line is [ls]
+line is [cat *.txt]
+line is [pwd]
+line is [cat *.txt]
+line is [ls]
+line is [env]
+line is [s]
+line is [ls]
+line is [cat a.txt]
+line is [ls]
+line is [cat < *.txt]
+line is [cat *.txt]
+line is [exit]
+line is [cd ../test]
+line is [cat *.txt]
+line is [cat *.txt]
+line is [exit]
+line is [aasexitd asd  d asd]
+line is [ls]
+line is [exit]
+line is [asdcexit asd]
+line is [exit]
+line is [ls]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd test]
+line is [ls]
+line is [cat *.txt]
+line is [pwd]
+line is [cat *.txt]
+line is [cat *.txt]
+line is [ls ]
+line is [cat Makefile]
+line is [cat a.txt]
+line is [cat *.txt]
+line is [cat *.txt]
+line is [ech $PWD]
+line is [echo $PWD]
+line is [cd]
+line is [pwd]
+line is [ls]
+line is [echo 123 > a.txt]
+line is [echo 456 > b.txt]
+line is [cat *.txt]
+line is [exit]
+line is [pwd]
+line is [cd ../test]
+line is [pwd]
+line is [cat *.txt]
+line is [exit]
+line is [unset PATH]
+line is [ls]
+INPUT_KEY: [101]KEY_PRESSED: [101]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [99]KEY_PRESSED: [99]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [104]KEY_PRESSED: [104]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [111]KEY_PRESSED: [111]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [32]KEY_PRESSED: [32]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [36]KEY_PRESSED: [36]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [127]KEY_PRESSED: [127]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [92]KEY_PRESSED: [92]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [127]KEY_PRESSED: [127]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [36]KEY_PRESSED: [36]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [72]KEY_PRESSED: [72]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [79]KEY_PRESSED: [79]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [77]KEY_PRESSED: [77]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [69]KEY_PRESSED: [69]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [127]KEY_PRESSED: [127]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [127]KEY_PRESSED: [127]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [127]KEY_PRESSED: [127]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [127]KEY_PRESSED: [127]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [72]KEY_PRESSED: [72]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [79]KEY_PRESSED: [79]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [77]KEY_PRESSED: [77]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [69]KEY_PRESSED: [69]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [10]KEY_PRESSED: [10]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+pass input_roop functions...
+
+[36mTABLE_NO  TYPE  JOB_NO  CMD             ARG                                               REDIRECT
+[0m1         START 1       echo            /Users/eunhkim,                                   [33mNull[0m
+retrieve_history fd is [4]
+line is [exit]
+line is [ls]
+line is [pwd]
+line is [cd ..]
+line is [ls]
+line is [echo 123 > a.txt]
+line is [ls]
+line is [exit]
+line is [echo 123 > a.txt]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [echo 123 > aa.txt]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [echo 123 > a.txt]
+line is [cd 42sh]
+line is [pwd]
+line is [cd ..]
+line is [ls]
+line is [echo 789 > b.txt]
+line is [exit]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd 42sh]
+line is [ls]
+line is [cat < Makefile]
+line is [echo 123 > a.txt]
+line is [ls]
+line is [rm -rf a.txt]
+line is [ls]
+line is [asdad asd d2D2D2C2C2C2C2D2D2D2D2C2D22D2D2D ads 2D2Dasd exitD]
+line is [ls]
+line is [exit]
+line is [exit]
+line is [asd asd asd asd asd asd asd ]
+line is [ls]
+line is [asd as das das asd a]
+line is [ls]
+line is [abc def ghi]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [sfd sdf dsf sdf sdf ]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [pwd]
+line is [unset PATH]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [sadexit]
+line is [exit]
+line is [exit]
+line is [exit]
+line is [asbsa asd asd asd asd asasd assad as dasdexit]
+line is [exit]
+line is [Ca\\\exitDs]
+line is [ls]
+line is [exit]
+line is [asdasd]
+line is [sadasd]
+line is [exit]
+line is [ssd]
+line is [sadasd]
+line is [sad]
+line is [exit]
+line is [sad]
+line is [exit]
+line is [adfaf]
+line is [sadasd]
+line is [assdasd]
+line is [asdasdeexit]
+line is [exit]
+line is [ls]
+line is [sa]
+line is [ls]
+line is [echo 123]
+line is [exit]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd test]
+line is [ls]
+line is [cat *.txt]
+line is [ls]
+line is [ls]
+line is [exit]
+line is [cd ../test]
+line is [ls]
+line is [cat *.txt]
+line is [exit]
+line is [ls]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd test]
+line is [las]
+line is [ls]
+line is [cat *.txt]
+line is [pwd]
+line is [cat *.txt]
+line is [ls]
+line is [env]
+line is [s]
+line is [ls]
+line is [cat a.txt]
+line is [ls]
+line is [cat < *.txt]
+line is [cat *.txt]
+line is [exit]
+line is [cd ../test]
+line is [cat *.txt]
+line is [cat *.txt]
+line is [exit]
+line is [aasexitd asd  d asd]
+line is [ls]
+line is [exit]
+line is [asdcexit asd]
+line is [exit]
+line is [ls]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd test]
+line is [ls]
+line is [cat *.txt]
+line is [pwd]
+line is [cat *.txt]
+line is [cat *.txt]
+line is [ls ]
+line is [cat Makefile]
+line is [cat a.txt]
+line is [cat *.txt]
+line is [cat *.txt]
+line is [ech $PWD]
+line is [echo $PWD]
+line is [cd]
+line is [pwd]
+line is [ls]
+line is [echo 123 > a.txt]
+line is [echo 456 > b.txt]
+line is [cat *.txt]
+line is [exit]
+line is [pwd]
+line is [cd ../test]
+line is [pwd]
+line is [cat *.txt]
+line is [exit]
+line is [unset PATH]
+line is [ls]
+line is [echo $HOME]
+INPUT_KEY: [101]KEY_PRESSED: [101]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [99]KEY_PRESSED: [99]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [104]KEY_PRESSED: [104]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [111]KEY_PRESSED: [111]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [32]KEY_PRESSED: [32]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [92]KEY_PRESSED: [92]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [36]KEY_PRESSED: [36]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [72]KEY_PRESSED: [72]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [79]KEY_PRESSED: [79]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [77]KEY_PRESSED: [77]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [69]KEY_PRESSED: [69]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [10]KEY_PRESSED: [10]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+pass input_roop functions...
+
+[36mTABLE_NO  TYPE  JOB_NO  CMD             ARG                                               REDIRECT
+[0m1         START 1       echo            $HOME,                                            [33mNull[0m
+retrieve_history fd is [4]
+line is [exit]
+line is [ls]
+line is [pwd]
+line is [cd ..]
+line is [ls]
+line is [echo 123 > a.txt]
+line is [ls]
+line is [exit]
+line is [echo 123 > a.txt]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [echo 123 > aa.txt]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [echo 123 > a.txt]
+line is [cd 42sh]
+line is [pwd]
+line is [cd ..]
+line is [ls]
+line is [echo 789 > b.txt]
+line is [exit]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd 42sh]
+line is [ls]
+line is [cat < Makefile]
+line is [echo 123 > a.txt]
+line is [ls]
+line is [rm -rf a.txt]
+line is [ls]
+line is [asdad asd d2D2D2C2C2C2C2D2D2D2D2C2D22D2D2D ads 2D2Dasd exitD]
+line is [ls]
+line is [exit]
+line is [exit]
+line is [asd asd asd asd asd asd asd ]
+line is [ls]
+line is [asd as das das asd a]
+line is [ls]
+line is [abc def ghi]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [sfd sdf dsf sdf sdf ]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [pwd]
+line is [unset PATH]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [ls]
+line is [sadexit]
+line is [exit]
+line is [exit]
+line is [exit]
+line is [asbsa asd asd asd asd asasd assad as dasdexit]
+line is [exit]
+line is [Ca\\\exitDs]
+line is [ls]
+line is [exit]
+line is [asdasd]
+line is [sadasd]
+line is [exit]
+line is [ssd]
+line is [sadasd]
+line is [sad]
+line is [exit]
+line is [sad]
+line is [exit]
+line is [adfaf]
+line is [sadasd]
+line is [assdasd]
+line is [asdasdeexit]
+line is [exit]
+line is [ls]
+line is [sa]
+line is [ls]
+line is [echo 123]
+line is [exit]
+line is [ls]
+line is [exit]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd test]
+line is [ls]
+line is [cat *.txt]
+line is [ls]
+line is [ls]
+line is [exit]
+line is [cd ../test]
+line is [ls]
+line is [cat *.txt]
+line is [exit]
+line is [ls]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd test]
+line is [las]
+line is [ls]
+line is [cat *.txt]
+line is [pwd]
+line is [cat *.txt]
+line is [ls]
+line is [env]
+line is [s]
+line is [ls]
+line is [cat a.txt]
+line is [ls]
+line is [cat < *.txt]
+line is [cat *.txt]
+line is [exit]
+line is [cd ../test]
+line is [cat *.txt]
+line is [cat *.txt]
+line is [exit]
+line is [aasexitd asd  d asd]
+line is [ls]
+line is [exit]
+line is [asdcexit asd]
+line is [exit]
+line is [ls]
+line is [ls]
+line is [cd ..]
+line is [ls]
+line is [cd test]
+line is [ls]
+line is [cat *.txt]
+line is [pwd]
+line is [cat *.txt]
+line is [cat *.txt]
+line is [ls ]
+line is [cat Makefile]
+line is [cat a.txt]
+line is [cat *.txt]
+line is [cat *.txt]
+line is [ech $PWD]
+line is [echo $PWD]
+line is [cd]
+line is [pwd]
+line is [ls]
+line is [echo 123 > a.txt]
+line is [echo 456 > b.txt]
+line is [cat *.txt]
+line is [exit]
+line is [pwd]
+line is [cd ../test]
+line is [pwd]
+line is [cat *.txt]
+line is [exit]
+line is [unset PATH]
+line is [ls]
+line is [echo $HOME]
+line is [echo \$HOME]
+INPUT_KEY: [101]KEY_PRESSED: [101]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [120]KEY_PRESSED: [120]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [105]KEY_PRESSED: [105]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [116]KEY_PRESSED: [116]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+INPUT_KEY: [10]KEY_PRESSED: [10]
+pass match_move...
+enter match hist functions...
+keyhist[0][259: 0x10c248c60]
+keyhist[1][258: 0x10c2489e0]
+pass match_hist functions...
+pass match_hist...
+pass insert_char...
+pass delete_char...
+pass input_roop functions...
+
+[36mTABLE_NO  TYPE  JOB_NO  CMD             ARG                                               REDIRECT
+[0m1         START 1       exit            [33mNull                                              [0m[33mNull[0m

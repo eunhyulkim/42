@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_free_doublestr.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 17:06:55 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/11 22:35:19 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 18:25:12 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int		ft_free_doublestr(char ***doublestr_addr)
 {
-	int 	i;
+	int		i;
 	char	**doublestr;
 
 	if (!doublestr_addr || !(*doublestr_addr))
