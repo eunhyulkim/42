@@ -12,11 +12,11 @@ LFLAGS = -L. -lft -ltermcap
 MAIN_FILES = display tokenizer lexer parser expander converter \
 			 heredoc execute execve free error escaper
 UTILS_FILES = parser_get_utils parser_set_utils expander_utils \
-			 fd_utils pipe_utils
+			 fd_utils pipe_utils converter_utils
 BIN_FILES = cd echo env exit export pwd unset
 GNL_FILES = get_next_line get_next_line_utils
 TERM_FILES = cursor_move dlst_utils ft_getwinsz get_input history key \
-			 pos set_term_mode tc_putc goto_move
+			 pos set_term_mode tc_putc goto_move history_utils
 DIFF_FILES = main signal
 
 COMMON_PATH = $(MAIN_FILES)

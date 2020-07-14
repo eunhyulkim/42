@@ -263,3 +263,5 @@ exit
 asjkd
 exit
 exit
+ls
+exit

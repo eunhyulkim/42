@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/13 18:17:35 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/13 18:24:29 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/14 16:03:42 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ t_table	*parser(char **tokens);
 */
 char	**get_entries(char *src);
 void	expander(t_table *table);
+int		open_handle(int *opened, char c);
 void	converter(t_table *table);
 char	*get_config_path(char *filepath);
 void	convert_heredoc(t_redir *redir);

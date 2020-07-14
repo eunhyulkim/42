@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/13 22:30:15 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/13 22:31:48 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/14 16:08:32 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,23 +44,6 @@ void		old_hist_entry(t_line *line, t_dlist **hist)
 	line->hist_depth++;
 	feed_line(line, (*hist)->content);
 	ft_putstr_fd(line->cmd, 0);
-}
-
-void		match_hist(int key_pressed, t_line *line)
-{
-	int						i;
-	static struct s_keyhist	keyhist[2] = 
-	{
-		{KEY_UP, &old_hist_entry},
-		{KEY_DOWN, &new_hist_entry}
-	};
-	
-	i = 0;
-	while (i < 2)
-	{
-		if (key_pressed == keyhist[i++].key)
-			keyhist[i - 1].p(line, &(line->hist));
-	}
 }
 
 void		append_history(char *entry)
