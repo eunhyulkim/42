@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/13 18:14:21 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/13 19:12:37 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/14 17:01:08 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,5 @@ t_dlist		*ft_dlstnew(void const *content, size_t content_size);
 size_t		ft_dlstsize(t_dlist *lst);
 void		ft_dlstremovenode(t_dlist **head);
 void		ft_dlstdelstr(t_dlist **lst);
-t_dlist		*ft_dlstgethead(t_dlist *dlst);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/13 22:27:37 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/13 22:27:38 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/14 17:00:52 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,19 +88,9 @@ void	ft_dlstremovenode(t_dlist **head)
 void	ft_dlstdelstr(t_dlist **lst)
 {
 	t_dlist *tmp;
+	t_dlist *dlst;
 
-	*lst = ft_dlstgethead(*lst);
-	while (*lst)
-	{
-		tmp = *lst;
-		free((*lst)->content);
-		*lst = (*lst)->next;
-		free(tmp);
-	}
-}
-
-t_dlist	*ft_dlstgethead(t_dlist *dlst)
-{
+	dlst = *lst;
 	while (dlst)
 	{
 		if (dlst->prev)
@@ -108,5 +98,12 @@ t_dlist	*ft_dlstgethead(t_dlist *dlst)
 		else
 			break ;
 	}
-	return (dlst);
+	*lst = dlst;
+	while (*lst)
+	{
+		tmp = *lst;
+		free((*lst)->content);
+		*lst = (*lst)->next;
+		free(tmp);
+	}
 }

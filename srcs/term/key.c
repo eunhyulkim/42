@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/13 22:28:21 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/13 22:29:06 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/14 15:55:12 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ static int	match_key(char *key_str, int i)
 		{KEY_CODE_SLE, KEY_SLEFT}, {KEY_CODE_SUP, KEY_SPREVIOUS}, \
 		{KEY_CODE_SDO, KEY_SNEXT}
 	};
+
 	i = 0;
 	while (i < 11)
 	{
@@ -36,9 +37,7 @@ static int	match_key(char *key_str, int i)
 			return (key_couple[i].key_ret);
 		i++;
 	}
-	if (key_str[0] == '\x5e')
-		return (0);
-	return (key_str[0]);
+	return (key_str[0] == '\x5e' ? 0 : key_str[0]);
 }
 
 int			get_key(void)
