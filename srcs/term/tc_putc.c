@@ -1,29 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_free_doublestr.c                                :+:      :+:    :+:   */
+/*   tc_putc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/06/26 17:06:55 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/13 18:25:12 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/07/13 22:31:58 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/13 22:31:58 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell_bonus.h"
 
-int		ft_free_doublestr(char ***doublestr_addr)
+int		tc_putc(int c)
 {
-	int		i;
-	char	**doublestr;
-
-	if (!doublestr_addr || !(*doublestr_addr))
-		return (0);
-	i = -1;
-	doublestr = *doublestr_addr;
-	while (doublestr[++i])
-		ft_free_str(&doublestr[i]);
-	ft_free(doublestr);
-	*doublestr_addr = 0;
-	return (1);
+	return (write(0, &c, 1));
 }

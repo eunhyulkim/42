@@ -1,29 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_free_doublestr.c                                :+:      :+:    :+:   */
+/*   ft_getwinsz.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/06/26 17:06:55 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/13 18:25:12 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/07/13 22:30:06 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/13 22:30:07 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell_bonus.h"
 
-int		ft_free_doublestr(char ***doublestr_addr)
+int		ft_getwinsz(t_winsz *winsz)
 {
-	int		i;
-	char	**doublestr;
+	struct winsize	w;
 
-	if (!doublestr_addr || !(*doublestr_addr))
-		return (0);
-	i = -1;
-	doublestr = *doublestr_addr;
-	while (doublestr[++i])
-		ft_free_str(&doublestr[i]);
-	ft_free(doublestr);
-	*doublestr_addr = 0;
-	return (1);
+	if (ioctl(0, TIOCGWINSZ, &w))
+		return (1);
+	winsz->col = w.ws_col;
+	winsz->row = w.ws_row;
+	return (0);
 }

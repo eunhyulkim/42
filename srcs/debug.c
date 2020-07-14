@@ -10,7 +10,7 @@ void		print_table(t_table *table)
 	if (!table)
 		return ;
 	int tno = 0;
-	printf("\n%s%-10s%-6s%-8s%-16s%-50s%s\n", KCYN, "TABLE_NO", "TYPE", "JOB_NO", \
+	dprintf(g_fd, "\n%s%-10s%-6s%-8s%-16s%-50s%s\n", KCYN, "TABLE_NO", "TYPE", "JOB_NO", \
 	"CMD", "ARG", "REDIRECT");
 	while (table)
 	{
@@ -19,28 +19,28 @@ void		print_table(t_table *table)
 		int jno = 1;
 		while (job)
 		{
-			printf("%s%-10d", KNRM, tno);
+			dprintf(g_fd, "%s%-10d", KNRM, tno);
 			if (!table->sep_type)
-				printf("%-6s", "START");
+				dprintf(g_fd, "%-6s", "START");
 			else if (table->sep_type == AND)
-				printf("%-6s", "AND");
+				dprintf(g_fd, "%-6s", "AND");
 			else if (table->sep_type == OR)
-				printf("%-6s", "OR");
+				dprintf(g_fd, "%-6s", "OR");
 			else if (table->sep_type == SEMI)
-				printf("%-6s", "SEMI");
-			printf("%-8d", jno++);
+				dprintf(g_fd, "%-6s", "SEMI");
+			dprintf(g_fd, "%-8d", jno++);
 			if (job->command.cmd)
-				printf("%-16s", job->command.cmd);
+				dprintf(g_fd, "%-16s", job->command.cmd);
 			else
-				printf("%s%-16s%s", KYEL, "Null", KNRM);
+				dprintf(g_fd, "%s%-16s%s", KYEL, "Null", KNRM);
 			arg = job->command.arg_list;
 			idx = 0;
 			int len = 0;
 			if (!arg && (len = 50))
-				printf("%s%-50s%s", KYEL, "Null", KNRM);
+				dprintf(g_fd, "%s%-50s%s", KYEL, "Null", KNRM);
 			while (arg && arg[idx])
 			{
-				printf("%s,", arg[idx]);
+				dprintf(g_fd, "%s,", arg[idx]);
 				len += ft_strlen(arg[idx]) + 1;
 				idx++;
 			}
@@ -48,21 +48,21 @@ void		print_table(t_table *table)
 			if (len < 0)
 				len = 0;
 			while (len--)
-				printf(" ");
+				dprintf(g_fd, " ");
 			if (!job->redir_list)
-				printf("%s%s%s\n", KYEL, "Null", KNRM);
+				dprintf(g_fd, "%s%s%s\n", KYEL, "Null", KNRM);
 			else
 			{
 				redir = job->redir_list;
 				while (redir)
 				{
 					if (redir->sign[0] == '>')
-						printf("%d", redir->fd);
-					printf("%s", redir->sign);
-					printf("%s,", redir->arg);
+						dprintf(g_fd, "%d", redir->fd);
+					dprintf(g_fd, "%s", redir->sign);
+					dprintf(g_fd, "%s,", redir->arg);
 					redir = redir->next;
 				}
-				printf("\n");
+				dprintf(g_fd, "\n");
 			}
 			job = job->next;
 		}

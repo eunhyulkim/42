@@ -2,14 +2,15 @@ NAME =	libft.a
 INCLUDES = -I ../include/
 CC = gcc
 RM = rm -f
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 
 MAIN_FILES = ft_strchr ft_strlen ft_split ft_strdup ft_calloc \
 			 ft_memset ft_strcat ft_strcpy ft_strjoin ft_strnew \
 			 ft_strsub ft_putstr_fd ft_isspace ft_strcmp ft_strncmp \
 			 ft_isalpha ft_isascii ft_isnum ft_isprint ft_isset \
 			 ft_atoi ft_realloc ft_memcpy ft_itoa ft_putendl_fd \
-			 ft_strrchr ft_isnumber
+			 ft_strrchr ft_isnumber ft_bzero ft_isdigit ft_memcmp \
+			 ft_memmove ft_putchar_fd
 
 BONUS_FILES = ft_dup_doublestr ft_len_doublestr ft_free_doublestr \
 			  ft_realloc_doublestr ft_startswith ft_isformat ft_in \

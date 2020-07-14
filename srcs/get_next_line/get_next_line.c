@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/29 22:41:27 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/13 12:25:37 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 22:24:05 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int	is_last_line_eof(int fd, t_buf *buf)
 	return (1);
 }
 
-int	get_next_line(int fd, char **line)
+int	get_next_line(int fd, char **line, int ret_opt)
 {
 	static t_buf	buf;
 
@@ -71,7 +71,7 @@ int	get_next_line(int fd, char **line)
 		else
 		{
 			buf.idx++;
-			return (add_newline_return(line));
+			return ((ret_opt) ? (add_newline_return(line)) : (1));
 		}
 	}
 	return (0);

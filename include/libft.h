@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/04/06 01:06:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/11 22:49:30 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/13 18:14:54 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,13 @@ char							*ft_itoa(t_llint n);
 void							ft_putendl_fd(char *s, int fd);
 char							*ft_strrchr(const char *s, int c);
 int								ft_isnumber(char *str);
+void							ft_bzero(void *data, size_t len);
+int								ft_isdigit(int c);
+int								ft_memcmp(const void *s1, const void *s2, \
+								size_t n);
+void							*ft_memmove(void *dst, const void *src, \
+								size_t len);
+void							ft_putchar_fd(char c, int fd);
 
 /*
 ** special functinos

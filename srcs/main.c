@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/07/09 19:50:08 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/13 11:46:00 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/07/13 22:26:20 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/13 22:26:26 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int				main(int ac, char *av[], char **env)
 		set_builtin_signal();
 		display_prompt();
 		line = 0;
-		if (!(get_next_line(0, &line)))
+		if (!(get_next_line(0, &line, TRUE)))
 			ft_exit(line, 0);
 		else if (is_empty_line(line))
 			continue;
