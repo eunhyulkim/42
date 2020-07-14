@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/13 22:28:21 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/14 15:55:12 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/14 20:16:37 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,8 @@ static int	match_key(char *key_str, int i)
 	i = 0;
 	while (i < 11)
 	{
-		if (i < 7 && !ft_memcmp(key_couple[i].key_code, \
+		if (!ft_memcmp(key_couple[i].key_code, \
 		key_str, MAX_KEY_LEN))
-			return (key_couple[i].key_ret);
-		if (i >= 7 && i < 9 && !ft_memcmp(key_couple[i].key_code, \
-		key_str, MAX_KEY_LEN - 2))
-			return (key_couple[i].key_ret);
-		if (i >= 9 && i < 11 && !ft_memcmp(key_couple[i].key_code, \
-		key_str, MAX_KEY_LEN + 2))
 			return (key_couple[i].key_ret);
 		i++;
 	}
@@ -45,20 +39,14 @@ int			get_key(void)
 	char	*key_str;
 	int		key_pressed;
 
-	if (!(key_str = ft_calloc(sizeof(char), 7)))
+	if (!(key_str = ft_calloc(sizeof(char), 5)))
 		return (-1);
 	if (!key_str)
 		return (-1);
 	read(0, key_str, 1);
-	if (*key_str == '\x5e')
-		read(0, key_str + 1, 1);
 	if (*key_str == '\x1b')
-		read(0, key_str + 1, 1);
-	if (*(key_str + 1) == '\x5b')
-		read(0, key_str + 2, 2);
-	if (*(key_str + 2) == '\x31' && *(key_str + 3) == '\x3b')
-		read(0, key_str + 4, 2);
+		read(0, key_str + 1, 3);
 	key_pressed = match_key(key_str, 0);
-	free(key_str);
+	ft_free_str(&key_str);
 	return (key_pressed);
 }
