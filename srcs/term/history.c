@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/13 22:30:15 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/14 17:07:17 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/14 19:07:04 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static void	feed_line(t_line *line, char *entry)
 
 void		new_hist_entry(t_line *line, t_dlist **hist)
 {
-	if (line->hist && !line->hist_depth)
+	if (!line->hist || !line->hist_depth)
 		return ;
 	line->hist_depth--;
 	*hist = (*hist)->prev;
@@ -36,7 +36,7 @@ void		new_hist_entry(t_line *line, t_dlist **hist)
 
 void		old_hist_entry(t_line *line, t_dlist **hist)
 {
-	if (line->hist && line->hist_depth == line->hist_size)
+	if (!line->hist || line->hist_depth == line->hist_size)
 		return ;
 	if (!line->hist_depth)
 		ft_dlstadd(hist, ft_dlstnew(line->cmd, ft_strlen(line->cmd) + 1));
@@ -80,13 +80,15 @@ t_dlist		*retrieve_history(void)
 	free(path);
 	if (fd == -1)
 		return (NULL);
+	line = 0;
 	while (get_next_line(fd, &line, FALSE))
 	{
 		len = ft_strlen(line);
 		if (len < MAX_CMD_LEN)
 			ft_dlstadd(&hist, ft_dlstnew(line, len + 1));
-		free(line);
+		ft_free_str(&line);
 	}
+	ft_free_str(&line);
 	close(fd);
 	return (hist);
 }
