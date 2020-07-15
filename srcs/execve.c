@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 17:03:18 by iwoo              #+#    #+#             */
-/*   Updated: 2020/07/13 12:12:27 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/15 12:28:38 by iwoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,13 +118,13 @@ void		cmd_execve(t_command *command)
 	{
 		if (stat.st_mode & S_IFDIR)
 			return (error_execute(command->cmd, EXECUTE_DRECTORY, 126));
-		else if (*command->cmd == '.' && stat.st_mode & S_IXUSR)
+		else if (!(stat.st_mode & S_IXUSR))
+			error_execute(command->cmd, PERMISSION_DENIED, 126);
+		else if (stat.st_mode & S_IXUSR)
 			return (run_exec(command));
 	}
 	if (!ft_strchr(command->cmd, '/'))
 		error_execute(command->cmd, NOT_CMD_FOUND, 127);
-	else if (!(stat.st_mode & S_IXUSR))
-		error_execute(command->cmd, PERMISSION_DENIED, 126);
 	else
 		error_execute(command->cmd, NO_SUCH_ENTRY, 127);
 	return ;
