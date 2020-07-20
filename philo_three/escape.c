@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/20 10:59:07 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/20 18:36:35 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/21 00:54:00 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,16 +61,26 @@ void	close_and_unlink_semaphore(t_info *info, t_semaphore *sem)
 
 void	safe_escape(t_info *info, t_semaphore *sem, t_sopher *sophers)
 {
+	int		i;
+
 	dprintf(g_fd, "[safe_secape]safe_escpae function start\n");
 	sem_wait(sem->dead_s);
 	sem_post(sem->dead_s);
-	dprintf(g_fd, "[safe_secape]check someone's death, %llu\n", get_time(&sophers[0]));
+	dprintf(g_fd, "[safe_secape]check someone's death, %llu\n", \
+	get_time(&sophers[0]));
+	i = 0;
+	while (i < info->numbers)
+	{
+		dprintf(g_fd, "KILL TRY [%d]\n", sophers[i].pid);
+		kill(sophers[i].pid, SIGKILL);
+		i++;
+	}
 	dprintf(g_fd, "[safe_secape]dead_s is wait and post success\n");
 	close_and_unlink_semaphore(info, sem);
 	dprintf(g_fd, "[safe_secape]close_and_unlink_semaphore success\n");
 	free_semaphore(sem);
 	dprintf(g_fd, "[safe_secape]free_semaphore success\n");
 	free(sophers);
-	dprintf(g_fd, "[safe_secape]safe_escpae function end\n");
+	dprintf(g_fd, "[safe_secape]safe_escape function end\n");
 	return ;
 }

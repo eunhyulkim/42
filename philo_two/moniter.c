@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/20 11:05:13 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/20 12:22:57 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/20 16:51:09 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,18 @@ void	*moniter_heart_routine(void *sopher_arg)
 	sem = sopher->semaphore;
 	while (1)
 	{
-		sem_wait(&sem->sopher_s[sopher->seat_no - 1]);
+		sem_wait(sem->sopher_s[sopher->seat_no - 1]);
 		if (!sopher->is_eating && (int)get_hungry_time(sopher) >= time_die)
 		{
 			print_message(sopher, TYPE_DIED);
-			sem_post(&sem->sopher_s[sopher->seat_no - 1]);
-			sem_post(&sem->dead_s);
+			sem_post(sem->sopher_s[sopher->seat_no - 1]);
+			sem_post(sem->dead_s);
 			return (void *)(NULL);
 		}
-		sem_post(&sem->sopher_s[sopher->seat_no - 1]);
+		sem_post(sem->sopher_s[sopher->seat_no - 1]);
 		usleep(1000);
 	}
+	return (void *)(NULL);
 }
 
 void	moniter_heart(t_sopher *sophers, t_info *info)
@@ -68,11 +69,11 @@ void	*moniter_count_routine(void *sophers)
 	{
 		i = 0;
 		while (i < info->numbers)
-			sem_wait(&sem->eat_s[i++]);
+			sem_wait(sem->eat_s[i++]);
 		total++;
 	}
 	print_message(&sopher[0], TYPE_OVER);
-	sem_post(&sem->dead_s);
+	sem_post(sem->dead_s);
 	return (void *)(NULL);
 }
 

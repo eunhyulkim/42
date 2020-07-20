@@ -6,13 +6,13 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/20 11:03:28 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/20 12:39:42 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/20 16:40:54 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_two.h"
 
-static char		*get_semname(int i, char type)
+char			*get_semname(int i, char type)
 {
 	char	*name;
 
@@ -31,9 +31,11 @@ static void		open_multiple_sem(int i, t_semaphore *head)
 
 	name = 0;
 	name = get_semname(i, 'E');
+	sem_unlink(name);
 	head->eat_s[i] = sem_open(name, O_CREAT, 0644, 1);
 	free(name);
 	name = get_semname(i, 'S');
+	sem_unlink(name);
 	head->sopher_s[i] = sem_open(name, O_CREAT, 0644, 1);
 	free(name);
 	sem_wait(head->eat_s[i]);
@@ -42,31 +44,33 @@ static void		open_multiple_sem(int i, t_semaphore *head)
 
 int				init_semaphore(t_semaphore **sem, t_info *info)
 {
-	t_semaphore	*head;
-	char			*name;
+	t_semaphore		*head;
 	int				i;
 
 	if (!(*sem = (t_semaphore *)ft_calloc(sizeof(t_semaphore), 1)))
 		return (FALSE);
 	head = *sem;
-	if (!(head->eat_s = (sem_t *)ft_calloc(sizeof(sem_t *), info->numbers)))
+	if (!(head->eat_s = (sem_t **)ft_calloc(sizeof(sem_t *), info->numbers)))
 		return (FALSE);
-	if (!(head->sopher_s = (sem_t *)ft_calloc(sizeof(sem_t), info->numbers)))
+	if (!(head->sopher_s = (sem_t **)ft_calloc(sizeof(sem_t *), info->numbers)))
 		return (FALSE);
+	sem_unlink("/philo2_write");
 	head->write_s = sem_open("/philo2_write", O_CREAT, 0644, 1);
+	sem_unlink("/philo2_dead");
 	head->dead_s = sem_open("/philo2_dead", O_CREAT, 0644, 1);
 	sem_wait(head->dead_s);
+	sem_unlink("/philo2_fork");
 	if (info->numbers > 1)
 		head->fork_s = sem_open("/philo2_fork", O_CREAT, 0644, \
 		info->numbers / 2);
 	i = -1;
 	while (++i < info->numbers)
-		open_multiple_sem(i, head, info);
+		open_multiple_sem(i, head);
 	return (TRUE);
 }
 
 int				init_philosophers(t_sopher **sophers_ref, t_info *info, \
-		t_semaphire *sem)
+		t_semaphore *sem)
 {
 	t_sopher	*sophers;
 	int			i;
@@ -79,7 +83,7 @@ int				init_philosophers(t_sopher **sophers_ref, t_info *info, \
 	while (i < info->numbers)
 	{
 		sophers[i].info = info;
-		sophers[i].semaphire = sem;
+		sophers[i].semaphore = sem;
 		sophers[i].seat_no = i + 1;
 		i++;
 	}

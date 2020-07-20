@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/20 10:59:28 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/20 11:12:09 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/20 17:25:03 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,11 @@ void	ft_putnbr_fd(t_llint n, int fd)
 	ft_putchar_fd((char)(nb % 10) + 48, fd);
 }
 
-void	ft_putendl_fd(char *s, int fd)
+int		ft_putendl_fd(char *s, int fd)
 {
 	if (fd < 0 || !s)
-		return ;
+		return (1);
 	ft_putstr_fd(s, fd);
 	write(fd, "\n", 1);
+	return (1);
 }

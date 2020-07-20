@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/20 11:05:32 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/20 17:40:20 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/21 00:50:18 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,19 +35,24 @@ void	print_message(t_sopher *sopher, int message_type)
 
 	if (!done)
 	{
+		sem_wait(sopher->semaphore->dwrite_s);
 		sem_wait(sopher->semaphore->write_s);
 		ft_putnbr_fd(get_time(sopher), STDIN);
 		ft_putchar_fd(' ', STDIN);
 		if (message_type == TYPE_OVER || message_type == TYPE_DIED)
 			done = TRUE;
 		if (message_type == TYPE_OVER)
+		{
+			sem_post(sopher->semaphore->write_s);
 			return (ft_putendl_fd(get_message(message_type), STDIN));
+		}
 		ft_putnbr_fd(sopher->seat_no, STDIN);
 		ft_putchar_fd(' ', STDIN);
 		ft_putendl_fd(get_message(message_type), STDIN);
 		if (message_type == TYPE_DIED)
 			ft_putendl_fd("One philosopher died and eat was stopped", STDIN);
 		sem_post(sopher->semaphore->write_s);
+		sem_post(sopher->semaphore->dwrite_s);
 	}
 	return ;
 }

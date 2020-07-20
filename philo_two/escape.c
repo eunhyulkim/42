@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/20 10:59:07 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/20 12:27:07 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/20 17:25:31 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,10 @@ int		free_semaphore(t_semaphore *sem)
 {
 	if (!sem)
 		return (FALSE);
-	if (sem->eat_m)
-		free(sem->eat_m);
-	if (sem->sopher_m)
-		free(sem->sopher_m);
+	if (sem->eat_s)
+		free(sem->eat_s);
+	if (sem->sopher_s)
+		free(sem->sopher_s);
 	free(sem);
 	return (FALSE);
 }
@@ -37,31 +37,39 @@ int		free_semaphore(t_semaphore *sem)
 void	close_and_unlink_semaphore(t_info *info, t_semaphore *sem)
 {
 	int		i;
+	char	*name;
 
-	sem_close(&sem->write_s);
-	sem_unlink(&sem->write_s);
-	sem_close(&sem->dead_s);
-	sem_unlink(&sem->dead_s);
-	sem_close(&sem->fork_s);
-	sem_unlink(&sem->fork_s);
+	name = 0;
+	(void)sem;
+	sem_unlink("/philo2_write");
+	sem_unlink("/philo2_dead");
+	sem_unlink("/philo2_fork");
 	i = 0;
 	while (i < info->numbers)
 	{
-		sem_close(&sem->eat_s[i]);
-		sem_unlink(&sem->eat_s[i]);
-		sem_close(&sem->sopher_s[i]);
-		sem_unlink(&sem->sopher_s[i]);
+		name = get_semname(i, 'E');
+		sem_unlink(name);
+		free(name);
+		name = get_semname(i, 'S');
+		sem_unlink(name);
+		free(name);
 		i++;
 	}
+	dprintf(g_fd, "[safe_secape]close_and_unlink_semaphore_end\n");
 	return ;
 }
 
 void	safe_escape(t_info *info, t_semaphore *sem, t_sopher *sophers)
 {
-	sem_wait(&sem->dead_s);
-	sem_post(&sem->dead_s);
+	dprintf(g_fd, "[safe_secape]safe_escpae function start\n");
+	sem_wait(sem->dead_s);
+	sem_post(sem->dead_s);
+	dprintf(g_fd, "[safe_secape]dead_s is wait and post success\n");
 	close_and_unlink_semaphore(info, sem);
-	free_semaphotre(sem);
+	dprintf(g_fd, "[safe_secape]close_and_unlink_semaphore success\n");
+	free_semaphore(sem);
+	dprintf(g_fd, "[safe_secape]free_semaphore success\n");
 	free(sophers);
+	dprintf(g_fd, "[safe_secape]safe_escpae function end\n");
 	return ;
 }

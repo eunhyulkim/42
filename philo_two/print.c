@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/20 11:05:32 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/20 11:12:09 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/20 17:01:46 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,16 @@ char	*get_message(int message_type)
 	return (0);
 }
 
-void	print_message(t_sopher *sopher, int message_type)
+int		print_message(t_sopher *sopher, int message_type)
 {
 	static int	done;
+	int			res;
 
-	pthread_mutex_lock(&sopher->mutex->write_m);
+	res = 0;
 	if (!done)
 	{
+		res = 1;
+		sem_wait(sopher->semaphore->write_s);
 		ft_putnbr_fd(get_time(sopher), STDIN);
 		ft_putchar_fd(' ', STDIN);
 		if (message_type == TYPE_OVER || message_type == TYPE_DIED)
@@ -47,7 +50,7 @@ void	print_message(t_sopher *sopher, int message_type)
 		ft_putendl_fd(get_message(message_type), STDIN);
 		if (message_type == TYPE_DIED)
 			ft_putendl_fd("One philosopher died and eat was stopped", STDIN);
+		sem_post(sopher->semaphore->write_s);
 	}
-	pthread_mutex_unlock(&sopher->mutex->write_m);
-	return ;
+	return (res);
 }

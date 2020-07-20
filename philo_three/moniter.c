@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/20 11:05:13 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/20 18:13:20 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/21 00:49:37 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ void	*moniter_heart_routine(void *sopher_arg)
 			print_message(sopher, TYPE_DIED);
 			sem_post(sem->sopher_s[sopher->seat_no - 1]);
 			sem_post(sem->dead_s);
+			sem_wait(sem->dwrite_s);
 			return (void *)(NULL);
 		}
 		sem_post(sem->sopher_s[sopher->seat_no - 1]);
@@ -59,6 +60,7 @@ void	*moniter_count_routine(void *sophers)
 	}
 	print_message(&sopher[0], TYPE_OVER);
 	sem_post(sem->dead_s);
+	dprintf(g_fd, "moniter_count_routine_is_sueccess_end\n");
 	return (void *)(NULL);
 }
 

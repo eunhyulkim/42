@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo_three.h                                        :+:      :+:    :+:   */
+/*   philo_three.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/20 10:58:43 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/20 17:25:56 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/21 00:55:06 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <fcntl.h>
 # include <sys/time.h>
 # include <semaphore.h>
+# include <signal.h>
 
 # define STDIN			0
 # define STDOUT			1
@@ -40,6 +41,7 @@
 # define DIED			2
 
 # define NAME_WRITE		"/philo3_write"
+# define NAME_DWRITE	"/philo3_dwrite"
 # define NAME_DIED		"/philo3_died"
 # define NAME_FORK		"/philo3_fork"
 # define NAME_SOPHER	"/philo3_sopher"
@@ -79,6 +81,7 @@ typedef struct			s_semaphore
 typedef struct			s_sopher
 {
 	int					seat_no;
+	pid_t				pid;
 	int					last_time;
 	int					is_eating;
 	int					count_eat;

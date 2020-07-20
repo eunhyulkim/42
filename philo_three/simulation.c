@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/20 11:05:52 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/20 18:09:27 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/21 00:54:23 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,26 +53,6 @@ void	eat(t_sopher *sopher)
 	return ;
 }
 
-void	dup_semaphore(t_sopher *sopher)
-{
-	t_semaphore	*sem;
-	char		*name;
-	int			i;
-
-	sem = sopher->semaphore;
-	sem->write_s = sem_open(NAME_WRITE, O_CREAT, 0644, 1);
-	sem->dead_s = sem_open(NAME_DIED, O_CREAT, 0644, 1);
-	sem->fork_s = sem_open(NAME_FORK, O_CREAT, 0644, 1);
-	name = 0;
-	i = sopher->seat_no;
-	name = get_semname(i, 'E');
-	sem->eat_s[i] = sem_open(name, O_CREAT, 0644, 1);
-	free(name);
-	name = get_semname(i, 'S');
-	sem->sopher_s[i] = sem_open(name, O_CREAT, 0644, 1);
-	free(name);
-}
-
 void	*live(void *sopher_void)
 {
 	t_sopher *sopher;
@@ -80,7 +60,6 @@ void	*live(void *sopher_void)
 	sopher = (t_sopher *)sopher_void;
 	while (1)
 	{
-		// dup_semaphore(sopher);
 		take_forks(sopher);
 		eat(sopher);
 		clean_forks(sopher);
@@ -103,13 +82,18 @@ void	simulation(t_sopher *sophers)
 	{
 		dprintf(g_fd, "%d sopher's simulation start\n", sophers[i].seat_no);
 		tid = fork();
-		if (tid > 0)
+		if (tid == 0)
 		{
 			pthread_create(&thread, NULL, &moniter_heart_routine, \
 			(void *)&sophers[i]);
 			pthread_detach(thread);
 			live((void *)&sophers[i]);
 			exit(EXIT_SUCCESS);
+		}
+		else if (tid > 0)
+		{
+			sophers[i].pid = tid;
+			dprintf(g_fd, "[%d] sophers fork pid[%d]\n", i, sophers[i].pid);
 		}
 		usleep(100);
 	}

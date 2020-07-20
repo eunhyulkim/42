@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/20 11:04:39 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/20 18:07:51 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/21 00:55:31 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,8 @@ int		main(int ac, char *av[])
 
 	if ((g_fd = open("../log/log.txt", O_RDWR | O_TRUNC | O_CREAT, 0644)) < 0)
 		return (1);
-	if ((g_rfd = open("../log/result.txt", O_RDWR | O_TRUNC | O_CREAT, 0644)) < 0)
+	if ((g_rfd = open("../log/result.txt", \
+	O_RDWR | O_TRUNC | O_CREAT, 0644)) < 0)
 		return (1);
 	if (ac < 5 || ac > 6)
 		ft_error("argument count must be between 5 and 6");
@@ -56,5 +57,6 @@ int		main(int ac, char *av[])
 		ft_error("malloc or semaphore failed and not started");
 	close(g_fd);
 	close(g_rfd);
+	dprintf(g_fd, "[main]maun function is end\n");
 	return (0);
 }

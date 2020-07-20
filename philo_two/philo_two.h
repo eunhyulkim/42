@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/20 10:58:43 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/20 12:37:27 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/20 17:25:56 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,10 +82,12 @@ typedef struct			s_sopher
 int						g_fd;
 int						g_rfd;
 
+int						sem_getvalue(sem_t *restrict sem, int *restrict sval);
 /*
 ** parse and init functions
 */
 int						parse(int ac, char *av[], t_info *info);
+char					*get_semname(int i, char type);
 int						init_semaphore(t_semaphore **semaphore, t_info *info);
 int						init_philosophers(t_sopher	**sophers_ref, \
 						t_info *info, t_semaphore *semaphore);
@@ -101,9 +103,9 @@ void					moniter_count(t_sopher *sophers);
 /*
 ** simulation functions
 */
-void					take_forks(t_sopher *sopher);
-void					clean_forks(t_sopher *sopher);
-void					eat(t_sopher *sopher);
+int						take_forks(t_sopher *sopher);
+int						clean_forks(t_sopher *sopher);
+int						eat(t_sopher *sopher);
 void					*live(void *sopher);
 void					simulation(t_sopher *sophers);
 
@@ -111,7 +113,7 @@ void					simulation(t_sopher *sophers);
 ** print functions
 */
 char					*get_message(int message_type);
-void					print_message(t_sopher *sopher, int message_type);
+int						print_message(t_sopher *sopher, int message_type);
 
 /*
 ** main function
@@ -144,7 +146,7 @@ size_t					ft_strlen(const char *str);
 void					ft_putchar_fd(char c, int fd);
 void					ft_putstr_fd(char *s, int fd);
 void					ft_putnbr_fd(t_llint n, int fd);
-void					ft_putendl_fd(char *s, int fd);
+int						ft_putendl_fd(char *s, int fd);
 int						ft_atoi(char *str);
 int						ft_isnum(t_llint c);
 int						ft_isset(int c, char *set);
@@ -152,10 +154,5 @@ int						ft_isnumber(char *str);
 char					*ft_strdup(const char *src);
 char					*ft_strmjoin(char *s1, char *s2);
 char					*ft_itoa(t_llint n);
-
-/*
-** log function
-*/
-// void					log_init_philosophers(t_info *info, t_sopher *sophers);
 
 #endif

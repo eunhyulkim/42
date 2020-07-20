@@ -4,7 +4,7 @@ CC = gcc
 RM = rm -f
 CFLAGS = -Wall -Wextra -Werror
 
-MAIN_FILES = main parse init moniter simulation time print escape log \
+MAIN_FILES = main parse init moniter simulation time print escape \
 			 ft_put ft_string utils
 SRCS = $(addsuffix .c, $(MAIN_FILES))
 OBJS = $(addsuffix .o, $(MAIN_FILES))

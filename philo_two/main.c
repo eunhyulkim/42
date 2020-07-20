@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/20 11:04:39 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/20 12:35:11 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/20 17:23:20 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,22 @@ int		philosophy_two(t_info *info)
 
 	sem = 0;
 	sophers = 0;
+	dprintf(g_fd, "[philosophy]philosophy_two start\n");
 	if (!init_semaphore(&sem, info))
 		return (free_semaphore(sem));
+	dprintf(g_fd, "[philosophy]init_semaphores passed\n");
 	if (!init_philosophers(&sophers, info, sem))
 		return (free_semaphore(sem));
+	dprintf(g_fd, "[philosophy]init_philosophers passed\n");
 	set_start_time(info);
+	dprintf(g_fd, "[philosophy]set_start_time passed\n");
 	if (info->must_eat)
 		moniter_count(sophers);
+	dprintf(g_fd, "[philosophy]moniter_count passed\n");
 	moniter_heart(sophers, info);
+	dprintf(g_fd, "[philosophy]moniter_heart passed\n");
 	simulation(sophers);
+	dprintf(g_fd, "[philosophy]simulation passed\n");
 	safe_escape(info, sem, sophers);
 	return (TRUE);
 }
