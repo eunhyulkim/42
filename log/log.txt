@@ -1,0 +1,10 @@
+[ARG PARSE]
+[numbers: 1][time_die: 630]	[time_eat: 200000][time_sleep: 300000][must_eat: 10]
+
+[PHILOSOPHER INIT]
+[1th][first_fork: 0][second_fork: 0]
+
+[START TIME]
+[1595213788 sec][33432 usec]
+
+1 sopher's simulation start
