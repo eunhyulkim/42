@@ -21,7 +21,7 @@ const std::string Form::guide[11] = {
 	"Enter login_id(Required).",
 	"Enter postal_address(Optional).",
 	"Enter email_address(Optional).",
-	"Enter phone_number(Optional, 11 digit number without '-'.",
+	"Enter phone_number(Optional, 11 digit with '-'.",
 	"Enter birtyday_date(Optional, OOOO-OO-OO).",
 	"Enter favorite_meal(Optional).",
 	"Enter underware_color(Optional).",

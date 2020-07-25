@@ -44,7 +44,6 @@ int		main(void)
 	Cmd		cmd = CMD_NONE;
 	Contact	contact[8];
 
-	print::login_art();
 	while (1)
 	{
 		try
