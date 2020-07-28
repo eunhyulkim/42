@@ -2,19 +2,28 @@
 #include "Fixed.class.hpp"
 
 int main( void ) {
-	Fixed a;
-	Fixed const b( 10 );
-	Fixed const c( 42.42f );
-	Fixed const d( b );
-	a = Fixed( 1234.4321f );
-	std::cout << "a is " << a << std::endl;
-	std::cout << "b is " << b << std::endl;
-	std::cout << "a >= b compare " << std::boolalpha << (a >= b) << std::endl;
-	std::cout << "c is " << c << std::endl;
-	std::cout << "d is " << d << std::endl;
-	std::cout << "a is " << a.toInt() << " as integer" << std::endl;
-	std::cout << "b is " << b.toInt() << " as integer" << std::endl;
-	std::cout << "c is " << c.toInt() << " as integer" << std::endl;
-	std::cout << "d is " << d.toInt() << " as integer" << std::endl;
+	Fixed a(1.11f);
+	Fixed a2(1.11f);
+	Fixed b(1.22f);
+	Fixed c(10);
+
+	std::cout << "a: 1.11f -> " << a << std::endl;
+	std::cout << "b: 1.22f -> " << b << std::endl;
+	std::cout << "c: 10 -> " << c << std::endl;
+	
+	std::cout << "a + b = " << (a + b) << std::endl;
+	std::cout << "b - a = " << (b - a) << std::endl;
+	std::cout << "b * c = " << b * c << std::endl;
+	std::cout << "b / c = " << b / c << std::endl;
+
+	std::cout << "false-> " << std::boolalpha << (a > b) << std::endl;
+	std::cout << "false-> " << std::boolalpha << (a >= b) << std::endl;
+	std::cout << "true-> " << std::boolalpha << (a >= a2) << std::endl;
+	std::cout << "true-> " << std::boolalpha << (a < b) << std::endl;
+	std::cout << "true-> " << std::boolalpha << (a <= a2) << std::endl;
+	std::cout << "false-> " << std::boolalpha << (a == b) << std::endl;
+	std::cout << "true-> " << std::boolalpha << (a == a2) << std::endl;
+	std::cout << "true-> " << std::boolalpha << (a != b) << std::endl;
+	std::cout << "false-> " << std::boolalpha << (a != a2) << std::endl;
 	return 0;
 }
