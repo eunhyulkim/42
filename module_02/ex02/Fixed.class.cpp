@@ -1,5 +1,8 @@
 #include "Fixed.class.hpp"
 
+/*
+** canonical form
+*/
 Fixed::Fixed() {
 	this->_fixedValue = 0;
 	std::cout << "Default constructor called" << std::endl;
@@ -20,16 +23,49 @@ Fixed::Fixed(const Fixed& copy) {
 	*this = copy;
 }
 
+Fixed::~Fixed() {
+	std::cout << "Default destructor called" << std::endl;
+}
+
+/*
+** overload comparison operator (>, <, >=, <=, == and !=)
+*/
 Fixed&
-Fixed::operator=(const Fixed& obj){
+Fixed::operator=(const Fixed& obj) {
 	std::cout << "Assignation operator called" << std::endl;
 	if (this != &obj)
 		this->_fixedValue = obj.getRawBits();
 	return (*this);
 }
 
-Fixed::~Fixed() {
-	std::cout << "Default destructor called" << std::endl;
+bool
+Fixed::operator>(const Fixed& obj) const{
+	return (this->_fixedValue > obj._fixedValue);
+}
+
+bool
+Fixed::operator>=(const Fixed& obj) const{
+	return (this->_fixedValue >= obj._fixedValue);
+}
+
+bool
+Fixed::operator<(const Fixed& obj) const{
+	return (this->_fixedValue < obj._fixedValue);
+}
+
+bool
+Fixed::operator<=(const Fixed& obj) const{
+	return (this->_fixedValue <= obj._fixedValue);
+}
+
+bool
+Fixed::operator==(const Fixed& obj) const{
+	return (this->_fixedValue == obj._fixedValue);
+}
+
+bool
+Fixed::operator!=(const Fixed& obj) const{
+	return (this->_fixedValue != obj._fixedValue);
 }
 
 int

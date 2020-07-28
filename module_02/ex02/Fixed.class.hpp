@@ -14,12 +14,19 @@ class Fixed
 		int		_fixedValue;
 
 	public:
-		Fixed& operator=(const Fixed& obj);
 		Fixed(const Fixed& copy);
 		Fixed(const int number);
 		Fixed(const float number);
 		Fixed();
 		~Fixed();
+
+		Fixed& operator=(const Fixed& obj);
+		bool operator>(const Fixed& obj) const;
+		bool operator>=(const Fixed& obj) const;
+		bool operator<(const Fixed& obj) const;
+		bool operator<=(const Fixed& obj) const;
+		bool operator==(const Fixed& obj) const;
+		bool operator!=(const Fixed& obj) const;
 
 		static int getFractionalBits(void);
 		int getRawBits(void) const;
