@@ -1,21 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Human.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/07/27 00:51:23 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/27 00:51:24 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/07/26 22:00:17 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/26 22:56:20 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Pony.hpp"
+#include "Human.hpp"
 
-int main(void)
+Brain& Human::getBrain(void)
 {
-	Pony::ponyOnTheStack();
-	std::cout << std::endl;
-	Pony::ponyOnTheHeap();
-	return (0);
+	return (this->humanBrain);
+}
+
+std::string	Human::identify(void)
+{
+	return (this->getBrain().identify());
 }

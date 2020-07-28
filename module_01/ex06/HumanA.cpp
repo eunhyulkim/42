@@ -1,21 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   HumanA.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/07/27 00:51:23 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/27 00:51:24 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/07/26 23:22:26 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/27 00:41:27 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Pony.hpp"
+#include "HumanA.hpp"
 
-int main(void)
+HumanA::HumanA(std::string name, Weapon& club) : name(name), weapon(club){}
+
+void	HumanA::attack(void)
 {
-	Pony::ponyOnTheStack();
-	std::cout << std::endl;
-	Pony::ponyOnTheHeap();
-	return (0);
+	std::cout << this->name << " " << "attacks with his ";
+	std::cout << weapon.get_type() << std::endl;
 }

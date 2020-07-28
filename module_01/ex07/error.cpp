@@ -1,21 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   error.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/07/27 00:51:23 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/27 00:51:24 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/07/27 01:01:12 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/27 01:23:10 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Pony.hpp"
+#include "replace.hpp"
 
-int main(void)
-{
-	Pony::ponyOnTheStack();
-	std::cout << std::endl;
-	Pony::ponyOnTheHeap();
-	return (0);
+namespace error{
+	void	exit(char const *msg)
+	{
+		if (msg)
+			std::cout << msg << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+
+	void	exit(std::string msg)
+	{
+		if (!msg.empty())
+			std::cout << msg << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
 }

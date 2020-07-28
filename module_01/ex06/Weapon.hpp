@@ -1,21 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Weapon.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/07/27 00:51:23 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/27 00:51:24 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/07/26 23:02:34 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/27 00:43:07 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Pony.hpp"
+#ifndef WEAPON_HPP
+# define WEAPON_HPP
 
-int main(void)
+#include <string>
+
+class Weapon
 {
-	Pony::ponyOnTheStack();
-	std::cout << std::endl;
-	Pony::ponyOnTheHeap();
-	return (0);
-}
+	private:
+		std::string	type;
+	public:
+		Weapon(std::string type = "anonymous club");
+		void setType(std::string type);
+		std::string get_type();
+};
+
+#endif

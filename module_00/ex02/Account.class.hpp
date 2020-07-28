@@ -46,6 +46,8 @@ private:
 	int				_nbDeposits;
 	int				_nbWithdrawals;
 
+	mutable int _countCheckAmountCall;
+
 	Account( void );
 
 };

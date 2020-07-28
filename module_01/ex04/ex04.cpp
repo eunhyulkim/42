@@ -1,21 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   ex04.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/07/27 00:51:23 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/27 00:51:24 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/07/26 12:12:39 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/26 12:14:43 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Pony.hpp"
+#include <iostream>
 
 int main(void)
 {
-	Pony::ponyOnTheStack();
-	std::cout << std::endl;
-	Pony::ponyOnTheHeap();
+	std::string	str = "HI THIS IS BRAIN";
+	std::string *str_pointer = &str;
+	std::string &str_reference = str;
+
+	std::cout << *str_pointer << std::endl;
+	std::cout << str_reference << std::endl;
 	return (0);
 }

@@ -1,21 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Zombie.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/07/27 00:51:23 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/27 00:51:24 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/07/27 00:51:46 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/27 00:51:46 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Pony.hpp"
+#ifndef ZOMBIE_HPP
+# define ZOMBIE_HPP
 
-int main(void)
+#include <iostream>
+#include <random>
+
+class Zombie
 {
-	Pony::ponyOnTheStack();
-	std::cout << std::endl;
-	Pony::ponyOnTheHeap();
-	return (0);
-}
+	private:
+		static int		idx;
+		std::string		_type;
+		std::string		_name;
+
+	public:
+		Zombie(std::string type = "super", std::string name = "");
+		void 		announce(void);
+		std::string	get_name();
+		std::string	get_type();
+};
+
+#endif

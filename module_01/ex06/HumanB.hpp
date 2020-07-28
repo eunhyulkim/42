@@ -1,21 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   HumanB.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/07/27 00:51:23 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/27 00:51:24 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/07/27 00:50:43 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/27 00:50:44 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Pony.hpp"
+#include <string>
+#include <iostream>
+#include "Weapon.hpp"
 
-int main(void)
+#ifndef HUMAN_B_HPP
+# define HUMAN_B_HPP
+
+class HumanB
 {
-	Pony::ponyOnTheStack();
-	std::cout << std::endl;
-	Pony::ponyOnTheHeap();
-	return (0);
-}
+	private:
+		std::string	name;
+		Weapon	*weapon;
+	public:
+		HumanB(std::string name);
+		void	setWeapon(Weapon &club);
+		void	attack(void);
+};
+
+#endif

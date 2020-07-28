@@ -1,21 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   HumanA.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/07/27 00:51:23 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/27 00:51:24 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/07/26 23:11:34 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/27 00:45:26 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Pony.hpp"
+#ifndef HUMAN_A_HPP
+# define HUMAN_A_HPP
 
-int main(void)
+#include <string>
+#include <iostream>
+#include "Weapon.hpp"
+
+class HumanA
 {
-	Pony::ponyOnTheStack();
-	std::cout << std::endl;
-	Pony::ponyOnTheHeap();
-	return (0);
-}
+	private:
+		std::string	name;
+		Weapon&	weapon;
+	public:
+		HumanA(std::string name, Weapon& club);
+		void	attack(void);
+};
+
+#endif

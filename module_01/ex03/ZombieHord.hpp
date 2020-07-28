@@ -1,21 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   ZombieHord.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/07/27 00:51:23 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/27 00:51:24 by eunhkim          ###   ########.fr       */
+/*   Created: 2020/07/26 10:55:36 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/07/26 11:52:29 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Pony.hpp"
+#ifndef ZOMBIE_HORD_HPP
+# define ZOMBIE_HORD_HPP
 
-int main(void)
+#include <iostream>
+#include "Zombie.hpp"
+
+class ZombieHord;
+
+class ZombieHord
 {
-	Pony::ponyOnTheStack();
-	std::cout << std::endl;
-	Pony::ponyOnTheHeap();
-	return (0);
-}
+	private:
+		Zombie 		*_zombies;
+		int			_size;
+	public:
+		ZombieHord(int size = 1);
+		~ZombieHord(void);
+		int 		get_size(void);
+		void 		announce(void);
+};
+#endif
