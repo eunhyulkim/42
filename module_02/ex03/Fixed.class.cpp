@@ -15,6 +15,12 @@ Fixed::Fixed(const float number) {
 	this->_fixedValue = roundf(number * (1 << fractional_bits));
 }
 
+Fixed::Fixed(const std::string str) {
+	float f = std::atof(str.c_str());
+	Fixed temp(f);
+	this->_fixedValue = temp._fixedValue;
+}
+
 Fixed::Fixed(const Fixed& copy) {
 	*this = copy;
 }
@@ -137,6 +143,11 @@ Fixed::toInt(void) const{
 float
 Fixed::toFloat(void) const {
 	return ((float)this->_fixedValue / (float)(1 << fractional_bits));
+}
+
+std::string
+Fixed::toString(void) const {
+	return (std::to_string(this->_fixedValue));
 }
 
 std::ostream&

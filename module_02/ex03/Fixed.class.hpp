@@ -2,7 +2,11 @@
 # define FIXED_CLASS_HPP
 
 # include <iostream>
+# include <sstream>
+# include <cstdlib>
+# include <string>
 # include <cmath>
+# include <cfloat>
 
 class Fixed;
 std::ostream& operator<<(std::ostream& os, const Fixed& obj);
@@ -17,6 +21,7 @@ class Fixed
 		Fixed(const Fixed& copy);
 		Fixed(const int number);
 		Fixed(const float number);
+		Fixed(const std::string str);
 		Fixed();
 		~Fixed();
 
@@ -43,6 +48,7 @@ class Fixed
 		void setRawBits(int const raw);
 		int toInt(void) const;
 		float toFloat(void) const;
+		std::string toString(void) const;
 
 		static Fixed& min(Fixed& n, Fixed& m);
 		static const Fixed& min(const Fixed& n, const Fixed& m);

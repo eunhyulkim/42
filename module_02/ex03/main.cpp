@@ -6,6 +6,7 @@ namespace {
 		exit(EXIT_FAILURE);
 	}
 }
+
 int		main(int ac, char *av[])
 {
 	if (ac != 2)
@@ -15,8 +16,8 @@ int		main(int ac, char *av[])
 	}
 	try {
 		parse::main(av[1]);
+		eval::main(av[1]);
 	} catch (char const *msg) {
 		ft_error(msg);
 	}
-	std::cout << "PARSE IS SUCCESS" << std::endl;
 }
