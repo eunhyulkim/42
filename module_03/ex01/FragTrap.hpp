@@ -21,6 +21,7 @@ class FragTrap {
 		int ArmorDamageReduction; // 5
 	public:
 		FragTrap(char const *name);
+		FragTrap();
 		~FragTrap();
 		FragTrap(const FragTrap& copy);
 		FragTrap& operator=(const FragTrap& obj);

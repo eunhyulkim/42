@@ -13,6 +13,7 @@ class FragTrap : public ClapTrap {
 		int HeatersAttackDamage;
 	public:
 		FragTrap(char const *name);
+		FragTrap();
 		~FragTrap();
 		FragTrap(const FragTrap& copy);
 		FragTrap& operator=(const FragTrap& obj);

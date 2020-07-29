@@ -19,6 +19,7 @@ class ClapTrap {
 	public:
 		ClapTrap(char const *name, int EnergyPoints, int MeleeAttackDamage, \
 		int RangedAttackDamage, int ArmorDamageReduction);
+		ClapTrap();
 		~ClapTrap();
 		ClapTrap(const ClapTrap& copy);
 		ClapTrap& operator=(const ClapTrap& obj);

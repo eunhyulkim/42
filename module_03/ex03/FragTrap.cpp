@@ -10,6 +10,14 @@ FragTrap::FragTrap(char const *name) : ClapTrap(name, 100, 100, 30, 20, 5)
 	std::cout << "[FR4G-TP-CONS] FragTrap" << std::endl;
 }
 
+FragTrap::FragTrap() : ClapTrap()
+{
+	this->JurorsAttackDamage = 0;
+	this->MiddlesAttackDamage = 0;
+	this->HeatersAttackDamage = 0;
+	std::cout << "[FR4G-TP-CONS] FragTrap" << std::endl;
+}
+
 FragTrap::FragTrap(const FragTrap& copy) : ClapTrap(copy) {
 	this->JurorsAttackDamage = copy.JurorsAttackDamage;
 	this->MiddlesAttackDamage = copy.MiddlesAttackDamage;

@@ -18,6 +18,22 @@ FragTrap::FragTrap(char const *name) {
 	std::cout << "[FR4G-TP-CONS] FragTrap" << std::endl;
 }
 
+FragTrap::FragTrap() {
+	this->Name = std::string("anonymous");
+	this->HitPoints = 100;
+	this->MaxHitPoints = 100;
+	this->EnergyPoints = 100;
+	this->MaxEnergyPoints = 100;
+	this->Level = 1;
+	this->JurorsAttackDamage = 50;
+	this->MeleeAttackDamage = 30;
+	this->RangedAttackDamage = 20;
+	this->MiddlesAttackDamage = 10;
+	this->HeatersAttackDamage = 5;
+	this->ArmorDamageReduction = 5;
+	std::cout << "[FR4G-TP-CONS] FragTrap" << std::endl;
+}
+
 FragTrap&
 FragTrap::operator=(const FragTrap& obj) {
 	if (this != &obj)

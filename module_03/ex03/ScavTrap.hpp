@@ -13,6 +13,7 @@ class ScavTrap : public ClapTrap {
 		int HeatersChallengeEnergy;
 	public:
 		ScavTrap(char const *name);
+		ScavTrap();
 		~ScavTrap();
 		ScavTrap(const ScavTrap& copy);
 		ScavTrap& operator=(const ScavTrap& obj);

@@ -31,6 +31,14 @@ NinjaTrap::~NinjaTrap() {
 */
 
 void
+NinjaTrap::meleeAttack(std::string const & target){
+	std::cout << "[FR4G-TP] \033[47;30m'" << this->Name << "' Ninja-style attacks '"
+	<< target << "' at " << "\033[1mmelee\033[0;47;30m"
+	<< ", causing \033[1m" << this->MeleeAttackDamage
+	<< " points \033[0;47;30mof damage!\033[0m" << std::endl;
+}
+
+void
 NinjaTrap::shadowStep(void)
 {
 	std::cout << "[FR4G-TP] \033[47;30m'" << this->Name << "' step shadow..."
@@ -40,8 +48,6 @@ NinjaTrap::shadowStep(void)
 void
 NinjaTrap::ninjaShoebox(FragTrap& fragTrap)
 {
-	if (this->HitPoints > 10)
-		this->HitPoints -= 10;
 	std::cout << "[FR4G-TP] " << this->Name << " control other trap..." << std::endl;
 	fragTrap.vaulthunter_dot_exe("FRAG-TARGET");
 }
@@ -49,8 +55,6 @@ NinjaTrap::ninjaShoebox(FragTrap& fragTrap)
 void
 NinjaTrap::ninjaShoebox(ScavTrap& scavTrap)
 {
-	if (this->HitPoints > 10)
-		this->HitPoints -= 10;
 	std::cout << "[FR4G-TP] " << this->Name << " control other trap..." << std::endl;
 	scavTrap.challengeNewcomer();
 }
@@ -58,8 +62,6 @@ NinjaTrap::ninjaShoebox(ScavTrap& scavTrap)
 void
 NinjaTrap::ninjaShoebox(NinjaTrap& ninjaTrap)
 {
-	if (this->HitPoints > 10)
-		this->HitPoints -= 10;
 	std::cout << "[FR4G-TP] " << this->Name << " control other trap..." << std::endl;
 	ninjaTrap.shadowStep();
 }

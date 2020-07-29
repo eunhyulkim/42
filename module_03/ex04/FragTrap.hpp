@@ -6,8 +6,8 @@
 #include <random>
 #include "ClapTrap.hpp"
 
-class FragTrap : public ClapTrap {
-	private:
+class FragTrap : virtual public ClapTrap {
+	protected:
 		int JurorsAttackDamage;
 		int MiddlesAttackDamage;
 		int HeatersAttackDamage;
@@ -18,6 +18,8 @@ class FragTrap : public ClapTrap {
 		FragTrap(const FragTrap& copy);
 		FragTrap& operator=(const FragTrap& obj);
 
+		void meleeAttack(std::string const & target);
+		void rangedAttack(std::string const & target);
 		void jurorsAttack(std::string const & target);
 		void middlesAttack(std::string const & target);
 		void heatersAttack(std::string const & target);

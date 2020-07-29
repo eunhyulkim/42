@@ -18,6 +18,22 @@ ScavTrap::ScavTrap(char const *name) {
 	std::cout << "[FR4G-TP-CONS] ScavTrap" << std::endl;
 }
 
+ScavTrap::ScavTrap() {
+	this->Name = std::string("noname");
+	this->HitPoints = 100;
+	this->MaxHitPoints = 100;
+	this->EnergyPoints = 50;
+	this->MaxEnergyPoints = 50;
+	this->Level = 1;
+	this->JurorsAttackDamage = 30;
+	this->MeleeAttackDamage = 20;
+	this->RangedAttackDamage = 15;
+	this->MiddlesAttackDamage = 7;
+	this->HeatersAttackDamage = 3;
+	this->ArmorDamageReduction = 3;
+	std::cout << "[FR4G-TP-CONS] ScavTrap" << std::endl;
+}
+
 ScavTrap&
 ScavTrap::operator=(const ScavTrap& obj) {
 	if (this != &obj)

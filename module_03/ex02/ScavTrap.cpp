@@ -2,11 +2,19 @@
 
 typedef void	(ScavTrap::* func_member)(void);
 
-ScavTrap::ScavTrap(char const *name)  : ClapTrap(name, 50, 20, 15, 3)
+ScavTrap::ScavTrap(char const *name) : ClapTrap(name, 50, 20, 15, 3)
 {
 	this->JurorsChallengeEnergy = 40;
 	this->MiddlesChallengeEnergy = 25;
 	this->HeatersChallengeEnergy = 10;
+	std::cout << "[FR4G-TP-CONS] ScavTrap" << std::endl;
+}
+
+ScavTrap::ScavTrap() : ClapTrap()
+{
+	this->JurorsChallengeEnergy = 0;
+	this->MiddlesChallengeEnergy = 0;
+	this->HeatersChallengeEnergy = 0;
 	std::cout << "[FR4G-TP-CONS] ScavTrap" << std::endl;
 }
 

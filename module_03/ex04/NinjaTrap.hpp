@@ -8,13 +8,14 @@
 #include "ScavTrap.hpp"
 #include "FragTrap.hpp"
 
-class NinjaTrap : public ClapTrap {
+class NinjaTrap : virtual public ClapTrap {
 	public:
 		NinjaTrap(char const *name);
 		NinjaTrap();
 		~NinjaTrap();
 		NinjaTrap(const NinjaTrap& copy);
 		NinjaTrap& operator=(const NinjaTrap& obj);
+		void meleeAttack(std::string const & target);
 		void ninjaShoebox(FragTrap& fragTrap);
 		void ninjaShoebox(ScavTrap& scavTrap);
 		void ninjaShoebox(NinjaTrap& ninjaTrap);

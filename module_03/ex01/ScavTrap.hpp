@@ -21,6 +21,7 @@ class ScavTrap {
 		int ArmorDamageReduction; // 5
 	public:
 		ScavTrap(char const *name);
+		ScavTrap();
 		~ScavTrap();
 		ScavTrap(const ScavTrap& copy);
 		ScavTrap& operator=(const ScavTrap& obj);

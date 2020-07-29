@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/29 17:10:47 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/29 19:07:41 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/29 21:07:06 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,20 @@ int RangedAttackDamage, int ArmorDamageReduction)
 	this->MeleeAttackDamage = MeleeAttackDamage;;
 	this->RangedAttackDamage = RangedAttackDamage;;
 	this->ArmorDamageReduction = ArmorDamageReduction;
+	std::cout << "[FR4G-TP-CONS] ClapTrap" << std::endl;
+}
+
+ClapTrap::ClapTrap()
+{
+	this->Name = std::string("noname");
+	this->HitPoints = 0;
+	this->MaxHitPoints = 0;
+	this->EnergyPoints = 0;
+	this->MaxEnergyPoints = 0;
+	this->Level = 0;
+	this->MeleeAttackDamage = 0;
+	this->RangedAttackDamage = 0;
+	this->ArmorDamageReduction = 0;
 	std::cout << "[FR4G-TP-CONS] ClapTrap" << std::endl;
 }
 

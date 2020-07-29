@@ -2,7 +2,7 @@
 
 typedef void	(FragTrap::* func_member)(std::string const &);
 
-FragTrap::FragTrap(char const *name) : ClapTrap(name, 100, 30, 20, 5)
+FragTrap::FragTrap(char const *name) : ClapTrap(name, 100, 100, 30, 20, 5)
 {
 	this->JurorsAttackDamage = 50;
 	this->MiddlesAttackDamage = 25;
@@ -41,6 +41,19 @@ FragTrap::~FragTrap() {
 /*
 ** FR4G-TP <name> attacks <target> at range, causing <damage> points of damage!
 */
+
+void
+FragTrap::meleeAttack(std::string const & target) {
+	ClapTrap::meleeAttack(target);
+}
+
+void
+FragTrap::rangedAttack(std::string const & target) {
+	std::cout << "[FR4G-TP] \033[47;30m'" << this->Name << "' Frag-style attacks '"
+	<< target << "' at " << "\033[1mranged\033[0;47;30m"
+	<< ", causing \033[1m" << this->RangedAttackDamage
+	<< " points \033[0;47;30mof damage!\033[0m" << std::endl;
+}
 
 void
 FragTrap::jurorsAttack(std::string const & target){
