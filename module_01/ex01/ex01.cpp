@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/27 00:51:34 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/27 00:51:35 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/30 16:14:09 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,4 @@ void	memoryLeak()
 
 	std::cout << *panther << std::endl;
 	delete panther;
-}
-
-int main(void)
-{
-	memoryLeak();
-	// delete panther;
-	while (1)
-		;
-	return (0);
 }

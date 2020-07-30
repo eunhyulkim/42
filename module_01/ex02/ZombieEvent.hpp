@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/26 10:55:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/26 11:33:27 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/30 16:23:49 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ class ZombieEvent
 		std::string _type;
 	public:
 		void	setZombieType(std::string type);
-		Zombie *newZombie(std::string name);
+		Zombie	*randomChump(void);
+		Zombie	*newZombie(std::string name);
 		void	fightYourParent(Zombie *&z);
 };
 #endif

@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/27 00:51:54 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/27 00:51:54 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/30 16:47:27 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,43 @@
 #include "ZombieHord.hpp"
 
 namespace {
+	void	print(char const *msg) {
+		std::cout << std::endl
+		<< "\033[1;32;44m" << msg << "\033[0m"
+		<< std::endl << std::endl;
+	}
+
+	void	print(std::string msg) {
+		std::cout << std::endl
+		<< "\033[1;32;44m" << msg << "\033[0m"
+		<< std::endl << std::endl;
+	}
+
 	void welcome_msg(void)
 	{
 		std::cout << std::endl;
 		std::cout << "WELCOME TO ZOMBIE WORLD!" << std::endl;
-		std::cout << "In our world, 10 zombies that never die!" << std::endl << std::endl;
-	}
-
-	void leaks_test(void)
-	{
-		Zombie superZombie[4];
-		welcome_msg();
-
-		ZombieHord hord;
-		return ;
+		std::cout << "In our world, 10 zombies that never die!" << std::endl;
 	}
 }
 
 int main(void)
 {
-	leaks_test();
+	welcome_msg();
+	{
+		print("SUPER ZOMBIE CREATE(With Random Name)");
+		Zombie superZombie[4];
+
+		print("ZOMBIE HORD CREATE(With Random Name)");
+		ZombieHord hord(5);
+
+		print("ZOMBIE HORD ANNOUNCE");
+		hord.announce();
+
+		print("ZOMBIE HORD MASS SUICIDE");
+		hord.massSuicide();
+
+		print("TEST END");
+	}
 	return (0);
 }

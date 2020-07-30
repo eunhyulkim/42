@@ -3,6 +3,11 @@
 
 # include <iostream>
 # include <string>
+# include "Victim.hpp"
+# include "Peon.hpp"
+
+class Victim;
+class Peon;
 
 class Sorcerer {
 	private:
@@ -14,6 +19,12 @@ class Sorcerer {
 		Sorcerer& operator=(const Sorcerer& obj);
 		Sorcerer(const Sorcerer& copy);
 		~Sorcerer();
-		void introduce(void);
+
+		std::string getName(void) const;
+		std::string getTitle(void) const;
+		void polymorph(Victim const &victim) const;
+		void polymorph(Peon const &peon) const;
 };
+
+std::ostream& operator<<(std::ostream& os, const Sorcerer& s);
 #endif

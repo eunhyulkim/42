@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/26 10:55:36 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/26 11:52:29 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/30 16:41:40 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,5 +28,6 @@ class ZombieHord
 		~ZombieHord(void);
 		int 		get_size(void);
 		void 		announce(void);
+		void 		massSuicide(void);
 };
 #endif

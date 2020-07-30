@@ -46,7 +46,7 @@ void		Logger::logToFile(std::string entry){
 
 void		Logger::log(std::string const &dest, std::string const &msg){
 	std::string dest_name[2] = {"file", "console"};
-	func_member	member[2] = {&Logger::logToConsole, &Logger::logToFile};
+	func_member	member[2] = {&Logger::logToFile, &Logger::logToConsole};
 	if (dest == dest_name[0])
 		(this->*member[0])(MakeLogEntry(msg));
 	else if (dest == dest_name[1])

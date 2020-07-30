@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/26 10:55:45 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/26 12:08:16 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/30 16:47:05 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,16 @@
 ZombieHord::ZombieHord(int size)
 {
 	this->_size = size;
-	this->_zombies = new Zombie[3];
-	this->announce();
+	this->_zombies = new Zombie[size];
 }
 
 ZombieHord::~ZombieHord(void)
 {
-	std::cout << this->_zombies;
-	delete[] this->_zombies;
+	if (this->_zombies)
+	{
+		delete[] this->_zombies;
+		this->_zombies = nullptr;
+	}
 }
 
 int ZombieHord::get_size(void)
@@ -34,4 +36,13 @@ void ZombieHord::announce(void)
 {
 	for (int i = 0; i < this->_size; i++)
 		this->_zombies[i].announce();
+}
+
+void ZombieHord::massSuicide(void)
+{
+	if (this->_zombies)
+	{
+		delete[] this->_zombies;
+		this->_zombies = nullptr;
+	}
 }

@@ -27,8 +27,22 @@ Sorcerer::~Sorcerer() {
 	<< std::endl;
 }
 
+std::string Sorcerer::getName(void) const { return (this->name); }
+std::string Sorcerer::getTitle(void) const { return (this->title); }
+
 void
-Sorcerer::introduce(void) {
-	std::cout << "I am " << this->name << ", "
-	<< this->title << ", and I like ponies!" << std::endl;
+Sorcerer::polymorph(Victim const &victim) const {
+	victim.getPolymorphed();
+}
+
+void
+Sorcerer::polymorph(Peon const &peon) const {
+	peon.getPolymorphed();
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Sorcerer& s) {
+os << "I am " << s.getName() << ", "
+<< s.getTitle() << ", and I like ponies!" << std::endl;
+  return os;
 }

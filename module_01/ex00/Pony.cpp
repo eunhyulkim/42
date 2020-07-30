@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/27 00:51:27 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/27 00:51:27 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/30 16:07:35 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void 	Pony::ponyOnTheStack(void)
 
 void 	Pony::ponyOnTheHeap(void)
 {
-	Pony *cpony = new Pony("hurre", "blue");
+	Pony *cpony = new Pony("eunhkim", "blue");
 	std::cout << "Hello, I'm a " << cpony->get_name() << " living on the heap." << std::endl;
 	cpony->speak();
 

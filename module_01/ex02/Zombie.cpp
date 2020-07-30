@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/27 00:51:43 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/27 00:51:43 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/30 16:17:58 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ Zombie::Zombie(std::string type, std::string name) : _type(type), _name(name)
 	this->idx += 1;
 	if (name == "")
 		_name = get_random_name();
-	this->announce();
 };
 
 std::string Zombie::get_name(void){
