@@ -10,7 +10,7 @@ namespace {
 
 int main(void)
 {
-	FragTrap a;
+	FragTrap a("TYO");
 
 	print("BASIC TEST : 4 RANDOM ATTACK");
 	a.vaulthunter_dot_exe("OP");
@@ -32,7 +32,7 @@ int main(void)
 	print("OVERFLOW TEST : 1 REPAIRED(MAX 100)");
 	a.beRepaired(30);
 
-	print("BASIC TEST : 1 REPAIRED(MAX 100)");
+	print("BASIC TEST : 1 RE-ATTACK");
 	a.vaulthunter_dot_exe("OP");
 
 	print("TEST END");

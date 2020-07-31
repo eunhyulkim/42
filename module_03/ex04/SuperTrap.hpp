@@ -11,7 +11,7 @@
 
 class SuperTrap : virtual protected ClapTrap, public FragTrap, public NinjaTrap {
 	public:
-		SuperTrap(char const *name);
+		SuperTrap(std::string name);
 		SuperTrap();
 		~SuperTrap();
 		SuperTrap(const SuperTrap& copy);

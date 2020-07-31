@@ -2,8 +2,8 @@
 
 typedef void	(ScavTrap::* func_member)(void);
 
-ScavTrap::ScavTrap(char const *name) {
-	this->Name = std::string(name);
+ScavTrap::ScavTrap(std::string name) {
+	this->Name = name;
 	this->HitPoints = 100;
 	this->MaxHitPoints = 100;
 	this->EnergyPoints = 50;

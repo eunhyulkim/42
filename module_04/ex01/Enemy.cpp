@@ -11,13 +11,11 @@ Enemy::operator=(const Enemy& obj) {
 		this->type = obj.type;
 		this->hp = obj.hp;
 	}
-	std::cout << "[WEST-ASSIGN] Enemy" << std::endl;
 	return (*this);
 }
 
 Enemy::Enemy(const Enemy& copy) {
 	*this = copy;
-	std::cout << "[WEST-COPY] Enemy" << std::endl;
 }
 
 int

@@ -2,8 +2,8 @@
 
 typedef void	(FragTrap::* func_member)(std::string const &);
 
-FragTrap::FragTrap(char const *name) {
-	this->Name = std::string(name);
+FragTrap::FragTrap(std::string name) {
+	this->Name = name;
 	this->HitPoints = 100;
 	this->MaxHitPoints = 100;
 	this->EnergyPoints = 100;

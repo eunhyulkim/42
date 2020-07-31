@@ -2,7 +2,7 @@
 
 typedef void	(NinjaTrap::* func_member)(std::string const &);
 
-SuperTrap::SuperTrap(char const *name) \
+SuperTrap::SuperTrap(std::string name) \
 : ClapTrap(name, 100, 120, 60, 20, 5), FragTrap(name), NinjaTrap(name)
 {
 	std::cout << "[FR4G-TP-CONS] SuperTrap" << std::endl;

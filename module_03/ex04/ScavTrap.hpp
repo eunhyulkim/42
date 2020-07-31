@@ -12,7 +12,7 @@ class ScavTrap : public ClapTrap {
 		int MiddlesChallengeEnergy;
 		int HeatersChallengeEnergy;
 	public:
-		ScavTrap(char const *name);
+		ScavTrap(std::string name);
 		ScavTrap();
 		~ScavTrap();
 		ScavTrap(const ScavTrap& copy);

@@ -7,7 +7,6 @@ PlasmaRifle::~PlasmaRifle() {}
 PlasmaRifle&
 PlasmaRifle::operator=(const PlasmaRifle& obj) {
 	this->AWeapon::operator=(obj);
-	std::cout << "[WEST-ASSIGN] PlasmaRifle" << std::endl;
 	return (*this);
 }
 

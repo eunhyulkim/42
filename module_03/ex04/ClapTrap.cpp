@@ -6,16 +6,16 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/29 17:10:47 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/30 01:33:17 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/07/31 13:04:27 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ClapTrap.hpp"
 
-ClapTrap::ClapTrap(char const *name, int HitPoints, int EnergyPoints, \
+ClapTrap::ClapTrap(std::string name, int HitPoints, int EnergyPoints, \
 int MeleeAttackDamage, int RangedAttackDamage, int ArmorDamageReduction)
 {
-	this->Name = std::string(name);
+	this->Name = name;
 	this->HitPoints = HitPoints;
 	this->MaxHitPoints = HitPoints;
 	this->EnergyPoints = EnergyPoints;

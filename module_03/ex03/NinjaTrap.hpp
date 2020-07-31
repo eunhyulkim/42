@@ -10,7 +10,7 @@
 
 class NinjaTrap : public ClapTrap {
 	public:
-		NinjaTrap(char const *name);
+		NinjaTrap(std::string name);
 		NinjaTrap();
 		~NinjaTrap();
 		NinjaTrap(const NinjaTrap& copy);

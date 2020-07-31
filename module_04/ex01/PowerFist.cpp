@@ -1,7 +1,7 @@
 #include "PowerFist.hpp"
 
 PowerFist::PowerFist()
-: AWeapon("PowerFist", 50, 8) {}
+: AWeapon("PowerFist", 8, 50) {}
 PowerFist::~PowerFist() {}
 
 PowerFist&
@@ -17,7 +17,6 @@ PowerFist::PowerFist(const PowerFist& copy)
 }
 
 void
-PowerFist::attack(void) const
-{
+PowerFist::attack(void) const {
 	std::cout << "* pschhh... SBAM! *" << std::endl;
 }

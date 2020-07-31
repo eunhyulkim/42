@@ -2,7 +2,7 @@
 
 typedef void	(ScavTrap::* func_member)(void);
 
-ScavTrap::ScavTrap(char const *name) : ClapTrap(name, 50, 20, 15, 3)
+ScavTrap::ScavTrap(std::string name) : ClapTrap(name, 50, 20, 15, 3)
 {
 	this->JurorsChallengeEnergy = 40;
 	this->MiddlesChallengeEnergy = 25;

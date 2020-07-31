@@ -124,39 +124,3 @@ int main(void)
 	print("TEST END");
 	return (0);
 }
-
-
-// int main(void)
-// {
-// 	// FragTrap a("HELLO");
-// 	// ScavTrap b("HI");
-// 	SuperTrap c("COW");
-
-// 	c.meleeAttack("AA");
-// 	c.rangedAttack("AA");
-
-// 	// void jurorsAttack(std::string const & target);
-// 	// void middlesAttack(std::string const & target);
-// 	// void heatersAttack(std::string const & target);
-// 	// void vaulthunter_dot_exe(std::string const & target);
-
-// 	c.jurorsAttack("BB");
-// 	c.middlesAttack("BB");
-// 	c.heatersAttack("BB");
-// 	c.vaulthunter_dot_exe("BB");
-
-// 	// void ninjaShoebox(FragTrap& fragTrap);
-// 	// void ninjaShoebox(ScavTrap& scavTrap);
-// 	// void ninjaShoebox(NinjaTrap& ninjaTrap);
-// 	// void shadowStep(void);
-
-// 	FragTrap frag("frag");
-// 	ScavTrap scav("scav");
-// 	NinjaTrap ninja("ninja");
-// 	c.ninjaShoebox(frag);
-// 	c.ninjaShoebox(scav);
-// 	c.ninjaShoebox(ninja);
-// 	c.shadowStep();
-// 	c.vaulthunter_dot_exe("KK");
-// 	return (0);
-// }

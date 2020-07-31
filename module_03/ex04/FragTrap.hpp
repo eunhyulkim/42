@@ -12,7 +12,7 @@ class FragTrap : virtual public ClapTrap {
 		int MiddlesAttackDamage;
 		int HeatersAttackDamage;
 	public:
-		FragTrap(char const *name);
+		FragTrap(std::string name);
 		FragTrap();
 		~FragTrap();
 		FragTrap(const FragTrap& copy);

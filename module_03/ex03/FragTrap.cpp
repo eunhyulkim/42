@@ -2,7 +2,7 @@
 
 typedef void	(FragTrap::* func_member)(std::string const &);
 
-FragTrap::FragTrap(char const *name) : ClapTrap(name, 100, 100, 30, 20, 5)
+FragTrap::FragTrap(std::string name) : ClapTrap(name, 100, 100, 30, 20, 5)
 {
 	this->JurorsAttackDamage = 50;
 	this->MiddlesAttackDamage = 25;

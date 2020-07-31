@@ -17,7 +17,7 @@ class ClapTrap {
 		int RangedAttackDamage;
 		int ArmorDamageReduction;
 	public:
-		ClapTrap(char const *name, int HitPoints, int EnergyPoints, \
+		ClapTrap(std::string name, int HitPoints, int EnergyPoints, \
 		int MeleeAttackDamage, int RangedAttackDamage, int ArmorDamageReduction);
 		ClapTrap();
 		~ClapTrap();
