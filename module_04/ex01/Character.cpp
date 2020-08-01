@@ -32,9 +32,9 @@ Character::attack(Enemy* enemy) {
 		this->ap -= this->weapon->getAPCost();
 		std::cout << this->name << " attacks " << enemy->getType()
 		<< " with a " << this->weapon->getName() << std::endl;
+		this->weapon->attack();
 		if (enemy->getHP() <= 0)
 		{
-			std::cout << "delete" << std::endl;
 			delete enemy;
 			enemy = nullptr;
 		}

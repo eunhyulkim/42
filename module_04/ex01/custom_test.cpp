@@ -85,6 +85,7 @@ int		main(void)
 	PowerFist fis;
 	print("FIST TADMAGE");
 	RadScorpion *kid = new RadScorpion();
+	print("OVERLOAD << WITH NO WEAPON");
 	std::cout << e;
 	e.equip(&shot);
 	print("CHRACTER ATTACK");
@@ -98,8 +99,9 @@ int		main(void)
 	std::cout << e.getName() << "(AP: " << e.getAP() << ")" << std::endl;
 	print("RECOVER AP");
 	e.recoverAP();
-	std::cout << e;
 	std::cout << e.getName() << "(AP: " << e.getAP() << ")" << std::endl;
+	print("OVERLOAD << WITH WEAPON");
+	std::cout << e;
 	print("TEST END");
 	return (0);
 }

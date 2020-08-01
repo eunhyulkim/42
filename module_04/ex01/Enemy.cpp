@@ -25,7 +25,5 @@ std::string Enemy::getType(void) const { return (this->type); }
 void Enemy::takeDamage(int damage) {
 	if (damage > hp)
 		damage = hp;
-	std::cout << "take " << damage
-	<< " damage, remain hp is " << (hp - damage) << std::endl;
 	hp -= damage;
 }

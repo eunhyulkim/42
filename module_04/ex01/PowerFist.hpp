@@ -2,6 +2,7 @@
 # define POWER_FIST_HPP
 
 # include <string>
+# include <iostream>
 # include "AWeapon.hpp"
 
 class PowerFist : public AWeapon
