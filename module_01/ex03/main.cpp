@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/27 00:51:54 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/30 16:47:27 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/08/01 11:35:48 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,6 @@
 
 namespace {
 	void	print(char const *msg) {
-		std::cout << std::endl
-		<< "\033[1;32;44m" << msg << "\033[0m"
-		<< std::endl << std::endl;
-	}
-
-	void	print(std::string msg) {
 		std::cout << std::endl
 		<< "\033[1;32;44m" << msg << "\033[0m"
 		<< std::endl << std::endl;

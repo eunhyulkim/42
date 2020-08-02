@@ -8,12 +8,6 @@
 #include "Character.hpp"
 
 namespace {
-	void	print(char const *msg) {
-		std::cout << std::endl
-		<< "\033[1;32;44m" << msg << "\033[0m"
-		<< std::endl << std::endl;
-	}
-
 	void	print(std::string msg) {
 		std::cout << std::endl
 		<< "\033[1;32;44m" << msg << "\033[0m"
@@ -83,7 +77,6 @@ int		main(void)
 	Character e("eunhkim");
 	PlasmaRifle shot;
 	PowerFist fis;
-	print("FIST TADMAGE");
 	RadScorpion *kid = new RadScorpion();
 	print("OVERLOAD << WITH NO WEAPON");
 	std::cout << e;

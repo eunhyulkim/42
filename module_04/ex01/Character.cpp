@@ -4,9 +4,9 @@ Character::Character(){}
 Character::Character(std::string const & name) : name(name), ap(40), weapon(nullptr) {}
 Character::~Character() {}
 
-Character& Character::operator=(const Character& obj) { return (*this); }
+Character& Character::operator=(const Character&) { return (*this); }
 
-Character::Character(const Character& copy) {}
+Character::Character(const Character&) {}
 
 std::string
 Character::getName(void) const { return (this->name); }

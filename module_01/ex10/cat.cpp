@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/27 15:23:42 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/07/27 16:28:22 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/08/01 11:53:23 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,9 @@ namespace cat {
 	void	from_stdin(void)
 	{
 		std::string	line;
-		std::string data;
 
 		while (std::getline(std::cin, line))
-			data.append(line).push_back('\n');
-		std::cout << data;
+			std::cout << line << std::endl;
 	}
 
 	void	from_files(int ac, char *av[])

@@ -10,8 +10,8 @@ class Character
 {
 	protected:
 		Character();
-		Character& operator=(const Character& obj);
-		Character(const Character& copy);
+		Character& operator=(const Character&);
+		Character(const Character&);
 		std::string name;
 		int			ap;
 		AWeapon 	*weapon;
