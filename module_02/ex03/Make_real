@@ -1,14 +1,15 @@
 NAME = eval_expr
 CC = clang++
-RM = rm -rf
+RM = rm -f
 INCLUDES = -I.
 CFLAGS = -Wall -Wextra -Werror
 
-MAIN_FILES = parse Fixed.class main eval
-
+MAIN_FILES = main parse eval
+CLASS_FILES = Fixed
 SRCS = $(addsuffix .cpp, $(MAIN_FILES))
-
+SRCS += $(addsuffix .class.cpp, $(CLASS_FILES))
 OBJS = $(addsuffix .o, $(MAIN_FILES))
+OBJS += $(addsuffix .class.o, $(CLASS_FILES))
 
 GREEN = \033[0;32m
 RED = \033[0;31m
@@ -33,8 +34,11 @@ clean:
 fclean: clean
 	@echo "$(RESET)Removing $(NAME)"
 	@${RM} $(NAME)
-	@echo "$(RED)clean DONE$(RESET)"
+	@echo "$(RED)fclean DONE$(RESET)"
 
-re: flcean all
+re: fclean all
+
+test: $(NAME)
+	@./$(NAME)
 
 .PHONY:	all clean fclean re bonus
