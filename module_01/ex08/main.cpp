@@ -1,12 +1,6 @@
 #include "Human.hpp"
 
 namespace {
-	void	print(char const *msg) {
-		std::cout << std::endl
-		<< "\033[1;32;44m" << msg << "\033[0m"
-		<< std::endl << std::endl;
-	}
-
 	void	print(std::string msg) {
 		std::cout << std::endl
 		<< "\033[1;32;44m" << msg << "\033[0m"
