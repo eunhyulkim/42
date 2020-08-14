@@ -5,47 +5,62 @@
 # include <iostream>
 # include "Bureaucrat.hpp"
 
+class Bureaucrat;
+class Form;
+
 class Form
 {
 	private:
-		std::string		_name;
-		bool			_signed;
-		int				_sign_grade;
-		int				_execute_grade;
+		std::string m_name;
+		bool m_signed;
+		int m_required_sign_grade;
+		int m_required_exec_grade;
 		Form();
-
 	public:
-		Form(const std::string& name, int sign_grade, int excute_grade);
+		Form(const std::string& name, int sign_grade, int exec_grade);
 		Form(const Form& copy);
 		Form& operator=(const Form& obj);
 		virtual ~Form();
 
-		const std::string getName() const;
-		bool getSigned() const;
-		int getSignGrade() const;
-		int getExecuteGrade() const;
+		/* getter function */
+		std::string get_m_name() const;
+		bool get_m_signed() const;
+		int get_m_required_sign_grade() const;
+		int get_m_required_exec_grade() const;
 
-		void beSigned(const Bureaucrat& bureaucrat);
+		/* declare member function */
+		void beSigned(const Bureaucrat& Bureaucrat);
+
+		/* exception declare */
+		class GradeTooLowException : public std::exception {
+			public:
+				GradeTooLowException() throw ();
+				GradeTooLowException(const GradeTooLowException&) throw ();
+				GradeTooLowException& operator= (const GradeTooLowException&) throw ();
+				virtual ~GradeTooLowException() throw ();
+				virtual const char* what() const throw ();
+		};
 
 		class GradeTooHighException : public std::exception {
 			public:
-				GradeTooHighException() throw();
-				GradeTooHighException(const GradeTooHighException&) throw();
-				GradeTooHighException& operator=(const GradeTooHighException&) throw();
-				virtual ~GradeTooHighException() throw();
-				virtual const char* what() const throw();
-			};
-
-		class GradeTooLowException : public std::exception {
+				GradeTooHighException() throw ();
+				GradeTooHighException(const GradeTooHighException&) throw ();
+				GradeTooHighException& operator= (const GradeTooHighException&) throw ();
+				virtual ~GradeTooHighException() throw ();
+				virtual const char* what() const throw ();
+		};
+		
+		class AlreadySignedException : public std::exception {
 			public:
-				GradeTooLowException() throw();
-				GradeTooLowException(const GradeTooLowException&) throw();
-				GradeTooLowException& operator=(const GradeTooLowException&) throw();
-				virtual ~GradeTooLowException() throw();
-				virtual const char* what() const throw();
-			};
+				AlreadySignedException() throw ();
+				AlreadySignedException(const AlreadySignedException&) throw ();
+				AlreadySignedException& operator= (const AlreadySignedException&) throw ();
+				virtual ~AlreadySignedException() throw ();
+				virtual const char* what() const throw ();
+		};
 };
 
-std::ostream&	operator<<(std::ostream& out, const Form& Form);
+/* global operator overload */
+std::ostream&	operator<<(std::ostream& out, const Form& form);
 
 #endif

@@ -1,36 +1,32 @@
-#include "ShrubberyCreationForm.hpp"
+#include "PresidentialPardonForm.hpp"
 
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ---------------------------- */
 /* ************************************************************************** */
 
-/* static variable code */
 
 /* ************************************************************************** */
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-ShrubberyCreationForm::ShrubberyCreationForm() {}
-ShrubberyCreationForm::ShrubberyCreationForm(const std::string& target)
-: Form("Shrubbery Creation Form", 145, 137, target){}
+PresidentialPardonForm::PresidentialPardonForm() {}
+PresidentialPardonForm::PresidentialPardonForm(const std::string& target)
+: Form("Presidential Pardon Form", 25, 5, target) {}
 
-ShrubberyCreationForm::ShrubberyCreationForm(const ShrubberyCreationForm& copy)
+PresidentialPardonForm::PresidentialPardonForm(const PresidentialPardonForm& copy)
 : Form(copy) {}
 
 /* ************************************************************************** */
 /* ------------------------------- DESTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-ShrubberyCreationForm::~ShrubberyCreationForm()
-{
-	/* destructor code */
-}
+PresidentialPardonForm::~PresidentialPardonForm() {}
 
 /* ************************************************************************** */
 /* -------------------------------- OVERLOAD -------------------------------- */
 /* ************************************************************************** */
 
-ShrubberyCreationForm& ShrubberyCreationForm::operator=(const ShrubberyCreationForm& obj)
+PresidentialPardonForm& PresidentialPardonForm::operator=(const PresidentialPardonForm& obj)
 {
 	if (this == &obj)
 		return (*this);
@@ -40,24 +36,8 @@ ShrubberyCreationForm& ShrubberyCreationForm::operator=(const ShrubberyCreationF
 }
 
 void
-ShrubberyCreationForm::beExecuted(const Bureaucrat&) const {
-	std::string path = std::string(std::getenv("PWD"));
-	path += "/" + this->get_m_target() + "_shrubbery";
-	std::ofstream out(path, std::ofstream::trunc);
-	std::string tree = "\
-		 /\\\n\
-		/\\*\\\n\
-	   /\\O\\*\\\n\
-	  /*/\\/\\/\\\n\
-  	 /\\O\\/\\*\\/\\\n\
-    /\\*\\/\\*\\/\\/\\\n\
-   /\\O\\/\\/*/\\/O/\\\n\
-	   	 ||\n\
-		 ||\n\
-		 ||\
-	";
-	out << tree;
-	out.close();
+PresidentialPardonForm::beExecuted(const Bureaucrat&) const {
+	std::cout << this->get_m_target() << " has been pardoned by Zafod Beeblebrox" << std::endl;
 }
 
 /* ************************************************************************** */

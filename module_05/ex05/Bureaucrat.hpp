@@ -3,6 +3,10 @@
 
 # include <string>
 # include <iostream>
+# include "Form.hpp"
+
+class Form;
+class Bureaucrat;
 
 class Bureaucrat
 {
@@ -23,6 +27,8 @@ class Bureaucrat
 		/* declare member function */
 		void upGrade(void);
 		void downGrade(void);
+		void signForm(Form& form) const;
+		void executeForm(const Form& form) const;
 
 		/* exception declare */
 		class GradeTooLowException : public std::exception {

@@ -1,29 +1,44 @@
-#include "Bureaucrat.hpp"
 #include "Form.hpp"
+
+/* ************************************************************************** */
+/* ---------------------------- STATIC VARIABLE ----------------------------- */
+/* ************************************************************************** */
+
 
 /* ************************************************************************** */
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
 Form::Form() {}
-Form::Form(const std::string& name, int sign_grade, int execute_grade)
-: _name(name), _signed(false), _sign_grade(sign_grade), _execute_grade(execute_grade)
+Form::Form(const std::string& name, int sign_grade, int exec_grade)
+: m_name(name), m_required_sign_grade(sign_grade), m_required_exec_grade(exec_grade)
 {
-	if (sign_grade < 1 || execute_grade < 1)
-		throw Form::GradeTooHighException();
-	if (sign_grade > 150 || execute_grade > 150)
+	if (sign_grade > 150 || exec_grade > 150)
 		throw Form::GradeTooLowException();
+	if (sign_grade <= 0 || exec_grade <= 0)
+		throw Form::GradeTooHighException();
+	this->m_signed = false;
 }
 
 Form::Form(const Form& copy)
-: _name(copy.getName()), _signed(copy.getSigned()),
-_sign_grade(copy.getSignGrade()), _execute_grade(copy.getExecuteGrade()) {}
+: m_name(copy.get_m_name()), 
+m_required_sign_grade(copy.get_m_required_sign_grade()), 
+m_required_exec_grade(copy.get_m_required_exec_grade())
+{
+	this->m_signed = false;
+}
 
 /* ************************************************************************** */
 /* ------------------------------- DESTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-Form::~Form() {}
+Form::~Form()
+{
+	this->m_name.clear();
+	this->m_signed = false;
+	this->m_required_sign_grade = 0;
+	this->m_required_exec_grade = 0;
+}
 
 /* ************************************************************************** */
 /* -------------------------------- OVERLOAD -------------------------------- */
@@ -33,55 +48,67 @@ Form& Form::operator=(const Form& obj)
 {
 	if (this == &obj)
 		return (*this);
-	this->_name = obj.getName();
-	this->_signed = obj.getSigned();
-	this->_sign_grade = obj.getSignGrade();
-	this->_execute_grade = obj.getExecuteGrade();
+	this->m_name = obj.get_m_name();
+	this->m_signed = obj.get_m_signed();
+	this->m_required_sign_grade = obj.get_m_required_sign_grade();
+	this->m_required_exec_grade = obj.get_m_required_exec_grade();
+	/* overload= code */
 	return (*this);
 }
 
 std::ostream&
 operator<<(std::ostream& out, const Form& form)
 {
-	out << "<" << form.getName() << ">" << " form is";
-	if (!form.getSigned())
-		out << " not";
-	out << " signed, sign-grade is " << form.getSignGrade() << ", ";
-	out << "execute-grade is " << form.getExecuteGrade() << ".";
+	out << "<" << form.get_m_name();
+	out << "(signed: " << std::boolalpha << form.get_m_signed();
+	out << ", require_sign_grade(" << form.get_m_required_sign_grade();
+	out << "), required_exec_grade(" << form.get_m_required_exec_grade() << ")>";
 	return (out);
 }
+
+/* ************************************************************************** */
+/* --------------------------------- GETTER --------------------------------- */
+/* ************************************************************************** */
+
+std::string Form::get_m_name() const { return (this->m_name); }
+bool Form::get_m_signed() const { return (this->m_signed); }
+int Form::get_m_required_sign_grade() const { return (this->m_required_sign_grade); }
+int Form::get_m_required_exec_grade() const { return (this->m_required_exec_grade); }
 
 /* ************************************************************************** */
 /* ------------------------------- EXCEPTION -------------------------------- */
 /* ************************************************************************** */
 
-Form::GradeTooHighException::GradeTooHighException() throw(){}
-Form::GradeTooHighException::GradeTooHighException(const Form::GradeTooHighException&) throw(){}
-Form::GradeTooHighException& Form::GradeTooHighException::operator=(const Form::GradeTooHighException&) throw(){ return (*this); }
-Form::GradeTooHighException::~GradeTooHighException() throw(){}
-const char* Form::GradeTooHighException::what() const throw(){ return "GradeTooHighException error"; }
+Form::GradeTooLowException::GradeTooLowException() throw () : std::exception(){}
+Form::GradeTooLowException::GradeTooLowException(const GradeTooLowException&) throw () : std::exception(){}
+Form::GradeTooLowException& Form::GradeTooLowException::operator=(const Form::GradeTooLowException&) throw() { return (*this); }
+Form::GradeTooLowException::~GradeTooLowException() throw (){}
+const char* Form::GradeTooLowException::what() const throw () { return ("GradeTooLowException error"); }
 
-Form::GradeTooLowException::GradeTooLowException() throw(){}
-Form::GradeTooLowException::GradeTooLowException(const Form::GradeTooLowException&) throw(){}
-Form::GradeTooLowException& Form::GradeTooLowException::operator=(const Form::GradeTooLowException&) throw(){ return (*this); }
-Form::GradeTooLowException::~GradeTooLowException() throw(){}
-const char* Form::GradeTooLowException::what() const throw(){ return "GradeTooLowException error"; }
+Form::GradeTooHighException::GradeTooHighException() throw () : std::exception(){}
+Form::GradeTooHighException::GradeTooHighException(const GradeTooHighException&) throw () : std::exception(){}
+Form::GradeTooHighException& Form::GradeTooHighException::operator=(const Form::GradeTooHighException&) throw() { return (*this); }
+Form::GradeTooHighException::~GradeTooHighException() throw (){}
+const char* Form::GradeTooHighException::what() const throw () { return ("GradeTooHighException error"); }
+
+Form::AlreadySignedException::AlreadySignedException() throw () : std::exception(){}
+Form::AlreadySignedException::AlreadySignedException(const AlreadySignedException&) throw () : std::exception(){}
+Form::AlreadySignedException& Form::AlreadySignedException::operator=(const Form::AlreadySignedException&) throw() { return (*this); }
+Form::AlreadySignedException::~AlreadySignedException() throw (){}
+const char* Form::AlreadySignedException::what() const throw () { return ("AlreadySignedException error"); }
+
+/* exception code */
 
 /* ************************************************************************** */
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
 /* ************************************************************************** */
 
-const std::string Form::getName() const { return (this->_name); }
-bool Form::getSigned() const { return (this->_signed); }
-int Form::getSignGrade() const { return (this->_sign_grade); }
-int Form::getExecuteGrade() const { return (this->_execute_grade); }
-
-void Form::beSigned(const Bureaucrat& bureaucrat)
-{
-	if (bureaucrat.getGrade() > this->_sign_grade)
+void
+Form::beSigned(const Bureaucrat& bureaucrat) {
+	if (bureaucrat.get_m_grade() > this->m_required_sign_grade)
 		throw Form::GradeTooLowException();
-	else if (this->_signed == true)
-		throw ("form is already signed.");
+	else if (this->m_signed == true)
+		throw Form::AlreadySignedException();
 	else
-		this->_signed = true;
+		this->m_signed = true;
 }

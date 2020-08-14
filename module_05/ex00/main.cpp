@@ -19,9 +19,9 @@ int		main(void)
 	try {
 			Bureaucrat c("kim", 2);
 			std::cout << c << std::endl;
-			c.increment();
+			c.upGrade();
 			std::cout << c << std::endl;
-			c.increment();
+			c.upGrade();
 			std::cout << c << std::endl;
 	} catch (std::exception& e) {
 		std::cout << e.what() << std::endl;
@@ -31,9 +31,9 @@ int		main(void)
 	try {
 		Bureaucrat c("eunh", 149);
 		std::cout << c << std::endl;
-		c.decrement();
+		c.downGrade();
 		std::cout << c << std::endl;
-		c.decrement();
+		c.downGrade();
 	} catch (std::exception& e) {
 		std::cout << e.what() << std::endl;
 	}

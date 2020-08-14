@@ -1,10 +1,10 @@
-NAME = phonebook
+NAME = test
 CC = clang++
 RM = rm -rf
 INCLUDES = -I.
 CFLAGS = -Wall -Wextra -Werror
 
-MAIN_FILES = Form print exit search Contact phonebook add
+MAIN_FILES = Bureaucrat Form main
 
 SRCS = $(addsuffix .cpp, $(MAIN_FILES))
 

@@ -4,9 +4,9 @@
 #include <cstdlib>
 #include <iomanip>
 #include "Bureaucrat.hpp"
-#include "Form.hpp"
 
 # define DEBUG_LEVEL	1
+
 namespace {
 	void	print(std::string msg) {
 		std::cout << std::endl
@@ -17,18 +17,15 @@ namespace {
 
 int		main(void)
 {
-/*
-** 	EX00 TEST
-*/
 	if (DEBUG_LEVEL <= 0)
 	{
 		print("BASIC + UNDERFLOW TEST(2->1->0)");
 		try {
 				Bureaucrat c("kim", 2);
 				std::cout << c << std::endl;
-				c.increment();
+				c.upGrade();
 				std::cout << c << std::endl;
-				c.increment();
+				c.upGrade();
 				std::cout << c << std::endl;
 		} catch (std::exception& e) {
 			std::cout << e.what() << std::endl;
@@ -38,17 +35,14 @@ int		main(void)
 		try {
 			Bureaucrat c("eunh", 149);
 			std::cout << c << std::endl;
-			c.decrement();
+			c.downGrade();
 			std::cout << c << std::endl;
-			c.decrement();
+			c.downGrade();
 		} catch (std::exception& e) {
 			std::cout << e.what() << std::endl;
 		}
 	}
 
-/*
-** 	EX01 TEST
-*/
 	if (DEBUG_LEVEL <= 1)
 	{
 		print("CREAT FORM SUCCESS CASE");
@@ -74,6 +68,7 @@ int		main(void)
 		print("FORM OVERLOAD TEST");
 		std::cout << a << std::endl;
 	}
+
 	print("TEST_END");
 	return (0);
 }

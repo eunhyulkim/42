@@ -1,4 +1,4 @@
-#include "ShrubberyCreationForm.hpp"
+#include "Intern.hpp"
 
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ---------------------------- */
@@ -10,65 +10,34 @@
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-ShrubberyCreationForm::ShrubberyCreationForm() {}
-ShrubberyCreationForm::ShrubberyCreationForm(const std::string& target)
-: Form("Shrubbery Creation Form", 145, 137, target){}
-
-ShrubberyCreationForm::ShrubberyCreationForm(const ShrubberyCreationForm& copy)
-: Form(copy) {}
+Intern::Intern() {}
+Intern::Intern(const Intern&) {}
 
 /* ************************************************************************** */
 /* ------------------------------- DESTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-ShrubberyCreationForm::~ShrubberyCreationForm()
-{
-	/* destructor code */
-}
+Intern::~Intern() {}
 
 /* ************************************************************************** */
 /* -------------------------------- OVERLOAD -------------------------------- */
 /* ************************************************************************** */
 
-ShrubberyCreationForm& ShrubberyCreationForm::operator=(const ShrubberyCreationForm& obj)
-{
-	if (this == &obj)
-		return (*this);
-	this->Form::operator=(obj);
-	/* overload= code */
-	return (*this);
-}
-
-void
-ShrubberyCreationForm::beExecuted(const Bureaucrat&) const {
-	std::string path = std::string(std::getenv("PWD"));
-	path += "/" + this->get_m_target() + "_shrubbery";
-	std::ofstream out(path, std::ofstream::trunc);
-	std::string tree = "\
-		 /\\\n\
-		/\\*\\\n\
-	   /\\O\\*\\\n\
-	  /*/\\/\\/\\\n\
-  	 /\\O\\/\\*\\/\\\n\
-    /\\*\\/\\*\\/\\/\\\n\
-   /\\O\\/\\/*/\\/O/\\\n\
-	   	 ||\n\
-		 ||\n\
-		 ||\
-	";
-	out << tree;
-	out.close();
-}
+Intern& Intern::operator=(const Intern&) { return (*this); }
 
 /* ************************************************************************** */
 /* --------------------------------- GETTER --------------------------------- */
 /* ************************************************************************** */
 
-
-
 /* ************************************************************************** */
 /* ------------------------------- EXCEPTION -------------------------------- */
 /* ************************************************************************** */
+
+Intern::FailedMakeFormException::FailedMakeFormException() throw () : std::exception(){}
+Intern::FailedMakeFormException::FailedMakeFormException(const FailedMakeFormException&) throw () : std::exception(){}
+Intern::FailedMakeFormException& Intern::FailedMakeFormException::operator=(const Intern::FailedMakeFormException&) throw() { return (*this); }
+Intern::FailedMakeFormException::~FailedMakeFormException() throw (){}
+const char* Intern::FailedMakeFormException::what() const throw () { return ("FailedMakeFormException error"); }
 
 /* exception code */
 
@@ -76,3 +45,39 @@ ShrubberyCreationForm::beExecuted(const Bureaucrat&) const {
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
 /* ************************************************************************** */
 
+namespace {
+	Form *makeShrubbery(std::string target) {
+		return new ShrubberyCreationForm(target);
+	}
+
+	Form *makeRobotomy(std::string target) {
+		return new RobotomyRequestForm(target);
+	}
+
+	Form *makePardon(std::string target) {
+		return new PresidentialPardonForm(target);
+	}
+	
+	struct FormType types[3] = {
+		{ "shrubbery creation", makeShrubbery },
+		{ "robotomy request", makeRobotomy },
+		{ "presidential pardon", makePardon }
+	};
+}
+
+Form*
+Intern::makeForm(const std::string& form, const std::string& target) const {
+	Form *created_form = nullptr;
+
+	for (int i = 0; i < 3; i++)
+	{
+		if (types[i].type == form)
+		{
+			created_form = (types[i].make)(target);
+			std::cout << "Intern creates " << *created_form << std::endl;
+			return (created_form);
+		}
+	}
+	throw (Intern::FailedMakeFormException());
+	return (created_form);
+}

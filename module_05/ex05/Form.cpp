@@ -62,11 +62,11 @@ Form& Form::operator=(const Form& obj)
 std::ostream&
 operator<<(std::ostream& out, const Form& form)
 {
-	out << "<" << form.get_m_name();
-	out << "(signed: " << std::boolalpha << form.get_m_signed();
-	out << ", require_sign_grade(" << form.get_m_required_sign_grade();
-	out << "), required_exec_grade(" << form.get_m_required_exec_grade();
-	out << "), target(" << form.get_m_target() << ")>";
+	out << form.get_m_name();
+	out << "(s.grade(" << form.get_m_required_sign_grade();
+	out << "), r.grade(" << form.get_m_required_exec_grade();
+	out << ")) targeted on " << form.get_m_target() << " (";
+	out << std::boolalpha << form.get_m_signed() << ")";
 	return (out);
 }
 

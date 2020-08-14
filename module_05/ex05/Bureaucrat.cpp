@@ -101,23 +101,13 @@ Bureaucrat::downGrade(void) {
 }
 
 void
-Bureaucrat::signForm(Form& form) {
-	try {
-		form.beSigned(*this);
-		std::cout << *this;
-		std::cout << " signs " << form << std::endl;
-	} catch (std::exception& e) {
-		std::cerr << *this;
-		std::cerr << " cannot sign " << form << " because ";
-		std::cerr << e.what() << std::endl;
-	}
+Bureaucrat::signForm(Form& form) const {
+	form.beSigned(*this);
+	std::cout << *this;
+	std::cout << " signs " << form << std::endl;
 }
 
 void
-Bureaucrat::executeForm(const Form& form) {
-	try {
-		form.execute(*this);
-	} catch (std::exception& e) {
-		std::cerr << "execute failed because " << e.what() << std::endl;
-	}
+Bureaucrat::executeForm(const Form& form) const {
+	form.execute(*this);
 }
