@@ -9,7 +9,7 @@
 /* ************************************************************************** */
 
 RadScorpion::RadScorpion()
-: Enemy(80, "RadScorpion")
+: Enemy(80, "Rad Scorpion")
 {
 	std::cout << "* click click click *" << std::endl;
 }

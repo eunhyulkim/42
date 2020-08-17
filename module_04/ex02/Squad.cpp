@@ -59,14 +59,14 @@ Squad::getCount() const {
 }
 
 ISpaceMarine*
-Squad::getUnit(int nth) const {
+Squad::getUnit(int nth) const
+{
 	int			i;
 	t_squad 	*item;
 
 	i = 0;
-	item = nullptr;
 	if (nth > this->m_total_unit - 1 || nth < 0)
-		return (NULL);
+		return (nullptr);
 	item = this->m_squad;
 	while (i++ < nth)
 		item = item->next;
@@ -74,20 +74,32 @@ Squad::getUnit(int nth) const {
 }
 
 int
-Squad::push(ISpaceMarine* unit) {
+Squad::push(ISpaceMarine* unit)
+{
 	t_squad	*item;
 
+	if (!unit)
+		return (this->m_total_unit);
 	if (!this->m_squad)
+	{
 		this->m_squad = new t_squad();
+		this->m_squad->unit = nullptr;
+		this->m_squad->next = nullptr;
+	}
 	item = this->m_squad;
 	while (item->next)
+	{
+		if (item->unit == unit || item->next->unit == unit)
+			return (this->m_total_unit);
 		item = item->next;
+	}
 	if (!item->unit)
 		item->unit = unit;
 	else
 	{
 		item->next = new t_squad();
 		item->next->unit = unit;
+		item->next->next = nullptr;
 	}
 	this->m_total_unit += 1;
 	return (this->m_total_unit);
@@ -120,7 +132,8 @@ Squad::init(Squad *obj) {
 }
 
 void
-Squad::deepCopy(const Squad& copy) {
+Squad::deepCopy(const Squad& copy)
+{
 	t_squad *item;
 	ISpaceMarine *t;
 

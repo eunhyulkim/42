@@ -8,13 +8,10 @@
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-PlasmaRifle::PlasmaRifle() : AWeapon("PlasmaRifle", 5, 21) {}
+PlasmaRifle::PlasmaRifle() : AWeapon("Plasma Rifle", 5, 21) {}
 
 PlasmaRifle::PlasmaRifle(const PlasmaRifle& copy)
-: AWeapon(copy)
-{
-	std::cout << "[WEST-COPY] PlasmaRifle" << std::endl;
-}
+: AWeapon(copy) {}
 
 /* ************************************************************************** */
 /* ------------------------------- DESTRUCTOR ------------------------------- */
@@ -31,7 +28,6 @@ PlasmaRifle& PlasmaRifle::operator=(const PlasmaRifle& obj)
 	if (this == &obj)
 		return (*this);
 	this->AWeapon::operator=(obj);
-	std::cout << "[WEST-ASSIGN] PlasmaRifle" << std::endl;
 	return (*this);
 }
 

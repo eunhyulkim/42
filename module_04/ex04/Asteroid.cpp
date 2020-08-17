@@ -8,7 +8,7 @@
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-Asteroid::Asteroid(std::string name) : m_name(name) {}
+Asteroid::Asteroid() : m_name("Asteroid") {}
 
 Asteroid::Asteroid(const Asteroid& copy) : m_name(copy.get_m_name()) {}
 
@@ -26,7 +26,6 @@ Asteroid& Asteroid::operator=(const Asteroid& obj)
 {
 	if (this == &obj)
 		return (*this);
-	this->m_name = obj.get_m_name();
 	return (*this);
 }
 

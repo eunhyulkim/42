@@ -19,7 +19,10 @@ MateriaSource::MateriaSource(const MateriaSource& copy)
 {
 	this->m_count = copy.get_m_count();
 	for (int i = 0; i < this->m_count; i++)
-		this->m_srcs[i] = copy.m_srcs[i]->clone();
+	{
+		if (copy.m_srcs[i] != nullptr)
+			this->m_srcs[i] = copy.m_srcs[i]->clone();
+	}
 }
 
 /* ************************************************************************** */
@@ -29,7 +32,10 @@ MateriaSource::MateriaSource(const MateriaSource& copy)
 MateriaSource::~MateriaSource()
 {
 	for (int i = 0; i < this->m_count; i++)
-		delete this->m_srcs[i];
+	{
+		if (this->m_srcs[i])
+			delete this->m_srcs[i];
+	}
 	this->m_count = 0;
 }
 
@@ -44,16 +50,19 @@ MateriaSource& MateriaSource::operator=(const MateriaSource& obj)
 	this->~MateriaSource();
 	this->m_count = obj.get_m_count();
 	for (int i = 0; i < this->m_count; i++)
-		this->m_srcs[i] = obj.m_srcs[i]->clone();
+	{
+		if (obj.m_srcs[i] != nullptr)
+			this->m_srcs[i] = obj.m_srcs[i]->clone();
+	}
 	return (*this);
 }
 
 void
 MateriaSource::learnMateria(AMateria* materia)
 {
-	if (this->m_count >= 4)
+	if (materia == nullptr || this->m_count >= 4)
 		return ;
-	this->m_srcs[m_count] = materia;
+	this->m_srcs[m_count] = materia->clone();
 	this->m_count += 1;
 }
 

@@ -28,11 +28,27 @@ int main(void)
 	}
 	else
 	{
-		print("TEST : 3 Peon Virth and Death (Expect 12 Lines)");
-		Peon	zim("Zimmy");
-		Peon	zoe(zim);
-		Peon	robert("Robert");
-		robert = zim;
+		print("SOCERER CONTRUCTOR CALL TEST");
+		Sorcerer robert("Robert", "the Magnificent");
+		print("SOCERER OVERLOAD TEST");
+		std::cout << robert;
+		print("VICTIM CONSTRUCTOR CALL TEST");
+		Victim june("June");
+		print("VICTIM ASSIGN CALL TEST");
+		Victim anna = june;
+		print("VICTIM ASSIGN OVERLOAD TEST");
+		std::cout << anna;
+		print("PEON CONSTRUCTOR CALL TEST");
+		Peon zim("Zimmy");
+		print("PEON COPY CONSTRUCTOR CALL TEST");
+		Peon zimmy(zim);
+		print("PEON COPY OVERLOAD TEST");
+		std::cout << zimmy;
+		print("POLYMORPH VICTIM");
+		robert.polymorph(june);
+		print("POLYMORPH PEON");
+		robert.polymorph(zimmy);
+		print("DESTRUCTOR CALL TEST...");
 	}
 	return (0);
 }

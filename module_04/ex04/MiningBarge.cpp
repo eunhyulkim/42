@@ -27,8 +27,11 @@ MiningBarge::MiningBarge(const MiningBarge& copy)
 /* ------------------------------- DESTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-MiningBarge::~MiningBarge() {
+MiningBarge::~MiningBarge()
+{
 	this->m_count = 0;
+	for (int i = 0; i < 4; i++)
+		this->m_srcs[i] = nullptr;
 }
 
 /* ************************************************************************** */
@@ -71,7 +74,7 @@ MiningBarge::equip(IMiningRaser* miner)
 {
 	int i;
 
-	if (this->m_count >= 4)
+	if (this->m_count >= 4 || miner == nullptr)
 		return ;
 	i = 0;
 	while (i <= this->m_count)

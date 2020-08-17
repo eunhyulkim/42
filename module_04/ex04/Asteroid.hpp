@@ -12,9 +12,9 @@ class StripMiner;
 class Asteroid : public IAsteroid
 {
 	private:
-		std::string m_name;
+		const std::string m_name;
 	public:
-		Asteroid(std::string name = "Asteroid");
+		Asteroid();
 		Asteroid(const Asteroid& copy);
 		Asteroid& operator=(const Asteroid& obj);
 		virtual ~Asteroid();

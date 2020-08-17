@@ -13,10 +13,10 @@ class Character
 		std::string m_name;
 		int m_ap;
 		AWeapon *m_weapon;
+		Character& operator=(const Character&);
+		Character(const Character&);
 	protected:
 		Character();
-		Character(const Character&);
-		Character& operator=(const Character&);
 	public:
 		Character(const std::string& name);
 		virtual ~Character();

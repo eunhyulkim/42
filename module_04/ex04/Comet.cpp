@@ -8,7 +8,7 @@
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-Comet::Comet(std::string name) : m_name(name) {}
+Comet::Comet() : m_name("Comet") {}
 
 Comet::Comet(const Comet& copy) : m_name(copy.get_m_name()) {}
 
@@ -26,7 +26,6 @@ Comet& Comet::operator=(const Comet& obj)
 {
 	if (this == &obj)
 		return (*this);
-	this->m_name = obj.get_m_name();
 	return (*this);
 }
 

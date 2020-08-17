@@ -13,7 +13,7 @@ AMateria::AMateria() {}
 AMateria::AMateria(const std::string& type) : m_type(type), m_xp(0) {}
 
 AMateria::AMateria(const AMateria& copy)
-: m_type(copy.get_m_type(), copy.get_m_xp()) {}
+: m_type(copy.get_m_type()), m_xp(copy.get_m_xp()) {}
 
 /* ************************************************************************** */
 /* ------------------------------- DESTRUCTOR ------------------------------- */
@@ -21,7 +21,6 @@ AMateria::AMateria(const AMateria& copy)
 
 AMateria::~AMateria()
 {
-	this->m_type.clear();
 	this->m_xp = 0;
 }
 
@@ -33,7 +32,6 @@ AMateria& AMateria::operator=(const AMateria& obj)
 {
 	if (this == &obj)
 		return (*this);
-	this->m_type = obj.get_m_type();
 	this->m_xp = obj.get_m_xp();
 	return (*this);
 }
@@ -42,7 +40,7 @@ AMateria& AMateria::operator=(const AMateria& obj)
 /* --------------------------------- GETTER --------------------------------- */
 /* ************************************************************************** */
 
-std::string AMateria::get_m_type() const { return (this->m_type); }
+const std::string& AMateria::get_m_type() const { return (this->m_type); }
 unsigned int AMateria::get_m_xp() const { return (this->m_xp); }
 
 /* ************************************************************************** */

@@ -96,14 +96,13 @@ Character::attack(Enemy* enemy) {
 		return ;
 	if (this->m_ap < this->m_weapon->get_m_apcost())
 		return ;
+	if (enemy->get_m_hp() <= 0)
+		return ;
 	enemy->takeDamage(this->m_weapon->get_m_damage());
 	this->m_ap -= this->m_weapon->get_m_apcost();
 	std::cout << this->m_name << " attacks " << enemy->get_m_type()
 	<< " with a " << this->m_weapon->get_m_name() << std::endl;
 	this->m_weapon->attack();
 	if (enemy->get_m_hp() <= 0)
-	{
 		delete enemy;
-		enemy = nullptr;
-	}
 }

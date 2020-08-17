@@ -8,13 +8,10 @@
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-PowerFist::PowerFist() : AWeapon("PowerFist", 8, 50) {}
+PowerFist::PowerFist() : AWeapon("Power Fist", 8, 50) {}
 
 PowerFist::PowerFist(const PowerFist& copy)
-: AWeapon(copy)
-{
-	std::cout << "[WEST-COPY] PowerFist" << std::endl;
-}
+: AWeapon(copy) {}
 
 /* ************************************************************************** */
 /* ------------------------------- DESTRUCTOR ------------------------------- */
@@ -31,7 +28,6 @@ PowerFist& PowerFist::operator=(const PowerFist& obj)
 	if (this == &obj)
 		return (*this);
 	this->AWeapon::operator=(obj);
-	std::cout << "[WEST-ASSIGN] PowerFist" << std::endl;
 	return (*this);
 }
 

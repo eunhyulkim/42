@@ -12,7 +12,7 @@ class AMateria;
 class Character : public ICharacter
 {
 	private:
-		std::string m_name;
+		const std::string m_name;
 		AMateria *m_srcs[4];
 		int m_count;
 		Character();

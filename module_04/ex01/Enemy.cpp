@@ -62,7 +62,10 @@ int Enemy::get_m_hp() const { return (this->m_hp); }
 /* ************************************************************************** */
 
 void
-Enemy::takeDamage(int damage) {
+Enemy::takeDamage(int damage)
+{
+	if (damage < 0)
+		return ;
 	if (damage > this->m_hp)
 		damage = this->m_hp;
 	this->m_hp -= damage;

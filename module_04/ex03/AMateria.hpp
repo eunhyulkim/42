@@ -8,7 +8,7 @@
 class AMateria
 {
 	protected:
-		std::string m_type;
+		const std::string m_type;
 		unsigned int m_xp;
 		AMateria();
 	public:
@@ -18,7 +18,7 @@ class AMateria
 		virtual ~AMateria();
 
 		/* getter function */
-		std::string get_m_type() const;
+		const std::string& get_m_type() const;
 		unsigned int get_m_xp() const;
 
 		/* declare member function */
