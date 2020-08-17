@@ -4,7 +4,7 @@ RM = rm -rf
 INCLUDES = -I.
 CFLAGS = -Wall -Wextra -Werror
 
-MAIN_FILES = main
+MAIN_FILES = identify
 
 SRCS = $(addsuffix .cpp, $(MAIN_FILES))
 
