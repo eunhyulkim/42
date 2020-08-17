@@ -43,13 +43,13 @@ operator<<(std::ostream& out, const Character& character)
 	{
 		out << character.get_m_name();
 		out << " has " << character.get_m_ap();
-		out << " and is unarmed" << std::endl;
+		out << "AP and is unarmed" << std::endl;
 	}
 	else
 	{
 		out << character.get_m_name();
 		out << " has " << character.get_m_ap();
-		out << " and wields a " << character.get_m_weapon()->get_m_name();
+		out << "AP and wields a " << character.get_m_weapon()->get_m_name();
 		out << std::endl;
 	}
 	return (out);

@@ -70,6 +70,24 @@ class OfficeBlock
 				virtual ~FailedMakeFormException() throw ();
 				virtual const char* what() const throw ();
 		};
+		
+		class ForbiddenMultiException : public std::exception {
+			public:
+				ForbiddenMultiException() throw ();
+				ForbiddenMultiException(const ForbiddenMultiException&) throw ();
+				ForbiddenMultiException& operator= (const ForbiddenMultiException&) throw ();
+				virtual ~ForbiddenMultiException() throw ();
+				virtual const char* what() const throw ();
+		};
+
+		class FulledInBlockException : public std::exception {
+			public:
+				FulledInBlockException() throw ();
+				FulledInBlockException(const FulledInBlockException&) throw ();
+				FulledInBlockException& operator= (const FulledInBlockException&) throw ();
+				virtual ~FulledInBlockException() throw ();
+				virtual const char* what() const throw ();
+		};
 };
 
 /* global operator overload */

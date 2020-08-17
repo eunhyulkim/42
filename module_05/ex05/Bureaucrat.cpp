@@ -106,5 +106,6 @@ Bureaucrat::signForm(Form& form) const {
 
 void
 Bureaucrat::executeForm(const Form& form) const {
+	std::cout << *this << " execute " << form << std::endl;
 	form.execute(*this);
 }

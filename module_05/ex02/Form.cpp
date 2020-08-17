@@ -9,8 +9,8 @@
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-Form::Form() {}
-Form::Form(const std::string& name, int sign_grade, int exec_grade, const std::string& target)
+Form::Form() : m_required_sign_grade(0), m_required_exec_grade(0) {}
+Form::Form(const std::string& name, const int sign_grade, const int exec_grade, const std::string& target)
 : m_name(name), m_required_sign_grade(sign_grade), m_required_exec_grade(exec_grade), m_target(target)
 {
 	if (sign_grade > 150 || exec_grade > 150)
@@ -35,11 +35,7 @@ m_target(copy.get_m_target())
 
 Form::~Form()
 {
-	this->m_name.clear();
 	this->m_signed = false;
-	this->m_required_sign_grade = 0;
-	this->m_required_exec_grade = 0;
-	this->m_target.clear();
 }
 
 /* ************************************************************************** */
@@ -50,12 +46,7 @@ Form& Form::operator=(const Form& obj)
 {
 	if (this == &obj)
 		return (*this);
-	this->m_name = obj.get_m_name();
 	this->m_signed = obj.get_m_signed();
-	this->m_required_sign_grade = obj.get_m_required_sign_grade();
-	this->m_required_exec_grade = obj.get_m_required_exec_grade();
-	this->m_target = obj.get_m_target();
-	/* overload= code */
 	return (*this);
 }
 
@@ -133,6 +124,3 @@ Form::execute(const Bureaucrat& executor) const {
 	else
 		this->beExecuted(executor);
 }
-
-void
-Form::beExecuted(const Bureaucrat&) const {}

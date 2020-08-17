@@ -9,8 +9,9 @@
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-Form::Form() {}
-Form::Form(const std::string& name, int sign_grade, int exec_grade)
+Form::Form() : m_required_sign_grade(0), m_required_exec_grade(0) {}
+
+Form::Form(const std::string& name, const int sign_grade, const int exec_grade)
 : m_name(name), m_required_sign_grade(sign_grade), m_required_exec_grade(exec_grade)
 {
 	if (sign_grade > 150 || exec_grade > 150)
@@ -35,8 +36,6 @@ m_required_exec_grade(copy.get_m_required_exec_grade())
 Form::~Form()
 {
 	this->m_signed = false;
-	this->m_required_sign_grade = 0;
-	this->m_required_exec_grade = 0;
 }
 
 /* ************************************************************************** */
@@ -47,11 +46,7 @@ Form& Form::operator=(const Form& obj)
 {
 	if (this == &obj)
 		return (*this);
-	this->m_name = obj.get_m_name();
 	this->m_signed = obj.get_m_signed();
-	this->m_required_sign_grade = obj.get_m_required_sign_grade();
-	this->m_required_exec_grade = obj.get_m_required_exec_grade();
-	/* overload= code */
 	return (*this);
 }
 
@@ -69,10 +64,10 @@ operator<<(std::ostream& out, const Form& form)
 /* --------------------------------- GETTER --------------------------------- */
 /* ************************************************************************** */
 
-std::string Form::get_m_name() const { return (this->m_name); }
-bool Form::get_m_signed() const { return (this->m_signed); }
+const std::string& Form::get_m_name() const { return (this->m_name); }
 int Form::get_m_required_sign_grade() const { return (this->m_required_sign_grade); }
 int Form::get_m_required_exec_grade() const { return (this->m_required_exec_grade); }
+bool Form::get_m_signed() const { return (this->m_signed); }
 
 /* ************************************************************************** */
 /* ------------------------------- EXCEPTION -------------------------------- */
@@ -82,19 +77,19 @@ Form::GradeTooLowException::GradeTooLowException() throw () : std::exception(){}
 Form::GradeTooLowException::GradeTooLowException(const GradeTooLowException&) throw () : std::exception(){}
 Form::GradeTooLowException& Form::GradeTooLowException::operator=(const Form::GradeTooLowException&) throw() { return (*this); }
 Form::GradeTooLowException::~GradeTooLowException() throw (){}
-const char* Form::GradeTooLowException::what() const throw () { return ("GradeTooLowException error"); }
+const char* Form::GradeTooLowException::what() const throw () { return ("Form::GradeTooLowException error"); }
 
 Form::GradeTooHighException::GradeTooHighException() throw () : std::exception(){}
 Form::GradeTooHighException::GradeTooHighException(const GradeTooHighException&) throw () : std::exception(){}
 Form::GradeTooHighException& Form::GradeTooHighException::operator=(const Form::GradeTooHighException&) throw() { return (*this); }
 Form::GradeTooHighException::~GradeTooHighException() throw (){}
-const char* Form::GradeTooHighException::what() const throw () { return ("GradeTooHighException error"); }
+const char* Form::GradeTooHighException::what() const throw () { return ("Form::GradeTooHighException error"); }
 
 Form::AlreadySignedException::AlreadySignedException() throw () : std::exception(){}
 Form::AlreadySignedException::AlreadySignedException(const AlreadySignedException&) throw () : std::exception(){}
 Form::AlreadySignedException& Form::AlreadySignedException::operator=(const Form::AlreadySignedException&) throw() { return (*this); }
 Form::AlreadySignedException::~AlreadySignedException() throw (){}
-const char* Form::AlreadySignedException::what() const throw () { return ("AlreadySignedException error"); }
+const char* Form::AlreadySignedException::what() const throw () { return ("Form::AlreadySignedException error"); }
 
 /* exception code */
 

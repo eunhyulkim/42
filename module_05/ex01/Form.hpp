@@ -10,19 +10,19 @@ class Bureaucrat;
 class Form
 {
 	private:
-		std::string m_name;
+		const std::string m_name;
+		const int m_required_sign_grade;
+		const int m_required_exec_grade;
 		bool m_signed;
-		int m_required_sign_grade;
-		int m_required_exec_grade;
 		Form();
 	public:
-		Form(const std::string& name, int sign_grade, int exec_grade);
+		Form(const std::string& name, const int sign_grade, const int exec_grade);
 		Form(const Form& copy);
 		Form& operator=(const Form& obj);
 		virtual ~Form();
 
 		/* getter function */
-		std::string get_m_name() const;
+		const std::string& get_m_name() const;
 		bool get_m_signed() const;
 		int get_m_required_sign_grade() const;
 		int get_m_required_exec_grade() const;

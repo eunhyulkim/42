@@ -20,9 +20,9 @@ class Intern;
 class OfficeBlock
 {
 	private:
-		Bureaucrat const *m_signer;
-		Bureaucrat const *m_executor;
-		Intern const *m_intern;
+		Bureaucrat *m_signer;
+		Bureaucrat *m_executor;
+		Intern *m_intern;
 		OfficeBlock(const OfficeBlock&);
 		OfficeBlock& operator=(const OfficeBlock&);
 	public:
@@ -31,9 +31,9 @@ class OfficeBlock
 		virtual ~OfficeBlock();
 
 		/* setter function */
-		void set_m_intern(Intern const &intern);
-		void set_m_signer(Bureaucrat const &signer);
-		void set_m_executor(Bureaucrat const &executor);
+		void set_m_intern(Intern &intern);
+		void set_m_signer(Bureaucrat &signer);
+		void set_m_executor(Bureaucrat &executor);
 
 		/* declare member function */
 		void doBureaucracy(const std::string& form_name, const std::string& target);
@@ -63,6 +63,24 @@ class OfficeBlock
 				FailedMakeFormException(const FailedMakeFormException&) throw ();
 				FailedMakeFormException& operator= (const FailedMakeFormException&) throw ();
 				virtual ~FailedMakeFormException() throw ();
+				virtual const char* what() const throw ();
+		};
+		
+		class ForbiddenMultiException : public std::exception {
+			public:
+				ForbiddenMultiException() throw ();
+				ForbiddenMultiException(const ForbiddenMultiException&) throw ();
+				ForbiddenMultiException& operator= (const ForbiddenMultiException&) throw ();
+				virtual ~ForbiddenMultiException() throw ();
+				virtual const char* what() const throw ();
+		};
+
+		class FulledInBlockException : public std::exception {
+			public:
+				FulledInBlockException() throw ();
+				FulledInBlockException(const FulledInBlockException&) throw ();
+				FulledInBlockException& operator= (const FulledInBlockException&) throw ();
+				virtual ~FulledInBlockException() throw ();
 				virtual const char* what() const throw ();
 		};
 };

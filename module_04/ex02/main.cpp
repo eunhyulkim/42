@@ -23,10 +23,10 @@ int custom_main()
 	std::cout << son << std::endl;
 	print("CREATE SQUAD");
 	Squad* vlc = new Squad;
-	Squad test = Squad();
-	(void)test;
 	vlc->push(bob);
 	vlc->push(jim);
+	vlc->push(bob);
+	vlc->push(nullptr);
 
 	print("GET UNIT CHECK");
 	std::cout << vlc->getUnit(0) << std::endl;
@@ -53,7 +53,7 @@ int custom_main()
 	std::cout << nvlc->getUnit(3) << std::endl;
 	print("CHECK UNIT COUNT(3)");
 	std::cout << nvlc->getCount() << std::endl;
-
+	print("TEST END, DESTRUCTOR WILL CALL");
 	delete vlc;
 	delete nvlc;
 
@@ -62,6 +62,7 @@ int custom_main()
 
 int main()
 {
+	print("BASIC TEST");
 	ISpaceMarine* bob = new TacticalMarine;
 	ISpaceMarine* jim = new AssaultTerminator;
 	ISquad* vlc = new Squad;
@@ -75,6 +76,6 @@ int main()
 		cur->meleeAttack();
 	}
 	delete vlc;
-	// custom_main();
+	custom_main();
 	return 0;
 }

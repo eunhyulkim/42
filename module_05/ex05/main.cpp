@@ -72,7 +72,7 @@ int main()
 		try {
 			central.doBureaucracy();
 		} catch (std::exception& e) {
-			std::cerr << e.what() << std::endl;
+			std::cout << e.what() << std::endl;
 		}
 	}
 
@@ -83,7 +83,7 @@ int main()
 			multipleQueueUp(central, 10);
 			central.doBureaucracy();
 		} catch (std::exception& e) {
-			std::cerr << e.what() << std::endl;
+			std::cout << e.what() << std::endl;
 			std::cout << "wating person count: " << central.get_m_queue_count() << std::endl;
 		}
 	}
@@ -100,7 +100,7 @@ int main()
 				central << *worker[i];
 			central.doBureaucracy();
 		} catch (std::exception& e) {
-			std::cerr << e.what() << std::endl;
+			std::cout << e.what() << std::endl;
 			std::cout << "wating person count: " << central.get_m_queue_count() << std::endl;
 		}
 		for (int i = 0; i < 41; i++)
@@ -123,9 +123,32 @@ int main()
 			multipleQueueUp(central, 10);
 			central.doBureaucracy();
 		} catch (std::exception& e) {
-			std::cerr << e.what() << std::endl;
+			std::cout << e.what() << std::endl;
 		}
 		for (int i = 0; i < 20; i++)
+			delete worker[i];
+		std::cout << "wating person count: " << central.get_m_queue_count() << std::endl;
+	}
+
+	print("Succeess Big Case Test");
+	{
+		CentralBureaucracy central;
+		Bureaucrat *worker[40];
+		for (int i = 0; i < 40; i++)
+		{
+			worker[i] = new Bureaucrat(get_random_name(), get_random_grade());
+			if (i < 10)
+				central.feed(*worker[i]);
+			else
+				central << *worker[i];
+		}
+		try {
+			multipleQueueUp(central, 1000);
+			central.doBureaucracy();
+		} catch (std::exception& e) {
+			std::cout << e.what() << std::endl;
+		}
+		for (int i = 0; i < 40; i++)
 			delete worker[i];
 		std::cout << "wating person count: " << central.get_m_queue_count() << std::endl;
 	}

@@ -11,11 +11,11 @@ class Form;
 class Form
 {
 	private:
-		std::string m_name;
+		const std::string m_name;
 		bool m_signed;
-		int m_required_sign_grade;
-		int m_required_exec_grade;
-		std::string m_target;
+		const int m_required_sign_grade;
+		const int m_required_exec_grade;
+		const std::string m_target;
 	protected:
 		Form();
 	public:
@@ -34,7 +34,7 @@ class Form
 		/* declare member function */
 		void beSigned(const Bureaucrat& Bureaucrat);
 		void execute(const Bureaucrat& executor) const;
-		virtual void beExecuted(const Bureaucrat&) const;
+		virtual void beExecuted(const Bureaucrat&) const = 0;
 
 		/* exception declare */
 		class GradeTooLowException : public std::exception {

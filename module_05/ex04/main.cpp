@@ -27,8 +27,7 @@ namespace {
 	{
 		try {
 			ob.doBureaucracy(form, target);
-		}
-		catch (OfficeBlock::FailedMakeFormException& e) {
+		} catch (OfficeBlock::FailedMakeFormException& e) {
 			std::cout << e.what() << std::endl;
 		} catch (OfficeBlock::NotFilledBlockException& e) {
 			std::cout << e.what() << std::endl;
@@ -48,6 +47,8 @@ int main()
 	Bureaucrat hermes = Bureaucrat("Hermes Conrad", 37);
 	Bureaucrat bob = Bureaucrat("Bobby Bobson", 123);
 	OfficeBlock ob;
+	if (false)
+		BureaucracyTry(ob, "presidential pardon", "Pigley");
 	ob.set_m_intern(idiotOne);
 	ob.set_m_signer(bob);
 	print("WHEN EXECUTOR NOT SET");
@@ -59,16 +60,32 @@ int main()
 	BureaucracyTry(ob, "robotomy request", "Pigley");
 	print("SUCCESS CASE");
 	BureaucracyTry(ob, "shrubbery creation", "Pigley");
-	// }
-	// catch (OfficeBlock::FailedMakeFormException& e) {
-	// 	std::cout << "1: " << e.what() << std::endl;
-	// } catch (OfficeBlock::NotFilledBlockException& e) {
-	// 	std::cout << "3: " << e.what() << std::endl;
-	// } catch (OfficeBlock::GradeTooLowException& e) {
-	// 	std::cout << "2: " << e.what() << std::endl;
-	// } catch (std::exception & e) {
-	// 	std::cout << e.what() << std::endl;
-	// }
+
+	{
+		print("EXCEPTION TEST");
+		Intern idiotOne;
+		Bureaucrat hermes = Bureaucrat("Hermes Conrad", 37);
+		OfficeBlock oa;
+	
+		oa.set_m_intern(idiotOne);
+		try {
+			oa.set_m_intern(idiotOne);
+		} catch (OfficeBlock::FulledInBlockException& e) {
+				std::cout << e.what() << std::endl;
+		} catch (OfficeBlock::ForbiddenMultiException& e) {
+			std::cout << e.what() << std::endl;
+		}
+	
+		try {
+			oa.set_m_signer(hermes);
+			oa.set_m_executor(hermes);
+		} catch (OfficeBlock::FulledInBlockException& e) {
+			std::cout << e.what() << std::endl;
+		} catch (OfficeBlock::ForbiddenMultiException& e) {
+			std::cout << e.what() << std::endl;
+		}
+	}
 
 	print("TEST END");
+	return (0);
 }

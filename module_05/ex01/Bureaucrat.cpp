@@ -103,8 +103,8 @@ Bureaucrat::signForm(Form& form) {
 		std::cout << *this;
 		std::cout << " signs " << form << std::endl;
 	} catch (std::exception& e) {
-		std::cerr << *this;
-		std::cerr << " cannot sign " << form << " because ";
-		std::cerr << e.what() << std::endl;
+		std::cout << *this;
+		std::cout << " cannot sign " << form << " because ";
+		std::cout << e.what() << std::endl;
 	}
 }

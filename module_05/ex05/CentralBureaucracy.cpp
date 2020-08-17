@@ -103,9 +103,9 @@ CentralBureaucracy::feed(const Bureaucrat& bureaucrat) {
 	if (this->m_bureaucrat_count >= 40)
 		throw (CentralBureaucracy::FulledOfficeException());
 	if (this->m_bureaucrat_count % 2 == 0)
-		this->m_office[this->m_bureaucrat_count / 2].set_m_signer(bureaucrat);
+		this->m_office[this->m_bureaucrat_count / 2].set_m_signer(const_cast<Bureaucrat&>(bureaucrat));
 	else
-		this->m_office[this->m_bureaucrat_count / 2].set_m_executor(bureaucrat);
+		this->m_office[this->m_bureaucrat_count / 2].set_m_executor(const_cast<Bureaucrat&>(bureaucrat));
 	this->set_m_bureaucrat_count(this->get_m_bureaucrat_count() + 1);
 	return ;
 }
