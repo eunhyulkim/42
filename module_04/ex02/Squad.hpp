@@ -1,6 +1,10 @@
-#include "ISquad.hpp"
-#include "ISpaceMarine.hpp"
-#include <iostream>
+#ifndef SQUAD_HPP
+# define SQUAD_HPP
+
+# include <string>
+# include <iostream>
+
+# include "ISquad.hpp"
 
 class Squad : public ISquad
 {
@@ -10,17 +14,22 @@ class Squad : public ISquad
 			ISpaceMarine 	*unit;
 			s_squad 		*next;
 		}					t_squad;
-
-		t_squad				*squad;
-		int					totalUnit;
-		void				init(Squad *obj);
-		void				deepCopy(const Squad& copy);
+		t_squad 			*m_squad;
+		int 				m_total_unit;
+		
+	protected:
+		void init(Squad *obj);
+		void deepCopy(const Squad& copy);
 	public:
 		Squad();
-		~Squad();
 		Squad(const Squad& copy);
 		Squad& operator=(const Squad& obj);
-		int getCount() const;
-		ISpaceMarine* getUnit(int nth) const;
-		int push(ISpaceMarine* unit);
+		virtual ~Squad();
+
+		/* inherit overload function */
+		virtual int getCount() const;
+		virtual ISpaceMarine* getUnit(int nth) const;
+		virtual int push(ISpaceMarine* unit);
 };
+
+#endif

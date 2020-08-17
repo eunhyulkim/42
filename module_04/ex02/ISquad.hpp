@@ -1,6 +1,9 @@
 #ifndef I_SQUAD_HPP
 # define I_SQUAD_HPP
 
+# include <string>
+# include <iostream>
+
 # include "ISpaceMarine.hpp"
 
 class ISquad

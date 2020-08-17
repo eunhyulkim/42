@@ -1,23 +1,28 @@
 #ifndef ASTEROID_HPP
 # define ASTEROID_HPP
 
-#include "IAsteroid.hpp"
+# include <string>
+# include <iostream>
 
-class StripMiner;
+# include "IAsteroid.hpp"
+
 class DeepCoreMiner;
+class StripMiner;
 
 class Asteroid : public IAsteroid
 {
 	private:
-		std::string name;
+		std::string m_name;
 	public:
 		Asteroid(std::string name = "Asteroid");
 		Asteroid(const Asteroid& copy);
 		Asteroid& operator=(const Asteroid& obj);
-		~Asteroid();
-		std::string beMined(DeepCoreMiner *raser) const;
-		std::string beMined(StripMiner *raser) const;
-		std::string getName() const;
+		virtual ~Asteroid();
+
+		/* inherit overload function */
+		virtual std::string beMined(DeepCoreMiner *) const;
+		virtual std::string beMined(StripMiner *) const;
+		virtual std::string get_m_name() const;
 };
 
 #endif

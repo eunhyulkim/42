@@ -3,15 +3,16 @@
 
 # include <string>
 # include <iostream>
+
 # include "Enemy.hpp"
 
 class RadScorpion : public Enemy
 {
 	public:
 		RadScorpion();
-		RadScorpion& operator=(const RadScorpion& obj);
 		RadScorpion(const RadScorpion& copy);
-		~RadScorpion();
+		RadScorpion& operator=(const RadScorpion& obj);
+		virtual ~RadScorpion();
 };
 
 #endif

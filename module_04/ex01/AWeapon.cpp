@@ -1,25 +1,65 @@
 #include "AWeapon.hpp"
 
-AWeapon::AWeapon(){}
-AWeapon::AWeapon(std::string const & name, int apcost, int damage) \
-: name(name), apcost(apcost), damage(damage) {}
-AWeapon::~AWeapon() {}
+/* ************************************************************************** */
+/* ---------------------------- STATIC VARIABLE ----------------------------- */
+/* ************************************************************************** */
 
-AWeapon&
-AWeapon::operator=(const AWeapon& obj) {
-	if (this != &obj)
-	{
-		this->name = obj.name;
-		this->damage = obj.damage;
-		this->apcost = obj.apcost;
-	}
+
+/* ************************************************************************** */
+/* ------------------------------ CONSTRUCTOR ------------------------------- */
+/* ************************************************************************** */
+
+AWeapon::AWeapon() {}
+AWeapon::AWeapon(const std::string& name, int apcost, int damage)
+: m_name(name), m_apcost(apcost), m_damage(damage) {}
+
+AWeapon::AWeapon(const AWeapon& copy)
+: m_name(copy.get_m_name()), m_apcost(copy.get_m_apcost()), m_damage(copy.get_m_damage()) {}
+
+/* ************************************************************************** */
+/* ------------------------------- DESTRUCTOR ------------------------------- */
+/* ************************************************************************** */
+
+AWeapon::~AWeapon()
+{
+	this->m_name.clear();
+	this->m_apcost = 0;
+	this->m_damage = 0;
+}
+
+/* ************************************************************************** */
+/* -------------------------------- OVERLOAD -------------------------------- */
+/* ************************************************************************** */
+
+AWeapon& AWeapon::operator=(const AWeapon& obj)
+{
+	if (this == &obj)
+		return (*this);
+	this->m_name = obj.get_m_name();
+	this->m_apcost = obj.get_m_apcost();
+	this->m_damage = obj.get_m_damage();
+	/* overload= code */
 	return (*this);
 }
 
-AWeapon::AWeapon(const AWeapon& copy) {
-	*this = copy;
-}
+/* ************************************************************************** */
+/* --------------------------------- GETTER --------------------------------- */
+/* ************************************************************************** */
 
-std::string AWeapon::getName(void) const { return (this->name); }
-int AWeapon::getAPCost(void) const { return (this->apcost); }
-int AWeapon::getDamage(void) const { return (this->damage); }
+std::string AWeapon::get_m_name() const { return (this->m_name); }
+int AWeapon::get_m_apcost() const { return (this->m_apcost); }
+int AWeapon::get_m_damage() const { return (this->m_damage); }
+
+/* ************************************************************************** */
+/* --------------------------------- SETTER --------------------------------- */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/* ------------------------------- EXCEPTION -------------------------------- */
+/* ************************************************************************** */
+
+/* exception code */
+
+/* ************************************************************************** */
+/* ---------------------------- MEMBER FUNCTION ----------------------------- */
+/* ************************************************************************** */

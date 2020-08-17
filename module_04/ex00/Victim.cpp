@@ -1,44 +1,86 @@
 #include "Victim.hpp"
 
-Victim::Victim(std::string name) : name(name) {
-	std::cout << "Some random victim called " << this->name
-	<< " just appeared!" << std::endl;
-}
+/* ************************************************************************** */
+/* ---------------------------- STATIC VARIABLE ----------------------------- */
+/* ************************************************************************** */
+
+
+/* ************************************************************************** */
+/* ------------------------------ CONSTRUCTOR ------------------------------- */
+/* ************************************************************************** */
 
 Victim::Victim() {}
+Victim::Victim(const std::string& name)
+: m_name(name)
+{
+	std::cout << "Some random victim called ";
+	std::cout << this->m_name;
+	std::cout << " just appeared!" << std::endl;
+}
 
-Victim&
-Victim::operator=(const Victim& obj) {
-	if (this != &obj)
-		this->name = obj.name;
+Victim::Victim(const Victim& copy)
+: m_name(copy.get_m_name())
+{
+	std::cout << "Some random victim called ";
+	std::cout << this->m_name;
+	std::cout << " just appeared!" << std::endl;	
+}
+
+/* ************************************************************************** */
+/* ------------------------------- DESTRUCTOR ------------------------------- */
+/* ************************************************************************** */
+
+Victim::~Victim()
+{
+	std::cout << "Victim ";
+	std::cout << this->get_m_name();
+	std::cout << " just died for no apparent reason!" << std::endl;
+	this->m_name.clear();
+}
+
+/* ************************************************************************** */
+/* -------------------------------- OVERLOAD -------------------------------- */
+/* ************************************************************************** */
+
+Victim& Victim::operator=(const Victim& obj)
+{
+	if (this == &obj)
+		return (*this);
+	this->m_name = obj.get_m_name();
+	/* overload= code */
 	return (*this);
 }
 
-Victim::Victim(const Victim& copy) {
-	*this = copy;
-	std::cout << "Some random victim called " << this->name
-	<< " just appeared!" << std::endl;
+std::ostream&
+operator<<(std::ostream& out, const Victim& victim)
+{
+	out << "I'm " << victim.get_m_name();
+	out << " and I like otters!" << std::endl;
+	return (out);
 }
 
-Victim::~Victim() {
-	std::cout << "Victim " << this->name
-	<< " just died for no apparent reason!" << std::endl;
-}
+/* ************************************************************************** */
+/* --------------------------------- GETTER --------------------------------- */
+/* ************************************************************************** */
 
-std::string
-Victim::getName(void) const {
-	return (this->name);
-}
+std::string Victim::get_m_name() const { return (this->m_name); }
+
+/* ************************************************************************** */
+/* --------------------------------- SETTER --------------------------------- */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/* ------------------------------- EXCEPTION -------------------------------- */
+/* ************************************************************************** */
+
+/* exception code */
+
+/* ************************************************************************** */
+/* ---------------------------- MEMBER FUNCTION ----------------------------- */
+/* ************************************************************************** */
 
 void
 Victim::getPolymorphed(void) const {
-	std::cout << this->name
-	<< " has been turned into a cute little sheep!" << std::endl;
-};
-
-std::ostream&
-operator<<(std::ostream& os, const Victim& p) {
-  os << "I'm " << p.getName()
-  << " and I like otters!" << std::endl;
-  return os;
+	std::cout << this->get_m_name();
+	std::cout << " has been turned into a cute little sheep!" << std::endl;
 }

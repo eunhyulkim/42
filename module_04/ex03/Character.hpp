@@ -1,29 +1,38 @@
 #ifndef CHARACTER_HPP
 # define CHARACTER_HPP
 
+# include <string>
+# include <iostream>
+
 # include "ICharacter.hpp"
+# include "AMateria.hpp"
 
 class AMateria;
 
 class Character : public ICharacter
 {
 	private:
-		std::string _name;
-		AMateria	*_srcs[4];
-		int			_count;
+		std::string m_name;
+		AMateria *m_srcs[4];
+		int m_count;
 		Character();
-
 	public:
 		Character(const std::string name);
 		Character(const Character& copy);
 		Character& operator=(const Character& obj);
-		~Character();
+		virtual ~Character();
 
-		std::string const & getName() const;
-		int getCount() const;
+		/* getter function */
+		int get_m_count() const;
+
+		/* inherit overload function */
+		virtual const std::string& get_m_name() const;
+		virtual void equip(AMateria* m);
+		virtual void unequip(int idx);
+		virtual void use(int idx, ICharacter& target);
+
+		/* declare member function */
 		AMateria* getMateria(int idx) const;
-		void equip(AMateria* m);
-		void unequip(int idx);
-		void use(int idx, ICharacter& target);
 };
+
 #endif

@@ -1,24 +1,27 @@
 #ifndef PEON_HPP
 # define PEON_HPP
 
-# include <iostream>
 # include <string>
+# include <iostream>
+
 # include "Victim.hpp"
 
-class Victim;
-
-class Peon : public Victim {
+class Peon : public Victim
+{
 	private:
 		Peon();
 	public:
-		Peon(std::string name);
-		Peon& operator=(const Peon& obj);
+		Peon(const std::string& name);
 		Peon(const Peon& copy);
-		~Peon();
+		Peon& operator=(const Peon& obj);
+		virtual ~Peon();
 
-		void getPolymorphed(void) const;
+		/* inherit overload function */
+		virtual void getPolymorphed(void) const;
+
+		/* declare member function */
 };
 
-std::ostream& operator<<(std::ostream& os, const Peon& p);
+/* global operator overload */
 
 #endif

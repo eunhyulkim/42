@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <iomanip>
 #include "Bureaucrat.hpp"
+#include "Form.hpp"
 
 # define DEBUG_LEVEL	1
 

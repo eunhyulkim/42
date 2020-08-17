@@ -1,17 +1,23 @@
 #ifndef DEEP_CORE_MINER_HPP
 # define DEEP_CORE_MINER_HPP
 
-#include "IMiningRaser.hpp"
-#include <iostream>
+# include <string>
+# include <iostream>
+
+# include "IAsteroid.hpp"
+# include "IMiningRaser.hpp"
 
 class DeepCoreMiner : public IMiningRaser
 {
+	private:
 	public:
 		DeepCoreMiner();
-		~DeepCoreMiner();
-		DeepCoreMiner(const DeepCoreMiner& copy);
+		DeepCoreMiner(const DeepCoreMiner&);
 		DeepCoreMiner& operator=(const DeepCoreMiner& obj);
-		void mine(IAsteroid* obj);
+		virtual ~DeepCoreMiner();
+
+		/* inherit overload function */
+		virtual void mine(IAsteroid* obj);
 };
 
 #endif

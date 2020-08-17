@@ -1,21 +1,24 @@
 #ifndef ASSAULT_TERMINATOR_HPP
 # define ASSAULT_TERMINATOR_HPP
 
-# include "ISpaceMarine.hpp"
+# include <string>
 # include <iostream>
+
+# include "ISpaceMarine.hpp"
 
 class AssaultTerminator : public ISpaceMarine
 {
 	public:
 		AssaultTerminator();
-		~AssaultTerminator();
-		AssaultTerminator(const AssaultTerminator& copy);
+		AssaultTerminator(const AssaultTerminator&);
 		AssaultTerminator& operator=(const AssaultTerminator& obj);
+		virtual ~AssaultTerminator();
 
-		ISpaceMarine* clone(void) const;
-		void battleCry(void) const;
-		void rangedAttack(void) const;
-		void meleeAttack(void) const;
+		/* inherit overload function */
+		virtual ISpaceMarine* clone() const;
+		virtual void battleCry() const;
+		virtual void rangedAttack() const;
+		virtual void meleeAttack() const;
 };
 
 #endif

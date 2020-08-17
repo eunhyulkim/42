@@ -2,23 +2,27 @@
 # define MATERIA_SOURCE_HPP
 
 # include <string>
+
 # include "AMateria.hpp"
 # include "IMateriaSource.hpp"
 
 class MateriaSource : public IMateriaSource
 {
 	private:
-		AMateria	*srcs[4];
-		int			count;
+		AMateria *m_srcs[4];
+		int m_count;
 	public:
 		MateriaSource();
 		MateriaSource(const MateriaSource& copy);
 		MateriaSource& operator=(const MateriaSource& obj);
-		~MateriaSource();
+		virtual ~MateriaSource();
 
-		int	getCount() const;
-		void learnMateria(AMateria* materia);
-		AMateria* createMateria(std::string const & type);
+		/* getter function */
+		int get_m_count() const;
+
+		/* inherit overload function */
+		virtual void learnMateria(AMateria* materia);
+		virtual AMateria* createMateria(std::string const & type);
 };
 
 #endif

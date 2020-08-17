@@ -1,17 +1,22 @@
 #ifndef STRIP_MINER_HPP
 # define STRIP_MINER_HPP
 
-#include "IMiningRaser.hpp"
-#include <iostream>
+# include <iostream>
+
+# include "IAsteroid.hpp"
+# include "IMiningRaser.hpp"
 
 class StripMiner : public IMiningRaser
 {
+	private:
 	public:
 		StripMiner();
-		~StripMiner();
-		StripMiner(const StripMiner& copy);
+		StripMiner(const StripMiner&);
 		StripMiner& operator=(const StripMiner& obj);
-		void mine(IAsteroid* obj);
+		virtual ~StripMiner();
+
+		/* inherit overload function */
+		virtual void mine(IAsteroid* obj);
 };
 
 #endif

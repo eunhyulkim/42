@@ -34,7 +34,6 @@ m_required_exec_grade(copy.get_m_required_exec_grade())
 
 Form::~Form()
 {
-	this->m_name.clear();
 	this->m_signed = false;
 	this->m_required_sign_grade = 0;
 	this->m_required_exec_grade = 0;

@@ -1,7 +1,7 @@
 #ifndef I_MATERIA_SOURCE_HPP
 # define I_MATERIA_SOURCE_HPP
 
-#include <string>
+# include <string>
 
 class IMateriaSource
 {

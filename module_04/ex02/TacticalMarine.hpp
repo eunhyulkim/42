@@ -1,21 +1,24 @@
 #ifndef TACTICAL_MARINE_HPP
 # define TACTICAL_MARINE_HPP
 
-#include "ISpaceMarine.hpp"
-#include <iostream>
+# include <string>
+# include <iostream>
+
+# include "ISpaceMarine.hpp"
 
 class TacticalMarine : public ISpaceMarine
 {
 	public:
 		TacticalMarine();
-		~TacticalMarine();
-		TacticalMarine(const TacticalMarine& copy);
+		TacticalMarine(const TacticalMarine&);
 		TacticalMarine& operator=(const TacticalMarine& obj);
+		virtual ~TacticalMarine();
 
-		ISpaceMarine* clone(void) const;
-		void battleCry(void) const;
-		void rangedAttack(void) const;
-		void meleeAttack(void) const;
+		/* inherit overload function */
+		virtual ISpaceMarine* clone() const;
+		virtual void battleCry() const;
+		virtual void rangedAttack() const;
+		virtual void meleeAttack() const;
 };
 
 #endif

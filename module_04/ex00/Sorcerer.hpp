@@ -1,30 +1,32 @@
 #ifndef SORCERER_HPP
 # define SORCERER_HPP
 
-# include <iostream>
 # include <string>
+# include <iostream>
+
 # include "Victim.hpp"
-# include "Peon.hpp"
 
-class Victim;
-class Peon;
-
-class Sorcerer {
+class Sorcerer
+{
 	private:
-		std::string		name;
-		std::string		title;
+		std::string m_name;
+		std::string m_title;
 		Sorcerer();
 	public:
-		Sorcerer(std::string name, std::string title);
-		Sorcerer& operator=(const Sorcerer& obj);
+		Sorcerer(const std::string& name, const std::string& title);
 		Sorcerer(const Sorcerer& copy);
-		~Sorcerer();
+		Sorcerer& operator=(const Sorcerer& obj);
+		virtual ~Sorcerer();
 
-		std::string getName(void) const;
-		std::string getTitle(void) const;
+		/* getter function */
+		std::string get_m_name() const;
+		std::string get_m_title() const;
+
+		/* declare member function */
 		void polymorph(Victim const &victim) const;
-		void polymorph(Peon const &peon) const;
 };
 
-std::ostream& operator<<(std::ostream& os, const Sorcerer& s);
+/* global operator overload */
+std::ostream&	operator<<(std::ostream& out, const Sorcerer& sorcerer);
+
 #endif

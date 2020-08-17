@@ -3,30 +3,36 @@
 
 # include <string>
 # include <iostream>
+
 # include "AWeapon.hpp"
 # include "Enemy.hpp"
 
 class Character
 {
+	private:
+		std::string m_name;
+		int m_ap;
+		AWeapon *m_weapon;
 	protected:
 		Character();
-		Character& operator=(const Character&);
 		Character(const Character&);
-		std::string name;
-		int			ap;
-		AWeapon 	*weapon;
+		Character& operator=(const Character&);
 	public:
-		Character(std::string const & name);
-		~Character();
+		Character(const std::string& name);
+		virtual ~Character();
 
+		/* getter function */
+		std::string get_m_name() const;
+		int get_m_ap() const;
+		AWeapon *get_m_weapon() const;
+
+		/* declare member function */
 		void recoverAP(void);
 		void equip(AWeapon* equipment);
 		void attack(Enemy* enemy);
-		std::string getName(void) const;
-		AWeapon *getWeapon(void) const;
-		int getAP(void) const;
 };
 
-std::ostream& operator<<(std::ostream& os, const Character& s);
+/* global operator overload */
+std::ostream&	operator<<(std::ostream& out, const Character& character);
 
 #endif

@@ -1,18 +1,22 @@
 #ifndef ICE_HPP
 # define ICE_HPP
 
-#include "AMateria.hpp"
-#include <iostream>
+# include <string>
+# include <iostream>
 
-class Ice : public AMateria {
+# include "AMateria.hpp"
+
+class Ice : public AMateria
+{
 	public:
 		Ice();
 		Ice(const Ice& copy);
 		Ice& operator=(const Ice& obj);
-		~Ice();
+		virtual ~Ice();
 
-		AMateria* clone() const;
-		void use(ICharacter& target);
+		/* inherit overload function */
+		virtual AMateria* clone() const;
+		virtual void use(ICharacter& target);
 };
 
 #endif

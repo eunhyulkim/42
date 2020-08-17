@@ -1,23 +1,28 @@
 #ifndef COMET_HPP
 # define COMET_HPP
 
-#include "IAsteroid.hpp"
+# include <string>
+# include <iostream>
 
-class StripMiner;
+# include "IAsteroid.hpp"
+
 class DeepCoreMiner;
+class StripMiner;
 
 class Comet : public IAsteroid
 {
 	private:
-		std::string name;
+		std::string m_name;
 	public:
 		Comet(std::string name = "Comet");
 		Comet(const Comet& copy);
 		Comet& operator=(const Comet& obj);
-		~Comet();
-		std::string beMined(DeepCoreMiner *) const;
-		std::string beMined(StripMiner *) const;
-		std::string getName() const;
+		virtual ~Comet();
+
+		/* inherit overload function */
+		virtual std::string beMined(DeepCoreMiner *) const;
+		virtual std::string beMined(StripMiner *) const;
+		virtual std::string get_m_name() const;
 };
 
 #endif

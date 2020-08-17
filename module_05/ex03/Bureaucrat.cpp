@@ -28,7 +28,6 @@ Bureaucrat::Bureaucrat(const Bureaucrat& copy)
 
 Bureaucrat::~Bureaucrat()
 {
-	this->m_name.clear();
 	this->m_grade = 0;
 }
 
@@ -40,9 +39,7 @@ Bureaucrat& Bureaucrat::operator=(const Bureaucrat& obj)
 {
 	if (this == &obj)
 		return (*this);
-	this->m_name = obj.get_m_name();
 	this->m_grade = obj.get_m_grade();
-	/* overload= code */
 	return (*this);
 }
 

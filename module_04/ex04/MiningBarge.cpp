@@ -1,44 +1,84 @@
 #include "MiningBarge.hpp"
 
+/* ************************************************************************** */
+/* ---------------------------- STATIC VARIABLE ----------------------------- */
+/* ************************************************************************** */
+
+
+/* ************************************************************************** */
+/* ------------------------------ CONSTRUCTOR ------------------------------- */
+/* ************************************************************************** */
+
 MiningBarge::MiningBarge()
 {
 	for (int i = 0; i < 4; i++)
-		this->_srcs[i] = nullptr;
-	this->_count = 0;
+		this->m_srcs[i] = nullptr;
+	this->m_count = 0;
 }
 
-MiningBarge::MiningBarge(const MiningBarge& copy) { *this = copy; }
+MiningBarge::MiningBarge(const MiningBarge& copy) 
+{
+	this->m_count = copy.get_m_count();
+	for (int i = 0; i < this->m_count; i++)
+		this->m_srcs[i] = copy.m_srcs[i];
+}
+
+/* ************************************************************************** */
+/* ------------------------------- DESTRUCTOR ------------------------------- */
+/* ************************************************************************** */
+
+MiningBarge::~MiningBarge() {
+	this->m_count = 0;
+}
+
+/* ************************************************************************** */
+/* -------------------------------- OVERLOAD -------------------------------- */
+/* ************************************************************************** */
 
 MiningBarge& MiningBarge::operator=(const MiningBarge& obj)
 {
 	if (this == &obj)
 		return (*this);
 	this->~MiningBarge();
-	this->_count = obj.getCount();
-	for (int i = 0; i < this->_count; i++)
-		this->_srcs[i] = obj._srcs[i];
+	this->m_count = obj.get_m_count();
+	for (int i = 0; i < this->m_count; i++)
+		this->m_srcs[i] = obj.m_srcs[i];
 	return (*this);
 }
 
-MiningBarge::~MiningBarge() { this->_count = 0; }
+/* ************************************************************************** */
+/* --------------------------------- GETTER --------------------------------- */
+/* ************************************************************************** */
 
+int MiningBarge::get_m_count() const { return (this->m_count); }
 
-int
-MiningBarge::getCount(void) const { return this->_count; }
+/* ************************************************************************** */
+/* --------------------------------- SETTER --------------------------------- */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/* ------------------------------- EXCEPTION -------------------------------- */
+/* ************************************************************************** */
+
+/* exception code */
+
+/* ************************************************************************** */
+/* ---------------------------- MEMBER FUNCTION ----------------------------- */
+/* ************************************************************************** */
 
 void
 MiningBarge::equip(IMiningRaser* miner)
 {
 	int i;
 
-	if (this->_count >= 4)
+	if (this->m_count >= 4)
 		return ;
 	i = 0;
-	while (i <= this->_count)
-		if (this->_srcs[i++] == miner)
+	while (i <= this->m_count)
+		if (this->m_srcs[i++] == miner)
 			return ;
-	this->_srcs[this->_count] = miner;
-	this->_count += 1;
+	this->m_srcs[this->m_count] = miner;
+	this->m_count += 1;
 }
 
 void
@@ -47,6 +87,6 @@ MiningBarge::mine(IAsteroid* obj) const
 	int i;
 
 	i = 0;
-	while (i < this->_count)
-		this->_srcs[i++]->mine(obj);
+	while (i < this->m_count)
+		this->m_srcs[i++]->mine(obj);
 }

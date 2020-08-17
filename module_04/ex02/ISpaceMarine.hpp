@@ -1,6 +1,9 @@
 #ifndef I_SPACE_MARINE_HPP
 # define I_SPACE_MARINE_HPP
 
+# include <string>
+# include <iostream>
+
 class ISpaceMarine
 {
 	public:

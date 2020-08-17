@@ -1,0 +1,10 @@
+Create a class Base that only possesses a public virtual destructor. Create three
+empty classes A, B and C that publicly inherit from Base.
+Write a function "Base * generate(void);" that randomly instanciates A, B or C
+and returns the instance as a Base pointer. Feel free to use anything you like for the
+randomness.
+Write a function "void identify_from_pointer(Base * p);" that displays "A",
+"B" or "C" according to the real type of p.
+Write a function "void identify_from_reference( Base & p);" that displays "A",
+"B" or "C" according to the real type of p.
+Wrap these three functions in a program that prooves that everything works as intended. Including <typeinfo> is forbidden.

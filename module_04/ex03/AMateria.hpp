@@ -2,13 +2,14 @@
 # define A_MATERIA_HPP
 
 # include <string>
+
 # include "ICharacter.hpp"
 
 class AMateria
 {
 	protected:
-		std::string _type;
-		unsigned int _xp;
+		std::string m_type;
+		unsigned int m_xp;
 		AMateria();
 	public:
 		AMateria(const std::string& type);
@@ -16,9 +17,15 @@ class AMateria
 		AMateria& operator=(const AMateria& obj);
 		virtual ~AMateria();
 
-		const std::string& getType() const;
-		unsigned int getXP() const;
+		/* getter function */
+		std::string get_m_type() const;
+		unsigned int get_m_xp() const;
+
+		/* declare member function */
 		virtual AMateria* clone() const = 0;
 		virtual void use(ICharacter& target);
 };
+
+/* global operator overload */
+
 #endif

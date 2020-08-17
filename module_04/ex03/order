@@ -1,5 +1,0 @@
-# include "AMateria.hpp"
-# include "IMateriaSource.hpp"
-
-ICharacter, Character -> AMateria
-AMatera, IMateriaSource -> MateriaSource

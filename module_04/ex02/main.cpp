@@ -75,8 +75,6 @@ int main()
 		cur->meleeAttack();
 	}
 	delete vlc;
-	custom_main();
-	while (1)
-		;
+	// custom_main();
 	return 0;
 }

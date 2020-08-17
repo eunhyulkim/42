@@ -1,22 +1,29 @@
 #ifndef VICTIM_HPP
 # define VICTIM_HPP
 
-# include <iostream>
 # include <string>
+# include <iostream>
 
-class Victim {
+class Victim
+{
+	private:
+		std::string m_name;
 	protected:
 		Victim();
-		std::string		name;
 	public:
-		Victim(std::string name);
-		Victim& operator=(const Victim& obj);
+		Victim(const std::string& name);
 		Victim(const Victim& copy);
-		~Victim();
+		Victim& operator=(const Victim& obj);
+		virtual ~Victim();
 
-		std::string getName(void) const;
-		void getPolymorphed(void) const;
+		/* getter function */
+		std::string get_m_name() const;
+
+		/* declare member function */
+		virtual void getPolymorphed(void) const;
 };
 
-std::ostream& operator<<(std::ostream& os, const Victim& p);
+/* global operator overload */
+std::ostream&	operator<<(std::ostream& out, const Victim& victim);
+
 #endif

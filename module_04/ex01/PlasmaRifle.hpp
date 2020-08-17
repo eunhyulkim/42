@@ -3,17 +3,23 @@
 
 # include <string>
 # include <iostream>
+
 # include "AWeapon.hpp"
 
 class PlasmaRifle : public AWeapon
 {
 	public:
 		PlasmaRifle();
-		PlasmaRifle& operator=(const PlasmaRifle& obj);
 		PlasmaRifle(const PlasmaRifle& copy);
-		~PlasmaRifle();
+		PlasmaRifle& operator=(const PlasmaRifle& obj);
+		virtual ~PlasmaRifle();
 
-		void attack(void) const;
+		/* inherit overload function */
+		virtual void attack() const;
+
+		/* declare member function */
 };
+
+/* global operator overload */
 
 #endif

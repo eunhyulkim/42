@@ -3,17 +3,23 @@
 
 # include <string>
 # include <iostream>
+
 # include "Enemy.hpp"
 
 class SuperMutant : public Enemy
 {
 	public:
 		SuperMutant();
-		SuperMutant& operator=(const SuperMutant& obj);
 		SuperMutant(const SuperMutant& copy);
-		~SuperMutant();
+		SuperMutant& operator=(const SuperMutant& obj);
+		virtual ~SuperMutant();
 
-		void takeDamage(int damage);
+		/* inherit overload function */
+		virtual void takeDamage(int damage);
+
+		/* declare member function */
 };
+
+/* global operator overload */
 
 #endif
