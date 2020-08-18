@@ -19,10 +19,6 @@ int		main(int ac, char *av[])
         pm.runCalc();
         pm.printResult();
     }
-    // else if (!pm.set_m_tokens(av[1]) || !pm.set_m_rpolish_expression())
-    //     std::cout << "expressions is unvalid" << std::endl;
-    // else
-    //     pm.runCalc();
 
     return (0);
 }

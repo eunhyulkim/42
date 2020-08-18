@@ -130,6 +130,9 @@ PolandMan::set_m_tokens(std::string raw_string)
 		else
 			return (false);
 	}
+	if (std::count(m_token_types.begin(), m_token_types.end(), OP) + 1
+	!= std::count(m_token_types.begin(), m_token_types.end(), NUM))
+		return (false);
 	if (bracket != 0 || prevNum == false)
 		return (false);
 	return (true);
