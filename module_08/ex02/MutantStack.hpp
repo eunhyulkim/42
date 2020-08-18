@@ -2,6 +2,7 @@
 # define MUTANT_STACK_HPP
 
 # include <stack>
+# include <algorithm>
 
 template <typename T>
 class MutantStack : public std::stack<T>
