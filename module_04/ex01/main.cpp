@@ -6,7 +6,7 @@
 #include "RadScorpion.hpp"
 #include "Character.hpp"
 
-# define BASIC_TEST     false
+# define BASIC_TEST     true
 
 void	print(std::string msg) {
     std::cout << std::endl
@@ -27,7 +27,7 @@ int main()
         std::cout << *me;
         me->equip(pf);
         me->attack(b);
-        std::cout << *me;
+        std::cout << *me;make
         me->equip(pr);
         std::cout << *me;
         me->attack(b);
