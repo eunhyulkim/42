@@ -41,12 +41,18 @@ class Stack
 		void push(const_reference val);
 		void pop();
 
-		friend bool ::operator==(const ft::Stack<T, C>& lhs, const ft::Stack<T, C>& rhs);
-		friend bool ::operator!=(const ft::Stack<T, C>& lhs, const ft::Stack<T, C>& rhs);
-		friend bool ::operator>(const ft::Stack<T, C>& lhs, const ft::Stack<T, C>& rhs);
-		friend bool ::operator>=(const ft::Stack<T, C>& lhs, const ft::Stack<T, C>& rhs);
-		friend bool ::operator<(const ft::Stack<T, C>& lhs, const ft::Stack<T, C>& rhs);
-		friend bool ::operator<=(const ft::Stack<T, C>& lhs, const ft::Stack<T, C>& rhs);
+		template <typename S, typename K>
+		friend bool ::operator==(const ft::Stack<S, K>& lhs, const ft::Stack<S, K>& rhs);
+		template <typename S, typename K>
+		friend bool ::operator!=(const ft::Stack<S, K>& lhs, const ft::Stack<S, K>& rhs);
+		template <typename S, typename K>
+		friend bool ::operator>(const ft::Stack<S, K>& lhs, const ft::Stack<S, K>& rhs);
+		template <typename S, typename K>
+		friend bool ::operator>=(const ft::Stack<S, K>& lhs, const ft::Stack<S, K>& rhs);
+		template <typename S, typename K>
+		friend bool ::operator<(const ft::Stack<S, K>& lhs, const ft::Stack<S, K>& rhs);
+		template <typename S, typename K>
+		friend bool ::operator<=(const ft::Stack<S, K>& lhs, const ft::Stack<S, K>& rhs);
 };
 
 /* ************************************************************************** */
@@ -128,39 +134,39 @@ ft::Stack<T, C>::pop(void) {
 // /* --------------------------- NON MEMBER OPERATOR -------------------------- */
 // /* ************************************************************************** */
 
-template <typename T, typename C>
+template <typename S, typename K>
 bool
-operator==(const ft::Stack<T, C>& lhs, const ft::Stack<T, C>& rhs){
+operator==(const ft::Stack<S, K>& lhs, const ft::Stack<S, K>& rhs){
 	return (lhs.m_container == rhs.m_container);
 }
 
-template <typename T, typename C>
+template <typename S, typename K>
 bool
-operator!=(const ft::Stack<T, C>& lhs, const ft::Stack<T, C>& rhs) {
+operator!=(const ft::Stack<S, K>& lhs, const ft::Stack<S, K>& rhs){
 	return (lhs.m_container != rhs.m_container);
 }
 
-template <typename T, typename C>
+template <typename S, typename K>
 bool
-operator<(const ft::Stack<T, C>& lhs, const ft::Stack<T, C>& rhs) {
+operator<(const ft::Stack<S, K>& lhs, const ft::Stack<S, K>& rhs){
 	return (lhs.m_container < rhs.m_container);
 }
 
-template <typename T, typename C>
+template <typename S, typename K>
 bool
-operator<=(const ft::Stack<T, C>& lhs, const ft::Stack<T, C>& rhs) {
+operator<=(const ft::Stack<S, K>& lhs, const ft::Stack<S, K>& rhs){
 	return (lhs.m_container <= rhs.m_container);
 }
 
-template <typename T, typename C>
+template <typename S, typename K>
 bool
-operator>(const ft::Stack<T, C>& lhs, const ft::Stack<T, C>& rhs) {
+operator>(const ft::Stack<S, K>& lhs, const ft::Stack<S, K>& rhs){
 	return (lhs.m_container > rhs.m_container);
 }
 
-template <typename T, typename C>
+template <typename S, typename K>
 bool
-operator>=(const ft::Stack<T, C>& lhs, const ft::Stack<T, C>& rhs) {
+operator>=(const ft::Stack<S, K>& lhs, const ft::Stack<S, K>& rhs){
 	return (lhs.m_container >= rhs.m_container);
 }
 
