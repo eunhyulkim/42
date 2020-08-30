@@ -43,12 +43,18 @@ class Queue
 		void push(const_reference val);
 		void pop();
 
-		friend bool ::operator==(const ft::Queue<T, C>& lhs, const ft::Queue<T, C>& rhs);
-		friend bool ::operator!=(const ft::Queue<T, C>& lhs, const ft::Queue<T, C>& rhs);
-		friend bool ::operator>(const ft::Queue<T, C>& lhs, const ft::Queue<T, C>& rhs);
-		friend bool ::operator>=(const ft::Queue<T, C>& lhs, const ft::Queue<T, C>& rhs);
-		friend bool ::operator<(const ft::Queue<T, C>& lhs, const ft::Queue<T, C>& rhs);
-		friend bool ::operator<=(const ft::Queue<T, C>& lhs, const ft::Queue<T, C>& rhs);
+		template<typename Q, typename K >
+		friend bool ::operator==(const ft::Queue<Q, K>& lhs, const ft::Queue<Q, K>& rhs);
+		template<typename Q, typename K >
+		friend bool ::operator!=(const ft::Queue<Q, K>& lhs, const ft::Queue<Q, K>& rhs);
+		template<typename Q, typename K >
+		friend bool ::operator>(const ft::Queue<Q, K>& lhs, const ft::Queue<Q, K>& rhs);
+		template<typename Q, typename K >
+		friend bool ::operator>=(const ft::Queue<Q, K>& lhs, const ft::Queue<Q, K>& rhs);
+		template<typename Q, typename K >
+		friend bool ::operator<(const ft::Queue<Q, K>& lhs, const ft::Queue<Q, K>& rhs);
+		template<typename Q, typename K >
+		friend bool ::operator<=(const ft::Queue<Q, K>& lhs, const ft::Queue<Q, K>& rhs);
 };
 
 /* ************************************************************************** */
@@ -142,39 +148,39 @@ ft::Queue<T, C>::pop(void) {
 // /* --------------------------- NON MEMBER OPERATOR -------------------------- */
 // /* ************************************************************************** */
 
-template <typename T, typename C>
+template<typename Q, typename K>
 bool
-operator==(const ft::Queue<T, C>& lhs, const ft::Queue<T, C>& rhs){
+operator==(const ft::Queue<Q, K>& lhs, const ft::Queue<Q, K>& rhs){
 	return (lhs.m_container == rhs.m_container);
 }
 
-template <typename T, typename C>
+template<typename Q, typename K>
 bool
-operator!=(const ft::Queue<T, C>& lhs, const ft::Queue<T, C>& rhs) {
+operator!=(const ft::Queue<Q, K>& lhs, const ft::Queue<Q, K>& rhs) {
 	return (lhs.m_container != rhs.m_container);
 }
 
-template <typename T, typename C>
+template<typename Q, typename K>
 bool
-operator<(const ft::Queue<T, C>& lhs, const ft::Queue<T, C>& rhs) {
+operator<(const ft::Queue<Q, K>& lhs, const ft::Queue<Q, K>& rhs) {
 	return (lhs.m_container < rhs.m_container);
 }
 
-template <typename T, typename C>
+template<typename Q, typename K>
 bool
-operator<=(const ft::Queue<T, C>& lhs, const ft::Queue<T, C>& rhs) {
+operator<=(const ft::Queue<Q, K>& lhs, const ft::Queue<Q, K>& rhs) {
 	return (lhs.m_container <= rhs.m_container);
 }
 
-template <typename T, typename C>
+template<typename Q, typename K>
 bool
-operator>(const ft::Queue<T, C>& lhs, const ft::Queue<T, C>& rhs) {
+operator>(const ft::Queue<Q, K>& lhs, const ft::Queue<Q, K>& rhs) {
 	return (lhs.m_container > rhs.m_container);
 }
 
-template <typename T, typename C>
+template<typename Q, typename K>
 bool
-operator>=(const ft::Queue<T, C>& lhs, const ft::Queue<T, C>& rhs) {
+operator>=(const ft::Queue<Q, K>& lhs, const ft::Queue<Q, K>& rhs) {
 	return (lhs.m_container >= rhs.m_container);
 }
 
