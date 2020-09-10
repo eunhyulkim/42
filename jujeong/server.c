@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 	int readn;
 	int i= 0;
 	char buf[MAXLINE];
-	fd_set readfds, allfds;
+	fd_set readfds, allfds, fds;
 
 	struct sockaddr_in server_addr, client_addr;
 
@@ -57,8 +57,9 @@ int main(int argc, char **argv)
 	while(1)
 	{
 		allfds = readfds;
+		fds = readfds;
 		printf("Select Wait %d\n", maxfd);
-		fd_num = select(maxfd + 1 , &allfds, (fd_set *)0,
+		fd_num = select(maxfd + 1 , &allfds, 0,
 					  (fd_set *)0, NULL);
 
 		if (FD_ISSET(listen_fd, &allfds))
@@ -72,6 +73,7 @@ int main(int argc, char **argv)
 			if (client_fd > maxfd)
 				maxfd = client_fd;
 			printf("Accept OK\n");
+			sleep(10);
 			continue;
 		}
 
@@ -94,6 +96,14 @@ int main(int argc, char **argv)
 				if (--fd_num <= 0)
 					break;
 			}
+			//
+			// if (FD_ISSET(sockfd, &fds))
+			// {
+			// 	printf("fds set\n");
+			// 	// if (--fd_num <= 0)
+			// 	// 	break;
+			// }
+			//
 		}
 	}
 }
