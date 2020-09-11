@@ -6,7 +6,7 @@
 /*   By: yopark <yopark@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/06 18:46:06 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/08 12:19:07 by yopark           ###   ########.fr       */
+/*   Updated: 2020/09/11 16:47:08 by yopark           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,21 +18,24 @@
 #include <string.h>
 #include <iostream>
 
-extern fd_set read_set;
-extern fd_set write_set;
+extern fd_set read_set_copy;
+extern fd_set write_set_copy;
 
 Client::Client(int fd, struct sockaddr_in addr): _fd(fd), _addr(addr)
 {
-	fcntl(_fd, F_SETFL, O_NONBLOCK);
-	FD_SET(_fd, &read_set);
-	FD_SET(_fd, &write_set);
-	std::cout << "client constructor" << std::endl;
+	if (fcntl(_fd, F_SETFL, O_NONBLOCK) == -1)
+	{
+		std::cerr << "fcntl error" << std::endl;
+		exit(1);
+	}
+	FD_SET(_fd, &read_set_copy);
+	std::cout << "Client constructor" << " [" << htons(_addr.sin_port) << "]" << std::endl;
 }
 
 Client::~Client()
 {
 	close(_fd);
-	std::cout << "client destructor" << std::endl;
+	std::cout << "Client destructor" << " [" << htons(_addr.sin_port) << "]" << std::endl;
 }
 
 int			Client::getFd() const
