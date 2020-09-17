@@ -6,7 +6,7 @@
 /*   By: yopark <yopark@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/06 17:55:16 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/08 12:17:39 by yopark           ###   ########.fr       */
+/*   Updated: 2020/09/11 18:32:36 by yopark           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define SERVER_HPP
 
 # include "Client.hpp"
+# include "utils.hpp"
 
 # include <arpa/inet.h>
 # include <list>
@@ -24,11 +25,15 @@ class Server
 private:
 	int						_fd;
 	struct sockaddr_in		_addr;
-	
+
+	void					_parseRequest(const std::string &raw);
+
 public:
 	std::list<Client*>		clients;
+	ws::Request				request;
+	ws::Response			response;
 
-	Server(const char *ip, int port);
+	Server(int port);
 	virtual ~Server();
 
 	Server		&operator=(const Server &x);

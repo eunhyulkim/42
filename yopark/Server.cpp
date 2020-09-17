@@ -6,7 +6,7 @@
 /*   By: yopark <yopark@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/06 18:42:39 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/08 13:03:32 by yopark           ###   ########.fr       */
+/*   Updated: 2020/09/11 19:33:24 by yopark           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,53 +17,50 @@
 #include <iostream>
 #include <unistd.h>
 #include <algorithm>
+#include <sstream>
 
-extern fd_set read_set;
+extern fd_set read_set_copy;
+extern fd_set write_set_copy;
 
-Server::Server(const char *ip, int port)
+Server::Server(int port)
 {
-	if ((_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) // 소켓 생성
+	if ((_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
 	{
 		std::cerr << "socket error" << std::endl;
 		exit(1);
 	}
-	std::cout << "socket succeed" << std::endl;
 
 	int value = true;
 
-	if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(int)) == -1) // 소켓 옵션 부여
+	if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(int)) == -1)
 	{
 		std::cerr << "setsockopt error" << std::endl;
 		exit(1);
 	}
-	std::cout << "setsockopt succeed" << std::endl;
 
 	bzero(&_addr, sizeof(struct sockaddr_in));
-	_addr.sin_family = AF_INET; // AF_INET = PF_INET, IP 주소 체계를 인터넷 프로토콜뿐만 아니라 다른 프로토콜에서도 사용할 수 있도록 함
+	_addr.sin_family = AF_INET;
 	_addr.sin_port = htons(port);
-	_addr.sin_addr.s_addr = inet_addr(ip);
-	if (bind(_fd, reinterpret_cast<struct sockaddr *>(&_addr), sizeof(struct sockaddr)) == -1) // 소켓에 주소 할당
+	_addr.sin_addr.s_addr = INADDR_ANY;
+	if (bind(_fd, reinterpret_cast<struct sockaddr *>(&_addr), sizeof(struct sockaddr)) == -1)
 	{
 		std::cerr << "bind error" << std::endl;
 		exit(1);
 	}
-	std::cout << "bind succeed" << std::endl;
 
-	if (listen(_fd, 42) == -1) // 소켓 열기
+	if (listen(_fd, 42) == -1)
 	{
 		std::cerr << "listen error" << std::endl;
 		exit(1);
 	}
-	std::cout << "listen succeed" << std::endl;
 
-	if (fcntl(_fd, F_SETFL, O_NONBLOCK) == -1) // O_NONBLOCK 플래그 설정
+	if (fcntl(_fd, F_SETFL, O_NONBLOCK) == -1)
 	{
 		std::cerr << "fcntl error" << std::endl;
 		exit(1);
 	}
-	std::cout << "fcntl succeed" << std::endl;
-	FD_SET(_fd, &read_set); // read_set.fd_array[_fd] = true;
-	std::cout << "Server constructor" << std::endl;
+	FD_SET(_fd, &read_set_copy);
+	std::cout << "Server constructor" << " [" << htons(_addr.sin_port) << "]" << std::endl;
 }
 
 Server::~Server()
@@ -71,7 +68,7 @@ Server::~Server()
 	close(_fd);
 	for (std::list<Client*>::iterator it = clients.begin() ; it != clients.end() ; ++it)
 		delete *it;
-	std::cout << "Server destructor" << std::endl;
+	std::cout << "Server destructor" << " [" << htons(_addr.sin_port) << "]" << std::endl;
 }
 
 Server		&Server::operator=(const Server &x)
@@ -101,7 +98,7 @@ void		Server::putClient()
 {
 	struct sockaddr_in	client_addr;
 	socklen_t			client_addr_size = sizeof(struct sockaddr_in);
-	Client				*a;
+	Client				*cli;
 
 	bzero(&client_addr, client_addr_size);
 
@@ -112,18 +109,78 @@ void		Server::putClient()
 		std::cerr << "accept error" << std::endl;
 		exit(1);
 	}
-	std::cout << "accept succeed" << std::endl;
-	a = new Client(client_fd, client_addr);
-	clients.push_back(a);
+	cli = new Client(client_fd, client_addr);
+	clients.push_back(cli);
 }
+
+void		Server::_parseRequest(const std::string &raw)
+{
+	std::istringstream	is(raw);
+	std::string			line;
+	int					signal = 0;
+
+	std::stringstream	body;
+	
+	body.str("");
+
+	while (std::getline(is, line, '\n'))
+	{
+		if (signal == 0)
+		{
+			std::istringstream	is2(line);
+			std::string			line2;
+			int					signal2 = 0;
+
+			while (std::getline(is2, line2, ' '))
+			{
+				if (signal2 == 0) request.method = line2;
+				else if (signal2 == 1) request.uri = line2;
+				else if (signal2 == 2) request.version = line2;
+				else {};
+				signal2++;
+			}
+			signal++;
+		}
+		else if (signal == 1)
+		{
+			if (line == "")
+			{
+				signal++;
+				continue ;
+			}
+			size_t			pos = line.find(":");
+			std::string		key = line.substr(0, pos);
+			std::string		value = line.substr(pos + 1, line.length() - pos);
+
+			request.headers.insert(std::make_pair(key, value));
+		}
+		else if (signal == 2)
+		{
+			body << line;
+		}
+	}
+	request.body = body.str();
+}
+
 
 void		Server::recvRequest(Client *cli)
 {
 	char	buf[1000];
 
 	int n = recv(cli->getFd(), buf, 1000, 0);
-	buf[n] = '\0';
-	std::cout << buf << std::endl;
+	if (!n)
+		return ;
+	buf[n] = '\0';		
+	_parseRequest(std::string(buf));
+
+	std::cout << "method:" << request.method << std::endl;
+	std::cout << "uri:" << request.uri << std::endl;
+	std::cout << "version:" << request.version << std::endl;
+	for (std::map<std::string, std::string>::iterator it = request.headers.begin() ; it != request.headers.end() ; ++it)
+		std::cout << "key:" << it->first << " " << "value:" << it->second << std::endl;
+	std::cout << "body:" << request.body << std::endl;
+
+	FD_SET(cli->getFd(), &write_set_copy);
 }
 
 void		Server::sendResponse(Client *cli)
@@ -131,85 +188,5 @@ void		Server::sendResponse(Client *cli)
 	char msg[] = "HTTP/1.1 200 OK\r\nContent-Length: 25\r\n\r\n<p>welcome, 42 webserver!</p>";
 
 	send(cli->getFd(), msg, strlen(msg), 0);
+	FD_CLR(cli->getFd(), &write_set_copy);
 }
-
-
-
-
-// int		Server::readRequest(std::vector<Client*>::iterator it)
-// {
-// 	int 		bytes;
-// 	int			ret;
-// 	Client		*client = NULL;
-// 	std::string	log;
-
-// 	client = *it;
-// 	bytes = strlen(client->rBuf);
-// 	ret = read(client->fd, client->rBuf + bytes, BUFFER_SIZE - bytes);
-// 	bytes += ret;
-// 	if (ret > 0)
-// 	{
-// 		client->rBuf[bytes] = '\0';
-// 		if (strstr(client->rBuf, "\r\n\r\n") != NULL
-// 			&& client->status != Client::BODYPARSING)
-// 		{
-// 			log = "REQUEST:\n";
-// 			log += client->rBuf;
-// 			g_logger.log(log, HIGH);
-// 			client->last_date = ft::getDate();
-// 			_handler.parseRequest(*client, _conf);
-// 			client->setWriteState(true);
-// 		}
-// 		if (client->status == Client::BODYPARSING)
-// 			_handler.parseBody(*client);
-// 		return (1);
-// 	}
-// 	else
-// 	{
-// 		*it = NULL;
-// 		_clients.erase(it);
-// 		if (client)
-// 			delete client;
-// 		g_logger.log("[" + std::to_string(_port) + "] " + "connected clients: " + std::to_string(_clients.size()), LOW);
-// 		return (0);
-// 	}
-// }
-
-// int		Server::writeResponse(std::vector<Client*>::iterator it)
-// {
-// 	unsigned long	bytes;
-// 	std::string		tmp;
-// 	std::string		log;
-// 	Client			*client = NULL;
-
-// 	client = *it;
-// 	switch (client->status)
-// 	{
-// 		case Client::RESPONSE:
-// 			log = "RESPONSE:\n";
-// 			log += client->response.substr(0, 128);
-// 			g_logger.log(log, HIGH);
-// 			bytes = write(client->fd, client->response.c_str(), client->response.size());
-// 			if (bytes < client->response.size())
-// 				client->response = client->response.substr(bytes);
-// 			else
-// 			{
-// 				client->response.clear();
-// 				client->setToStandBy();
-// 			}
-// 			client->last_date = ft::getDate();
-// 			break ;
-// 		case Client::STANDBY:
-// 			if (getTimeDiff(client->last_date) >= TIMEOUT)
-// 				client->status = Client::DONE;
-// 			break ;
-// 		case Client::DONE:
-// 			delete client;
-// 			_clients.erase(it);
-// 			g_logger.log("[" + std::to_string(_port) + "] " + "connected clients: " + std::to_string(_clients.size()), LOW);
-// 			return (0);
-// 		default:
-// 			_handler.dispatcher(*client);
-// 	}
-// 	return (1);
-// }

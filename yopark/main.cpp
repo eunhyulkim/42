@@ -6,12 +6,13 @@
 /*   By: yopark <yopark@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/06 17:46:42 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/08 12:21:45 by yopark           ###   ########.fr       */
+/*   Updated: 2020/09/11 19:36:06 by yopark           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "Client.hpp"
+#include "utils.hpp"
 
 #include <iostream>
 #include <list>
@@ -21,30 +22,36 @@
 fd_set read_set;
 fd_set write_set;
 fd_set error_set;
+fd_set read_set_copy;
+fd_set write_set_copy;
+fd_set error_set_copy;
+bool live = true;
+
+
+void			kill_server(int signal)
+{
+	(void)signal;
+	std::cout << std::endl;
+	live = false;
+}
+
 
 int			main(int argc, char *argv[])
 {
-	std::list<Server*> servers;
+	signal(SIGINT, kill_server);
+
+	FD_ZERO(&read_set_copy);
+	FD_ZERO(&write_set_copy);
+	FD_ZERO(&error_set_copy);
 
 	struct timeval timeout;
 
-	timeout.tv_sec = 1;
+	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;
-	FD_ZERO(&read_set); // bzero(&read_set, sizeof(fd_set));
-	FD_ZERO(&write_set);
-	FD_ZERO(&error_set);
 
-	Server *a = new Server("127.0.0.1", 4000);
-	Server *b = new Server("127.0.0.1", 4001);
+	std::list<Server*> servers = ws::parseConfig();
 
-	servers.push_back(a);
-	servers.push_back(b);
-
-	fd_set read_set_copy = read_set;
-	fd_set write_set_copy = write_set;
-	fd_set error_set_copy = error_set;
-
-	while (true)
+	while (live)
 	{
 		read_set = read_set_copy;
 		write_set = write_set_copy;
@@ -54,7 +61,6 @@ int			main(int argc, char *argv[])
 
 		for (std::list<Server*>::iterator it = servers.begin() ; it != servers.end() ; ++it)
 			max_fd = std::max(max_fd, (*it)->getMaxfd());
-		std::cout << max_fd << std::endl;
 		int n = select(max_fd + 1, &read_set, &write_set, &error_set, &timeout);
 		if (n == -1)
 		{
@@ -63,19 +69,18 @@ int			main(int argc, char *argv[])
 		}
 		else if (n == 0)
 		{
-			std::cout << "no fds are ready for 1 second" << std::endl;
 			continue ;
 		}
-		for (std::list<Server*>::iterator it = servers.begin() ; it != servers.end() ; ++it)
+		for (std::list<Server*>::iterator sev = servers.begin() ; sev != servers.end() ; ++sev)
 		{
-			if (FD_ISSET((*it)->getFd(), &read_set)) // read_set.fd_array[it->getFd()] == true
-				(*it)->putClient();
-			for (std::list<Client*>::iterator cli = (*it)->clients.begin() ; cli != (*it)->clients.end() ; ++cli)
+			if (FD_ISSET((*sev)->getFd(), &read_set))
+				(*sev)->putClient();
+			for (std::list<Client*>::iterator cli = (*sev)->clients.begin() ; cli != (*sev)->clients.end() ; ++cli)
 			{
 				if (FD_ISSET((*cli)->getFd(), &read_set))
-					(*it)->recvRequest(*cli);
+					(*sev)->recvRequest(*cli);
 				if (FD_ISSET((*cli)->getFd(), &write_set))
-					(*it)->sendResponse(*cli);
+					(*sev)->sendResponse(*cli);
 			}
 		}
 	}
