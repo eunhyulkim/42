@@ -181,7 +181,7 @@ int main(int argc, char **argv, char **env)
 							close(fd[0]);
 							// setuid(nUserID);
 
-							if (execve("/Users/juhyeon/webserv/cgi_tester", NULL, env)) //cgi tester 경로 설정 및 환경 변수 설정
+							if (execve("cgi_tester", NULL, env)) //cgi tester 경로 설정 및 환경 변수 설정
 							{
 								/* unable to execute CGI... */
 								perror("execve");
@@ -210,12 +210,9 @@ int main(int argc, char **argv, char **env)
 						write(sockfd, "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n", 45);
 						write(fd[1], tok.c_str(), tok.length());
 						close(fd[1]);
-						std::cout << "write" << std::endl;
 						waitpid(pid, NULL, 0);
 						write(sockfd, "\0", 1);
-						std::cout << "write" << std::endl;
 						// len = read(fd[1], rea, 10000);
-						std::cout << "read" << std::endl;
 						// rea[len] = '\0';
 						// std::cout << rea << std::endl;
 						std::cout << "-------------------------------------" << std::endl;
