@@ -141,6 +141,7 @@ class Server {
     private:
         bool hasException(int client_fd);
         void closeConnection(int client_fd);
+        bool isSendable();
         void sendResponse(Response& response);
         bool hasRequest(int client_fd);
         Request recvRequest(int client_fd);
