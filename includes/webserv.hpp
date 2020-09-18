@@ -5,6 +5,6 @@
 # include <fcntl.h>
 # include <cstdlib>
 
-# define DEFAULT_CONFIG_FILE_PATH "config/default.config"
+# define DEFAULT_CONFIG_FILE_PATH "config/default.conf"
 
 #endif
