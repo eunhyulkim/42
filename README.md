@@ -4,6 +4,12 @@
 This project is being carried out by **eunhkim, jujeong, and yopark** in 42 seoul, 
 and aims to comply with all standards of the subject. This is a step not yet completed.
 
+# Wiki
+* [서브젝트 해석](https://github.com/eunhyulkim/webserv/wiki/A.-Mandatory-Part)
+* [서브젝트에 필요한 헤더 정리](https://github.com/eunhyulkim/webserv/wiki/D.-HTTP-Headers)
+* [서브젝트에 필요한 CGI 메타변수 정리](https://github.com/eunhyulkim/webserv/wiki/E.-Meta-Variables)
+* [서브젝트에 필요한 상태코드 정리](https://github.com/eunhyulkim/webserv/wiki/F.-Status-Code)
+
 # Reference
 * [CGI Environment Variable Reference](https://www.whoishostingthis.com/compare/cgi-access/variables/)  
 * [PHP Meta Variable Example](https://docstore.mik.ua/orelly/weblinux2/php/ch07_03.htm)
