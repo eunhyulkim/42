@@ -14,6 +14,7 @@ namespace ft
 			return (std::string(""));
 		while ((read_cnt = read(fd, buff, 1024)) > 0)
 			ret.append(buff, read_cnt);
+		close(fd);
 		return (ret);
 	}
 }
