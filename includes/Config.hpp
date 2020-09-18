@@ -2,7 +2,9 @@
 # define CONFIG_HPP
 
 # include <string>
+# include <vector>
 # include <iostream>
+# include "libft.hpp"
 
 class Config
 {
@@ -14,8 +16,7 @@ class Config
 		char **m_base_env;
 		Config();
 	public:
-		Config(std::string software_name, std::string software_version, \
-		std::string http_version, std::string cgi_version, char **env);
+		Config(std::string config_block, char **env);
 		Config(const Config& copy);
 		Config& operator=(const Config& obj);
 		virtual ~Config();
