@@ -12,14 +12,20 @@ class Config
 		std::string m_http_version;
 		std::string m_cgi_version;
 		char **m_base_env;
-	public:
 		Config();
-		Config(const std::string& /* parameter */, ...);
+	public:
+		Config(std::string software_name, std::string software_version, \
+		std::string http_version, std::string cgi_version, char **env);
 		Config(const Config& copy);
 		Config& operator=(const Config& obj);
 		virtual ~Config();
 
-		/* declare member function */
+		/* getter function */
+		std::string get_m_software_name() const;
+		std::string get_m_software_version() const;
+		std::string get_m_http_version() const;
+		std::string get_m_cgi_version() const;
+		char **get_m_base_env() const;
 };
 
 /* global operator overload */
