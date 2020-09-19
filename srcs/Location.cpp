@@ -21,7 +21,7 @@ Location::Location(std::string location_block)
 		this->m_allow_method = ft::stringVectorToSet(ft::split(map_block.find("allow_method")->second, ' '));
 	else {
 		this->m_allow_method.insert("GET");
-		this->m_allow_method.insert("POST");
+		this->m_allow_method.insert("HEAD");
 	}
 	this->m_index = ft::stringVectorToSet(ft::split(map_block.find("index")->second, ' '));
 	this->m_cgi = ft::stringVectorToSet(ft::split(map_block.find("cgi")->second, ' '));
