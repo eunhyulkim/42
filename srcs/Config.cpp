@@ -33,7 +33,7 @@ Config::~Config()
 	this->m_software_version.clear();
 	this->m_http_version.clear();
 	this->m_cgi_version.clear();
-	this->m_base_env = nullptr;
+	this->m_base_env = NULL;
 }
 
 /* ************************************************************************** */
