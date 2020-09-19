@@ -8,36 +8,24 @@
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-namespace {
-	std::vector<std::string>
-	split(std::string s, char c)
-	{
-		std::vector<std::string> ret;
-		size_t pos = 0;
-		while ((pos = s.find(c)) != std::string::npos)
-		{
-			if (pos != 0)
-				ret.push_back(s.substr(0, pos));
-			s.erase(0, pos + 1);
-		}
-		if (s.length() != 0)
-			ret.push_back(s);
-		return (ret);
-	}
-}
-
 Location::Location() {}
 Location::Location(std::string location_block)
 {
-	std::map<std::string, std::string> map_block = ft::stringVectorToMap(split(location_block, '\n'), ' ');
+	std::map<std::string, std::string> map_block = ft::stringVectorToMap(ft::split(location_block, '\n'), ' ');
 	this->m_root_path = map_block.find("root")->second;
-	if (map_block.find("autoindex") != map_block.end())
-	this->m_auth_basic_realm = map_block.find("auth_basic_realm")->second;
-	this->m_auth_basic_file = map_block.find("auth_basic_file")->second;
-	this->m_allow_method = ft::stringVectorToSet(split(map_block.find("allow_method")->second, ' '));
-	this->m_index = ft::stringVectorToSet(split(map_block.find("index")->second, ' '));
-	this->m_cgi = ft::stringVectorToSet(split(map_block.find("cgi")->second, ' '));
-	this->m_autoindex = map_block.find("autoindex") != map_block.end() && map_block.find("autoindex")->second == "on";
+	if (ft::hasKey(map_block, "auth_basic_realm"))
+		this->m_auth_basic_realm = map_block.find("auth_basic_realm")->second;
+	if (ft::hasKey(map_block, "auth_basic_file"))
+		this->m_auth_basic_file = map_block.find("auth_basic_file")->second;
+	if (ft::hasKey(map_block, "allow_method"))
+		this->m_allow_method = ft::stringVectorToSet(ft::split(map_block.find("allow_method")->second, ' '));
+	else {
+		this->m_allow_method.insert("GET");
+		this->m_allow_method.insert("POST");
+	}
+	this->m_index = ft::stringVectorToSet(ft::split(map_block.find("index")->second, ' '));
+	this->m_cgi = ft::stringVectorToSet(ft::split(map_block.find("cgi")->second, ' '));
+	this->m_autoindex = ft::hasKey(map_block, "autoindex") && map_block.find("autoindex")->second == "on";
 }
 
 Location::Location(const Location& copy) 
@@ -102,9 +90,9 @@ operator<<(std::ostream& out, const Location& location)
 /* ************************************************************************** */
 
 std::string Location::get_m_root_path() const { return (this->m_root_path); }
-const std::set<std::string>& Location::get_m_allow_method() const { return (this->m_allow_method); }
 std::string Location::get_m_auth_basic_realm() const { return (this->m_auth_basic_realm); }
-const std::string& Location::get_m_auth_basic_file() const { return (this->m_auth_basic_file); }
+std::string Location::get_m_auth_basic_file() const { return (this->m_auth_basic_file); }
+const std::set<std::string>& Location::get_m_allow_method() const { return (this->m_allow_method); }
 const std::set<std::string>& Location::get_m_index() const { return (this->m_index); }
 const std::set<std::string>& Location::get_m_cgi() const { return (this->m_cgi); }
 const bool& Location::get_m_autoindex() const { return (this->m_autoindex); }

@@ -26,9 +26,9 @@ class Location
 
 		/* getter function */
         std::string get_m_root_path() const;
-        const std::set<std::string>& get_m_allow_method() const;
         std::string get_m_auth_basic_realm() const;
-        const std::string& get_m_auth_basic_file() const;
+        std::string get_m_auth_basic_file() const;
+        const std::set<std::string>& get_m_allow_method() const;
         const std::set<std::string>& get_m_index() const;
         const std::set<std::string>& get_m_cgi() const;
         const bool& get_m_autoindex() const;

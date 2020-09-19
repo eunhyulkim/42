@@ -51,6 +51,23 @@ namespace ft
 			return (std::string(""));
 		while ((read_cnt = read(fd, buff, 1024)) > 0)
 			ret.append(buff, read_cnt);
+		close(fd);
+		return (ret);
+	}
+
+	std::vector<std::string>
+	split(std::string s, char c)
+	{
+		std::vector<std::string> ret;
+		size_t pos = 0;
+		while ((pos = s.find(c)) != std::string::npos)
+		{
+			if (pos != 0)
+				ret.push_back(s.substr(0, pos));
+			s.erase(0, pos + 1);
+		}
+		if (s.length() != 0)
+			ret.push_back(s);
 		return (ret);
 	}
 
@@ -58,7 +75,7 @@ namespace ft
 	stringVectorToSet(std::vector<std::string> stringVector)
 	{
 		std::set<std::string> ret;
-
+	
 		for (int i = 0; i < stringVector.size(); ++i) {
 			ret.insert(stringVector[i]);
 		}
@@ -76,8 +93,9 @@ namespace ft
 		{
 			if (stringVector[i].find(sep) == std::string::npos)
 				throw (std::invalid_argument("Not found sep in string"));
-			std::string key = stringVector[i].substr(0, stringVector[i].find(sep));
-			std::string value = stringVector[i].substr(key.size() + 1);
+			std::string data = trim(stringVector[i], " \t");
+			std::string key = data.substr(0, data.find(sep));
+			std::string value = data.substr(key.size() + 1);
 			ret.insert(std::pair<std::string, std::string>(trim(key, " \t"), trim(value, " \t")));
 		}
 		return (ret);

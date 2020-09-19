@@ -9,10 +9,15 @@
 /* ************************************************************************** */
 
 Config::Config() {}
-Config::Config(std::string software_name, std::string software_version, \
-std::string http_version, std::string cgi_version, char** env)
-: m_software_name(software_name), m_software_version(software_version), \
-m_http_version(http_version), m_cgi_version(cgi_version), m_base_env(env) {}
+Config::Config(std::string config_block, char** env)
+{
+	std::vector<std::string> strs = ft::split(config_block, '\n');
+	this->m_software_name = strs[0].substr(strs[0].find(" ") + 1);
+	this->m_software_version = strs[1].substr(strs[1].find(" ") + 1);
+	this->m_http_version = strs[2].substr(strs[2].find(" ") + 1);
+	this->m_cgi_version = strs[3].substr(strs[3].find(" ") + 1);
+	this->m_base_env = env;
+}
 
 Config::Config(const Config& copy)
 : m_software_name(copy.get_m_software_name()), m_software_version(copy.get_m_software_version()), \
@@ -28,7 +33,7 @@ Config::~Config()
 	this->m_software_version.clear();
 	this->m_http_version.clear();
 	this->m_cgi_version.clear();
-	this->m_base_env = nullptr;
+	this->m_base_env = NULL;
 }
 
 /* ************************************************************************** */
