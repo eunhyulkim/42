@@ -31,6 +31,7 @@ Location::Location(std::string location_block)
 {
 	std::map<std::string, std::string> map_block = ft::stringVectorToMap(split(location_block, '\n'), ' ');
 	this->m_root_path = map_block.find("root")->second;
+	if (map_block.find("autoindex") != map_block.end())
 	this->m_auth_basic_realm = map_block.find("auth_basic_realm")->second;
 	this->m_auth_basic_file = map_block.find("auth_basic_file")->second;
 	this->m_allow_method = ft::stringVectorToSet(split(map_block.find("allow_method")->second, ' '));
