@@ -48,7 +48,7 @@ namespace ft
 		std::string ret;
 
 		if ((fd = open(file_path.c_str(), O_RDONLY)) == -1)
-			return (std::string(""));
+			throw (std::invalid_argument("Failed open to " + file_path));
 		while ((read_cnt = read(fd, buff, 1024)) > 0)
 			ret.append(buff, read_cnt);
 		close(fd);
