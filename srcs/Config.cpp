@@ -11,11 +11,11 @@
 Config::Config() {}
 Config::Config(std::string config_block, char** env)
 {
-	std::vector<std::string> strs = ft::split(config_block, '\n');
-	this->m_software_name = strs[0].substr(strs[0].find(" ") + 1);
-	this->m_software_version = strs[1].substr(strs[1].find(" ") + 1);
-	this->m_http_version = strs[2].substr(strs[2].find(" ") + 1);
-	this->m_cgi_version = strs[3].substr(strs[3].find(" ") + 1);
+	std::map<std::string, std::string> map_block = ft::stringVectorToMap(ft::split(config_block, '\n'), ':');
+	this->m_software_name = map_block.find("SOFTWARE_NAME")->second;
+	this->m_software_version = map_block.find("SOFTWARE_VERSION")->second;
+	this->m_http_version = map_block.find("HTTP_VERSION")->second;
+	this->m_cgi_version = map_block.find("CGI_VERSION")->second;
 	this->m_base_env = env;
 }
 
