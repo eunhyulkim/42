@@ -1,4 +1,4 @@
-#include "Config.hpp"
+#include "Connection.hpp"
 
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
@@ -8,63 +8,55 @@
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-Config::Config() {}
-Config::Config(std::string config_block, char** env)
+Connection::Connection() {}
+Connection::Connection(int fd, const std::string& client_ip, int client_port)
+: m_fd(fd), m_client_ip(client_ip), m_client_port(client_port)
 {
-	std::map<std::string, std::string> map_block = ft::stringVectorToMap(ft::split(config_block, '\n'), ' ');
-	this->m_software_name = map_block.find("SOFTWARE_NAME")->second;
-	this->m_software_version = map_block.find("SOFTWARE_VERSION")->second;
-	this->m_http_version = map_block.find("HTTP_VERSION")->second;
-	this->m_cgi_version = map_block.find("CGI_VERSION")->second;
-	this->m_base_env = env;
+	this->m_last_request_at.tv_sec = 0;
+	this->m_last_request_at.tv_usec = 0;
+	set_m_last_request_at();
 }
 
-Config::Config(const Config& copy)
-: m_software_name(copy.get_m_software_name()), m_software_version(copy.get_m_software_version()), \
-m_http_version(copy.get_m_http_version()), m_cgi_version(copy.get_m_cgi_version()), m_base_env(copy.get_m_base_env()) {}
+Connection::Connection(const Connection& copy)
+: m_fd(copy.get_m_fd()), m_client_ip(copy.get_m_client_ip()), m_client_port(copy.get_m_client_port()), \
+m_last_request_at(copy.get_m_last_request_at()) {}
 
 /* ************************************************************************** */
 /* ------------------------------- DESTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-Config::~Config()
+Connection::~Connection()
 {
-	this->m_software_name.clear();
-	this->m_software_version.clear();
-	this->m_http_version.clear();
-	this->m_cgi_version.clear();
-	this->m_base_env = NULL;
+	this->m_fd = 0;
+	this->m_last_request_at.tv_sec = 0;
+	this->m_last_request_at.tv_usec = 0;
+	this->m_client_ip.clear();
+	this->m_client_port = 0;
 }
 
 /* ************************************************************************** */
 /* -------------------------------- OVERLOAD -------------------------------- */
 /* ************************************************************************** */
 
-Config&
-Config::operator=(const Config& obj)
+Connection& Connection::operator=(const Connection& obj)
 {
 	if (this == &obj)
 		return (*this);
-	this->m_software_name = obj.get_m_software_name();
-	this->m_software_version = obj.get_m_software_version();
-	this->m_http_version = obj.get_m_http_version();
-	this->m_cgi_version = obj.get_m_cgi_version();
-	this->m_base_env = obj.get_m_base_env();
+	this->m_fd = obj.get_m_fd();
+	this->m_last_request_at = obj.get_m_last_request_at();
+	this->m_client_ip = obj.get_m_client_ip();
+	this->m_client_port = obj.get_m_client_port();
 	return (*this);
 }
 
 std::ostream&
-operator<<(std::ostream& out, const Config& config)
+operator<<(std::ostream& out, const Connection& connection)
 {
-	out << "SOFTWARE_NAME: " << config.get_m_software_name() << std::endl
-	<< "SOFTWARE_VERSION: " << config.get_m_software_version() << std::endl
-	<< "HTTP_VERSION: " << config.get_m_http_version() << std::endl
-	<< "CGI_VERSION: " << config.get_m_cgi_version() << std::endl;
-	char **env = config.get_m_base_env();
-	while (*env) {
-		std::cout << *env << std::endl;
-		++env;
-	}
+	out << "FD: " << connection.get_m_fd() << std::endl
+	<< "LAST_REQUEST_SEC: " << connection.get_m_last_request_at().tv_sec << std::endl
+	<< "LAST_REQUEST_USEC: " << connection.get_m_last_request_at().tv_usec << std::endl
+	<< "CLIENT_IP: " << connection.get_m_client_ip() << std::endl
+	<< "CLIENT_PORT: " << connection.get_m_client_port() << std::endl;
 	return (out);
 }
 
@@ -72,19 +64,29 @@ operator<<(std::ostream& out, const Config& config)
 /* --------------------------------- GETTER --------------------------------- */
 /* ************************************************************************** */
 
-std::string Config::get_m_software_name() const { return (this->m_software_name); }
-std::string Config::get_m_software_version() const { return (this->m_software_version); }
-std::string Config::get_m_http_version() const { return (this->m_http_version); }
-std::string Config::get_m_cgi_version() const { return (this->m_cgi_version); }
-char **Config::get_m_base_env() const { return (this->m_base_env); }
+int Connection::get_m_fd() const { return (this->m_fd); }
+timeval Connection::get_m_last_request_at() const { return (this->m_last_request_at); }
+std::string Connection::get_m_client_ip() const { return (this->m_client_ip); }
+int Connection::get_m_client_port() const { return (this->m_client_port); }
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */
 /* ************************************************************************** */
 
+void Connection::set_m_last_request_at()
+{
+	timeval now;
+	if (gettimeofday(&now, reinterpret_cast<struct timezone *>(NULL)) == -1)
+		return (false);
+	this->m_last_request_at = now;
+	return (true);
+}
+
 /* ************************************************************************** */
 /* ------------------------------- EXCEPTION -------------------------------- */
 /* ************************************************************************** */
+
+/* exception code */
 
 /* ************************************************************************** */
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
