@@ -9,7 +9,8 @@
 /* ************************************************************************** */
 
 Location::Location() {}
-Location::Location(std::string location_block)
+Location::Location(const std::string& location_uri, std::string location_block)
+: m_uri(location_uri)
 {
 	std::map<std::string, std::string> map_block = ft::stringVectorToMap(ft::split(location_block, '\n'), ' ');
 	this->m_root_path = map_block.find("root")->second;
@@ -24,13 +25,16 @@ Location::Location(std::string location_block)
 		this->m_allow_method.insert("GET");
 		this->m_allow_method.insert("HEAD");
 	}
-	this->m_index = ft::stringVectorToSet(ft::split(map_block.find("index")->second, ' '));
-	this->m_cgi = ft::stringVectorToSet(ft::split(map_block.find("cgi")->second, ' '));
+	if (ft::hasKey(map_block, "index"))
+		this->m_index = ft::stringVectorToSet(ft::split(map_block.find("index")->second, ' '));
+	if (ft::hasKey(map_block, "cgi"))
+		this->m_cgi = ft::stringVectorToSet(ft::split(map_block.find("cgi")->second, ' '));
 	this->m_autoindex = ft::hasKey(map_block, "autoindex") && map_block.find("autoindex")->second == "on";
 }
 
 Location::Location(const Location& copy) 
 {
+	this->m_uri = copy.get_m_uri();
 	this->m_root_path = copy.get_m_root_path();
 	this->m_auth_basic_realm = copy.get_m_auth_basic_realm();
 	this->m_auth_basic_file = copy.get_m_auth_basic_file();
@@ -46,6 +50,7 @@ Location::Location(const Location& copy)
 
 Location::~Location()
 {
+	this->m_uri.clear();
 	this->m_root_path.clear();
 	this->m_auth_basic_realm.clear();
 	this->m_auth_basic_file.clear();
@@ -63,6 +68,7 @@ Location& Location::operator=(const Location& obj)
 {
 	if (this == &obj)
 		return (*this);
+	this->m_uri = obj.get_m_uri();
 	this->m_root_path = obj.get_m_root_path();
 	this->m_auth_basic_realm = obj.get_m_auth_basic_realm();
 	this->m_auth_basic_file = obj.get_m_auth_basic_file();
@@ -76,6 +82,7 @@ Location& Location::operator=(const Location& obj)
 std::ostream&
 operator<<(std::ostream& out, const Location& location)
 {
+	out << "URI: " << location.get_m_uri() << std::endl;
 	out << "ROOT_PATH: " << location.get_m_root_path() << std::endl;
 	out << "AUTH_BASIC_REALM: " << location.get_m_auth_basic_realm() << std::endl;
 	out << "AUTH_BASIC_FILE: " << location.get_m_auth_basic_file() << std::endl;
@@ -90,6 +97,7 @@ operator<<(std::ostream& out, const Location& location)
 /* --------------------------------- GETTER --------------------------------- */
 /* ************************************************************************** */
 
+std::string Location::get_m_uri() const { return (this->m_uri); }
 std::string Location::get_m_root_path() const { return (this->m_root_path); }
 std::string Location::get_m_auth_basic_realm() const { return (this->m_auth_basic_realm); }
 std::string Location::get_m_auth_basic_file() const { return (this->m_auth_basic_file); }

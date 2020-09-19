@@ -10,6 +10,7 @@
 class Location
 {
 	private:
+        std::string m_uri;
 		std::string m_root_path;
 		std::string m_auth_basic_realm;
         std::string m_auth_basic_file;
@@ -19,12 +20,13 @@ class Location
         bool m_autoindex;
 		Location();
 	public:
-		Location(std::string location_block);
+		Location(const std::string& location_uri, std::string location_block);
 		Location(const Location& copy);
 		Location& operator=(const Location& obj);
 		virtual ~Location();
 
 		/* getter function */
+        std::string get_m_uri() const;
         std::string get_m_root_path() const;
         std::string get_m_auth_basic_realm() const;
         std::string get_m_auth_basic_file() const;
