@@ -6,7 +6,7 @@
 /*   By: yopark <yopark@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/19 20:57:07 by yopark           ###   ########.fr       */
+/*   Updated: 2020/09/20 13:08:21 by yopark           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,6 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 	else if (parsed[0] == "OPTIONS") m_method = OPTIONS;
 	else if (parsed[0] == "TRACE") m_method = TRACE;
 	else throw 400;
-	if (m_location->get_m_allow_method().find(parsed[0]) == m_location->get_m_allow_method().end())
-		throw 405;
 
 	if (parsed[1].length() > m_server->get_m_request_uri_limit_size())
 		throw 414;
@@ -48,24 +46,35 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 	int max_uri_match = 0;
 	for (it = m_server->get_m_locations()->begin() ; it != m_server->get_m_locations()->end() ; ++it)
 	{
-		if (std::strncmp((*it)->get_m_uri(), m_uri, (*it)->get_m_uri().length()) == 0 && (*it)->get_m_uri().length() > max_uri_match)
+		if (std::strncmp(it->get_m_uri(), m_uri, it->get_m_uri().length()) == 0 && it->get_m_uri().length() > max_uri_match)
 		{
-			m_location = it;
-			max_uri_match = (*it)->get_m_uri().length();
+			m_location = &(*it);
+			max_uri_match = it->get_m_uri().length();
 		}
 	}
 	if (!max_uri_match)
-		throw 404;	
-	std::string path(m_location->get_m_root_path() + m_uri);
+		throw 404;
+	if (m_location->get_m_allow_method().find(parsed[0]) == m_location->get_m_allow_method().end())
+		throw 405;
+
+	std::string root = m_location->get_m_root_path();
+	if (root[root.size() - 1] == '/' && m_uri[0] == '/')
+		m_uri.erase(m_uri.begin());
+	else if (root[root.size() - 1] != '/' && m_uri[0] != '/')
+		m_uri.insert(0, 1, '/');
+	m_path_translated = root + m_uri;
 	struct stat buf;
-	stat(path.c_str(), &buf);
+	stat(m_path_translated.c_str(), &buf);
 	m_uri_type = FILE;
 	if (S_ISREG(buf.st_mode))
 	{
 		for (std::set<std::string>::const_iterator it = m_location->get_m_cgi().begin() ; it != m_location->get_m_cgi().end() ; ++it)
 		{
-			if (path.find(*it, path.length() - (*it).length()) != std::string::npos)
+			if (m_path_translated.find(*it, m_path_translated.length() - (*it).length()) != std::string::npos)
+			{
 				m_uri_type = CGI_PROGRAM;
+				break ;
+			}
 		}
 	}
 	else if (S_ISDIR(buf.st_mode)) m_uri_type = DIRECTORY;
@@ -158,6 +167,7 @@ const std::map<std::string, std::string> &Request::get_m_headers() const { retur
 Request::TransferType	Request::get_m_transfer_type() const { return (m_transfer_type); }
 const std::string		&Request::get_m_content() const { return (m_content); }
 const std::string		&Request::get_m_origin() const { return (m_origin); }
+const std::string		&Request::get_m_path_translated() const { return (m_path_translated); }
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */
@@ -165,11 +175,17 @@ const std::string		&Request::get_m_origin() const { return (m_origin); }
 
 void Request::add_content(std::string added_content)
 {
+	if (m_content.size() + added_content.size() > m_server->get_m_limit_client_body_size())
+		throw 413;
 	m_content.append(added_content);
 }
 
 void Request::add_origin(std::string added_origin)
 {
+	if (m_method != TRACE)
+		return ;
+	if (m_origin.size() + added_origin.size() > m_server->get_m_limit_client_body_size())
+		throw 413;
 	m_origin.append(added_origin);
 }
 

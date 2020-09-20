@@ -6,7 +6,7 @@
 /*   By: yopark <yopark@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:22 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/19 20:52:57 by yopark           ###   ########.fr       */
+/*   Updated: 2020/09/20 12:52:27 by yopark           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ private:
 	std::string m_content;
 	std::string m_origin;
 
+	std::string m_path_translated;
+
 	Request();
 
 public:
@@ -74,6 +76,7 @@ public:
 	TransferType get_m_transfer_type() const;
 	const std::string &get_m_content() const;
 	const std::string &get_m_origin() const;
+	const std::string &get_m_path_translated() const;
 };
 
 /* global operator overload */
