@@ -15,7 +15,7 @@ class Response
 		Connection* m_connection;
 		int m_status_code;
 		std::string m_status_description;
-		std::map<std::string, std::string> m_header;
+		std::map<std::string, std::string> m_headers;
 		TransferType m_trasfer_type;
 		std::string m_content;
 		Response();
@@ -29,20 +29,16 @@ class Response
 		Connection *get_m_connection() const;
 		int get_m_status_code() const;
 		std::string get_m_status_description() const;
-		std::map<std::string, std::string> get_m_header() const;
+		std::map<std::string, std::string> get_m_headers() const;
 		TransferType get_m_transfer_type() const;
 		std::string get_m_content() const;
 		void addHeader(std::string header_key, std::string header_value);
 		const char* c_str();
-		// std::string get_m_software_name() const;
-		// std::string get_m_software_version() const;
-		// std::string get_m_http_version() const;
-		// std::string get_m_cgi_version() const;
-		// char **get_m_base_env() const;
 };
 
 /* global operator overload */
 std::ostream&	operator<<(std::ostream& out, const Response& Response);
+
 std::map<int, std::string> make_status ();
 
 #endif

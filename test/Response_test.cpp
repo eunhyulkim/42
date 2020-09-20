@@ -10,8 +10,7 @@ int	main(void)
 	test.addHeader("one", "two");
 	// std::cout << test;
 
-	// test.addHeader("one", "two");
 	test.addHeader("Transfer-encoding", "chunked");
 	std::cout << test.c_str();
-	std::cout << test;
+	// std::cout << test;
 }

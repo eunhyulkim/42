@@ -10,7 +10,10 @@ std::map<int, std::string> Response::status = make_status();
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-Response::Response() {}
+Response::Response()
+{
+
+}
 
 Response::Response(Connection *connection, int status_code, std::string body)
 {
@@ -19,7 +22,6 @@ Response::Response(Connection *connection, int status_code, std::string body)
 	this->m_status_description = Response::status[status_code];
 	this->m_content = body;
 	this->m_trasfer_type = GENERAL;
-	this->m_header.clear();
 }
 
 Response::Response(const Response& copy)
@@ -29,7 +31,7 @@ Response::Response(const Response& copy)
 	this->m_status_description = copy.get_m_status_description();
 	this->m_trasfer_type = copy.get_m_transfer_type();
 	this->m_content = copy.get_m_content();
-	this->m_header = copy.get_m_header();
+	this->m_headers = copy.get_m_headers();
 }
 
 /* ************************************************************************** */
@@ -54,7 +56,7 @@ Response::operator=(const Response& obj)
 	this->m_status_description = obj.get_m_status_description();
 	this->m_trasfer_type = obj.get_m_transfer_type();
 	this->m_content = obj.get_m_content();
-	this->m_header = obj.get_m_header();
+	this->m_headers = obj.get_m_headers();
 	return (*this);
 }
 
@@ -62,14 +64,14 @@ std::ostream&
 operator<<(std::ostream& out, const Response& Response)
 {
 	// int len = 0;
-	// std::map<std::string, std::string>::iterator it = Response.get_m_header().begin();
+	// std::map<std::string, std::string>::iterator it = Response.get_m_headers().begin();
 
 	out << "STATUS_CODE: " << Response.get_m_status_code() << std::endl
 	<< "STATUS_DESCRIPTION: " << Response.get_m_status_description() << std::endl
 	<< "TRANSFER_TYPE: " << Response.get_m_transfer_type() << std::endl
 	<< "CONTENT: " << Response.get_m_content() << std::endl;
-	// std::cout << "size :" << Response.get_m_header().size() << std::endl;
-	// for (; len < Response.get_m_header().size(); ++len)
+	// std::cout << "size :" << Response.get_m_headers().size() << std::endl;
+	// for (; len < Response.get_m_headers().size(); ++len)
 	// {
 	// 	out << "HEADER KEY: " << it->first << " VALUE : " << it->second << std::endl;
 	// 	++it;
@@ -84,7 +86,7 @@ operator<<(std::ostream& out, const Response& Response)
 Connection *Response::get_m_connection() const { return (this->m_connection); }
 int Response::get_m_status_code() const { return (this->m_status_code); }
 std::string Response::get_m_status_description() const { return (this->m_status_description); }
-std::map<std::string, std::string> Response::get_m_header() const { return (this->m_header); }
+std::map<std::string, std::string> Response::get_m_headers() const { return (this->m_headers); }
 Response::TransferType Response::get_m_transfer_type() const { return (this->m_trasfer_type); }
 std::string Response::get_m_content() const { return (this->m_content); }
 
@@ -102,7 +104,7 @@ std::string Response::get_m_content() const { return (this->m_content); }
 
 void Response::addHeader(std::string header_key, std::string header_value)
 {
-	this->m_header[header_key] = header_value;
+	this->m_headers[header_key] = header_value;
 	if (header_key == "Transfer-Encoding" && header_value == "chunked")
 		this->m_trasfer_type = CHUNKED;
 }
@@ -110,10 +112,10 @@ void Response::addHeader(std::string header_key, std::string header_value)
 const char *Response::c_str()
 {
 	std::string message;
-	std::map<std::string, std::string>::iterator it = this->m_header.begin();
+	std::map<std::string, std::string>::iterator it = this->m_headers.begin();
 
 	message = "HTTP/1.1 " + std::to_string(this->m_status_code) + " " + this->m_status_description + "\r\n";
-	for (; it != this->m_header.end(); ++it)
+	for (; it != this->m_headers.end(); ++it)
 	{
 		message += it->first + ": " + it->second + "\r\n";
 	}
