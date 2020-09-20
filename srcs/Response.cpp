@@ -63,19 +63,18 @@ Response::operator=(const Response& obj)
 std::ostream&
 operator<<(std::ostream& out, const Response& Response)
 {
-	// int len = 0;
-	// std::map<std::string, std::string>::iterator it = Response.get_m_headers().begin();
-
+	int len = 0;
+	std::map<std::string, std::string>::const_iterator it = Response.get_m_headers().begin();
 	out << "STATUS_CODE: " << Response.get_m_status_code() << std::endl
 	<< "STATUS_DESCRIPTION: " << Response.get_m_status_description() << std::endl
 	<< "TRANSFER_TYPE: " << Response.get_m_transfer_type() << std::endl
 	<< "CONTENT: " << Response.get_m_content() << std::endl;
-	// std::cout << "size :" << Response.get_m_headers().size() << std::endl;
-	// for (; len < Response.get_m_headers().size(); ++len)
-	// {
-	// 	out << "HEADER KEY: " << it->first << " VALUE : " << it->second << std::endl;
-	// 	++it;
-	// }
+	std::cout << "size :" << Response.get_m_headers().size() << std::endl;
+	for (; len < Response.get_m_headers().size(); ++len)
+	{
+		out << "HEADER KEY: " << it->first << " VALUE : " << it->second << std::endl;
+		++it;
+	}
 	return (out);
 }
 
@@ -86,7 +85,7 @@ operator<<(std::ostream& out, const Response& Response)
 Connection *Response::get_m_connection() const { return (this->m_connection); }
 int Response::get_m_status_code() const { return (this->m_status_code); }
 std::string Response::get_m_status_description() const { return (this->m_status_description); }
-std::map<std::string, std::string> Response::get_m_headers() const { return (this->m_headers); }
+const std::map<std::string, std::string>& Response::get_m_headers() const { return (this->m_headers); }
 Response::TransferType Response::get_m_transfer_type() const { return (this->m_trasfer_type); }
 std::string Response::get_m_content() const { return (this->m_content); }
 

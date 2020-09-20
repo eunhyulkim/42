@@ -3,6 +3,7 @@
 
 # include <string>
 # include <vector>
+# include <map>
 # include <iostream>
 # include "libft.hpp"
 # include "Connection.hpp"
@@ -29,7 +30,7 @@ class Response
 		Connection *get_m_connection() const;
 		int get_m_status_code() const;
 		std::string get_m_status_description() const;
-		std::map<std::string, std::string> get_m_headers() const;
+		const std::map<std::string, std::string>& get_m_headers() const;
 		TransferType get_m_transfer_type() const;
 		std::string get_m_content() const;
 		void addHeader(std::string header_key, std::string header_value);
