@@ -111,7 +111,7 @@ namespace {
 		return (ret);
 	}
 	
-	bool isValidPort(std::string s) { return ((std::atoi(s.c_str()) >= 0) && (std::atoi(s.c_str()) <= 255)); }
+	bool isValidPort(std::string s) { return ((std::stoi(s) >= 0) && (std::stoi(s) <= 255)); }
 	bool isValidCgi(std::string data) { return (!data.empty() && data[0] == '.'); }
 }
 
@@ -159,13 +159,13 @@ ServerManager::isValidConfigBlock(std::string& config_block)
 		if (!ft::hasKey(map_block, key[i]))
 			return (false);
 	}
-	if (map_block.find(key[0])->second.empty())
+	if (map_block[key[0]].empty())
 		return (false);
-	if (map_block.find(key[1])->second.empty())
+	if (map_block[key[1]].empty())
 		return (false);
-	if (map_block.find(key[2])->second != "1.1")
+	if (map_block[key[2]] != "1.1")
 		return (false);
-	if (map_block.find(key[3])->second != "1.1")
+	if (map_block[key[3]] != "1.1")
 		return (false);
 	return (true);
 }
@@ -251,12 +251,12 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 			return (false);
 	} 
 
-	std::vector<std::string> location = ft::split(ft::rtrim(map_block.find(key[0])->second, " \t{"), ' ');
+	std::vector<std::string> location = ft::split(ft::rtrim(map_block[key[0]], " \t{"), ' ');
 	if (location.size() != 1 || location[0].empty() || location[0][0] != '/')
 		return (false);
 	
 	struct stat buf;
-	std::string root = map_block.find(key[1])->second;
+	std::string root = map_block[key[1]];
 	stat(root.c_str(), &buf);
 	if (!S_ISDIR(buf.st_mode) || root.empty() || (root != "/" && root.size() > 1 && root[root.size() - 1] == '/'))
 		return (false);
@@ -266,14 +266,14 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 		return (false);
 	if (ft::hasKey(map_block, key[4]))
 	{
-		stat(map_block.find(key[4])->second.c_str(), &buf);
+		stat(map_block[key[4]].c_str(), &buf);
 		if (!S_ISREG(buf.st_mode))
 			return (false);
 	}
 
 	if (ft::hasKey(map_block, key[2]))
 	{
-		std::set<std::string> data_set = ft::stringVectorToSet(ft::split(map_block.find(key[2])->second, ' '));
+		std::set<std::string> data_set = ft::stringVectorToSet(ft::split(map_block[key[2]], ' '));
 		std::string method[] = {"GET", "POST", "HEAD", "PUT", "DELETE", "TRACE", "OPTIONS"};
 		std::set<std::string> method_set(method, method + sizeof(method) / sizeof(method[0]));
 		for (std::set<std::string>::iterator it = data_set.begin(); it != data_set.end(); ++it) {
@@ -283,13 +283,13 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 	}
 
 	if (ft::hasKey(map_block, key[6])) {
-		std::set<std::string> cgi_set = ft::stringVectorToSet(ft::split(map_block.find(key[6])->second, ' '));
+		std::set<std::string> cgi_set = ft::stringVectorToSet(ft::split(map_block[key[6]], ' '));
 		if (!std::all_of(cgi_set.begin(), cgi_set.end(), isValidCgi))
 			return (false);
 	}
 	
 	if (ft::hasKey(map_block, key[7])) {
-		std::string autoindex = map_block.find(key[7])->second;
+		std::string autoindex = map_block[key[7]];
 		if (autoindex != "on" && autoindex != "off")
 			return (false);
 	}
@@ -455,7 +455,7 @@ ServerManager::createServer(const std::string& configuration_file_path)
 				throw (std::invalid_argument("Location block(" + std::to_string(i) \
 				+ "-" + std::to_string(j) + ") is not valid."));
 		}
-		m_servers.push_back(Server(server_block, location_blocks));
+		m_servers.push_back(Server(this, server_block, location_blocks, &this->m_config));
 	}
 }
 

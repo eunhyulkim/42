@@ -41,10 +41,6 @@ class ServerManager
         bool isValidConfigBlock(std::string& config_block);
         bool isValidServerBlock(std::string& server_block);
         bool isValidLocationBlock(std::string& location_block);
-        void parseConfigBlock(std::string& config_block);
-        void parseServerBlock(std::string& server_block);
-        void parseLocationBlock(std::string& location_block);
-		bool parse(std::string config_string);
 	public:
 		ServerManager();
 		ServerManager(const ServerManager& copy);
