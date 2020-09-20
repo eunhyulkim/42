@@ -2,6 +2,16 @@
 
 namespace ft
 {
+	void
+	bzero(void *data, size_t len)
+	{
+		unsigned char *str;
+
+		str = (unsigned char *)data;
+		while (len > 0)
+			str[--len] = 0;
+	}
+
 	std::string
 	ltrim(std::string s, std::string seps)
 	{
@@ -104,4 +114,16 @@ namespace ft
 		}
 		return (ret);
 	}
+
+	std::string inet_nota(unsigned int address)
+	{
+		std::string ret;
+
+		ret = std::to_string(address & 0xFF) + ".";
+		ret.append(std::to_string((address >> 8) & 0xFF) + ".");
+		ret.append(std::to_string((address >> 16) & 0xFF) + ".");
+		ret.append(std::to_string((address >> 24) & 0xFF));
+		return (ret);
+	}
+
 }

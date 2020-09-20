@@ -3,6 +3,9 @@
 
 # include <string>
 # include <iostream>
+# include <arpa/inet.h>
+# include <sys/socket.h>
+# include "libft.hpp"
 
 class Server
 {
@@ -47,6 +50,10 @@ class Server
 		void set_m_default_error_page(std::string default_error_page);
 
 		/* declare member function */
+		bool hasException(int client_fd);
+		void closeConnection(int client_fd);
+		bool hasNewConnection();
+		void acceptNewConnection();
 };
 
 /* global operator overload */

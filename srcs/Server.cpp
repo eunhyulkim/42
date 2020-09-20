@@ -122,3 +122,43 @@ void Server::set_m_default_error_page(std::string default_error_page) { this->m_
 /* ************************************************************************** */
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
 /* ************************************************************************** */
+
+bool
+Server::hasException(int client_fd) {
+	return (m_manager->fdIsset(client_fd, ServerManager::SetType::ERROR_COPY_SET))
+}
+
+void
+Server::closeConnection(int client_fd)
+{
+	close(client_fd);
+	m_manager->fdClear(client_fd, ServerManager::SetType::READ_SET);
+	m_connections.erase(client_fd);
+}
+
+bool
+Server::hasNewConnection()
+{
+	return (m_manager->fdIsset(m_fd, ServerManager::SetType::READ_COPY_SET))
+}
+
+void
+Server::acceptNewConnection()
+{
+	struct sockaddr_in	client_addr;
+	socklen_t			client_addr_size = sizeof(struct sockaddr_in);
+	int 				client_fd;
+	std::string			client_ip;
+	int					client_port;
+
+	ft::bzero(&client_addr, client_addr_size);
+
+	if ((client_fd = accept(m_fd, (struct sockaddr *)&client_addr, &client_addr_size)) == -1)
+		return ;
+	client_ip = ft::inet_ntoa(client_addr.sin_addr.s_addr);
+	client_port = static_cast<int>(client_addr.sin_port);
+	m_connections[client_fd] = Connection(client_fd, client_ip, client_port);
+	m_manager->fdSet(client_fd, ServerManager::SetType::READ_SET);
+	return ;
+}
+
