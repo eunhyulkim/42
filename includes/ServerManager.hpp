@@ -69,9 +69,9 @@ class ServerManager
 
 		/* declare member function */
 		void printFdSets(); // function for develop
-		void CreateServer();
-		void RunServer();
-		void ExitServer();
+		void createServer();
+		void runServer();
+		void exitServer();
 };
 
 #endif
