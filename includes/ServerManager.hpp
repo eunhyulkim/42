@@ -69,9 +69,9 @@ class ServerManager
 
 		/* declare member function */
 		void printFdSets(); // function for develop
-		void createServer();
+		void createServer(const std::string& configuration_file_path);
 		void runServer();
-		void exitServer();
+		void exitServer(const std::string& error_msg);
 };
 
 #endif
