@@ -122,3 +122,47 @@ void Server::set_m_default_error_page(std::string default_error_page) { this->m_
 /* ************************************************************************** */
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
 /* ************************************************************************** */
+
+void
+Server::run()
+{
+	int response_count = 0;
+	while (!m_responses.empty() || response_count < SEND_RESPONSE_AT_ONCE)
+	{
+		++response_count;
+		if (isSendable(m_responses.front().get_m_client_fd()))
+			sendResponse();
+		m_responses.pop();
+	}
+
+	std::map<int, Connection>::iterator it = m_connections.begin();
+	for (; it != m_connections.end(); ++it)
+	{
+		Request request;
+		int fd = it->first;
+		
+		if (hasException(fd)) {
+			closeConnection(fd);
+			continue ;
+		}
+		if (hasRequest(fd))	{
+			try {
+				request = recvRequest(fd);
+			} catch (int status_code) {
+				createResponse(status_code);
+				continue ;
+			} catch (std::exception& e) {
+				createResponse(500);
+				continue ;
+			}
+			solveRequest(request);
+		}
+	}
+
+	if (hasNewConnection())
+	{
+		if (m_connections.size() >= (1024 / m_manager->m_servers.count()))
+			closeConnection(m_connections.begin()->first);
+		acceptNewConnection();
+	}
+}

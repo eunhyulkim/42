@@ -3,6 +3,13 @@
 
 # include <string>
 # include <iostream>
+# include <queue>
+# include "Location.hpp"
+# include "Connection.hpp"
+# include "Request.hpp"
+# include "ServerManager.hpp"
+
+# define SEND_RESPONSE_AT_ONCE 5
 
 class Server
 {
@@ -47,6 +54,7 @@ class Server
 		void set_m_default_error_page(std::string default_error_page);
 
 		/* declare member function */
+		void run();
 };
 
 /* global operator overload */
