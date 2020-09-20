@@ -68,7 +68,10 @@ class ServerManager
 		void fdCopy(SetType fdset);
 
 		/* declare member function */
-		void printFdSets();
+		void printFdSets(); // function for develop
+		void CreateServer();
+		void RunServer();
+		void ExitServer();
 };
 
 #endif
