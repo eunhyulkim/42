@@ -8,7 +8,10 @@
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-Config::Config() {}
+Config::Config() {
+	this->m_base_env = NULL;
+}
+
 Config::Config(std::string config_block, char** env)
 {
 	std::map<std::string, std::string> map_block = ft::stringVectorToMap(ft::split(config_block, '\n'), ' ');

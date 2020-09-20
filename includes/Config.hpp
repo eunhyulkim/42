@@ -15,8 +15,8 @@ class Config
 		std::string m_http_version;
 		std::string m_cgi_version;
 		char **m_base_env;
-		Config();
 	public:
+		Config();
 		Config(std::string config_block, char **env);
 		Config(const Config& copy);
 		Config& operator=(const Config& obj);
