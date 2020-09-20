@@ -4,17 +4,27 @@
 # include <string>
 # include <iostream>
 # include <vector>
+# include <set>
 # include <sys/select.h>
 # include <sys/types.h>
+# include <sys/stat.h>
 # include <unistd.h>
+# include <fcntl.h>
+# include <algorithm>
 # include "Config.hpp"
+
+# define REQUEST_URI_LIMIT_SIZE_MIN 64
+# define REQUEST_URI_LIMIT_SIZE_MAX 8192
+# define REQUEST_HEADER_LIMIT_SIZE_MIN 64
+# define REQUEST_HEADER_LIMIT_SIZE_MAX 8192
+# define LIMIT_CLIENT_BODY_SIZE_MAX 8192
 
 /* 테스트를 위한 임시 클래스 */
 class Server {};
 
 class ServerManager
 {
-	private:
+	public:
 		std::vector<Server> m_servers;
         Config m_config;
         int m_max_fd;
@@ -24,7 +34,17 @@ class ServerManager
         fd_set m_write_copy_set;
         fd_set m_error_set;
         fd_set m_error_copy_set;
-
+		
+		/* functions for parse configuration files */
+		bool splitConfigString(std::string config_string, std::string& config_block, std::vector<std::string>& server_strings);
+        bool splitServerString(std::string server_string, std::string& server_block, std::vector<std::string>& location_blocks);
+        bool isValidConfigBlock(std::string& config_block);
+        bool isValidServerBlock(std::string& server_block);
+        bool isValidLocationBlock(std::string& location_block);
+        void parseConfigBlock(std::string& config_block);
+        void parseServerBlock(std::string& server_block);
+        void parseLocationBlock(std::string& location_block);
+		bool parse(std::string config_string);
 	public:
 		ServerManager();
 		ServerManager(const ServerManager& copy);
@@ -46,7 +66,7 @@ class ServerManager
 		void fdClear(int fd, SetType fdset);
 		bool fdIsset(int fd, SetType fdset);
 		void fdCopy(SetType fdset);
-		
+
 		/* declare member function */
 		void printFdSets();
 };

@@ -93,9 +93,13 @@ namespace ft
 		{
 			if (stringVector[i].find(sep) == std::string::npos)
 				throw (std::invalid_argument("Not found sep in string"));
+			if (stringVector[i].find(sep) == 0)
+				throw (std::invalid_argument("Not found key in string"));
 			std::string data = trim(stringVector[i], " \t");
 			std::string key = data.substr(0, data.find(sep));
-			std::string value = data.substr(key.size() + 1);
+			std::string value;
+			if (stringVector[i].find(sep) < stringVector[i].size() - 1)
+				value = data.substr(key.size() + 1);
 			ret.insert(std::pair<std::string, std::string>(trim(key, " \t"), trim(value, " \t")));
 		}
 		return (ret);
