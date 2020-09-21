@@ -495,13 +495,15 @@ ServerManager::runServer()
 		}
 		for (std::vector<Server>::iterator it = m_servers.begin() ; it != m_servers.end() ; ++it)
 		{
-			Server server = *it;
-			server.run();
-			for (std::map<int, Connection>::const_iterator it2 = server.get_m_connections().begin() ; it2 != server.get_m_connections().end() ; ++it2)
+			it->run();
+
+			std::map<int, Connection>::const_iterator it2 = it->get_m_connections().begin();
+			while (it2 != it->get_m_connections().end())
 			{
-				Connection connection = it2->second;
-				if (connection.isOverTime())
-					server.closeConnection(it2->first);
+				int fd = it2->first;
+				
+				if (it2->second.isOverTime())
+					it->closeConnection(fd);
 			}
 		}
 	}
