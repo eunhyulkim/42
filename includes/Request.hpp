@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:22 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/21 18:24:41 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/21 21:00:07 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <sys/time.h>
 # include <sys/stat.h>
 # include <cstring>
-
+# include "Server.hpp"
 # include "libft.hpp"
 
 # define REQUEST_TIMEOVER 10

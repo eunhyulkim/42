@@ -114,18 +114,4 @@ namespace ft
 		}
 		return (ret);
 	}
-
-	std::string
-	setToString(std::set<std::string> string_set, std::string sep)
-	{
-		std::string ret;
-		for (std::set<std::string>::iterator it = string_set.begin(); it != string_set.end(); ++it)
-		{
-			ret.append(*it);
-			if (++it != string_set.end())
-				ret.append(sep);
-			--it;
-		}
-		return (ret);
-	}
 }
