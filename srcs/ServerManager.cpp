@@ -480,11 +480,11 @@ ServerManager::runServer()
 	g_live = true;
 	while (g_live)
 	{
-		this->m_read_set = this->m_read_copy_set;
-		this->m_write_set = this->m_write_copy_set;
-		this->m_error_set = this->m_error_copy_set;
+		this->m_read_copy_set = this->m_read_set;
+		this->m_write_copy_set = this->m_write_set;
+		this->m_error_copy_set = this->m_error_set;
 
-		int n = select(this->m_max_fd, &this->m_read_set, &this->m_write_set, &this->m_error_set, &timeout);
+		int n = select(this->m_max_fd, &this->m_read_copy_set, &this->m_write_copy_set, &this->m_error_copy_set, &timeout);
 		if (n == -1)
 		{
 			throw std::runtime_error("select error");
