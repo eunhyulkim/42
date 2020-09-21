@@ -10,6 +10,7 @@
 # include <sys/types.h>
 # include <netinet/in.h>
 # include <arpa/inet.h>
+# include "libft.hpp"
 # include "Location.hpp"
 # include "ServerManager.hpp"
 # include "Connection.hpp"
@@ -46,6 +47,7 @@ class Server
 		std::queue<Response> m_responses;
 	private:
 		void base64_decode(std::string data, std::string& key, std::string& value);
+		std::string inet_ntoa(unsigned int address);
 	public:
 		Server();
 		Server(ServerManager* server_manager, const std::string& server_block, std::vector<std::string>& location_blocks, Config* config);
@@ -79,9 +81,9 @@ class Server
 
 		/* declare member function */
 		bool hasException(int client_fd);
-		int closeConnection(int client_fd);
+		void closeConnection(int client_fd);
 		bool hasNewConnection();
-		int acceptNewConnection();
+		void acceptNewConnection();
 		void run();
 
 		// int isSendable(int client_fd);
@@ -90,7 +92,7 @@ class Server
 		// bool hasRequest(int client_fd);
 		// Request recvRequest(int client_fd);
 
-		// void solveRequest(const Request& request);
+		void solveRequest(const Request& request);		
 		// void executeAutoindex(const Request& request);
 		// int executeGet(Request request);
 		// int executeHead(Request request);
@@ -102,7 +104,7 @@ class Server
 
 		// char** createCGIEnv(Request request);
 		// int executeCGI(Request request);
-
+		
 		// int createResponse(int status);
 };
 

@@ -197,7 +197,7 @@ ServerManager::isValidServerBlock(std::string& server_block)
 		return (false);
 
 	std::vector<std::string> ip_tokens = ft::split(map_block.find(key[0])->second, '.');
-	if (port_tokens.size() != 4 || !std::all_of(ip_tokens.begin(), ip_tokens.end(), isValidIpByte))
+	if (ip_tokens.size() != 4 || !std::all_of(ip_tokens.begin(), ip_tokens.end(), isValidIpByte))
 		return (false);
 
 	int port = std::atoi(map_block.find(key[1])->second.c_str());
