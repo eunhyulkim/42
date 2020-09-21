@@ -2,6 +2,16 @@
 
 namespace ft
 {
+	void
+	bzero(void *data, size_t len)
+	{
+		unsigned char *str;
+
+		str = (unsigned char *)data;
+		while (len > 0)
+			str[--len] = 0;
+	}
+
 	std::string
 	ltrim(std::string s, std::string seps)
 	{
@@ -38,7 +48,7 @@ namespace ft
 	trim(std::string s, std::string seps) {
 		return (rtrim(ltrim(s, seps), seps));
 	}
-bzero();
+
 	std::string
 	getStringFromFile(std::string file_path)
 	{
@@ -75,7 +85,7 @@ bzero();
 	stringVectorToSet(std::vector<std::string> stringVector)
 	{
 		std::set<std::string> ret;
-	
+
 		for (int i = 0; i < stringVector.size(); ++i) {
 			ret.insert(stringVector[i]);
 		}
@@ -101,20 +111,6 @@ bzero();
 			if (stringVector[i].find(sep) < stringVector[i].size() - 1)
 				value = data.substr(key.size() + 1);
 			ret.insert(std::pair<std::string, std::string>(trim(key, " \t"), trim(value, " \t")));
-		}
-		return (ret);
-	}
-
-	std::string
-	setToString(std::set<std::string> string_set, std::string sep)
-	{
-		std::string ret;
-		for (std::set<std::string>::iterator it = string_set.begin(); it != string_set.end(); ++it)
-		{
-			ret.append(*it);
-			if (++it != string_set.end())
-				ret.append(sep);
-			--it;
 		}
 		return (ret);
 	}

@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:22 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/21 15:57:48 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/21 21:34:26 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <sys/time.h>
 # include <sys/stat.h>
 # include <cstring>
-
+# include "Server.hpp"
 # include "libft.hpp"
 
 # define REQUEST_TIMEOVER 10
@@ -48,12 +48,10 @@ private:
 	TransferType m_transfer_type;
 	std::string m_content;
 	std::string m_origin;
-
 	std::string m_path_translated;
 
-	Request();
-
 public:
+	Request();
 	Request(Connection *conneciton, Server *server, std::string start_line);
 	Request(const Request &x);
 	Request &operator=(const Request &x);	

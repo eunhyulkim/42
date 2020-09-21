@@ -41,6 +41,7 @@ int test_main(int ac, char *av[], char **env)
             std::cout << "PHASE 4-1" << std::endl;
             if (!manager.splitServerString(server_strings[i], server_block, location_blocks))
                 return (3);
+
             std::cout << "PHASE 4-2" << std::endl;
             if (!manager.isValidServerBlock(server_block))
                 return (4);
@@ -50,11 +51,6 @@ int test_main(int ac, char *av[], char **env)
                     return (5);
             }
             std::cout << "PHASE 4-4" << std::endl;
-            // manager.parseConfigBlock(config_block);
-            // manager.parseServerBlock(server_block);
-            // for (int j = 0; j < location_blocks.size(); ++j)
-            //     manager.parseLocationBlock(location_blocks[j]);
-            ++ret;
         }
     }
     return (0);

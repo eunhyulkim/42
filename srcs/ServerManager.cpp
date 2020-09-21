@@ -47,44 +47,6 @@ ServerManager& ServerManager::operator=(const ServerManager& obj)
 	return (*this);
 }
 
-namespace
-{
-	void
-	printFdSet(fd_set s, int max_fd)
-	{
-		bool first = true;
-		for (int i = 0; i <= max_fd; ++i)
-		{
-			if (FD_ISSET(i, &s))
-			{
-				if (!first) {
-					std::cout << " ";
-				}
-				first = false;
-				std::cout << i;
-			}
-		}
-	}
-}
-
-void ServerManager::printFdSets()
-{
-	std::cout << "MAX_FD: " << this->m_max_fd << std::endl;
-	std::cout << "[SET_ERROR_FD]" << std::endl;
-	printFdSet(this->m_error_set, this->m_max_fd); std::cout << std::endl;
-	std::cout << "[SET_ERROR_COPY_FD]" << std::endl;
-	printFdSet(this->m_error_copy_set, this->m_max_fd); std::cout << std::endl;
-	std::cout << "[SET_READ_FD]" << std::endl;
-	printFdSet(this->m_read_set, this->m_max_fd); std::cout << std::endl;
-	std::cout << "[SET_READ_COPY_FD]" << std::endl;
-	printFdSet(this->m_read_copy_set, this->m_max_fd); std::cout << std::endl;
-	std::cout << "[SET_WRITE_FD]" << std::endl;
-	printFdSet(this->m_write_set, this->m_max_fd); std::cout << std::endl;
-	std::cout << "[SET_WRITE_COPY_FD]" << std::endl;
-	printFdSet(this->m_write_copy_set, this->m_max_fd); std::cout << std::endl;
-	return ;
-}
-
 /* ************************************************************************** */
 /* --------------------------------- GETTER --------------------------------- */
 /* ************************************************************************** */
@@ -106,53 +68,63 @@ void ServerManager::set_m_config(const Config& config) { this->m_config = config
 /* exception code */
 
 /* ************************************************************************** */
-/* ---------------------------- MEMBER FUNCTION ----------------------------- */
+/* ---------------- FUNCTIONS FOR PARSE CONFIGURATION FILE ------------------ */
 /* ************************************************************************** */
+
+namespace {
+	enum IncludeMode { INCLUDE_START, INCLUDE_END, INCLUDE_BOTH, INCLUDE_NOT, };
+
+	std::vector<std::string> groupLineWithCondition(std::vector<std::string>& lines, \
+	const std::string& start_line, const std::string& end_line, IncludeMode mode = INCLUDE_BOTH)
+	{
+		bool is_group_line = false;
+		std::vector<std::string> ret;
+		std::vector<std::string> remain;
+		for (int i = 0; i < lines.size(); ++i)
+		{
+			std::string line = lines[i];
+			if (line.empty())
+				continue ;
+			if (is_group_line == true)
+			{
+				if (line.size() >= end_line.size() && line.substr(0, end_line.size()) == end_line)
+				{
+					if (mode == INCLUDE_BOTH || mode == INCLUDE_END)
+						ret[ret.size() - 1].append(line + "\n");
+					is_group_line = false;
+				}
+				else
+					ret[ret.size() - 1].append(line + "\n");
+			}
+			else if (line.size() >= start_line.size() && line.substr(0, start_line.size()) == start_line)
+			{
+				is_group_line = true;
+				if (mode == INCLUDE_BOTH || mode == INCLUDE_START)
+					ret.push_back(line + "\n");
+				else
+					ret.push_back("");
+			}
+			else
+				remain.push_back(line);
+		}
+		lines = remain;
+		return (ret);
+	}
+	
+	bool isValidIpByte(std::string s) { return ((std::stoi(s) >= 0) && (std::stoi(s) <= 255)); }
+	bool isValidCgi(std::string data) { return (!data.empty() && data[0] == '.'); }
+}
 
 bool
 ServerManager::splitConfigString(std::string config_string, std::string& config_block, \
 std::vector<std::string>& server_strings)
 {
-	std::cout << config_string << std::endl;
 	std::vector<std::string> lines = ft::split(config_string);
-	bool is_server_line = false;
-	bool is_first_server_line = false;
-	int server_index = 0;
-	
 	for (int i = 0; i < lines.size(); ++i)
-	{
-		std::string line = ft::rtrim(lines[i], " \t");
-		if (line.empty())
-			continue ;
-		if (is_server_line == false)
-		{
-			if (line != "server {")
-				config_block.append(line + "\n");
-			else
-			{
-				is_server_line = true;
-				is_first_server_line = true;
-			}
-		}
-		else
-		{
-			if (line != "}")
-			{
-				if (is_first_server_line)
-				{
-					server_strings.push_back(line + "\n");
-					is_first_server_line = false;
-				}
-				else
-					server_strings[server_index].append(line + "\n");
-			}
-			else
-			{
-				is_server_line = false;
-				++server_index;
-			}
-		}
-	}
+		lines[i] = ft::rtrim(lines[i], " \t");
+	server_strings = groupLineWithCondition(lines, "server {", "}", INCLUDE_NOT);
+	config_block = ft::containerToString(lines, "\n");
+
 	return (!config_block.empty() && server_strings.size() != 0);
 }
 
@@ -161,36 +133,20 @@ ServerManager::splitServerString(std::string server_string, std::string& server_
 std::vector<std::string>& location_blocks)
 {
 	std::vector<std::string> lines = ft::split(server_string);
-	bool is_location_line = false;
-	int location_index = 0;
-	
 	for (int i = 0; i < lines.size(); ++i)
-	{
-		std::string line = ft::trim(lines[i], " \t");
-		if (line.empty())
-			continue ;
-		if (is_location_line == false)
-		{
-			if (line.substr(0, 9) != "location ")
-				server_block.append(line + "\n");
-			else {
-				is_location_line = true;
-				location_blocks.push_back(line + "\n");
-			}
-		}
-		else
-		{
-			if (line != "}")
-				location_blocks[location_index].append(line + "\n");
-			else
-			{
-				is_location_line = false;
-				++location_index;
-			}
-		}
-	}
+		lines[i] = ft::trim(lines[i], " \t");
+	location_blocks = groupLineWithCondition(lines, "location ", "}", INCLUDE_START);
+	server_block = ft::containerToString(lines, "\n");
+
 	return (!server_block.empty() && location_blocks.size() != 0);
 }
+
+/*
+** function: isValidConfigBlock
+** 1. check every entity without duplicate
+** 2. check 'SOFTWARE_NAME' and 'SOFTWARE_VERSION' NOT EMPTY
+** 3. check 'HTTP_VERSION' and 'CGI_VERSION' is 1.1
+*/
 
 bool
 ServerManager::isValidConfigBlock(std::string& config_block)
@@ -203,18 +159,19 @@ ServerManager::isValidConfigBlock(std::string& config_block)
 		if (!ft::hasKey(map_block, key[i]))
 			return (false);
 	}
-	if (map_block.find(key[0])->second.empty())
+	if (map_block[key[0]].empty())
 		return (false);
-	if (map_block.find(key[1])->second.empty())
+	if (map_block[key[1]].empty())
 		return (false);
-	if (map_block.find(key[2])->second != "1.1")
+	if (map_block[key[2]] != "1.1")
 		return (false);
-	if (map_block.find(key[3])->second != "1.1")
+	if (map_block[key[3]] != "1.1")
 		return (false);
 	return (true);
 }
 
 /*
+** function: isValidServerBlock
 ** 1. check entity count without duplicate
 ** 2. check ip range ([0~255] * 4)
 ** 3. check port range (80, 443, 1024 ~ 49151)
@@ -223,11 +180,6 @@ ServerManager::isValidConfigBlock(std::string& config_block)
 ** 6. check body limit size
 */
 
-namespace {
-	bool isValidPort(std::string s) { return ((std::atoi(s.c_str()) >= 0) && (std::atoi(s.c_str()) <= 255)); }
-	bool isValidCgi(std::string data) { return (!data.empty() && data[0] == '.'); }
-}
-
 bool
 ServerManager::isValidServerBlock(std::string& server_block)
 {
@@ -235,48 +187,36 @@ ServerManager::isValidServerBlock(std::string& server_block)
 	std::string key[6] = {"host", "port", "REQUEST_URI_LIMIT_SIZE", "REQUEST_HEADER_LIMIT_SIZE", \
 	"DEFAULT_ERROR_PAGE", "LIMIT_CLIENT_BODY_SIZE"};
 	
-	std::cout << server_block << std::endl;
-	std::cout << 1 << std::endl;
 	if (map_block.size() < 6 || map_block.size() > 7)
 		return (false);
-	
-	std::cout << 2 << std::endl;
 	for (int i = 0; i < 6; ++i) {
 		if (!ft::hasKey(map_block, key[i]))
 			return (false);
-	}
-	
-	std::cout << 3 << std::endl;
+	}	
 	if (map_block.size() == 7 && !ft::hasKey(map_block, "server_name"))
 		return (false);
 
-	std::cout << 4 << std::endl;
-	std::vector<std::string> port_tokens = ft::split(map_block.find(key[0])->second, '.');
-	if (port_tokens.size() != 4 || !std::all_of(port_tokens.begin(), port_tokens.end(), isValidPort))
+	std::vector<std::string> ip_tokens = ft::split(map_block.find(key[0])->second, '.');
+	if (port_tokens.size() != 4 || !std::all_of(ip_tokens.begin(), ip_tokens.end(), isValidIpByte))
 		return (false);
 
-	std::cout << 5 << std::endl;
 	int port = std::atoi(map_block.find(key[1])->second.c_str());
-	if (port < 0 || (port != 80 && port != 443 && port < 1024 && port > 49151))
+	if (port != 80 && port != 443 && (port < 1024 || port > 49151))
 		return (false);
 	
-	std::cout << 6 << std::endl;
 	int uri_limit = std::atoi(map_block.find(key[2])->second.c_str());
 	if (uri_limit < REQUEST_URI_LIMIT_SIZE_MIN || uri_limit > REQUEST_URI_LIMIT_SIZE_MAX)
 		return (false);
 	
-	std::cout << 7 << std::endl;
 	int header_limit = std::atoi(map_block.find(key[3])->second.c_str());
 	if (header_limit < REQUEST_HEADER_LIMIT_SIZE_MIN || header_limit > REQUEST_HEADER_LIMIT_SIZE_MAX)
 		return (false);
 	
-	std::cout << 8 << std::endl;
 	int fd;
 	if ((fd = open(map_block.find(key[4])->second.c_str(), O_RDONLY)) == -1)
 		return (false);
 	close(fd);
 	
-	std::cout << 9 << std::endl;
 	int body_limit = std::atoi(map_block.find(key[5])->second.c_str());
 	if (body_limit < 0 || body_limit > LIMIT_CLIENT_BODY_SIZE_MAX)
 		return (false);
@@ -284,80 +224,72 @@ ServerManager::isValidServerBlock(std::string& server_block)
 	return (true);
 }
 
+/*
+** function: isValidLocationBlock
+** 1. check entity count without duplicate or empty value
+** 2. check location expression count and start with '/'
+** 3. check root path is valid directory and end without '/'
+** 4. check auth file path is valid file with realm string
+** 5. check header limit size
+** 6. check body limit size
+*/
+
 bool
 ServerManager::isValidLocationBlock(std::string& location_block)
 {
-	std::cout << location_block << std::endl;
 	std::map<std::string, std::string>map_block = ft::stringVectorToMap(ft::split(location_block, '\n'), ' ');
+	std::string key[] = {"location", "root", "allow_method", "auth_basic_realm", \
+	"auth_basic_file", "index", "cgi", "autoindex"};
+	std::set<std::string> key_set(key, key + sizeof(key) / sizeof(key[0]));
 	
-	std::cout << "a" << std::endl;
 	if (map_block.size() < 2 || map_block.size() > 8)
 		return (false);
-
-	std::cout << "b" << std::endl;
-	std::set<std::string>set_block;
-	for (std::map<std::string, std::string>::iterator it = map_block.begin(); it != map_block.end(); ++it)
-		set_block.insert(it->first);
-	std::string key[8] = {"location", "root", "allow_method", "auth_basic_realm", \
-	"auth_basic_file", "index", "cgi", "autoindex"};
-	std::set<std::string> key_set;
-	for (int i = 0; i < 8; ++i)
-		key_set.insert(key[i]);
-
-	std::cout << "c" << std::endl;
 	if (!ft::hasKey(map_block, "location") || !ft::hasKey(map_block, "root"))
 		return (false);
-	for (std::set<std::string>::iterator it = set_block.begin(); it != set_block.end(); ++it) {
-		if (!ft::hasKey(key_set, *it) || map_block.find(*it)->second.empty())
+	for (std::map<std::string, std::string>::iterator it = map_block.begin(); it != map_block.end(); ++it) {
+		if (!ft::hasKey(key_set, it->first) || it->second.empty())
 			return (false);
 	} 
 
-	std::cout << "d" << std::endl;
-	std::vector<std::string> location = ft::split(ft::rtrim(map_block.find(key[0])->second, " \t{"), ' ');
+	std::vector<std::string> location = ft::split(ft::rtrim(map_block[key[0]], " \t{"), ' ');
 	if (location.size() != 1 || location[0].empty() || location[0][0] != '/')
 		return (false);
 	
-	std::cout << "e" << std::endl;
 	struct stat buf;
-	std::string root = map_block.find(key[1])->second;
+	std::string root = map_block[key[1]];
 	stat(root.c_str(), &buf);
 	if (!S_ISDIR(buf.st_mode) || root.empty() || (root != "/" && root.size() > 1 && root[root.size() - 1] == '/'))
 		return (false);
 	
-	std::cout << "f" << std::endl;
+	if ((ft::hasKey(map_block, key[3]) && !ft::hasKey(map_block, key[4]))
+	|| (!ft::hasKey(map_block, key[3]) && ft::hasKey(map_block, key[4])))
+		return (false);
 	if (ft::hasKey(map_block, key[4]))
 	{
-		stat(map_block.find(key[4])->second.c_str(), &buf);
+		stat(map_block[key[4]].c_str(), &buf);
 		if (!S_ISREG(buf.st_mode))
 			return (false);
 	}
 
-	std::cout << "g" << std::endl;
 	if (ft::hasKey(map_block, key[2]))
 	{
-		std::set<std::string> data_set = ft::stringVectorToSet(ft::split(map_block.find(key[2])->second, ' '));
-		std::string method[7] = {"GET", "POST", "HEAD", "PUT", "DELETE", "TRACE", "OPTIONS"};
-		std::set<std::string> method_set;
-		for (int i = 0; i < 7; ++i)
-			method_set.insert(method[i]);
-	
+		std::set<std::string> data_set = ft::stringVectorToSet(ft::split(map_block[key[2]], ' '));
+		std::string method[] = {"GET", "POST", "HEAD", "PUT", "DELETE", "TRACE", "OPTIONS"};
+		std::set<std::string> method_set(method, method + sizeof(method) / sizeof(method[0]));
 		for (std::set<std::string>::iterator it = data_set.begin(); it != data_set.end(); ++it) {
-			std::cout << "[" << *it << "]" << std::endl;
 			if ((*it).empty() || !ft::hasKey(method_set, *it))
 				return (false);
-			std::cout << "[" << *it << "]" << std::endl;
 		} 
 	}
 
-	std::cout << "h" << std::endl;
 	if (ft::hasKey(map_block, key[6])) {
-		std::set<std::string> cgi_set = ft::stringVectorToSet(ft::split(map_block.find(key[6])->second, ' '));
+		std::set<std::string> cgi_set = ft::stringVectorToSet(ft::split(map_block[key[6]], ' '));
 		if (!std::all_of(cgi_set.begin(), cgi_set.end(), isValidCgi))
 			return (false);
 	}
 	
 	if (ft::hasKey(map_block, key[7])) {
-		std::string autoindex = map_block.find(key[7])->second;
+		std::string autoindex = map_block[key[7]];
 		if (autoindex != "on" && autoindex != "off")
 			return (false);
 	}
@@ -365,25 +297,13 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 	return (true);
 }
 
-void
-parseConfigBlock(std::string& config_block)
-{
 
-}
-
-void
-parseServerBlock(std::string& server_block)
-{
-
-}
+/* ************************************************************************** */
+/* ------------------------------ FD FUNCTION ------------------------------- */
+/* ************************************************************************** */
 
 void
-parseLocationBlock(std::string& location_block)
-{
-
-}
-
-void ServerManager::fdSet(int fd, SetType fdset)
+ServerManager::fdSet(int fd, SetType fdset)
 {
 	if (fdset == WRITE_SET)
 		FD_SET(fd, &this->m_write_set);
@@ -399,7 +319,8 @@ void ServerManager::fdSet(int fd, SetType fdset)
 		FD_SET(fd, &this->m_error_copy_set);
 }
 
-void ServerManager::fdZero(SetType fdset)
+void
+ServerManager::fdZero(SetType fdset)
 {
 	if (fdset == WRITE_SET)
 		FD_ZERO(&this->m_write_set);
@@ -415,7 +336,8 @@ void ServerManager::fdZero(SetType fdset)
 		FD_ZERO(&this->m_error_copy_set);
 }
 
-void ServerManager::fdClear(int fd, SetType fdset)
+void
+ServerManager::fdClear(int fd, SetType fdset)
 {
 	if (fdset == WRITE_SET)
 		FD_CLR(fd, &this->m_write_set);
@@ -431,7 +353,8 @@ void ServerManager::fdClear(int fd, SetType fdset)
 		FD_CLR(fd, &this->m_error_copy_set);
 }
 
-bool ServerManager::fdIsset(int fd, SetType fdset)
+bool
+ServerManager::fdIsset(int fd, SetType fdset)
 {
 	bool ret = false;
 
@@ -450,7 +373,8 @@ bool ServerManager::fdIsset(int fd, SetType fdset)
 	return (ret);
 }
 
-void ServerManager::fdCopy(SetType fdset)
+void
+ServerManager::fdCopy(SetType fdset)
 {
 	if (fdset == WRITE_SET) {
 		FD_ZERO(&this->m_write_copy_set);
@@ -462,4 +386,82 @@ void ServerManager::fdCopy(SetType fdset)
 		FD_ZERO(&this->m_error_copy_set);
 		this->m_error_copy_set = this->m_error_set;
 	}
+}
+
+/* ************************************************************************** */
+/* ---------------------------- MEMBER FUNCTION ----------------------------- */
+/* ************************************************************************** */
+
+namespace
+{
+	void
+	printFdSet(fd_set s, int max_fd)
+	{
+		bool first = true;
+		for (int i = 0; i <= max_fd; ++i)
+		{
+			if (FD_ISSET(i, &s))
+			{
+				if (!first) {
+					std::cout << " ";
+				}
+				first = false;
+				std::cout << i;
+			}
+		}
+	}
+}
+
+void
+ServerManager::printFdSets()
+{
+	std::cout << "MAX_FD: " << this->m_max_fd << std::endl;
+	std::cout << "[SET_ERROR_FD]" << std::endl;
+	printFdSet(this->m_error_set, this->m_max_fd); std::cout << std::endl;
+	std::cout << "[SET_ERROR_COPY_FD]" << std::endl;
+	printFdSet(this->m_error_copy_set, this->m_max_fd); std::cout << std::endl;
+	std::cout << "[SET_READ_FD]" << std::endl;
+	printFdSet(this->m_read_set, this->m_max_fd); std::cout << std::endl;
+	std::cout << "[SET_READ_COPY_FD]" << std::endl;
+	printFdSet(this->m_read_copy_set, this->m_max_fd); std::cout << std::endl;
+	std::cout << "[SET_WRITE_FD]" << std::endl;
+	printFdSet(this->m_write_set, this->m_max_fd); std::cout << std::endl;
+	std::cout << "[SET_WRITE_COPY_FD]" << std::endl;
+	printFdSet(this->m_write_copy_set, this->m_max_fd); std::cout << std::endl;
+	return ;
+}
+
+void
+ServerManager::createServer(const std::string& configuration_file_path)
+{
+	std::string config_string = ft::getStringFromFile(configuration_file_path);
+	std::string config_block;
+	std::vector<std::string> server_strings;
+
+	if (splitConfigString(config_string, config_block, server_strings))
+		throw (std::invalid_argument("Failed to split configuration string"));
+	if (!isValidConfigBlock(config_block))
+		throw (std::invalid_argument("Config block is not valid."));
+	for (int i = 0; i < server_strings.size(); ++i)
+	{
+		std::string server_block;
+		std::vector<std::string> location_blocks;
+		if (!splitServerString(server_strings[i], server_block, location_blocks))
+			throw (std::invalid_argument("Failed to split Sever string(" + std::to_string(i) + ")"));
+		if (!isValidServerBlock(server_block))
+			throw (std::invalid_argument("Server block(" + std::to_string(i) + ") is not valid."));
+		for (int j = 0; j < location_blocks.size(); ++j) {
+			if (!isValidLocationBlock(location_blocks[j]))
+				throw (std::invalid_argument("Location block(" + std::to_string(i) \
+				+ "-" + std::to_string(j) + ") is not valid."));
+		}
+		m_servers.push_back(Server(this, server_block, location_blocks, &this->m_config));
+	}
+}
+
+void
+ServerManager::exitServer(const std::string& error_msg)
+{
+	std::cout << error_msg << std::endl;
+	exit(EXIT_FAILURE);
 }
