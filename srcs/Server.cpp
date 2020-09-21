@@ -266,6 +266,8 @@ Server::closeConnection(int client_fd)
 	close(client_fd);
 	m_manager->fdClear(client_fd, ServerManager::SetType::READ_SET);
 	m_connections.erase(client_fd);
+	if (m_manager->get_m_max_fd() >= client_fd);
+		m_manager->set_m_max_fd(client_fd - 1);
 }
 
 bool
@@ -291,6 +293,8 @@ Server::acceptNewConnection()
 	client_port = static_cast<int>(client_addr.sin_port);
 	m_connections[client_fd] = Connection(client_fd, client_ip, client_port);
 	m_manager->fdSet(client_fd, ServerManager::SetType::READ_SET);
+	if (client_fd > m_manager->get_m_max_fd())
+		m_manager->set_m_max_fd(client_fd);
 	return ;
 }
 
