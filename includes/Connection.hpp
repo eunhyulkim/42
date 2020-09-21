@@ -8,7 +8,7 @@
 class Connection
 {
 	private:
-		int m_fd;
+		int m_client_fd;
 		timeval m_last_request_at;
 		std::string m_client_ip;
 		int m_client_port;
@@ -20,7 +20,7 @@ class Connection
 		virtual ~Connection();
 
 		/* getter function */
-		int get_m_fd() const;
+		int get_m_client_fd() const;
 		timeval get_m_last_request_at() const;
 		std::string get_m_client_ip() const;
 		int get_m_client_port() const;

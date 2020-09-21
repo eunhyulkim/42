@@ -2,6 +2,16 @@
 
 namespace ft
 {
+	void
+	bzero(void *data, size_t len)
+	{
+		unsigned char *str;
+
+		str = (unsigned char *)data;
+		while (len > 0)
+			str[--len] = 0;
+	}
+
 	std::string
 	ltrim(std::string s, std::string seps)
 	{
@@ -75,7 +85,7 @@ namespace ft
 	stringVectorToSet(std::vector<std::string> stringVector)
 	{
 		std::set<std::string> ret;
-	
+
 		for (int i = 0; i < stringVector.size(); ++i) {
 			ret.insert(stringVector[i]);
 		}
