@@ -114,4 +114,18 @@ namespace ft
 		}
 		return (ret);
 	}
+	
+	std::string containerToString(std::vector<unsigned char> container, std::string sep = " ")
+	{
+        std::string ret;
+		for (std::vector<unsigned char>::iterator it = container.begin(); it != container.end(); ++it)
+		{
+			ret.append(1, *it);
+			if (++it != container.end())
+				ret.append(sep);
+			--it;
+		}
+		return (ret);
+    }
+
 }

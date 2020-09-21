@@ -191,9 +191,15 @@ const std::queue<Response>& Server::get_m_responses() const { return (this->m_re
 ** 3. if uri is directory(with GET method), executeAutoindex 
 */
 
-void base64_decode(std::string data, std::string& key, std::string& value)
+void basic_decode(std::string data, std::string& key, std::string& value)
 {
-
+	std::string decodedData = ft::containerToString(ft::base64_decode(data), "");
+	if (decodedData.find(":") == std::string::npos || decodedData.find(":") == decodedData.size() - 1)
+		return ;
+	int idx = decodedData.find(":");
+	key = decodedData.substr(0, idx);
+    std::vector<unsigned char> value_base(decodedData.begin() + idx + 1, decodedData.end());
+    value = ft::base64_encode(&value_base[0], value_base.size());
 }
 
 void
@@ -216,9 +222,9 @@ Server::solveRequest(const Request& request)
 			}
 			else {
 				std::string key, value;
-				base64_decode(credential[1], key, value);
-				if (!ft::hasKey(location->get_m_auth_basic_file(), key)
-				|| location->get_m_auth_basic_file()[key] != value) {
+				basic_decode(credential[1], key, value);
+				if (key.empty() || value.empty() || !ft::hasKey(location->get_m_auth_basic_file(), key)
+				|| location->get_m_auth_basic_file().find(key)->second != value) {
 					return (createResponse(403));
 				}
 			}

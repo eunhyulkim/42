@@ -18,6 +18,7 @@
 # include "Response.hpp"
 # include "Config.hpp"
 # include "Request.hpp"
+# include "Base64.hpp"
 
 # define SEND_RESPONSE_AT_ONCE 5
 # define RESPONSE_OVERLOAD_COUNT 20
@@ -46,7 +47,7 @@ class Server
 		std::map<int, Connection> m_connections;
 		std::queue<Response> m_responses;
 	private:
-		void base64_decode(std::string data, std::string& key, std::string& value);
+		void basic_decode(std::string data, std::string& key, std::string& value);
 		std::string inet_ntoa(unsigned int address);
 	public:
 		Server();
