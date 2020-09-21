@@ -459,6 +459,56 @@ ServerManager::createServer(const std::string& configuration_file_path)
 	}
 }
 
+bool g_live;
+
+void
+changeSignal(int sig)
+{
+	(void)sig;
+	g_live = false;
+}
+
+void
+ServerManager::runServer()
+{
+	signal(SIGINT, changeSignal);
+
+	timeval timeout;
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 0;
+
+	g_live = true;
+	while (g_live)
+	{
+		this->m_read_copy_set = this->m_read_set;
+		this->m_write_copy_set = this->m_write_set;
+		this->m_error_copy_set = this->m_error_set;
+
+		int n = select(this->m_max_fd, &this->m_read_copy_set, &this->m_write_copy_set, &this->m_error_copy_set, &timeout);
+		if (n == -1)
+		{
+			throw std::runtime_error("select error");
+		}
+		else if (n == 0)
+		{
+			continue ;
+		}
+		for (std::vector<Server>::iterator it = m_servers.begin() ; it != m_servers.end() ; ++it)
+		{
+			it->run();
+
+			std::map<int, Connection>::const_iterator it2 = it->get_m_connections().begin();
+			while (it2 != it->get_m_connections().end())
+			{
+				int fd = it2->first;
+				
+				if (it2->second.isOverTime())
+					it->closeConnection(fd);
+			}
+		}
+	}
+}
+
 void
 ServerManager::exitServer(const std::string& error_msg)
 {

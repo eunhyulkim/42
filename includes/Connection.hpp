@@ -5,6 +5,8 @@
 # include <iostream>
 # include <sys/time.h>
 
+# define CONNECTION_OLD 30
+
 class Connection
 {
 	private:
@@ -27,6 +29,8 @@ class Connection
 
 		/* setter function */
 		void set_m_last_request_at();
+
+		bool isOverTime();
 };
 
 /* global operator overload */
