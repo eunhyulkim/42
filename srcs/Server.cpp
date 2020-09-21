@@ -183,6 +183,117 @@ const std::queue<Response>& Server::get_m_responses() const { return (this->m_re
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
 /* ************************************************************************** */
 
+/*
+** function: solveRequest
+** 1. check request method is allowed
+** 2. Check authentication is required
+** 2. If uri is directory, check reqeust method is GET(if not, response 405)
+** 3. if uri is directory(with GET method), executeAutoindex 
+*/
+
+void base64_decode(std::string data, std::string& key, std::string& value)
+{
+
+}
+
+void
+Server::solveRequest(const Request& request)
+{
+	Location* location = request.get_m_location();
+	std::string method = request.get_m_method_to_string();
+
+	if (!ft::hasKey(location->get_m_allow_method(), method)) {
+		createResponse(405, ft::setToString(location->get_m_allow_method(), " "));
+		return ;
+	}
+	if (!location->get_m_auth_basic_realm().empty()) {
+		if (!ft::hasKey(request.get_m_headers(), "Authorization")) {
+			createResponse(401, location->get_m_auth_basic_realm());
+		} else {
+			std::vector<std::string> credential = ft::split(request.get_m_headers().find("Authorization")->second, ' ');
+			if (credential.size() != 2 || credential[0] != "basic") {
+				return (createReponse(400));
+			}
+			else {
+				std::string key, value;
+				base64_decode(credential[1], key, value);
+				if (!ft::hasKey(location->get_m_auth_basic_file(), key)
+				|| location->get_m_auth_basic_file()[key] != value) {
+					return (createResponse(403));
+				}
+			}
+		}
+	}
+	if (request.get_m_uri_type() == Request::URIType::DIRECTORY)
+		executeAutoindex();
+	Request::Method method = request.get_m_method();
+	if (method == Request::Method::GET)
+		executeGet(request);
+	else if (method == Request::Method::HEAD)
+		executeHead(request);
+	else if (method == Request::Method::POST)
+		executePost(request);
+	else if (method == Request::Method::PUT)
+		executePut(request);
+	else if (method == Request::Method::DELETE)
+		executeDelete(request);
+	else if (method == Request::Method::OPTIONS)
+		executeOptions(request);
+	else if (method == Request::Method::TRACE)
+		executeTrace(request);	
+}
+
+std::string
+Server::inet_ntoa(unsigned int address)
+{
+	std::string ret;
+
+	ret = std::to_string(address & 0xFF) + ".";
+	ret.append(std::to_string((address >> 8) & 0xFF) + ".");
+	ret.append(std::to_string((address >> 16) & 0xFF) + ".");
+	ret.append(std::to_string((address >> 24) & 0xFF));
+	return (ret);
+}
+
+bool
+Server::hasException(int client_fd) {
+	return (m_manager->fdIsset(client_fd, ServerManager::SetType::ERROR_COPY_SET));
+}
+
+void
+Server::closeConnection(int client_fd)
+{
+	close(client_fd);
+	m_manager->fdClear(client_fd, ServerManager::SetType::READ_SET);
+	m_connections.erase(client_fd);
+}
+
+bool
+Server::hasNewConnection()
+{
+	return (m_manager->fdIsset(m_fd, ServerManager::SetType::READ_COPY_SET))
+}
+
+void
+Server::acceptNewConnection()
+{
+	struct sockaddr_in	client_addr;
+	socklen_t			client_addr_size = sizeof(struct sockaddr_in);
+	int 				client_fd;
+	std::string			client_ip;
+	int					client_port;
+
+	ft::bzero(&client_addr, client_addr_size);
+
+	if ((client_fd = accept(m_fd, (struct sockaddr *)&client_addr, &client_addr_size)) == -1)
+		return ;
+	client_ip = inet_ntoa(client_addr.sin_addr.s_addr);
+	client_port = static_cast<int>(client_addr.sin_port);
+	m_connections[client_fd] = Connection(client_fd, client_ip, client_port);
+	m_manager->fdSet(client_fd, ServerManager::SetType::READ_SET);
+	return ;
+}
+
 void
 Server::run()
 {
@@ -245,13 +356,13 @@ Server::run()
 	}
 }
 
-// bool Server::hasException(int client_fd){}
-// int Server::closeConnection(int client_fd){}
 // int Server::isSendable(int client_fd){}
 // int Server::sendResponse(Response response){}
+
 // bool Server::hasRequest(int client_fd){}
 // Request Server::readRequest(int client_fd){}
-// int Server::solveRequest(Request request){}
+
+// void executeAutoindex(const Request& request);
 // int Server::executeGet(Request request){}
 // int Server::executeHead(Request request){}
 // int Server::executePut(Request request){}
@@ -259,8 +370,8 @@ Server::run()
 // int Server::executeDelete(Request request){}
 // int Server::executeOptions(Request request){}
 // int Server::executeTrace(Request request){}
+
 // char** Server::createCGIEnv(Request request){}
 // int Server::executeCGI(Request request){}
+
 // int Server::createResponse(int status){}
-// bool Server::hasNewConnection(){}
-// int Server::acceptNewConnection(){}

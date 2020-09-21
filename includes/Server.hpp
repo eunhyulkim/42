@@ -10,6 +10,7 @@
 # include <sys/types.h>
 # include <netinet/in.h>
 # include <arpa/inet.h>
+# include "libft.hpp"
 # include "Location.hpp"
 # include "ServerManager.hpp"
 # include "Connection.hpp"
@@ -20,6 +21,13 @@
 
 # define SEND_RESPONSE_AT_ONCE 5
 # define RESPONSE_OVERLOAD_COUNT 20
+
+# include <vector>
+# include <set>
+# include <map>
+# include "Location.hpp"
+# include "Request.hpp"
+# include "libft.hpp"
 
 class Server
 {
@@ -37,6 +45,9 @@ class Server
 		std::vector<Location> m_locations;
 		std::map<int, Connection> m_connections;
 		std::queue<Response> m_responses;
+	private:
+		void base64_decode(std::string data, std::string& key, std::string& value);
+		std::string inet_ntoa(unsigned int address);
 	public:
 		Server();
 		Server(ServerManager* server_manager, const std::string& server_block, std::vector<std::string>& location_blocks, Config* config);
@@ -70,25 +81,31 @@ class Server
 
 		/* declare member function */
 		bool hasException(int client_fd);
-		int closeConnection(int client_fd);
-		int isSendable(int client_fd);
-		int sendResponse(Response response);
-		bool hasRequest(int client_fd);
-		Request recvRequest(int client_fd);
-		int solveRequest(Request request);
-		int executeGet(Request request);
-		int executeHead(Request request);
-		int executePut(Request request);
-		int executePost(Request request);
-		int executeDelete(Request request);
-		int executeOptions(Request request);
-		int executeTrace(Request request);
-		char** createCGIEnv(Request request);
-		int executeCGI(Request request);
-		int createResponse(int status);
+		void closeConnection(int client_fd);
 		bool hasNewConnection();
-		int acceptNewConnection();
+		void acceptNewConnection();
 		void run();
+
+		// int isSendable(int client_fd);
+		// int sendResponse(Response response);
+
+		// bool hasRequest(int client_fd);
+		// Request recvRequest(int client_fd);
+
+		void solveRequest(const Request& request);		
+		// void executeAutoindex(const Request& request);
+		// int executeGet(Request request);
+		// int executeHead(Request request);
+		// int executePut(Request request);
+		// int executePost(Request request);
+		// int executeDelete(Request request);
+		// int executeOptions(Request request);
+		// int executeTrace(Request request);
+
+		// char** createCGIEnv(Request request);
+		// int executeCGI(Request request);
+		
+		// int createResponse(int status);
 };
 
 /* global operator overload */

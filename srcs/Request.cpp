@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/21 21:05:35 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/21 21:38:44 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,6 +170,17 @@ Request::TransferType	Request::get_m_transfer_type() const { return (m_transfer_
 const std::string		&Request::get_m_content() const { return (m_content); }
 const std::string		&Request::get_m_origin() const { return (m_origin); }
 const std::string		&Request::get_m_path_translated() const { return (m_path_translated); }
+std::string 			Request::get_m_method_to_string() const
+{
+	if (m_method == GET) return (std::string("GET"));
+	else if (m_method == HEAD) return (std::string("HEAD"));
+	else if (m_method == POST) return (std::string("POST"));
+	else if (m_method == PUT) return (std::string("PUT"));
+	else if (m_method == DELETE) return (std::string("DELETE"));
+	else if (m_method == TRACE) return (std::string("TRACE"));
+	else if (m_method == OPTIONS) return (std::string("OPTIONS"));
+	return (std::string(""));
+}
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */
