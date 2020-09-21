@@ -38,7 +38,7 @@ namespace ft
 	trim(std::string s, std::string seps) {
 		return (rtrim(ltrim(s, seps), seps));
 	}
-
+bzero();
 	std::string
 	getStringFromFile(std::string file_path)
 	{
