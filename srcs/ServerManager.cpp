@@ -111,7 +111,7 @@ namespace {
 		return (ret);
 	}
 	
-	bool isValidPort(std::string s) { return ((std::stoi(s) >= 0) && (std::stoi(s) <= 255)); }
+	bool isValidIpByte(std::string s) { return ((std::stoi(s) >= 0) && (std::stoi(s) <= 255)); }
 	bool isValidCgi(std::string data) { return (!data.empty() && data[0] == '.'); }
 }
 
@@ -196,8 +196,8 @@ ServerManager::isValidServerBlock(std::string& server_block)
 	if (map_block.size() == 7 && !ft::hasKey(map_block, "server_name"))
 		return (false);
 
-	std::vector<std::string> port_tokens = ft::split(map_block.find(key[0])->second, '.');
-	if (port_tokens.size() != 4 || !std::all_of(port_tokens.begin(), port_tokens.end(), isValidPort))
+	std::vector<std::string> ip_tokens = ft::split(map_block.find(key[0])->second, '.');
+	if (ip_tokens.size() != 4 || !std::all_of(ip_tokens.begin(), ip_tokens.end(), isValidIpByte))
 		return (false);
 
 	int port = std::atoi(map_block.find(key[1])->second.c_str());

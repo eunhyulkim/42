@@ -85,7 +85,7 @@ namespace ft
 	stringVectorToSet(std::vector<std::string> stringVector)
 	{
 		std::set<std::string> ret;
-	
+
 		for (int i = 0; i < stringVector.size(); ++i) {
 			ret.insert(stringVector[i]);
 		}
@@ -114,16 +114,4 @@ namespace ft
 		}
 		return (ret);
 	}
-
-	std::string inet_nota(unsigned int address)
-	{
-		std::string ret;
-
-		ret = std::to_string(address & 0xFF) + ".";
-		ret.append(std::to_string((address >> 8) & 0xFF) + ".");
-		ret.append(std::to_string((address >> 16) & 0xFF) + ".");
-		ret.append(std::to_string((address >> 24) & 0xFF));
-		return (ret);
-	}
-
 }

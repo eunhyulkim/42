@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yopark <yopark@student.42seoul.kr>         +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/20 13:08:21 by yopark           ###   ########.fr       */
+/*   Updated: 2020/09/21 21:05:35 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 /* ************************************************************************** */
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
+
+Request::Request() {}
 
 Request::Request(Connection *connection, Server *server, std::string start_line): m_connection(connection), m_server(server), m_transfer_type(GENERAL)
 {
@@ -44,11 +46,11 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		throw 414;
 	m_uri = parsed[1];
 	int max_uri_match = 0;
-	for (it = m_server->get_m_locations()->begin() ; it != m_server->get_m_locations()->end() ; ++it)
+	for (std::vector<Location>::const_iterator it = m_server->get_m_locations().begin() ; it != m_server->get_m_locations().end() ; ++it)
 	{
-		if (std::strncmp(it->get_m_uri(), m_uri, it->get_m_uri().length()) == 0 && it->get_m_uri().length() > max_uri_match)
+		if (std::strncmp(it->get_m_uri().c_str(), m_uri.c_str(), it->get_m_uri().length()) == 0 && it->get_m_uri().length() > max_uri_match)
 		{
-			m_location = &(*it);
+			m_location = const_cast<Location *>(&(*it));
 			max_uri_match = it->get_m_uri().length();
 		}
 	}
@@ -144,7 +146,7 @@ std::ostream &operator<<(std::ostream &out, const Request &request)
 	out << "URI_TYPE: " << request.get_m_uri_type() << " (DIRECTORY, FILE, CGI_PROGRAM)" << std::endl;
 	out << "PROTOCOL: " << request.get_m_protocol() << std::endl;
 	out << "HEADERS:" << std::endl;
-	for (std::map<std::string, std::string>::const_iterator it = request.get_m_headers().begin() ; it != request.get_m_headers().end() ; ++it) // mapToString
+	for (std::map<std::string, std::string>::const_iterator it = request.get_m_headers().begin() ; it != request.get_m_headers().end() ; ++it)
 		out << "KEY: " << (*it).first << ", " << "VALUE: " << (*it).second << std::endl;
 	out << "TRANSFER_TYPE: " << request.get_m_transfer_type() << " (GENERAL, CHUNKED)" << std::endl;
 	out << "CONTENT: " << request.get_m_content() << std::endl;

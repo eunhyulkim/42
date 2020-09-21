@@ -20,7 +20,6 @@ namespace ft {
     std::vector<std::string> split(std::string s, char c = '\n');
     std::set<std::string> stringVectorToSet(std::vector<std::string> stringVector);
     std::map<std::string, std::string> stringVectorToMap(std::vector<std::string> stringVector, char sep = ':');
-    std::string inet_ntoa(unsigned int address);
 
     template <typename T, typename V>
     bool hasKey(T& container, V& value) { return (container.find(value) != container.end()); }
