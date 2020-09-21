@@ -86,9 +86,9 @@ operator<<(std::ostream& out, const Location& location)
 	out << "ROOT_PATH: " << location.get_m_root_path() << std::endl;
 	out << "AUTH_BASIC_REALM: " << location.get_m_auth_basic_realm() << std::endl;
 	out << "AUTH_BASIC_FILE: " << location.get_m_auth_basic_file() << std::endl;
-	out << "ALLOW_METHOD: " << ft::setToString(location.get_m_allow_method()) << std::endl;
-	out << "INDEX: " << ft::setToString(location.get_m_index()) << std::endl;
-	out << "CGI: " << ft::setToString(location.get_m_cgi()) << std::endl;
+	out << "ALLOW_METHOD: " << ft::containerToString(location.get_m_allow_method()) << std::endl;
+	out << "INDEX: " << ft::containerToString(location.get_m_index()) << std::endl;
+	out << "CGI: " << ft::containerToString(location.get_m_cgi()) << std::endl;
 	out << "AUTOINDEX: " << std::boolalpha << location.get_m_autoindex()<< std::endl;
 	return (out);
 }
