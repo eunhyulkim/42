@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yopark <yopark@student.42seoul.kr>         +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:22 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/20 12:52:27 by yopark           ###   ########.fr       */
+/*   Updated: 2020/09/21 15:57:48 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,11 @@ class Location;
 
 class Request
 {
-private:
+public:
 	enum Method { GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE };
 	enum URIType { DIRECTORY, FILE, CGI_PROGRAM };
 	enum TransferType { GENERAL, CHUNKED };
-
+private:
 	Connection *m_connection;
 	Server *m_server;
 	Location *m_location;
@@ -69,6 +69,7 @@ public:
 	Server *get_m_server() const;
 	Location *get_m_location() const;
 	Method get_m_method() const;
+	std::string get_m_method_to_string() const;
 	const std::string &get_m_uri() const;
 	URIType get_m_uri_type() const;
 	const std::string &get_m_protocol() const;

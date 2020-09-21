@@ -4,6 +4,13 @@
 # include <string>
 # include <iostream>
 
+# include <vector>
+# include <set>
+# include <map>
+# include "Location.hpp"
+# include "Request.hpp"
+# include "libft.hpp"
+
 class Server
 {
 	private:
@@ -19,6 +26,8 @@ class Server
 		std::vector<Location> m_locations;
 		std::map<int, Connection> m_connections;
 		std::queue<Response> m_responses;
+	private:
+		void base64_decode(std::string data, std::string& key, std::string& value);
 	public:
 		Server();
 		Server(const std::string& server_block, const std::string& location_blocks);
@@ -48,6 +57,7 @@ class Server
 
 		/* declare member function */
 		void solveRequest(const Request& request);
+		void executeAutoindex(const Request& request);
 };
 
 /* global operator overload */

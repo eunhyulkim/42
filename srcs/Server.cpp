@@ -123,8 +123,58 @@ void Server::set_m_default_error_page(std::string default_error_page) { this->m_
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
 /* ************************************************************************** */
 
+/*
+** function: solveRequest
+** 1. check request method is allowed
+** 2. Check authentication is required
+** 2. If uri is directory, check reqeust method is GET(if not, response 405)
+** 3. if uri is directory(with GET method), executeAutoindex 
+*/
+
+void base64_decode(std::string data, std::string& key, std::string& value)
 void
 Server::solveRequest(const Request& request)
 {
-	
+	Location* location = request.get_m_location();
+	std::string method = request.get_m_method_to_string();
+
+	if (!ft::hasKey(location->get_m_allow_method(), method)) {
+		createResponse(405, ft::setToString(location->get_m_allow_method(), " "));
+		return ;
+	}
+	if (!location->get_m_auth_basic_realm().empty()) {
+		if (!ft::hasKey(request.get_m_headers(), "Authorization")) {
+			createResponse(401, location->get_m_auth_basic_realm());
+		} else {
+			std::vector<std::string> credential = ft::split(request.get_m_headers().find("Authorization")->second, ' ');
+			if (credential.size() != 2 || credential[0] != "basic") {
+				return (createReponse(400));
+			}
+			else {
+				std::string key, value;
+				base64_decode(credential[1], key, value);
+				if (!ft::hasKey(location->get_m_auth_basic_file(), key)
+				|| location->get_m_auth_basic_file()[key] != value) {
+					return (createResponse(403));
+				}
+			}
+		}
+	}
+	if (request.get_m_uri_type() == Request::URIType::DIRECTORY)
+		executeAutoindex();
+	Request::Method method = request.get_m_method();
+	if (method == Request::Method::GET)
+		executeGet(request);
+	else if (method == Request::Method::HEAD)
+		executeHead(request);
+	else if (method == Request::Method::POST)
+		executePost(request);
+	else if (method == Request::Method::PUT)
+		executePut(request);
+	else if (method == Request::Method::DELETE)
+		executeDelete(request);
+	else if (method == Request::Method::OPTIONS)
+		executeOptions(request);
+	else if (method == Request::Method::TRACE)
+		executeTrace(request);	
 }
