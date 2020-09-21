@@ -11,6 +11,7 @@
 # include <unistd.h>
 # include <fcntl.h>
 # include <algorithm>
+# include "Server.hpp"
 # include "Config.hpp"
 
 # define REQUEST_URI_LIMIT_SIZE_MIN 64
@@ -18,9 +19,6 @@
 # define REQUEST_HEADER_LIMIT_SIZE_MIN 64
 # define REQUEST_HEADER_LIMIT_SIZE_MAX 8192
 # define LIMIT_CLIENT_BODY_SIZE_MAX 8192
-
-/* 테스트를 위한 임시 클래스 */
-class Server {};
 
 class ServerManager
 {

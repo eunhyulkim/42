@@ -10,10 +10,13 @@
 
 class Response
 {
+	public:
+		enum ConnectionType { CLOSE, KEEP_ALIVE, };
 	private:
 		enum TransferType { GENERAL, CHUNKED };
 		static std::map<int, std::string> status; // 확인
 		Connection* m_connection;
+		ConnectionType m_connection_type;
 		int m_status_code;
 		std::string m_status_description;
 		std::map<std::string, std::string> m_headers;
@@ -28,6 +31,7 @@ class Response
 
 		/* getter function */
 		Connection *get_m_connection() const;
+		ConnectionType get_m_connection_type() const;
 		int get_m_status_code() const;
 		std::string get_m_status_description() const;
 		const std::map<std::string, std::string>& get_m_headers() const;
