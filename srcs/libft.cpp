@@ -65,6 +65,19 @@ namespace ft
 		return (ret);
 	}
 
+	std::string
+	getStringFromFd(int fd)
+	{
+		int read_cnt = 0;
+		char buff[1024];
+		std::string ret;
+
+		while ((read_cnt = read(fd, buff, 1024)) > 0)
+			ret.append(buff, read_cnt);
+		close(fd);
+		return (ret);
+	}
+
 	std::vector<std::string>
 	split(std::string s, char c)
 	{

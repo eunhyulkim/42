@@ -17,6 +17,7 @@ namespace ft {
     std::string rtrim(std::string s, std::string seps = " ");
     std::string trim(std::string s, std::string seps = " ");
     std::string getStringFromFile(std::string file_path);
+    std::string getStringFromFd(int fd);
     std::vector<std::string> split(std::string s, char c = '\n');
     std::set<std::string> stringVectorToSet(std::vector<std::string> stringVector);
     std::map<std::string, std::string> stringVectorToMap(std::vector<std::string> stringVector, char sep = ':');

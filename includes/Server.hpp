@@ -5,11 +5,14 @@
 # include <iostream>
 # include <map>
 # include <vector>
+# include <set>
 # include <queue>
 # include <sys/socket.h>
 # include <sys/types.h>
 # include <netinet/in.h>
 # include <arpa/inet.h>
+# include <dirent.h>
+# include <fcntl.h>
 # include "libft.hpp"
 # include "Location.hpp"
 # include "ServerManager.hpp"
@@ -19,16 +22,13 @@
 # include "Config.hpp"
 # include "Request.hpp"
 # include "Base64.hpp"
+# include "HtmlWriter.hpp"
 
 # define SEND_RESPONSE_AT_ONCE 5
 # define RESPONSE_OVERLOAD_COUNT 20
+# define HEADERS std::vector<std::string>
 
 # include <vector>
-# include <set>
-# include <map>
-# include "Location.hpp"
-# include "Request.hpp"
-# include "libft.hpp"
 
 class Server
 {
@@ -94,8 +94,8 @@ class Server
 		// Request recvRequest(int client_fd);
 
 		void solveRequest(const Request& request);		
-		// void executeAutoindex(const Request& request);
-		// int executeGet(Request request);
+		void executeAutoindex(const Request& request);
+		void executeGet(const Request& request);
 		// int executeHead(Request request);
 		// int executePut(Request request);
 		// int executePost(Request request);
@@ -106,7 +106,7 @@ class Server
 		// char** createCGIEnv(Request request);
 		// int executeCGI(Request request);
 		
-		// int createResponse(int status);
+		void createResponse(int status, std::vector<std::string> headers = std::vector<std::string>(), std::string arg = "");
 };
 
 /* global operator overload */

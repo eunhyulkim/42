@@ -187,8 +187,8 @@ const std::queue<Response>& Server::get_m_responses() const { return (this->m_re
 ** function: solveRequest
 ** 1. check request method is allowed
 ** 2. Check authentication is required
-** 2. If uri is directory, check reqeust method is GET(if not, response 405)
-** 3. if uri is directory(with GET method), executeAutoindex 
+** 3. If uri is directory, executeAutoindex 
+** 4. If uri is file, executeMethod
 */
 
 void basic_decode(std::string data, std::string& key, std::string& value)
@@ -200,53 +200,6 @@ void basic_decode(std::string data, std::string& key, std::string& value)
 	key = decodedData.substr(0, idx);
     std::vector<unsigned char> value_base(decodedData.begin() + idx + 1, decodedData.end());
     value = ft::base64_encode(&value_base[0], value_base.size());
-}
-
-void
-Server::solveRequest(const Request& request)
-{
-	Location* location = request.get_m_location();
-	std::string method = request.get_m_method_to_string();
-
-	if (!ft::hasKey(location->get_m_allow_method(), method)) {
-		createResponse(405, ft::setToString(location->get_m_allow_method(), " "));
-		return ;
-	}
-	if (!location->get_m_auth_basic_realm().empty()) {
-		if (!ft::hasKey(request.get_m_headers(), "Authorization")) {
-			createResponse(401, location->get_m_auth_basic_realm());
-		} else {
-			std::vector<std::string> credential = ft::split(request.get_m_headers().find("Authorization")->second, ' ');
-			if (credential.size() != 2 || credential[0] != "basic") {
-				return (createReponse(400));
-			}
-			else {
-				std::string key, value;
-				basic_decode(credential[1], key, value);
-				if (key.empty() || value.empty() || !ft::hasKey(location->get_m_auth_basic_file(), key)
-				|| location->get_m_auth_basic_file().find(key)->second != value) {
-					return (createResponse(403));
-				}
-			}
-		}
-	}
-	if (request.get_m_uri_type() == Request::URIType::DIRECTORY)
-		executeAutoindex();
-	Request::Method method = request.get_m_method();
-	if (method == Request::Method::GET)
-		executeGet(request);
-	else if (method == Request::Method::HEAD)
-		executeHead(request);
-	else if (method == Request::Method::POST)
-		executePost(request);
-	else if (method == Request::Method::PUT)
-		executePut(request);
-	else if (method == Request::Method::DELETE)
-		executeDelete(request);
-	else if (method == Request::Method::OPTIONS)
-		executeOptions(request);
-	else if (method == Request::Method::TRACE)
-		executeTrace(request);	
 }
 
 std::string
@@ -341,7 +294,7 @@ Server::run()
 				continue ;
 			}
 			if (m_responses.size() > RESPONSE_OVERLOAD_COUNT) {
-				createResponse(503, "60");
+				createResponse(503);
 				closeConnection(fd);
 				continue ;
 			}
@@ -366,14 +319,147 @@ Server::run()
 	}
 }
 
+
+void
+Server::solveRequest(const Request& request)
+{
+	Location* location = request.get_m_location();
+	std::string method = request.get_m_method_to_string();
+
+	if (!ft::hasKey(location->get_m_allow_method(), method)) {
+		HEADERS headers(1, "Allow: " + ft::containerToString(location->get_m_allow_method(), ", "));
+		createResponse(405, headers, "");
+		return ;
+	}
+	if (!location->get_m_auth_basic_realm().empty()) {
+		if (!ft::hasKey(request.get_m_headers(), "Authorization")) {
+			std::string header = "WWW-Authenticate: Basic realm=\"";
+			header.append(request.get_m_location()->get_m_auth_basic_realm());
+			header.append("\", charset=\"UTF-8\"");
+			createResponse(401, HEADERS(1, header));
+		} else {
+			std::vector<std::string> credential = ft::split(request.get_m_headers().find("Authorization")->second, ' ');
+			if (credential.size() != 2 || credential[0] != "basic") {
+				return (createResponse(400));
+			}
+			else {
+				std::string key, value;
+				basic_decode(credential[1], key, value);
+				if (key.empty() || value.empty() || !ft::hasKey(location->get_m_auth_basic_file(), key)
+				|| location->get_m_auth_basic_file().find(key)->second != value) {
+					return (createResponse(403));
+				}
+			}
+		}
+	}
+	Request::Method method = request.get_m_method();
+	if (request.get_m_uri_type() == Request::URIType::DIRECTORY)
+		executeAutoindex(request);
+	if (method == Request::Method::GET)
+		executeGet(request);
+	else if (method == Request::Method::HEAD)
+		executeHead(request);
+	else if (method == Request::Method::POST)
+		executePost(request);
+	else if (method == Request::Method::PUT)
+		executePut(request);
+	else if (method == Request::Method::DELETE)
+		executeDelete(request);
+	else if (method == Request::Method::OPTIONS)
+		executeOptions(request);
+	else if (method == Request::Method::TRACE)
+		executeTrace(request);	
+}
+
+/*
+/* function: executeAutoindex
+** d_type(4) : DIRECTORY
+** d_type(8) : REGULAR_FILE
+*/
+
+namespace {
+	void makeAutoindexContent(HtmlWriter& html, char *cwd)
+	{
+		DIR *dir = NULL;
+		struct dirent *de = NULL;
+		bool first = true;
+
+		if ((dir = opendir(cwd)) == NULL)
+			return ;
+		while ((de = readdir(dir)) != NULL) {
+			if (de->d_name == ".")
+				continue ;
+			if (de->d_type == 4 || de->d_type == 8) // 4 dir, 8 file
+			{
+				if (first) {
+					html.add_link(de->d_name, "<pre>\n");
+					first = false;
+				}
+				html.add_link(de->d_name);
+			}
+		}
+	}
+	
+	int getValidIndexFd(const Request& request, char *cwd)
+	{
+		std::set<std::string> index = request.get_m_location()->get_m_index();
+		std::set<std::string>::iterator it = index.begin();
+		struct stat buf;
+		int fd = -1;
+		std::string path, body;
+		for (; it != index.end(); ++it)
+		{
+			path = std::string(cwd) + "/" + *it;
+			stat(path.c_str(), &buf);
+			if (S_ISREG(buf.st_mode) && (fd = open(path.c_str(), O_RDONLY)) > -1)
+				break ;
+		}
+		return (fd);
+	}
+}
+
+void
+Server::executeAutoindex(const Request& request)
+{
+	if (request.get_m_method() != Request::Method::GET)
+		return (createResponse(405, HEADERS(1, "Allow: GET")));
+	
+	char cwd[1024];
+	getcwd(cwd, sizeof(cwd));
+
+	if (request.get_m_location()->get_m_autoindex())
+	{
+		HtmlWriter html;
+		
+		html.add_title("Index of /test/");
+		html.add_bgcolor("white");
+		html.add_tag("\"white\">\n", "hr", "", true);
+		html.add_tag("hr>\n", "pre", "", true);
+		
+		makeAutoindexContent(html, cwd);
+		createResponse(200, HEADERS(), html.get_m_body());
+	}
+	else
+	{
+		int fd = getValidIndexFd(request, cwd);
+		if (fd == -1)
+			return (createResponse(404));
+		return (createResponse(200, HEADERS(), ft::getStringFromFd(fd)));
+	}
+}
+
+void
+Server::executeGet(const Request& request)
+{
+	
+}
+
 // int Server::isSendable(int client_fd){}
 // int Server::sendResponse(Response response){}
 
 // bool Server::hasRequest(int client_fd){}
 // Request Server::readRequest(int client_fd){}
 
-// void executeAutoindex(const Request& request);
-// int Server::executeGet(Request request){}
 // int Server::executeHead(Request request){}
 // int Server::executePut(Request request){}
 // int Server::executePost(Request request){}
