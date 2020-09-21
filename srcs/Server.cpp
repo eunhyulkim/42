@@ -122,3 +122,9 @@ void Server::set_m_default_error_page(std::string default_error_page) { this->m_
 /* ************************************************************************** */
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
 /* ************************************************************************** */
+
+void
+Server::solveRequest(const Request& request)
+{
+	
+}

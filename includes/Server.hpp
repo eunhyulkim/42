@@ -47,6 +47,7 @@ class Server
 		void set_m_default_error_page(std::string default_error_page);
 
 		/* declare member function */
+		void solveRequest(const Request& request);
 };
 
 /* global operator overload */
