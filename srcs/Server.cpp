@@ -45,7 +45,7 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 	server_addr.sin_port = htons(m_port);
 	if(bind(m_fd, reinterpret_cast<struct sockaddr *>(&server_addr), sizeof(struct sockaddr)) == -1)
 		throw "BIND ERROR";
-	if(listen(m_fd, 10) == -1)
+	if(listen(m_fd, 64) == -1)
 		throw "LISTEN ERROR";
 	if (fcntl(m_fd, F_SETFL, O_NONBLOCK) == -1)
 		throw "FCNTL ERROR";
