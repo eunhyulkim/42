@@ -64,7 +64,7 @@ operator<<(std::ostream& out, const Connection& connection)
 /* --------------------------------- GETTER --------------------------------- */
 /* ************************************************************************** */
 
-int Connection::get_m_fd() const { return (this->m_fd); }
+int Connection::get_m_client_fd() const { return (this->m_fd); }
 timeval Connection::get_m_last_request_at() const { return (this->m_last_request_at); }
 std::string Connection::get_m_client_ip() const { return (this->m_client_ip); }
 int Connection::get_m_client_port() const { return (this->m_client_port); }

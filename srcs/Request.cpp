@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yopark <yopark@student.42seoul.kr>         +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/20 13:08:21 by yopark           ###   ########.fr       */
+/*   Updated: 2020/09/21 18:25:05 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 /* ************************************************************************** */
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
+
+Request::Request() {}
 
 Request::Request(Connection *connection, Server *server, std::string start_line): m_connection(connection), m_server(server), m_transfer_type(GENERAL)
 {

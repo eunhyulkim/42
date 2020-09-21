@@ -18,6 +18,7 @@ Response::Response()
 Response::Response(Connection *connection, int status_code, std::string body)
 {
 	this->m_connection = connection;
+	this->m_connection_type = KEEP_ALIVE;
 	this->m_status_code = status_code;
 	this->m_status_description = Response::status[status_code];
 	this->m_content = body;
@@ -27,6 +28,7 @@ Response::Response(Connection *connection, int status_code, std::string body)
 Response::Response(const Response& copy)
 {
 	this->m_connection = copy.get_m_connection();
+	this->m_connection_type = copy.get_m_connection_type();
 	this->m_status_code = copy.get_m_status_code();
 	this->m_status_description = copy.get_m_status_description();
 	this->m_trasfer_type = copy.get_m_transfer_type();
@@ -52,6 +54,7 @@ Response::operator=(const Response& obj)
 	if (this == &obj)
 		return (*this);
 	this->m_connection = obj.get_m_connection();
+	this->m_connection_type = obj.get_m_connection_type();
 	this->m_status_code = obj.get_m_status_code();
 	this->m_status_description = obj.get_m_status_description();
 	this->m_trasfer_type = obj.get_m_transfer_type();
@@ -83,6 +86,7 @@ operator<<(std::ostream& out, const Response& Response)
 /* ************************************************************************** */
 
 Connection *Response::get_m_connection() const { return (this->m_connection); }
+Response::ConnectionType Response::get_m_connection_type() const { return (this->m_connection_type); }
 int Response::get_m_status_code() const { return (this->m_status_code); }
 std::string Response::get_m_status_description() const { return (this->m_status_description); }
 const std::map<std::string, std::string>& Response::get_m_headers() const { return (this->m_headers); }

@@ -13,9 +13,13 @@
 # include "Location.hpp"
 # include "ServerManager.hpp"
 # include "Connection.hpp"
+# include "Request.hpp"
 # include "Response.hpp"
 # include "Config.hpp"
 # include "Request.hpp"
+
+# define SEND_RESPONSE_AT_ONCE 5
+# define RESPONSE_OVERLOAD_COUNT 20
 
 class Server
 {
@@ -41,14 +45,18 @@ class Server
 		virtual ~Server();
 
 		/* getter function */
-		// std::string get_m_server_name() const;
-		// std::string get_m_host() const;
-		// int get_m_port() const;
-		// int get_m_fd() const;
-		// int get_m_request_uri_limit_size() const;
-		// int get_m_request_header_limit_size() const;
-		// int get_m_limit_client_body_size() const;
-		// std::string get_m_default_error_page() const;
+		const std::string& get_m_server_name() const;
+		const std::string& get_m_host() const;
+		int get_m_port() const;
+		int get_m_fd() const;
+		int get_m_request_uri_limit_size() const;
+		int get_m_request_header_limit_size() const;
+		int get_m_limit_client_body_size() const;
+		const std::string& get_m_default_error_page() const;
+		Config* get_m_config() const;
+		const std::vector<Location>& get_m_locations() const;
+		const std::map<int, Connection>& get_m_connections() const;
+		const std::queue<Response>& get_m_responses() const;
 
 		/* setter function */
 		// void set_m_server_name(std::string server_name);
@@ -66,7 +74,7 @@ class Server
 		int isSendable(int client_fd);
 		int sendResponse(Response response);
 		bool hasRequest(int client_fd);
-		Request readRequest(int client_fd);
+		Request recvRequest(int client_fd);
 		int solveRequest(Request request);
 		int executeGet(Request request);
 		int executeHead(Request request);
@@ -80,7 +88,7 @@ class Server
 		int createResponse(int status);
 		bool hasNewConnection();
 		int acceptNewConnection();
-		int run();
+		void run();
 };
 
 /* global operator overload */

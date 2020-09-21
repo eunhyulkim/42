@@ -31,7 +31,8 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 	m_request_uri_limit_size = std::stoi(server_map["REQUEST_URI_LIMIT_SIZE"]);
 	m_request_header_limit_size = std::stoi(server_map["REQUEST_HEADER_LIMIT_SIZE"]);
 	m_limit_client_body_size = std::stoi(server_map["LIMIT_CLIENT_BODY_SIZE"]);
-	error_page = server_map["DEFAULT_ERROR_PAGE"];
+	m_default_error_page = ft::getStringFromFile(server_map["DEFAULT_ERROR_PAGE"]);
+	
 	//socket 생성
 	if((m_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
 		throw std::runtime_error("SOCKET ERROR");
@@ -39,7 +40,6 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 	if (setsockopt(m_fd, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(int)) == -1)
 		throw std::runtime_error("SOCKET_OPTION ERROR");
 	ft::bzero(&server_addr, sizeof(struct sockaddr_in));
-	// memset((void *)&server_addr, 0x00, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = inet_addr(m_host.c_str());
 	server_addr.sin_port = htons(m_port);
@@ -49,10 +49,10 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 		throw std::runtime_error("LISTEN ERROR");
 	if (fcntl(m_fd, F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("FCNTL ERROR");
-	// m_manager->fdSet(m_fd, ServerManager::SetType::READ_SET);
-	// if (m_manager->m_max_fd < m_fd)
-	// 	m_manager->m_max_fd = m_fd;
-	m_default_error_page = ft::getStringFromFile(error_page);
+	m_manager->fdSet(m_fd, ServerManager::SetType::READ_SET);
+	if (m_manager->m_max_fd < m_fd)
+		m_manager->m_max_fd = m_fd;
+	
 	for (std::vector<std::string>::iterator it = location_blocks.begin(); it != location_blocks.end(); ++it)
 	{
 		uri = ft::split(ft::split(*it).front(), ' ')[1];
@@ -60,20 +60,6 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 		block = block.substr(block.find('\n') + 1);
 		m_locations.push_back(Location(uri, block));
 	}
-
-	// test
-	std::cout << m_server_name << std::endl;
-	std::cout << m_host << std::endl;
-	std::cout << m_port << std::endl;
-	std::cout << m_fd << std::endl;
-	std::cout << m_request_uri_limit_size << std::endl;
-	std::cout << m_request_header_limit_size << std::endl;
-	std::cout << m_limit_client_body_size << std::endl;
-	std::cout << m_default_error_page << std::endl;
-	std::cout << "------------------" << std::endl;
-	std::cout << m_locations.front() << std::endl;
-	std::cout << "------------------" << std::endl;
-	// std::cout << m_locations.back() << std::endl;
 }
 
 Server::Server(const Server& copy)
@@ -130,15 +116,30 @@ Server& Server::operator=(const Server& obj)
 std::ostream&
 operator<<(std::ostream& out, const Server& server)
 {
-	// out << "" << server.get_m_server_name();
-	// out << "" << server.get_m_host();
-	// out << "" << server.get_m_port();
-	// out << "" << server.get_m_fd();
-	// out << "" << server.get_m_request_uri_limit_size();
-	// out << "" << server.get_m_request_header_limit_size();
-	// out << "" << server.get_m_limit_client_body_size();
-	// out << "" << server.get_m_default_error_page();
-	// out << "" << std::endl;
+
+	out << "server_name: " << server.get_m_server_name() << std::endl;
+	out << "host: " << server.get_m_host() << std::endl;
+	out << "port: " << server.get_m_port() << std::endl;
+	out << "server_fd: " << server.get_m_fd() << std::endl;
+	out << "request_uri_limit_size: " << server.get_m_request_uri_limit_size() << std::endl;
+	out << "request_header_limit_size: " << server.get_m_request_header_limit_size() << std::endl;
+	out << "limit_client_body_size: " << server.get_m_limit_client_body_size() << std::endl;
+	out << "default_error_page: " << server.get_m_default_error_page() << std::endl;
+	out << "--------CONFIG----------" << std::endl;
+	out << *(server.get_m_config()) << std::endl;
+	out << "--------LOCATIONS----------" << std::endl;
+	for (std::vector<Location>::const_iterator it = server.get_m_locations().begin(); it != server.get_m_locations().end(); ++it) {
+		out << *it << std::endl;
+	}
+	std::cout << "--------CONNECTIONS----------" << std::endl;
+	for (std::map<int, Connection>::const_iterator it = server.get_m_connections().begin(); it != server.get_m_connections().end(); ++it) {
+		out << it->second << std::endl;
+	}
+	std::cout << "--------NEXT RESPONSE----------" << std::endl;
+	if (server.get_m_responses().size() > 0)
+		out << server.get_m_responses().front() << std::endl;
+	else
+		out << "Response is not exist." << std::endl;
 	return (out);
 }
 
@@ -146,14 +147,18 @@ operator<<(std::ostream& out, const Server& server)
 /* --------------------------------- GETTER --------------------------------- */
 /* ************************************************************************** */
 
-// std::string Server::get_m_server_name() const { return (this->m_server_name); }
-// std::string Server::get_m_host() const { return (this->m_host); }
-// int Server::get_m_port() const { return (this->m_port); }
-// int Server::get_m_fd() const { return (this->m_fd); }
-// int Server::get_m_request_uri_limit_size() const { return (this->m_request_uri_limit_size); }
-// int Server::get_m_request_header_limit_size() const { return (this->m_request_header_limit_size); }
-// int Server::get_m_limit_client_body_size() const { return (this->m_limit_client_body_size); }
-// std::string Server::get_m_default_error_page() const { return (this->m_default_error_page); }
+const std::string& Server::get_m_server_name() const { return (this->m_server_name); }
+const std::string& Server::get_m_host() const { return (this->m_host); }
+int Server::get_m_port() const { return (this->m_port); }
+int Server::get_m_fd() const { return (this->m_fd); }
+int Server::get_m_request_uri_limit_size() const { return (this->m_request_uri_limit_size); }
+int Server::get_m_request_header_limit_size() const { return (this->m_request_header_limit_size); }
+int Server::get_m_limit_client_body_size() const { return (this->m_limit_client_body_size); }
+const std::string& Server::get_m_default_error_page() const { return (this->m_default_error_page); }
+Config* Server::get_m_config() const { return (this->m_config); }
+const std::vector<Location>& Server::get_m_locations() const { return (this->m_locations); }
+const std::map<int, Connection>& Server::get_m_connections() const { return (this->m_connections); }
+const std::queue<Response>& Server::get_m_responses() const { return (this->m_responses); }
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */
@@ -178,6 +183,68 @@ operator<<(std::ostream& out, const Server& server)
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
 /* ************************************************************************** */
 
+void
+Server::run()
+{
+	int response_count = 0;
+	while (!m_responses.empty() || response_count < SEND_RESPONSE_AT_ONCE)
+	{
+		++response_count;
+		Response response(m_responses.front());
+		m_responses.pop();
+		if (isSendable(response.get_m_connection()->get_m_client_fd()))
+			sendResponse(response);
+		if (response.get_m_connection_type() == Response::ConnectionType::CLOSE)
+			closeConnection(response.get_m_connection()->get_m_client_fd());
+	}
+
+	std::map<int, Connection>::iterator it = m_connections.begin();
+	while (it != m_connections.end())
+	{
+		Request request;
+		int fd = it->first;
+		
+		++it;
+		if (hasException(fd)) {
+			closeConnection(fd);
+			continue ;
+		}
+		if (hasRequest(fd))	{
+			try {
+				request = recvRequest(fd);
+			} catch (int status_code) {
+				createResponse(status_code);
+				continue ;
+			} catch (std::exception& e) {
+				createResponse(500);
+				continue ;
+			}
+			if (m_responses.size() > RESPONSE_OVERLOAD_COUNT) {
+				createResponse(503, "60");
+				closeConnection(fd);
+				continue ;
+			}
+			solveRequest(request);
+		}
+	}
+
+	if (hasNewConnection())
+	{
+		if (m_connections.size() >= (1024 / m_manager->m_servers.size()))
+		{
+			std::map<int, Connection>::iterator it = m_connections.begin();
+			for (; it != m_connections.end(); ++it) {
+				if (!m_manager->fdIsset(it->first, ServerManager::SetType::WRITE_SET))
+					break ;
+			}
+			if (it == m_connections.end())
+				return ;
+			closeConnection(it->first);
+		}
+		acceptNewConnection();
+	}
+}
+
 // bool Server::hasException(int client_fd){}
 // int Server::closeConnection(int client_fd){}
 // int Server::isSendable(int client_fd){}
@@ -197,4 +264,3 @@ operator<<(std::ostream& out, const Server& server)
 // int Server::createResponse(int status){}
 // bool Server::hasNewConnection(){}
 // int Server::acceptNewConnection(){}
-// int Server::run(){}
