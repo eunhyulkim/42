@@ -33,19 +33,25 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 	m_limit_client_body_size = std::stoi(server_map["LIMIT_CLIENT_BODY_SIZE"]);
 	error_page = server_map["DEFAULT_ERROR_PAGE"];
 	//socket 생성
-	if((m_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+	if((m_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
 		throw "SOCKET ERROR";
-	memset((void *)&server_addr, 0x00, sizeof(server_addr));
+	int value = true;
+	if (setsockopt(m_fd, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(int)) == -1)
+		throw "SOCKET_OPTION ERROR";
+	bzero(&server_addr, sizeof(struct sockaddr_in));
+	// memset((void *)&server_addr, 0x00, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = inet_addr(m_host.c_str());
-	std::cout << m_host.c_str() << std::endl;
-	server_addr.sin_port = htons(8080);
-	if(bind(m_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
+	server_addr.sin_port = htons(80);
+	if(bind(m_fd, reinterpret_cast<struct sockaddr *>(&server_addr), sizeof(struct sockaddr)) == -1)
 		throw "BIND ERROR";
 	if(listen(m_fd, 10) == -1)
 		throw "LISTEN ERROR";
-	FD_SET(m_fd, &m_manager->m_read_set);
-	m_manager->m_max_fd = m_fd;
+	if (fcntl(m_fd, F_SETFL, O_NONBLOCK) == -1)
+		throw "FCNTL ERROR";
+	// FD_SET(m_fd, &m_manager->m_read_set);
+	// m_manager->m_max_fd = m_fd;
+	std::cout << error_page << std::endl;
 	std::ifstream in(error_page);
 	while (in)
 	{
