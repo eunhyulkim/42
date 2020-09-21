@@ -130,9 +130,12 @@ Server::run()
 	while (!m_responses.empty() || response_count < SEND_RESPONSE_AT_ONCE)
 	{
 		++response_count;
-		if (isSendable(m_responses.front().get_m_client_fd()))
-			sendResponse();
+		Response response(m_responses.front());
 		m_responses.pop();
+		if (isSendable(response.get_m_client_fd()))
+			sendResponse(response);
+		if (response.get_m_connection() == Response::ConnectionType::CLOSE)
+			closeConnection(response.get_m_client_fd());
 	}
 
 	std::map<int, Connection>::iterator it = m_connections.begin();
@@ -141,8 +144,8 @@ Server::run()
 		Request request;
 		int fd = it->first;
 		
+		++it;
 		if (hasException(fd)) {
-			++it;
 			closeConnection(fd);
 			continue ;
 		}
@@ -151,16 +154,18 @@ Server::run()
 				request = recvRequest(fd);
 			} catch (int status_code) {
 				createResponse(status_code);
-				++it;
 				continue ;
 			} catch (std::exception& e) {
 				createResponse(500);
-				++it;
+				continue ;
+			}
+			if (m_responses.size() > RESPONSE_OVERLOAD_COUNT) {
+				createResponse(503, 60);
+				closeConnection(fd);
 				continue ;
 			}
 			solveRequest(request);
 		}
-		++it;
 	}
 
 	if (hasNewConnection())

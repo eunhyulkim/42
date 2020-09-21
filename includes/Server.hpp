@@ -10,6 +10,7 @@
 # include "ServerManager.hpp"
 
 # define SEND_RESPONSE_AT_ONCE 5
+# define RESPONSE_OVERLOAD_COUNT 20
 
 class Server
 {
