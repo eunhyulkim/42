@@ -136,12 +136,13 @@ Server::run()
 	}
 
 	std::map<int, Connection>::iterator it = m_connections.begin();
-	for (; it != m_connections.end(); ++it)
+	while (it != m_connections.end())
 	{
 		Request request;
 		int fd = it->first;
 		
 		if (hasException(fd)) {
+			++it;
 			closeConnection(fd);
 			continue ;
 		}
@@ -150,13 +151,16 @@ Server::run()
 				request = recvRequest(fd);
 			} catch (int status_code) {
 				createResponse(status_code);
+				++it;
 				continue ;
 			} catch (std::exception& e) {
 				createResponse(500);
+				++it;
 				continue ;
 			}
 			solveRequest(request);
 		}
+		++it;
 	}
 
 	if (hasNewConnection())
