@@ -6,6 +6,11 @@
 # include <map>
 # include <vector>
 # include <queue>
+# include <fstream>
+# include <sys/socket.h>
+# include <sys/types.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
 # include "Location.hpp"
 # include "ServerManager.hpp"
 # include "Connection.hpp"
@@ -31,7 +36,7 @@ class Server
 		std::queue<Response> m_responses;
 	public:
 		Server();
-		Server(ServerManager* server_manager, int server_fd, const std::string& server_block, std::vector<std::string>& location_blocks, Config* config);
+		Server(ServerManager* server_manager, const std::string& server_block, std::vector<std::string>& location_blocks, Config* config);
 		Server(const Server& copy);
 		Server& operator=(const Server& obj);
 		virtual ~Server();

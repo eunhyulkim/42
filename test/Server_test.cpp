@@ -46,7 +46,18 @@ int	main()
 
 	// std::cout << ft::split(ft::split(str).front(), ' ')[1];
 	// std::cout << str.substr(str.find('\n'));
-	Server(NULL, 0, ser, vec, NULL);
+	Server(NULL, ser, vec, NULL);
+	std::string line;
+	std::string m_default_error_page;
+	std::ifstream in("test/log");
+	// std::cout << in.is_open() << std::endl;
+	while (in)
+	{
+		std::getline(in, line);
+		if (in)
+			m_default_error_page += line + '\n';
+	}
+	// std::cout << m_default_error_page << std::endl;
 	// while (str.find('}') != std::string::npos)
 	// {
 	// 	std::string tmp = str.substr(0, str.find('}') + 1);
