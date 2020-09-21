@@ -42,7 +42,7 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 	// memset((void *)&server_addr, 0x00, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = inet_addr(m_host.c_str());
-	server_addr.sin_port = htons(8080);
+	server_addr.sin_port = htons(m_port);
 	if(bind(m_fd, reinterpret_cast<struct sockaddr *>(&server_addr), sizeof(struct sockaddr)) == -1)
 		throw "BIND ERROR";
 	if(listen(m_fd, 10) == -1)
