@@ -171,7 +171,16 @@ Server::run()
 	if (hasNewConnection())
 	{
 		if (m_connections.size() >= (1024 / m_manager->m_servers.count()))
-			closeConnection(m_connections.begin()->first);
+		{
+			std::map<int, Connection>::iterator it = m_connections.begin();
+			for (; it != m_connections.end(); ++it) {
+				if (!m_manager->fdIsset(it->first, ServerManager::SetType::WRITE_SET))
+					break ;
+			}
+			if (it == m_connections.end())
+				return ;
+			closeConnection(it->first);
+		}
 		acceptNewConnection();
 	}
 }
