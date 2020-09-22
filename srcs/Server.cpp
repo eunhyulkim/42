@@ -287,10 +287,13 @@ Server::acceptNewConnection()
 
 	if ((client_fd = accept(m_fd, (struct sockaddr *)&client_addr, &client_addr_size)) == -1)
 		return ;
+	if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1)
+		return ;
 	client_ip = inet_ntoa(client_addr.sin_addr.s_addr);
 	client_port = static_cast<int>(client_addr.sin_port);
 	m_connections[client_fd] = Connection(client_fd, client_ip, client_port);
 	m_manager->fdSet(client_fd, ServerManager::SetType::READ_SET);
+
 	return ;
 }
 
@@ -361,8 +364,9 @@ Server::run()
 
 bool Server::hasRequest(int client_fd)
 {
-	return (m_manager->fdIsset(client_fd, ServerManager::SetType::READ_SET));
+	return (m_manager->fdIsset(client_fd, ServerManager::SetType::READ_COPY_SET));
 }
+
 Request Server::recvRequest(int client_fd, Connection connection)
 {
 	enum TransferType { GENERAL, CHUNKED };
@@ -385,14 +389,14 @@ Request Server::recvRequest(int client_fd, Connection connection)
 	while (!std::cin.eof()) //header parsing
 	{
 		std::getline(std::cin, buf);
-		if (buf == "\r")
+		if (buf == "\r" || buf == "")
 			break;
+		if (!request.isValidHeader(buf))
+			throw (400);
 		buf = ft::rtrim(buf, "\r");
 		size_t pos = buf.find(':');
-		std::string key = buf.substr(0, pos);
-		std::string value = buf.substr(pos + 1);
-		key = ft::trim(key);
-		value = ft::trim(value);
+		std::string key = ft::trim(buf.substr(0, pos));
+		std::string value = ft::trim(buf.substr(pos + 1));
 		for (size_t i = 0 ; i < key.length() ; ++i) // capitalize
 			key[i] = (i == 0 || key[i - 1] == '-') ? std::toupper(key[i]) : std::tolower(key[i]);
 		if (key == "Content-Type" && value.find("chunked") != std::string::npos)
@@ -401,15 +405,14 @@ Request Server::recvRequest(int client_fd, Connection connection)
 		{
 			content_length = std::stoi(value);
 			if (content_length > this->m_limit_client_body_size)
-				throw 413;
+				throw (413);
 		}
 		if (key == "Host")
 			host_header = true;
 		// std::cout << buf << std::endl;
 		request.add_header(key, value);
-		header_size += buf.size() + 2;
 	}
-	if (header_size > this->m_request_header_limit_size || !host_header)
+	if (!host_header)
 		throw 400;
 	if (request.get_m_method() == Request::Method::POST || request.get_m_method() == Request::Method::PUT)
 	{
@@ -418,7 +421,7 @@ Request Server::recvRequest(int client_fd, Connection connection)
 			std::getline(std::cin, buf);
 			origin_message = buf + "\n";
 			buf = ft::rtrim(buf, "\r");
-			if (!content_length)
+			if (content_length)
 				throw 400;
 			content_length = std::stoi(buf);
 		}
