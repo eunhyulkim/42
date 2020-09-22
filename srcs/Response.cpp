@@ -138,6 +138,7 @@ std::map<int, std::string> make_status ()
 	status_map[204] = "No Content";
 	status_map[205] = "Reset Content";
 	status_map[206] = "Partial Content";
+	status_map[299] = "CGI OK";
 	status_map[300] = "Multiple Choice";
 	status_map[301] = "Moved Permanently";
 	status_map[303] = "See Other";
