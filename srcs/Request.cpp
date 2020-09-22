@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jujeong <jujeong@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/21 21:38:44 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/22 15:02:07 by jujeong          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,20 +203,20 @@ void Request::add_origin(std::string added_origin)
 }
 
 
-void Request::add_header(std::string header)
+void Request::add_header(std::string key, std::string value)
 {
-	size_t pos = header.find(':');
-	std::string key = header.substr(0, pos);
-	std::string value = header.substr(pos + 1);
-	key = ft::trim(key);
-	value = ft::trim(value);
-	for (size_t i = 0 ; i < key.length() ; ++i) // capitalize
-		key[i] = (i == 0 || key[i - 1] == '-') ? std::toupper(key[i]) : std::tolower(key[i]);
+	// size_t pos = header.find(':');
+	// std::string key = header.substr(0, pos);
+	// std::string value = header.substr(pos + 1);
+	// key = ft::trim(key);
+	// value = ft::trim(value);
+	// for (size_t i = 0 ; i < key.length() ; ++i) // capitalize
+	// 	key[i] = (i == 0 || key[i - 1] == '-') ? std::toupper(key[i]) : std::tolower(key[i]);
 
-	if (key == "Content-Type" && value == "chunked")
-		m_transfer_type = CHUNKED;
-	if (key == "Content-Length" && std::atoi(value.c_str()) > m_server->get_m_limit_client_body_size())
-		throw 413;
+	// if (key == "Content-Type" && value == "chunked")
+	// 	m_transfer_type = CHUNKED;
+	// if (key == "Content-Length" && std::atoi(value.c_str()) > m_server->get_m_limit_client_body_size())
+	// 	throw 413;
 	std::pair<std::map<std::string, std::string>::iterator, bool> ret = m_headers.insert(std::make_pair(key, value));
 	if (!ret.second)
 		throw 400;
@@ -245,9 +245,9 @@ bool Request::isOverTime()
 
 	if (gettimeofday(&now, NULL) == -1)
 		throw std::runtime_error("gettimeofday error");
-	
+
 	long now_nbr = now.tv_sec * 1000 + now.tv_usec;
 	long start_nbr = m_start_at.tv_sec * 1000 + m_start_at.tv_usec;
-	
+
 	return ((now_nbr - start_nbr) / 1000 >= REQUEST_TIMEOVER);
 }

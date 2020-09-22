@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jujeong <jujeong@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:22 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/21 21:34:26 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/22 15:02:03 by jujeong          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,12 +54,12 @@ public:
 	Request();
 	Request(Connection *conneciton, Server *server, std::string start_line);
 	Request(const Request &x);
-	Request &operator=(const Request &x);	
+	Request &operator=(const Request &x);
 	virtual ~Request();
 
 	void add_content(std::string added_content);
 	void add_origin(std::string added_origin);
-	void add_header(std::string header);
+	void add_header(std::string key, std::string value);
 	bool isValidHeader(std::string header);
 	bool isOverTime();
 
