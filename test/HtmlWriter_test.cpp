@@ -21,8 +21,8 @@ int main(int ac, char *av[])
     std::string title = "Index of /test/";
     html.add_title(title);
     html.add_bgcolor("white");
-    html.add_tag("\"white\">\n", "h1", "text", false);
-    html.add_tag("/h1>\n", "hr", title, true);
+    html.add_tag("\"white\">\n", "h1", title, false);
+    html.add_tag("/h1>\n", "hr", "", true);
     html.add_tag("hr>\n", "pre", "", true);
     
     DIR *dir = NULL;
@@ -40,6 +40,8 @@ int main(int ac, char *av[])
         { 
             std::string content;
             std::string name(de->d_name);
+            if (name == "." || (name != ".." && name[0] == '.'))
+                continue ;
             content.append(html.makeLink(name));
             content.append(std::string(51 - std::string(de->d_name).size(), ' '));
             struct stat buf;
@@ -48,22 +50,10 @@ int main(int ac, char *av[])
             ft::bzero(&t, sizeof(struct tm));
             stat((temp + std::string("/") + name).c_str(), &buf);
             ft::convertTimespecToTm(&buf.st_mtimespec, &t);
-            // t.tv_sec = buf.st_mtimespec.tv_sec;
-            // t.tv_usec = buf.st_mtimespec.tv_nsec / 1000;
-            // gettimeofday(&t, reinterpret_cast<struct timezone *>(NULL));
-            // data.tm_sec = buf.st_mtimespec.tv_sec;
-            // data.tm_min += data.tm_sec / 60;
-            // data.tm_sec = data.tm_sec % 60;
-            // data.tm_hour += data.tm_min / 60;
-            // data.tm_min = data.tm_min % 60;
-            // data.tm_mday += data.tm_hour / 24;
-            // data.tm_hour = data.tm_hour % 24;
-            // std::cout << strftime(buff, sizeof(buff), "%d-%h-%G", &data);
-            // ft::bzero(buff, sizeof(buff));
-            // data.tm_year += data.tm_mday / 365;
-            // data.tm_mday = data.tm_mday % 365;
-            // strftime(buff, sizeof(buff), "%d-%h-%G", &data);
-            // std::cout << buff << std::endl;
+            char buff[1024];
+            strftime(buff, sizeof(buff), "%d-%h-%G %H:%M", &t);
+            content.append(std::string(buff));
+            content.append(std::string(20 - std::to_string(de->d_reclen).size(), ' '));
             content.append(std::to_string(de->d_reclen));
             html.add_line(idx++, content);
         }

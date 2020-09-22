@@ -60,30 +60,36 @@ namespace ft
 	}
 
 	std::string
-	getStringFromFile(std::string file_path)
+	getStringFromFile(std::string file_path, size_t max_size)
 	{
 		int fd = -1;
-		int read_cnt = 0;
+		size_t read_cnt = 0;
 		char buff[1024];
 		std::string ret;
 
 		if ((fd = open(file_path.c_str(), O_RDONLY)) == -1)
 			throw (std::invalid_argument("Failed open to " + file_path));
-		while ((read_cnt = read(fd, buff, 1024)) > 0)
+		while ((read_cnt = read(fd, buff, 1024)) > 0) {
 			ret.append(buff, read_cnt);
+			if (max_size != -1 && ret.size() > max_size)
+				throw (std::overflow_error("overflow max_size in getStringFromFile"));
+		}
 		close(fd);
 		return (ret);
 	}
 
 	std::string
-	getStringFromFd(int fd)
+	getStringFromFd(int fd, size_t max_size)
 	{
 		int read_cnt = 0;
 		char buff[1024];
 		std::string ret;
 
-		while ((read_cnt = read(fd, buff, 1024)) > 0)
+		while ((read_cnt = read(fd, buff, 1024)) > 0) {
 			ret.append(buff, read_cnt);
+			if (max_size != -1 && ret.size() > max_size)
+				throw (std::overflow_error("overflow max_size in getStringFromFile"));
+		}
 		close(fd);
 		return (ret);
 	}
@@ -158,16 +164,22 @@ namespace ft
 			ret += data / number;
 			data %= number;
 		}
+		void makeTime(struct tm* t)
+		{
+			t->tm_mday++;
+			t->tm_year -= 1900;
+		}
 	}
-	bool convertTimespecToTm(struct timespec* s, struct tm* t)
+	void convertTimespecToTm(time_t s, struct tm* t)
 	{
+		ft::bzero(t, sizeof(struct tm));
 		t->tm_gmtoff = 0;
 		t->tm_isdst = 0;
 		t->tm_zone = NULL;
 		t->tm_year = 1970;
 		t->tm_mon = 0;
 
-		long data = s->tv_sec;
+		long data = s + 32400;
 		if (data > 946684800) {
 			t->tm_year = 2000;
 			data -= 946684800;
@@ -175,13 +187,10 @@ namespace ft
 		ft::addDevideResult(t->tm_yday, data, 86400);
 		ft::addDevideResult(t->tm_hour, data, 3600);
 		ft::addDevideResult(t->tm_min, data, 60);
-		t->tm_sec += data;
-		ft::addDevideResult(t->tm_min, t->tm_sec, 60);
-		ft::addDevideResult(t->tm_hour, t->tm_min, 60);
-		ft::addDevideResult(t->tm_yday, t->tm_hour, 24);
+		t->tm_sec = data;
 	
 		while (t->tm_yday > 365) {
-			if (t->tm_year % 4 && t->tm_year % 100 != 0) {
+			if (t->tm_year % 4 == 0 && (t->tm_year % 100 != 0 || t->tm_year % 400 == 0)) {
 				if (t->tm_yday == 366)
 					break ;
 				t->tm_yday--;
@@ -189,18 +198,21 @@ namespace ft
 			t->tm_yday -= 365;
 			t->tm_year++;
 		}
-		std::cout << t->tm_year << std::endl;
 		int months[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-		while (t->tm_yday > months[t->tm_mon])
+		bool leap = t->tm_year % 4 == 0 && (t->tm_year % 100 != 0 || t->tm_year % 400 == 0);
+		t->tm_mday = t->tm_yday;
+		while (t->tm_mday > months[t->tm_mon])
 		{
-			if (t->tm_year % 4 && t->tm_year % 100 != 0 && t->tm_mon == 2) {
-				if (t->tm_yday == 28)
+			if (leap && t->tm_mon == 2) {
+				if (t->tm_mday == 28)
 					break ;
-				t->tm_yday--;
+				t->tm_mday--;
 			}
-			t->tm_yday -= months[t->tm_mon];
+			t->tm_mday -= months[t->tm_mon];
 			t->tm_mon++;
 		}
-		return (true);
+		t->tm_wday = t->tm_mday % 7;
+		makeTime(t);
+		return ;
 	}
 }

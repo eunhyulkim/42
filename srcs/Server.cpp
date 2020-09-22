@@ -4,6 +4,46 @@
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
 /* ************************************************************************** */
 
+std::map<std::string, std::string> makeMimeType ()
+{
+	std::map<std::string, std::string> type_map;
+
+	type_map["avi"] = "video/x-msvivdeo";
+	type_map["bin"] = "application/octet-stream";
+	type_map["bmp"] = "image/bmp";
+	type_map["css"] = "text/css";
+	type_map["csv"] = "text/csv";
+	type_map["doc"] = "application/msword";
+	type_map["docx"] = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+	type_map["gz"] = "application/gzip";
+	type_map["gif"] = "image/gif";
+	type_map["htm"] = "text/html";
+	type_map["html"] = "text/html";
+	type_map["ico"] = "image/vnd.microsoft.icon";
+	type_map["jepg"] = "image/jepg";
+	type_map["jpg"] = "image/jepg";
+	type_map["js"] = "text/javascript";
+	type_map["json"] = "application/json";
+	type_map["mp3"] = "audio/mpeg";
+	type_map["mpeg"] = "video/mpeg";
+	type_map["png"] = "image/png";
+	type_map["pdf"] = "apllication/pdf";
+	type_map["php"] = "application/x-httpd-php";
+	type_map["ppt"] = "application/vnd.ms-powerpoint";
+	type_map["pptx"] = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+	type_map["rar"] = "application/vnd.rar";
+	type_map["sh"] = "application/x-sh";
+	type_map["svg"] = "image/svg+xml";
+	type_map["tar"] = "application/x-tar";
+	type_map["tif"] = "image/tiff";
+	type_map["txt"] = "text/plain";
+	type_map["wav"] = "audio/wav";
+	type_map["xls"] = "application/xhtml+xml";
+	type_map["xlsx"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	type_map["zip"] = "application/zip";
+	return (type_map);
+}
+std::map<std::string, std::string> Server::mime_types = makeMimeType();
 
 /* ************************************************************************** */
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
@@ -214,6 +254,52 @@ Server::inet_ntoa(unsigned int address)
 	return (ret);
 }
 
+std::string
+Server::getExtension(std::string path)
+{
+	std::string ret;
+
+	if (path.find(".") != std::string::npos)
+	{
+		int idx = path.find(".");
+		if (idx != path.size() - 1)
+			ret = path.substr(idx + 1);
+	}
+	return (ret);
+}
+
+std::string
+Server::getMimeTypeHeader(std::string path)
+{
+	std::string extension = getExtension(path);
+	std::string ret;
+	if (!extension.empty() && ft::hasKey(mime_types, extension))
+		ret = "Content-type:" + mime_types[extension];
+	return (ret);
+}
+
+time_t
+Server::getLastModified(std::string path)
+{
+	struct stat buf;
+	struct tm t;
+	char buff[1024];
+	ft::bzero(&buf, sizeof(struct stat));
+	stat(path.c_str(), &buf);
+	return (buf.st_mtimespec.tv_sec);
+}
+
+std::string
+Server::getLastModifiedHeader(std::string path)
+{
+	time_t modified = getLastModified(path);
+	struct tm t;
+	char buff[1024];
+	ft::convertTimespecToTm(&modified, &t);
+	strftime(buff, sizeof(buff), "%a, %d %b %Y %X GMT", &t);
+	return ("Last-Modified:" + std::string(buff));
+}
+
 bool
 Server::hasException(int client_fd) {
 	return (m_manager->fdIsset(client_fd, ServerManager::SetType::ERROR_COPY_SET));
@@ -319,6 +405,26 @@ Server::run()
 	}
 }
 
+namespace {
+	bool isAuthorizationRequired(Location* location) { return (!location->get_m_auth_basic_realm().empty()); }
+	bool hasCredential(const Request& request) { return (ft::hasKey(request.get_m_headers(), "Authorization")); }
+	bool isValidCredentialForm(std::vector<std::string> credential) {
+		return (credential.size() == 2 && credential[0] != "basic");
+	}
+	bool isValidCredentialContent(Location* location, std::vector<std::string>& credential)
+	{
+		std::string key, value;
+		basic_decode(credential[1], key, value);
+		return (key.empty() || value.empty() || !ft::hasKey(location->get_m_auth_basic_file(), key)
+		|| location->get_m_auth_basic_file().find(key)->second != value);
+	}
+	void makeResponse401(Server* server, const Request& request) {
+		std::string header = "WWW-Authenticate:Basic realm=\"";
+		header.append(request.get_m_location()->get_m_auth_basic_realm());
+		header.append("\", charset=\"UTF-8\"");
+		return (server->createResponse(401, HEADERS(1, header)));
+	}
+}
 
 void
 Server::solveRequest(const Request& request)
@@ -327,35 +433,26 @@ Server::solveRequest(const Request& request)
 	std::string method = request.get_m_method_to_string();
 
 	if (!ft::hasKey(location->get_m_allow_method(), method)) {
-		HEADERS headers(1, "Allow: " + ft::containerToString(location->get_m_allow_method(), ", "));
-		createResponse(405, headers, "");
-		return ;
+		HEADERS headers(1, "Allow:" + ft::containerToString(location->get_m_allow_method(), ", "));
+		return (createResponse(405, headers, ""));
 	}
-	if (!location->get_m_auth_basic_realm().empty()) {
-		if (!ft::hasKey(request.get_m_headers(), "Authorization")) {
-			std::string header = "WWW-Authenticate: Basic realm=\"";
-			header.append(request.get_m_location()->get_m_auth_basic_realm());
-			header.append("\", charset=\"UTF-8\"");
-			createResponse(401, HEADERS(1, header));
+	if (isAuthorizationRequired(location)) {
+		if (!hasCredential(request)) {
+			return (makeResponse401(this, request));
 		} else {
 			std::vector<std::string> credential = ft::split(request.get_m_headers().find("Authorization")->second, ' ');
-			if (credential.size() != 2 || credential[0] != "basic") {
+			if (!isValidCredentialForm(credential))
 				return (createResponse(400));
-			}
-			else {
-				std::string key, value;
-				basic_decode(credential[1], key, value);
-				if (key.empty() || value.empty() || !ft::hasKey(location->get_m_auth_basic_file(), key)
-				|| location->get_m_auth_basic_file().find(key)->second != value) {
-					return (createResponse(403));
-				}
-			}
+			else if (!isValidCredentialContent(location, credential))
+				return (createResponse(403));
 		}
 	}
 	Request::Method method = request.get_m_method();
 	if (request.get_m_uri_type() == Request::URIType::DIRECTORY)
-		executeAutoindex(request);
-	if (method == Request::Method::GET)
+		return (executeAutoindex(request));
+	else if (request.get_m_uri_type() == Request::URIType::CGI_PROGRAM)
+		return (executeCGI(request));
+	else if (method == Request::Method::GET)
 		executeGet(request);
 	else if (method == Request::Method::HEAD)
 		executeHead(request);
@@ -378,29 +475,39 @@ Server::solveRequest(const Request& request)
 */
 
 namespace {
-	void makeAutoindexContent(HtmlWriter& html, char *cwd)
+	bool makeAutoindexContent(HtmlWriter& html, char *cwd)
 	{
 		DIR *dir = NULL;
 		struct dirent *de = NULL;
-		bool first = true;
+		char buff[1024];
+		int idx = 7;
 
 		if ((dir = opendir(cwd)) == NULL)
-			return ;
+			return (false);
 		while ((de = readdir(dir)) != NULL) {
-			if (de->d_name == ".")
-				continue ;
+			std::string name = de->d_name;
+            if (name == "." || (name != ".." && name[0] == '.'))
+                continue ;
 			if (de->d_type == 4 || de->d_type == 8) // 4 dir, 8 file
 			{
-				if (first) {
-					html.add_link(de->d_name, "<pre>\n");
-					first = false;
-				}
-				else
-					html.add_link(de->d_name);
+				std::string content;
+				content.append(html.makeLink(name));
+				content.append(std::string(51 - std::string(name).size(), ' '));
+				
+				struct stat buf;
+            	struct tm t;
+				ft::bzero(&buf, sizeof(struct stat));
+				stat((std::string(cwd) + "/" + name).c_str(), &buf);
+				ft::convertTimespecToTm(buf.st_mtimespec.tv_sec, &t);
+				strftime(buff, sizeof(buff), "%d-%h-%G %H:%M", &t);
+
+				content.append(std::string(buff));
+				content.append(std::string(20 - std::to_string(de->d_reclen).size(), ' '));
+				content.append(std::to_string(de->d_reclen));
+				html.add_line(idx++, content);
 			}
 		}
 	}
-	
 	int getValidIndexFd(const Request& request, char *cwd)
 	{
 		std::set<std::string> index = request.get_m_location()->get_m_index();
@@ -423,7 +530,7 @@ void
 Server::executeAutoindex(const Request& request)
 {
 	if (request.get_m_method() != Request::Method::GET)
-		return (createResponse(405, HEADERS(1, "Allow: GET")));
+		return (createResponse(405, HEADERS(1, "Allow:GET")));
 	
 	char cwd[1024];
 	getcwd(cwd, sizeof(cwd));
@@ -434,9 +541,11 @@ Server::executeAutoindex(const Request& request)
 		std::string title = "Index of " + request.get_m_uri();
 		html.add_title(title);
 		html.add_bgcolor("white");
-		html.add_tag("\"white\">\n", "hr", "", true);
+		html.add_tag("\"white\">\n", "h1", title, false);
+		html.add_tag("/h1>\n", "hr", "", true);
 		html.add_tag("hr>\n", "pre", "", true);
-		makeAutoindexContent(html, cwd);
+		if (makeAutoindexContent(html, cwd))
+			return (createResponse(500));
 		createResponse(200, HEADERS(), html.get_m_body());
 	}
 	else
@@ -451,6 +560,24 @@ Server::executeAutoindex(const Request& request)
 void
 Server::executeGet(const Request& request)
 {
+	std::string path = request.get_m_path_translated();
+	std::string body;
+
+	try {
+		body = ft::getStringFromFile(path, m_limit_client_body_size);
+	} catch (std::overflow_error& e) {
+		return (createResponse(413));
+	}
+	
+	HEADERS headers(1, getMimeTypeHeader(path));
+	if (headers[0].empty())
+		return (createResponse(415));
+	headers.push_back(getLastModifiedHeader(path));
+	return (createResponse(200, headers, body));
+}
+
+int Server::executeHead(Request request)
+{
 	
 }
 
@@ -460,7 +587,6 @@ Server::executeGet(const Request& request)
 // bool Server::hasRequest(int client_fd){}
 // Request Server::readRequest(int client_fd){}
 
-// int Server::executeHead(Request request){}
 // int Server::executePut(Request request){}
 // int Server::executePost(Request request){}
 // int Server::executeDelete(Request request){}

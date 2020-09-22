@@ -33,6 +33,7 @@
 class Server
 {
 	private:
+		static std::map<std::string, std::string> mime_types;
 		ServerManager* m_manager;
 		std::string m_server_name;
 		std::string m_host;
@@ -49,6 +50,11 @@ class Server
 	private:
 		void basic_decode(std::string data, std::string& key, std::string& value);
 		std::string inet_ntoa(unsigned int address);
+		std::string getExtension(std::string path);
+		std::string getMimeTypeHeader(std::string path);
+		time_t getLastModified(std::string path);
+		std::string getLastModifiedHeader(std::string path);
+		char** createCGIEnv(Request request);
 	public:
 		Server();
 		Server(ServerManager* server_manager, const std::string& server_block, std::vector<std::string>& location_blocks, Config* config);
@@ -96,15 +102,13 @@ class Server
 		void solveRequest(const Request& request);		
 		void executeAutoindex(const Request& request);
 		void executeGet(const Request& request);
-		// int executeHead(Request request);
+		int executeHead(Request request);
 		// int executePut(Request request);
 		// int executePost(Request request);
 		// int executeDelete(Request request);
 		// int executeOptions(Request request);
 		// int executeTrace(Request request);
-
-		// char** createCGIEnv(Request request);
-		// int executeCGI(Request request);
+		void executeCGI(const Request& request);
 		
 		void createResponse(int status, std::vector<std::string> headers = std::vector<std::string>(), std::string arg = "");
 };
