@@ -369,17 +369,14 @@ Request Server::recvRequest(int client_fd, Connection connection)
 	ssize_t		read_len = 0;
 	ssize_t		total_read_len = 0;
 	char		buffer[1024];
-	std::string	request_message;
 	std::string	origin_message;
 	std::string start_line;
-	std::string header_string;
-	// std::vector<std::string> header_lines;
 	std::string message_body;
 	std::string buf;
 	TransferType transfer_type = GENERAL;
 	int header_size = 0;
 	int content_length = 0;
-	int host_header = 0;
+	bool host_header = false;
 
 	dup2(client_fd, 0);
 	std::getline(std::cin, start_line);
@@ -407,7 +404,7 @@ Request Server::recvRequest(int client_fd, Connection connection)
 				throw 413;
 		}
 		if (key == "Host")
-			host_header = 1;
+			host_header = true;
 		// std::cout << buf << std::endl;
 		request.add_header(key, value);
 		header_size += buf.size() + 2;
@@ -419,12 +416,14 @@ Request Server::recvRequest(int client_fd, Connection connection)
 		if (transfer_type == CHUNKED)
 		{
 			std::getline(std::cin, buf);
-			origin_message = buf + "\r\n";
+			origin_message = buf + "\n";
 			buf = ft::rtrim(buf, "\r");
 			if (!content_length)
 				throw 400;
 			content_length = std::stoi(buf);
 		}
+		if (content_length < 0)
+			throw 400;
 		if (content_length > 0)
 		{
 			while ((read_len = read(client_fd, buffer, 1024)) != -1)
@@ -435,6 +434,11 @@ Request Server::recvRequest(int client_fd, Connection connection)
 					break;
 			}
 		}
+	}
+	else
+	{
+		if ((read_len = read(client_fd, buffer, 1024)) != -1)
+			throw 400;
 	}
 	origin_message += message_body;
 	request.add_content(message_body);
