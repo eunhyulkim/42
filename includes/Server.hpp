@@ -27,6 +27,7 @@
 # define SEND_RESPONSE_AT_ONCE 5
 # define RESPONSE_OVERLOAD_COUNT 20
 # define HEADERS std::vector<std::string>
+# define SERVER_ALLOW_METHODS "GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE"
 
 # include <vector>
 
@@ -102,12 +103,12 @@ class Server
 		void solveRequest(const Request& request);		
 		void executeAutoindex(const Request& request);
 		void executeGet(const Request& request);
-		int executeHead(Request request);
-		// int executePut(Request request);
-		// int executePost(Request request);
-		// int executeDelete(Request request);
-		// int executeOptions(Request request);
-		// int executeTrace(Request request);
+		void executeHead(const Request& request);
+		void executePost(const Request& request);
+		void executePut(const Request& request);
+		void executeDelete(const Request& request);
+		void executeOptions(const Request& request);
+		void executeTrace(const Request& request);
 		void executeCGI(const Request& request);
 		
 		void createResponse(int status, std::vector<std::string> headers = std::vector<std::string>(), std::string arg = "");

@@ -261,7 +261,7 @@ Server::getExtension(std::string path)
 
 	if (path.find(".") != std::string::npos)
 	{
-		int idx = path.find(".");
+		int idx = path.rfind(".");
 		if (idx != path.size() - 1)
 			ret = path.substr(idx + 1);
 	}
@@ -507,6 +507,16 @@ namespace {
 				html.add_line(idx++, content);
 			}
 		}
+		closedir(dir);
+	}
+	void makeAutoindexForm(HtmlWriter& html, const Request& request)
+	{
+		std::string title = "Index of " + request.get_m_uri();
+		html.add_title(title);
+		html.add_bgcolor("white");
+		html.add_tag("\"white\">\n", "h1", title, false);
+		html.add_tag("/h1>\n", "hr", "", true);
+		html.add_tag("hr>\n", "pre", "", true);
 	}
 	int getValidIndexFd(const Request& request, char *cwd)
 	{
@@ -538,12 +548,7 @@ Server::executeAutoindex(const Request& request)
 	if (request.get_m_location()->get_m_autoindex())
 	{
 		HtmlWriter html;
-		std::string title = "Index of " + request.get_m_uri();
-		html.add_title(title);
-		html.add_bgcolor("white");
-		html.add_tag("\"white\">\n", "h1", title, false);
-		html.add_tag("/h1>\n", "hr", "", true);
-		html.add_tag("hr>\n", "pre", "", true);
+		makeAutoindexForm(html, request);
 		if (makeAutoindexContent(html, cwd))
 			return (createResponse(500));
 		createResponse(200, HEADERS(), html.get_m_body());
@@ -576,9 +581,76 @@ Server::executeGet(const Request& request)
 	return (createResponse(200, headers, body));
 }
 
-int Server::executeHead(Request request)
+void
+Server::executeHead(const Request& request)
 {
+	std::string path = request.get_m_path_translated();
+	std::string body;
+
+	try {
+		body = ft::getStringFromFile(path, m_limit_client_body_size);
+	} catch (std::overflow_error& e) {
+		return (createResponse(413));
+	}
 	
+	HEADERS headers(1, getMimeTypeHeader(path));
+	if (headers[0].empty())
+		return (createResponse(415));
+	headers.push_back(getLastModifiedHeader(path));
+	headers.push_back("content-length:" + std::to_string(body.size()));
+	return (createResponse(200, headers));
+}
+
+void
+Server::executeTrace(const Request& request) {
+	createResponse(200, HEADERS(1, "Content-Type:text/plain"), request.get_m_origin());
+}
+
+void
+Server::executePost(const Request& request) {
+	if (request.get_m_content() == 0)
+		return (executeGet(request));
+}
+
+void
+Server::executeOptions(const Request& request) {
+	if (request.get_m_uri() == "*")
+		return (createResponse(200, HEADERS(1, std::string("Allow:") + SERVER_ALLOW_METHODS)));
+	HEADERS headers(1, "Allow:" + ft::containerToString(request.get_m_location()->get_m_allow_method(), ", "));
+	return (createResponse(200, headers));
+}
+
+void
+Server::executePut(const Request& request)
+{
+	int fd;
+	struct stat buf;
+
+	stat(request.get_m_path_translated().c_str(), &buf);
+	HEADERS headers(1, getMimeTypeHeader(request.get_m_path_translated()));
+	if (headers[0].empty())
+		return (createResponse(415));
+	if ((fd = open(request.get_m_path_translated().c_str(), O_RDWR | O_CREAT)) == -1)
+		createResponse(500);
+	if (write(fd, request.get_m_content().c_str(), request.get_m_content().size()) == -1)
+		createResponse(500);
+	close(fd);
+	if (S_ISREG(buf.st_mode))
+		return (createResponse(204));
+	headers.push_back("Location:" + m_host + "/" + request.get_m_uri());
+	return (createResponse(201, headers, request.get_m_content()));
+}
+
+void
+Server::executeDelete(const Request& request) {
+	if (unlink(request.get_m_path_translated().c_str()) == -1)
+		createResponse(204);
+}
+
+void
+Server::executeCGI(const Request& request)
+{
+		
 }
 
 // int Server::isSendable(int client_fd){}
@@ -587,13 +659,6 @@ int Server::executeHead(Request request)
 // bool Server::hasRequest(int client_fd){}
 // Request Server::readRequest(int client_fd){}
 
-// int Server::executePut(Request request){}
-// int Server::executePost(Request request){}
-// int Server::executeDelete(Request request){}
-// int Server::executeOptions(Request request){}
-// int Server::executeTrace(Request request){}
-
 // char** Server::createCGIEnv(Request request){}
-// int Server::executeCGI(Request request){}
 
 // int Server::createResponse(int status){}

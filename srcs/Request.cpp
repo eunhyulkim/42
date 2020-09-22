@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/22 01:22:27 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/23 00:40:23 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,12 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 
 	if (parsed[1].length() > m_server->get_m_request_uri_limit_size())
 		throw 414;
-	m_uri = parsed[1];
+	if (m_method == GET && parsed[1].find("?") != std::string::npos) {
+		m_query = parsed[1].substr(parsed[1].find("?") + 1);
+		m_uri = parsed[1].substr(0, parsed[1].find("?"));
+	}
+	else
+		m_uri = parsed[1];
 	int max_uri_match = 0;
 	for (std::vector<Location>::const_iterator it = m_server->get_m_locations().begin() ; it != m_server->get_m_locations().end() ; ++it)
 	{
@@ -80,7 +85,8 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		}
 	}
 	else if (S_ISDIR(buf.st_mode)) m_uri_type = DIRECTORY;
-	else throw 404;
+	else if (m_method != PUT)
+		throw 404;
 
 	m_protocol = parsed[2];
 	if (m_protocol != "HTTP/1.1")
@@ -101,6 +107,7 @@ Request::Request(const Request &x)
 	m_headers = x.m_headers;
 	m_transfer_type = x.m_transfer_type;
 	m_content = x.m_content;
+	m_query = x.m_query;
 	m_origin = x.m_origin;
 }
 
@@ -134,6 +141,7 @@ Request &Request::operator=(const Request &x)
 	m_headers = x.m_headers;
 	m_transfer_type = x.m_transfer_type;
 	m_content = x.m_content;
+	m_query = x.m_query;
 	m_origin = x.m_origin;
 
 	return (*this);
@@ -168,6 +176,7 @@ const std::string		&Request::get_m_protocol() const { return (m_protocol); }
 const std::map<std::string, std::string> &Request::get_m_headers() const { return (m_headers); }
 Request::TransferType	Request::get_m_transfer_type() const { return (m_transfer_type); }
 const std::string		&Request::get_m_content() const { return (m_content); }
+const std::string		&Request::get_m_query() const { return (m_query); }
 const std::string		&Request::get_m_origin() const { return (m_origin); }
 const std::string		&Request::get_m_path_translated() const { return (m_path_translated); }
 std::string 			Request::get_m_method_to_string() const

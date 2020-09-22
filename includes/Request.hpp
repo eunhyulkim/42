@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:22 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/21 21:34:26 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/23 00:31:33 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ private:
 	std::map<std::string, std::string> m_headers;
 	TransferType m_transfer_type;
 	std::string m_content;
+	std::string m_query;
 	std::string m_origin;
 	std::string m_path_translated;
 
@@ -74,6 +75,7 @@ public:
 	const std::map<std::string, std::string> &get_m_headers() const;
 	TransferType get_m_transfer_type() const;
 	const std::string &get_m_content() const;
+	const std::string &get_m_query() const;
 	const std::string &get_m_origin() const;
 	const std::string &get_m_path_translated() const;
 };
