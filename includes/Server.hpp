@@ -4,6 +4,7 @@
 # include <string>
 # include <iostream>
 # include <map>
+# include <set>
 # include <vector>
 # include <queue>
 # include <sys/socket.h>
@@ -21,13 +22,6 @@
 
 # define SEND_RESPONSE_AT_ONCE 5
 # define RESPONSE_OVERLOAD_COUNT 20
-
-# include <vector>
-# include <set>
-# include <map>
-# include "Location.hpp"
-# include "Request.hpp"
-# include "libft.hpp"
 
 class Server
 {
@@ -89,10 +83,10 @@ class Server
 		// int isSendable(int client_fd);
 		// int sendResponse(Response response);
 
-		// bool hasRequest(int client_fd);
-		// Request recvRequest(int client_fd);
+		bool hasRequest(int client_fd);
+		Request recvRequest(int client_fd, Connection connection);
 
-		void solveRequest(const Request& request);		
+		void solveRequest(const Request& request);
 		// void executeAutoindex(const Request& request);
 		// int executeGet(Request request);
 		// int executeHead(Request request);
@@ -104,7 +98,7 @@ class Server
 
 		// char** createCGIEnv(Request request);
 		// int executeCGI(Request request);
-		
+
 		// int createResponse(int status);
 };
 

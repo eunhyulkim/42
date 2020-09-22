@@ -32,7 +32,7 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 	m_request_header_limit_size = std::stoi(server_map["REQUEST_HEADER_LIMIT_SIZE"]);
 	m_limit_client_body_size = std::stoi(server_map["LIMIT_CLIENT_BODY_SIZE"]);
 	m_default_error_page = ft::getStringFromFile(server_map["DEFAULT_ERROR_PAGE"]);
-	
+
 	//socket 생성
 	if((m_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
 		throw std::runtime_error("SOCKET ERROR");
@@ -52,7 +52,7 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 	m_manager->fdSet(m_fd, ServerManager::SetType::READ_SET);
 	if (m_manager->m_max_fd < m_fd)
 		m_manager->m_max_fd = m_fd;
-	
+
 	for (std::vector<std::string>::iterator it = location_blocks.begin(); it != location_blocks.end(); ++it)
 	{
 		uri = ft::split(ft::split(*it).front(), ' ')[1];
@@ -188,7 +188,7 @@ const std::queue<Response>& Server::get_m_responses() const { return (this->m_re
 ** 1. check request method is allowed
 ** 2. Check authentication is required
 ** 2. If uri is directory, check reqeust method is GET(if not, response 405)
-** 3. if uri is directory(with GET method), executeAutoindex 
+** 3. if uri is directory(with GET method), executeAutoindex
 */
 
 void base64_decode(std::string data, std::string& key, std::string& value)
@@ -240,7 +240,7 @@ Server::solveRequest(const Request& request)
 	else if (method == Request::Method::OPTIONS)
 		executeOptions(request);
 	else if (method == Request::Method::TRACE)
-		executeTrace(request);	
+		executeTrace(request);
 }
 
 std::string
@@ -314,7 +314,7 @@ Server::run()
 	{
 		Request request;
 		int fd = it->first;
-		
+
 		++it;
 		if (hasException(fd)) {
 			closeConnection(fd);
@@ -322,7 +322,7 @@ Server::run()
 		}
 		if (hasRequest(fd))	{
 			try {
-				request = recvRequest(fd);
+				request = recvRequest(fd, it->second);
 			} catch (int status_code) {
 				createResponse(status_code);
 				continue ;
@@ -359,8 +359,48 @@ Server::run()
 // int Server::isSendable(int client_fd){}
 // int Server::sendResponse(Response response){}
 
-// bool Server::hasRequest(int client_fd){}
-// Request Server::readRequest(int client_fd){}
+bool Server::hasRequest(int client_fd)
+{
+	return (m_manager->fdIsset(client_fd, ServerManager::SetType::READ_SET));
+}
+Request Server::recvRequest(int client_fd, Connection connection)
+{
+	ssize_t		read_len;
+	char		buf[1024];
+	std::string	request_message;
+	std::string	origin_message;
+	std::string start_line;
+	std::string header_string;
+	std::vector<std::string> header_lines;
+	std::string message_body;
+
+	while ((read_len = read(client_fd, buf, 1024)) != -1)
+	{
+		request_message.append(buf, read_len);
+	}
+	start_line = request_message.substr(0, request_message.find("\r\n"));
+	origin_message = request_message;
+	request_message = request_message.substr(request_message.find("\r\n") + 2);
+	header_string = request_message.substr(0, request_message.find("\r\n\r\n"));
+	message_body = request_message.substr(request_message.find("\r\n\r\n") + 4);
+	if (header_string.size() > this->m_request_header_limit_size)
+		throw 400;
+	header_lines = ft::split(header_string);
+	Request request(&connection, this, start_line);
+	for (std::vector<std::string>::iterator it = header_lines.begin(); it != header_lines.end(); ++it)
+	{
+		*it = ft::rtrim(*it, "\r");
+		request.add_header(*it);
+	}
+	request.add_content(message_body);
+	request.add_origin(origin_message);
+	// std::cout << start_line << std::endl;
+	// std::cout << "------------------" << std::endl;
+	// std::cout << header_string << std::endl;
+	// std::cout << "------------------" << std::endl;
+	// std::cout << message_body << std::endl;
+	return (request);
+}
 
 // void executeAutoindex(const Request& request);
 // int Server::executeGet(Request request){}
