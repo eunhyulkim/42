@@ -96,29 +96,48 @@ HtmlWriter::add_tag(std::string front_token, std::string tag, std::string conten
 	if (newline)
 		token.append("\n");
 	token.append(content);
+	if (newline && !content.empty())
+		token.append("\n");
 	token.append("</" + tag + ">\n");
+	std::cout << "TOKEN" << std::endl;
+	std::cout << token << std::endl;
+	std::cout << std::boolalpha << newline << std::endl;
 	m_body.insert(m_body.find(front_token) + front_token.size(), token);
 }
 
 void
-HtmlWriter::add_link(std::string address, std::string front_token, std::string content)
+HtmlWriter::add_text(std::string front_token, std::string content, bool newline)
+{
+	std::string token = content;
+
+	if (newline)
+		token.append("\n");
+	m_body.insert(m_body.rfind(front_token) + front_token.size(), token);
+}
+
+std::string
+HtmlWriter::makeLink(std::string address, std::string content)
 {
 	std::string token = "<a href=\"" + address + "\">";
 	if (!content.empty())
 		token.append(content);
 	else
 		token.append(address);
-	token.append("</a>\n");
-	int idx = m_body.find("</body>");
-	if (front_token.empty() && m_body.find("<a href") == std::string::npos) {
-		idx = m_body.find("<body") + 5;
-		while (m_body[idx] != '>')
-			++idx;
-		idx += 2;
+	token.append("</a>");
+	return (token);
+}
+
+void
+HtmlWriter::add_line(int line_idx, std::string line)
+{
+	int idx = 1;
+	int pos = 0;
+	std::string body = m_body;
+	while (idx < line_idx) {
+		pos += body.find("\n") + 1;
+		body = body.substr(body.find("\n") + 1);
+		++idx;
 	}
-	else if (!front_token.empty())
-		idx = m_body.rfind(front_token) + front_token.size();
-	else
-		idx = m_body.rfind("/a>") + 4;
-	m_body.insert(idx, token);
+
+	m_body.insert(pos, line + "\n");
 }

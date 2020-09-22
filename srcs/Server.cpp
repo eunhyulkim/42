@@ -395,7 +395,8 @@ namespace {
 					html.add_link(de->d_name, "<pre>\n");
 					first = false;
 				}
-				html.add_link(de->d_name);
+				else
+					html.add_link(de->d_name);
 			}
 		}
 	}
@@ -430,12 +431,11 @@ Server::executeAutoindex(const Request& request)
 	if (request.get_m_location()->get_m_autoindex())
 	{
 		HtmlWriter html;
-		
-		html.add_title("Index of /test/");
+		std::string title = "Index of " + request.get_m_uri();
+		html.add_title(title);
 		html.add_bgcolor("white");
 		html.add_tag("\"white\">\n", "hr", "", true);
 		html.add_tag("hr>\n", "pre", "", true);
-		
 		makeAutoindexContent(html, cwd);
 		createResponse(200, HEADERS(), html.get_m_body());
 	}

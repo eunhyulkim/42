@@ -12,6 +12,16 @@ namespace ft
 			str[--len] = 0;
 	}
 
+	size_t
+	pow(size_t root, size_t square) {
+		size_t idx = 0;
+		size_t ret = 1;
+		while (idx++ < square) {
+			ret *= root;
+		}
+		return (ret);
+	}
+
 	std::string
 	ltrim(std::string s, std::string seps)
 	{
@@ -128,7 +138,7 @@ namespace ft
 		return (ret);
 	}
 	
-	std::string containerToString(std::vector<unsigned char> container, std::string sep = " ")
+	std::string containerToString(std::vector<unsigned char> container, std::string sep)
 	{
         std::string ret;
 		for (std::vector<unsigned char>::iterator it = container.begin(); it != container.end(); ++it)
@@ -141,4 +151,56 @@ namespace ft
 		return (ret);
     }
 
+	namespace {
+		template<typename T>
+		void addDevideResult(int& ret, T& data, int number)
+		{
+			ret += data / number;
+			data %= number;
+		}
+	}
+	bool convertTimespecToTm(struct timespec* s, struct tm* t)
+	{
+		t->tm_gmtoff = 0;
+		t->tm_isdst = 0;
+		t->tm_zone = NULL;
+		t->tm_year = 1970;
+		t->tm_mon = 0;
+
+		long data = s->tv_sec;
+		if (data > 946684800) {
+			t->tm_year = 2000;
+			data -= 946684800;
+		}
+		ft::addDevideResult(t->tm_yday, data, 86400);
+		ft::addDevideResult(t->tm_hour, data, 3600);
+		ft::addDevideResult(t->tm_min, data, 60);
+		t->tm_sec += data;
+		ft::addDevideResult(t->tm_min, t->tm_sec, 60);
+		ft::addDevideResult(t->tm_hour, t->tm_min, 60);
+		ft::addDevideResult(t->tm_yday, t->tm_hour, 24);
+	
+		while (t->tm_yday > 365) {
+			if (t->tm_year % 4 && t->tm_year % 100 != 0) {
+				if (t->tm_yday == 366)
+					break ;
+				t->tm_yday--;
+			}
+			t->tm_yday -= 365;
+			t->tm_year++;
+		}
+		std::cout << t->tm_year << std::endl;
+		int months[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+		while (t->tm_yday > months[t->tm_mon])
+		{
+			if (t->tm_year % 4 && t->tm_year % 100 != 0 && t->tm_mon == 2) {
+				if (t->tm_yday == 28)
+					break ;
+				t->tm_yday--;
+			}
+			t->tm_yday -= months[t->tm_mon];
+			t->tm_mon++;
+		}
+		return (true);
+	}
 }
