@@ -417,7 +417,7 @@ ServerManager::createServer(const std::string& configuration_file_path, char **e
 	std::string config_block;
 	std::vector<std::string> server_strings;
 
-	if (splitConfigString(config_string, config_block, server_strings))
+	if (!splitConfigString(config_string, config_block, server_strings))
 		throw (std::invalid_argument("Failed to split configuration string"));
 	if (!isValidConfigBlock(config_block))
 		throw (std::invalid_argument("Config block is not valid."));
@@ -437,6 +437,8 @@ ServerManager::createServer(const std::string& configuration_file_path, char **e
 		}
 		m_servers.push_back(Server(this, server_block, location_blocks, &this->m_config));
 	}
+	std::cout << "create server" << std::endl;
+	writeCreateServerLog();
 }
 
 bool g_live;
@@ -476,6 +478,7 @@ ServerManager::runServer()
 		for (std::vector<Server>::iterator it = m_servers.begin() ; it != m_servers.end() ; ++it)
 		{
 			it->run();
+			writeServerHealthLog();
 
 			std::map<int, Connection>::const_iterator it2 = it->get_m_connections().begin();
 			while (it2 != it->get_m_connections().end())
@@ -530,6 +533,8 @@ ServerManager::writeCreateServerLog()
 void
 ServerManager::writeServerHealthLog()
 {
+	if (!ft::isRightTime(5))
+		return ;
 	int fd = ServerManager::access_fd;
 	std::string text = "[HealthCheck][Server][Max_fd:" + std::to_string(m_max_fd) \
 	+ "][ReadFD:" + getSetFdString(fd, &m_read_set) + "][WriteFD:" + getSetFdString(fd, &m_write_set) + "]";

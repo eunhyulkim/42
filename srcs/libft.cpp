@@ -413,6 +413,14 @@ namespace ft
 	}
 
 	void log(int fd, std::string text) {
-		write(fd, text.c_str(), text.size() + 1);
+		write(fd, text.c_str(), text.size());
+	}
+	
+	bool isRightTime(int second) {
+		timeval t;
+		gettimeofday(&t, NULL);
+		if (t.tv_sec % second == 0)
+			return (true);
+		return (false);
 	}
 }
