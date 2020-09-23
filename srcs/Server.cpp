@@ -935,6 +935,13 @@ namespace {
 					std::getline(std::cin, buf);
 					origin_message += buf + "\n";
 					buf = ft::rtrim(buf, "\r");
+					if (buf == "0")
+					{
+						if ((read_len = read(client_fd, buffer, 2)) != 2 || std::strncmp(buffer, "\r\n", 2))
+							throw 400;
+						origin_message += "\r\n";
+						break;
+					}
 					content_length = std::stoi(buf);
 					if (content_length > server->get_m_limit_client_body_size())
 						throw (413);
