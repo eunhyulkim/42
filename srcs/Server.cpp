@@ -857,6 +857,22 @@ Server::executeCGI(const Request& request)
 
 // int Server::isSendable(int client_fd){}
 // int Server::sendResponse(Response response){}
+bool Server::isSendable(int client_fd)
+{
+	if (m_manager->fdIsset(client_fd, ServerManager::ERROR_COPY_SET))
+		return (false);
+	else if (m_manager->fdIsset(client_fd, ServerManager::WRITE_COPY_SET))
+		return (true);
+	return (false);
+}
+
+void Server::sendResponse(Response response)
+{
+	int fd = response.get_m_connection()->get_m_client_fd();
+
+	send(fd, response.c_str(), ft::strlen(response.c_str()), 0);
+	m_manager->fdClear(fd, ServerManager::WRITE_SET);
+}
 
 // bool Server::hasRequest(int client_fd){}
 // Request Server::readRequest(int client_fd){}

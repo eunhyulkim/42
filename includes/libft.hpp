@@ -14,6 +14,7 @@
 
 namespace ft {
     void bzero(void *data, size_t len);
+    size_t strlen(const char *s);
     size_t pow(size_t root, size_t square);
     void *memcpy(void *dest, const void *src, size_t len);
     void *calloc(size_t size, size_t count);

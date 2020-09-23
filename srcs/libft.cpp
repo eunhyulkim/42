@@ -12,6 +12,16 @@ namespace ft
 			str[--len] = 0;
 	}
 
+	size_t
+	strlen(const char *s)
+	{
+		size_t i = 0;
+
+		while (s[i] != '\0')
+			i++;
+		return (i);
+	}
+
 	void *
 	memcpy(void *dest, const void *src, size_t len)
 	{
