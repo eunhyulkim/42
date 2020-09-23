@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:22 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/23 21:03:37 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/23 21:14:43 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 # include "Connection.hpp"
 # include "Server.hpp"
 # include "Location.hpp"
+
+class Server;
 
 class Request
 {

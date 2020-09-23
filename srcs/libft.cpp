@@ -231,7 +231,7 @@ namespace ft
 	}
 
 	std::string
-	getStringFromFile(std::string file_path, size_t max_size)
+	getStringFromFile(std::string file_path, int max_size)
 	{
 		int fd = -1;
 		size_t read_cnt = 0;
@@ -242,7 +242,7 @@ namespace ft
 			throw (std::invalid_argument("Failed open to " + file_path));
 		while ((read_cnt = read(fd, buff, 1024)) > 0) {
 			ret.append(buff, read_cnt);
-			if (max_size != -1 && ret.size() > max_size)
+			if (max_size != -1 && static_cast<int>(ret.size()) > max_size)
 				throw (std::overflow_error("overflow max_size in getStringFromFile"));
 		}
 		close(fd);
@@ -250,7 +250,7 @@ namespace ft
 	}
 
 	std::string
-	getStringFromFd(int fd, size_t max_size)
+	getStringFromFd(int fd, int max_size)
 	{
 		int read_cnt = 0;
 		char buff[1024];
@@ -258,7 +258,7 @@ namespace ft
 
 		while ((read_cnt = read(fd, buff, 1024)) > 0) {
 			ret.append(buff, read_cnt);
-			if (max_size != -1 && ret.size() > max_size)
+			if (max_size != -1 && ret.size() > static_cast<int>(max_size))
 				throw (std::overflow_error("overflow max_size in getStringFromFile"));
 		}
 		close(fd);
@@ -286,7 +286,7 @@ namespace ft
 	{
 		std::set<std::string> ret;
 
-		for (int i = 0; i < stringVector.size(); ++i) {
+		for (size_t i = 0; i < stringVector.size(); ++i) {
 			ret.insert(stringVector[i]);
 		}
 		return (ret);
@@ -299,7 +299,7 @@ namespace ft
 
 		if (stringVector.size() == 0)
 			return ret;
-		for (int i = 0; i < stringVector.size(); ++i)
+		for (size_t i = 0; i < stringVector.size(); ++i)
 		{
 			if (stringVector[i].find(sep) == std::string::npos)
 				throw (std::invalid_argument("Not found sep in string"));

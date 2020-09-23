@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/23 21:00:04 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/23 21:22:49 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		throw 414;
 
 	m_uri = parsed[1];
-	int max_uri_match = 0;
+	size_t max_uri_match = 0;
 	for (std::vector<Location>::const_iterator it = m_server->get_m_locations().begin() ; it != m_server->get_m_locations().end() ; ++it)
 	{
 		if (std::strncmp(it->get_m_uri().c_str(), m_uri.c_str(), it->get_m_uri().length()) == 0 && it->get_m_uri().length() > max_uri_match)

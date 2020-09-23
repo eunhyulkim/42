@@ -8,6 +8,7 @@
 # include "Response.hpp"
 # include "Request.hpp"
 
+class Request;
 class ServerManager;
 
 class Server
@@ -20,9 +21,9 @@ class Server
 		std::string m_host;
 		int m_port;
 		int m_fd;
-		int m_request_uri_limit_size;
-		int m_request_header_limit_size;
-		int m_limit_client_body_size;
+		size_t m_request_uri_limit_size;
+		size_t m_request_header_limit_size;
+		size_t m_limit_client_body_size;
 		std::string m_default_error_page;
 		Config* m_config;
 		std::vector<Location> m_locations;
@@ -48,9 +49,9 @@ class Server
 		const std::string& get_m_host() const;
 		int get_m_port() const;
 		int get_m_fd() const;
-		int get_m_request_uri_limit_size() const;
-		int get_m_request_header_limit_size() const;
-		int get_m_limit_client_body_size() const;
+		size_t get_m_request_uri_limit_size() const;
+		size_t get_m_request_header_limit_size() const;
+		size_t get_m_limit_client_body_size() const;
 		const std::string& get_m_default_error_page() const;
 		Config* get_m_config() const;
 		const std::vector<Location>& get_m_locations() const;

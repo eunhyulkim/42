@@ -22,7 +22,7 @@ ServerManager::ServerManager()
     ft::fdZero(&m_error_copy_set);
 }
 
-ServerManager::ServerManager(const ServerManager& copy) {}
+ServerManager::ServerManager(const ServerManager&) {}
 
 /* ************************************************************************** */
 /* ------------------------------- DESTRUCTOR ------------------------------- */
@@ -51,7 +51,7 @@ ServerManager& ServerManager::operator=(const ServerManager& obj)
 }
 
 std::ostream&
-operator<<(std::ostream& out, const Server& server) {
+operator<<(std::ostream& out, const Server&) {
 	return (out);
 }
 
@@ -89,7 +89,7 @@ namespace {
 		bool is_group_line = false;
 		std::vector<std::string> ret;
 		std::vector<std::string> remain;
-		for (int i = 0; i < lines.size(); ++i)
+		for (size_t i = 0; i < lines.size(); ++i)
 		{
 			std::string line = lines[i];
 			if (line.empty())
@@ -129,7 +129,7 @@ ServerManager::splitConfigString(std::string config_string, std::string& config_
 std::vector<std::string>& server_strings)
 {
 	std::vector<std::string> lines = ft::split(config_string);
-	for (int i = 0; i < lines.size(); ++i)
+	for (size_t i = 0; i < lines.size(); ++i)
 		lines[i] = ft::rtrim(lines[i], " \t");
 	server_strings = groupLineWithCondition(lines, "server {", "}", INCLUDE_NOT);
 	config_block = ft::containerToString(lines, "\n");
@@ -142,7 +142,7 @@ ServerManager::splitServerString(std::string server_string, std::string& server_
 std::vector<std::string>& location_blocks)
 {
 	std::vector<std::string> lines = ft::split(server_string);
-	for (int i = 0; i < lines.size(); ++i)
+	for (size_t i = 0; i < lines.size(); ++i)
 		lines[i] = ft::trim(lines[i], " \t");
 	location_blocks = groupLineWithCondition(lines, "location ", "}", INCLUDE_START);
 	server_block = ft::containerToString(lines, "\n");
@@ -401,26 +401,6 @@ ServerManager::fdCopy(SetType fdset)
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
 /* ************************************************************************** */
 
-namespace
-{
-	void
-	printFdSet(fd_set s, int max_fd)
-	{
-		bool first = true;
-		for (int i = 0; i <= max_fd; ++i)
-		{
-			if (ft::fdIsset(i, &s))
-			{
-				if (!first) {
-					std::cout << " ";
-				}
-				first = false;
-				std::cout << i;
-			}
-		}
-	}
-}
-
 void
 ServerManager::openLog()
 {
@@ -441,7 +421,7 @@ ServerManager::createServer(const std::string& configuration_file_path)
 		throw (std::invalid_argument("Failed to split configuration string"));
 	if (!isValidConfigBlock(config_block))
 		throw (std::invalid_argument("Config block is not valid."));
-	for (int i = 0; i < server_strings.size(); ++i)
+	for (size_t i = 0; i < server_strings.size(); ++i)
 	{
 		std::string server_block;
 		std::vector<std::string> location_blocks;
@@ -449,7 +429,7 @@ ServerManager::createServer(const std::string& configuration_file_path)
 			throw (std::invalid_argument("Failed to split Sever string(" + std::to_string(i) + ")"));
 		if (!isValidServerBlock(server_block))
 			throw (std::invalid_argument("Server block(" + std::to_string(i) + ") is not valid."));
-		for (int j = 0; j < location_blocks.size(); ++j) {
+		for (size_t j = 0; j < location_blocks.size(); ++j) {
 			if (!isValidLocationBlock(location_blocks[j]))
 				throw (std::invalid_argument("Location block(" + std::to_string(i) \
 				+ "-" + std::to_string(j) + ") is not valid."));

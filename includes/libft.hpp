@@ -30,8 +30,8 @@ namespace ft {
     std::string ltrim(std::string s, std::string seps = " ");
     std::string rtrim(std::string s, std::string seps = " ");
     std::string trim(std::string s, std::string seps = " ");
-    std::string getStringFromFile(std::string file_path, size_t max_size = -1);
-    std::string getStringFromFd(int fd, size_t max_size = -1);
+    std::string getStringFromFile(std::string file_path, int max_size = -1);
+    std::string getStringFromFd(int fd, int max_size = -1);
     std::vector<std::string> split(std::string s, char c = '\n');
     std::set<std::string> stringVectorToSet(std::vector<std::string> stringVector);
     std::map<std::string, std::string> stringVectorToMap(std::vector<std::string> stringVector, char sep = ':');

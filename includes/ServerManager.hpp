@@ -29,7 +29,7 @@ class ServerManager
         bool isValidLocationBlock(std::string& location_block);
 	public:
 		ServerManager();
-		ServerManager(const ServerManager& copy);
+		ServerManager(const ServerManager&);
 		ServerManager& operator=(const ServerManager& obj);
 		virtual ~ServerManager();
 
@@ -62,6 +62,6 @@ class ServerManager
 };
 
 std::ostream&
-operator<<(std::ostream& out, const Server& server);
+operator<<(std::ostream& out, const Server&);
 
 #endif

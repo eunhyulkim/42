@@ -66,7 +66,7 @@ Response::operator=(const Response& obj)
 std::ostream&
 operator<<(std::ostream& out, const Response& Response)
 {
-	int len = 0;
+	size_t len = 0;
 	std::map<std::string, std::string>::const_iterator it = Response.get_m_headers().begin();
 	out << "STATUS_CODE: " << Response.get_m_status_code() << std::endl
 	<< "STATUS_DESCRIPTION: " << Response.get_m_status_description() << std::endl
