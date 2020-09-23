@@ -86,8 +86,8 @@ class Server
 		void acceptNewConnection();
 		void run();
 
-		// int isSendable(int client_fd);
-		// int sendResponse(Response response);
+		bool isSendable(int client_fd);
+		void sendResponse(Response response);
 
 		// bool hasRequest(int client_fd);
 		// Request recvRequest(int client_fd);
