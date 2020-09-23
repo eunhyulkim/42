@@ -4,6 +4,7 @@ int main(int ac, char *av[], char **env)
 {
     ServerManager manager;
 
+    manager.openLog();
     if (ac > 2)
         manager.exitServer("There are many arguments.");
     else {
@@ -16,7 +17,6 @@ int main(int ac, char *av[], char **env)
             manager.exitServer(e.what());
         }
     }
-    manager.openLog();
     manager.runServer();
     exit(EXIT_SUCCESS);
 }

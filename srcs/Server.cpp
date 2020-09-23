@@ -91,7 +91,6 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 	if (fcntl(m_fd, F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("FCNTL ERROR");
 	m_manager->fdSet(m_fd, ServerManager::READ_SET);
-	// m_manager->fdSet(m_fd, ServerManager::SetType::READ_SET);
 	if (m_manager->get_m_max_fd() < m_fd)
 		m_manager->set_m_max_fd(m_fd);
 	for (std::vector<std::string>::iterator it = location_blocks.begin(); it != location_blocks.end(); ++it)

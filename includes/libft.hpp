@@ -10,7 +10,7 @@
 # include <set>
 # include <map>
 # include <exception>
-# include <time.h>
+# include <sys/time.h>
 
 namespace ft {
     void bzero(void *data, size_t len);
@@ -44,6 +44,8 @@ namespace ft {
 	int fdIsset(int fd, fd_set *x);
 	void fdClr(int fd, fd_set *x);
     void log(int fd, std::string text);
+    bool isRightTime(int second);
+
     template <typename T, typename V>
     bool hasKey(T& container, V& value) { return (container.find(value) != container.end()); }
     template <typename T>
