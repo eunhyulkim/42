@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/21 21:38:44 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/23 12:51:35 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 
 	if (parsed[1].length() > m_server->get_m_request_uri_limit_size())
 		throw 414;
+	
 	m_uri = parsed[1];
 	int max_uri_match = 0;
 	for (std::vector<Location>::const_iterator it = m_server->get_m_locations().begin() ; it != m_server->get_m_locations().end() ; ++it)
@@ -64,6 +65,27 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		m_uri.erase(m_uri.begin());
 	else if (root[root.size() - 1] != '/' && m_uri[0] != '/')
 		m_uri.insert(0, 1, '/');
+	
+	if ((m_method == GET || m_method == HEAD) && m_uri.find("?") != std::string::npos) {
+		m_query = m_uri.substr(parsed[1].find("?") + 1);
+		m_uri = m_uri.substr(0, parsed[1].find("?"));
+		if (m_query.find("/") != std::string::npos && m_query.find("/") != m_query.size() - 1) {
+			m_path_info = m_query.substr(m_query.find("/") + 1);
+			m_query = m_query.substr(0, m_query.find("/"));
+		}
+	} else if (m_method == POST) {
+		for (std::set<std::string>::const_iterator it = m_location->get_m_cgi().begin() ; it != m_location->get_m_cgi().end() ; ++it)
+		{
+			std::string token = *it + "/";
+			if (m_uri.find(token) != std::string::npos && m_uri.find(token) + (token).size() < m_uri.size())
+			{
+				m_path_info = m_uri.substr(m_uri.find(token) + token.size());
+				m_uri = m_uri.substr(0, m_uri.find(token) + token.size() - 1);
+				break ;
+			}
+		}		
+	}
+
 	m_path_translated = root + m_uri;
 	struct stat buf;
 	stat(m_path_translated.c_str(), &buf);
@@ -80,7 +102,8 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		}
 	}
 	else if (S_ISDIR(buf.st_mode)) m_uri_type = DIRECTORY;
-	else throw 404;
+	else if (m_method != PUT || m_method != TRACE)
+		throw 404;
 
 	m_protocol = parsed[2];
 	if (m_protocol != "HTTP/1.1")
@@ -101,6 +124,8 @@ Request::Request(const Request &x)
 	m_headers = x.m_headers;
 	m_transfer_type = x.m_transfer_type;
 	m_content = x.m_content;
+	m_query = x.m_query;
+	m_path_info = x.m_path_info;
 	m_origin = x.m_origin;
 }
 
@@ -134,6 +159,8 @@ Request &Request::operator=(const Request &x)
 	m_headers = x.m_headers;
 	m_transfer_type = x.m_transfer_type;
 	m_content = x.m_content;
+	m_query = x.m_query;
+	m_path_info = x.m_path_info;
 	m_origin = x.m_origin;
 
 	return (*this);
@@ -168,6 +195,7 @@ const std::string		&Request::get_m_protocol() const { return (m_protocol); }
 const std::map<std::string, std::string> &Request::get_m_headers() const { return (m_headers); }
 Request::TransferType	Request::get_m_transfer_type() const { return (m_transfer_type); }
 const std::string		&Request::get_m_content() const { return (m_content); }
+const std::string		&Request::get_m_query() const { return (m_query); }
 const std::string		&Request::get_m_origin() const { return (m_origin); }
 const std::string		&Request::get_m_path_translated() const { return (m_path_translated); }
 std::string 			Request::get_m_method_to_string() const
@@ -239,7 +267,7 @@ bool Request::isValidHeader(std::string header)
 	return (true);
 }
 
-bool Request::isOverTime()
+bool Request::isOverTime() const
 {
 	timeval now;
 

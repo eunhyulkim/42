@@ -5,11 +5,14 @@
 # include <iostream>
 # include <map>
 # include <vector>
+# include <set>
 # include <queue>
 # include <sys/socket.h>
 # include <sys/types.h>
 # include <netinet/in.h>
 # include <arpa/inet.h>
+# include <dirent.h>
+# include <fcntl.h>
 # include "libft.hpp"
 # include "Location.hpp"
 # include "ServerManager.hpp"
@@ -18,20 +21,21 @@
 # include "Response.hpp"
 # include "Config.hpp"
 # include "Request.hpp"
+# include "Base64.hpp"
+# include "HtmlWriter.hpp"
 
 # define SEND_RESPONSE_AT_ONCE 5
 # define RESPONSE_OVERLOAD_COUNT 20
+# define CGI_META_VARIABLE_COUNT 15
+# define HEADERS std::vector<std::string>
+# define SERVER_ALLOW_METHODS "GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE"
 
 # include <vector>
-# include <set>
-# include <map>
-# include "Location.hpp"
-# include "Request.hpp"
-# include "libft.hpp"
 
 class Server
 {
 	private:
+		static std::map<std::string, std::string> mime_types;
 		ServerManager* m_manager;
 		std::string m_server_name;
 		std::string m_host;
@@ -46,8 +50,13 @@ class Server
 		std::map<int, Connection> m_connections;
 		std::queue<Response> m_responses;
 	private:
-		void base64_decode(std::string data, std::string& key, std::string& value);
+		void basic_decode(std::string data, std::string& key, std::string& value);
 		std::string inet_ntoa(unsigned int address);
+		std::string getExtension(std::string path);
+		std::string getMimeTypeHeader(std::string path);
+		time_t getLastModified(std::string path);
+		std::string getLastModifiedHeader(std::string path);
+		char** createCGIEnv(const Request& request);
 	public:
 		Server();
 		Server(ServerManager* server_manager, const std::string& server_block, std::vector<std::string>& location_blocks, Config* config);
@@ -93,19 +102,17 @@ class Server
 		// Request recvRequest(int client_fd);
 
 		void solveRequest(const Request& request);		
-		// void executeAutoindex(const Request& request);
-		// int executeGet(Request request);
-		// int executeHead(Request request);
-		// int executePut(Request request);
-		// int executePost(Request request);
-		// int executeDelete(Request request);
-		// int executeOptions(Request request);
-		// int executeTrace(Request request);
-
-		// char** createCGIEnv(Request request);
-		// int executeCGI(Request request);
+		void executeAutoindex(const Request& request);
+		void executeGet(const Request& request);
+		void executeHead(const Request& request);
+		void executePost(const Request& request);
+		void executePut(const Request& request);
+		void executeDelete(const Request& request);
+		void executeOptions(const Request& request);
+		void executeTrace(const Request& request);
+		void executeCGI(const Request& request);
 		
-		// int createResponse(int status);
+		void createResponse(int status, std::vector<std::string> headers = std::vector<std::string>(), std::string arg = "");
 };
 
 /* global operator overload */
