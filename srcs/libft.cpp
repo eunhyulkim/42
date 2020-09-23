@@ -435,4 +435,8 @@ namespace ft
 		mask = ~mask;
 		x->fds_bits[fd / 32] &= mask;
 	}
+
+	void log(int fd, std::string text) {
+		write(fd, text.c_str(), text.size() + 1);
+	}
 }

@@ -91,3 +91,16 @@ void Connection::set_m_last_request_at()
 /* ************************************************************************** */
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
 /* ************************************************************************** */
+
+bool Connection::isOverTime() const
+{
+	timeval now;
+
+	if (gettimeofday(&now, NULL) == -1)
+		throw std::runtime_error("gettimeofday error");
+	
+	long now_nbr = now.tv_sec * 1000 + now.tv_usec;
+	long start_nbr = m_last_request_at.tv_sec * 1000 + m_last_request_at.tv_usec;
+	
+	return ((now_nbr - start_nbr) / 1000 >= CONNECTION_OLD);
+}

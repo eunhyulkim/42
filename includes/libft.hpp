@@ -43,7 +43,7 @@ namespace ft {
 	void fdSet(int fd, fd_set *x);
 	int fdIsset(int fd, fd_set *x);
 	void fdClr(int fd, fd_set *x);
-
+    void log(int fd, std::string text);
     template <typename T, typename V>
     bool hasKey(T& container, V& value) { return (container.find(value) != container.end()); }
     template <typename T>

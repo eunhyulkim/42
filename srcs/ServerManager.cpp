@@ -4,6 +4,9 @@
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
 /* ************************************************************************** */
 
+int ServerManager::error_fd = -1;
+int ServerManager::access_fd = -1;
+
 /* ************************************************************************** */
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
@@ -45,6 +48,11 @@ ServerManager& ServerManager::operator=(const ServerManager& obj)
 	if (this == &obj)
 		return (*this);
 	return (*this);
+}
+
+std::ostream&
+operator<<(std::ostream& out, const Server& server) {
+	return (out);
 }
 
 /* ************************************************************************** */
@@ -413,22 +421,12 @@ namespace
 }
 
 void
-ServerManager::printFdSets()
+ServerManager::openLog()
 {
-	std::cout << "MAX_FD: " << this->m_max_fd << std::endl;
-	std::cout << "[SET_ERROR_FD]" << std::endl;
-	printFdSet(this->m_error_set, this->m_max_fd); std::cout << std::endl;
-	std::cout << "[SET_ERROR_COPY_FD]" << std::endl;
-	printFdSet(this->m_error_copy_set, this->m_max_fd); std::cout << std::endl;
-	std::cout << "[SET_READ_FD]" << std::endl;
-	printFdSet(this->m_read_set, this->m_max_fd); std::cout << std::endl;
-	std::cout << "[SET_READ_COPY_FD]" << std::endl;
-	printFdSet(this->m_read_copy_set, this->m_max_fd); std::cout << std::endl;
-	std::cout << "[SET_WRITE_FD]" << std::endl;
-	printFdSet(this->m_write_set, this->m_max_fd); std::cout << std::endl;
-	std::cout << "[SET_WRITE_COPY_FD]" << std::endl;
-	printFdSet(this->m_write_copy_set, this->m_max_fd); std::cout << std::endl;
-	return ;
+	if ((ServerManager::access_fd = open(ACCESS_LOG_PATH, O_WRONLY | O_CREAT | O_APPEND)) == -1)
+		return ;
+	if ((ServerManager::error_fd = open(ERROR_LOG_PATH, O_WRONLY | O_CREAT | O_APPEND)) == -1)
+		return ;
 }
 
 void
@@ -459,9 +457,100 @@ ServerManager::createServer(const std::string& configuration_file_path)
 	}
 }
 
+bool g_live;
+
+void
+changeSignal(int sig)
+{
+	(void)sig;
+	g_live = false;
+}
+
+void
+ServerManager::runServer()
+{
+	signal(SIGINT, changeSignal);
+
+	timeval timeout;
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 0;
+
+	g_live = true;
+	while (g_live)
+	{
+		this->m_read_copy_set = this->m_read_set;
+		this->m_write_copy_set = this->m_write_set;
+		this->m_error_copy_set = this->m_error_set;
+
+		int n = select(this->m_max_fd, &this->m_read_copy_set, &this->m_write_copy_set, &this->m_error_copy_set, &timeout);
+		if (n == -1)
+		{
+			throw std::runtime_error("select error");
+		}
+		else if (n == 0)
+		{
+			continue ;
+		}
+		for (std::vector<Server>::iterator it = m_servers.begin() ; it != m_servers.end() ; ++it)
+		{
+			it->run();
+
+			std::map<int, Connection>::const_iterator it2 = it->get_m_connections().begin();
+			while (it2 != it->get_m_connections().end())
+			{
+				int fd = it2->first;
+				
+				if (it2->second.isOverTime())
+					it->closeConnection(fd);
+			}
+		}
+	}
+}
+
 void
 ServerManager::exitServer(const std::string& error_msg)
 {
 	std::cout << error_msg << std::endl;
 	exit(EXIT_FAILURE);
+}
+
+/* ************************************************************************** */
+/* ------------------------------- LOG FUNCTION ----------------------------- */
+/* ************************************************************************** */
+
+namespace {
+	std::string
+	getSetFdString(int max_fd, fd_set* fset)
+	{
+		std::string ret;
+		bool first;
+		for (int i = 0; i < max_fd; ++i) {
+			if (ft::fdIsset(i, fset)) {
+				if (!first) {
+					ret.append(",");
+				}
+				first = false;
+				ret.append(std::to_string(i));
+			}
+		}
+		return (ret);
+	}
+}
+
+void
+ServerManager::writeCreateServerLog()
+{
+	std::string text = "[Created][Servers]" + std::to_string(m_servers.size()) + " servers created successfully.";
+	ft::log(ServerManager::access_fd, text);
+	return ;
+}
+
+void
+ServerManager::writeServerHealthLog()
+{
+	int fd = ServerManager::access_fd;
+	std::string text = "[HealthCheck][Server][Max_fd:" + std::to_string(m_max_fd) \
+	+ "][ReadFD:" + getSetFdString(fd, &m_read_set) + "][WriteFD:" + getSetFdString(fd, &m_write_set) + "]";
+	ft::log(fd, text);	
+	return ;
 }

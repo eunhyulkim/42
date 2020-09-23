@@ -334,6 +334,8 @@ Server::acceptNewConnection()
 
 	if ((client_fd = accept(m_fd, (struct sockaddr *)&client_addr, &client_addr_size)) == -1)
 		return ;
+	if (m_manager->m_max_fd < client_fd)
+		m_manager->m_max_fd = client_fd;
 	client_ip = inet_ntoa(client_addr.sin_addr.s_addr);
 	client_port = static_cast<int>(client_addr.sin_port);
 	m_connections[client_fd] = Connection(client_fd, client_ip, client_port);
