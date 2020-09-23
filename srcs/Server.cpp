@@ -904,6 +904,13 @@ Server::createResponse(Connection* connection, int status, HEADERS headers, std:
 		status = 200;
 	} else if (!body.empty()) {
 		headers.push_back("Content-Length:" + std::to_string(body.size()));
+	} else if (status >= 400 && status <= 599) {
+		body = m_default_error_page;
+		body.replace(body.find("#ERROR_CODE"), 11, std::to_string(status));
+		body.replace(body.find("#ERROR_CODE"), 11, std::to_string(status));
+		body.replace(body.find("#ERROR_DESCRIPTION"), 18, Response::status[status]);
+		body.replace(body.find("#ERROR_DESCRIPTION"), 18, Response::status[status]);
+		headers.push_back("Content-Length:" + std::to_string(body.size()));
 	}
 	if (!body.empty())
 		headers.push_back("Content-Language:ko-KR");
