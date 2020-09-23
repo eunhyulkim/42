@@ -16,6 +16,9 @@ int main(int ac, char *av[], char **env)
             manager.exitServer(e.what());
         }
     }
+    std::filebuf
+    std::cout
+    manager.openLog();
     manager.runServer();
     exit(EXIT_SUCCESS);
 }

@@ -11,8 +11,10 @@
 # include <unistd.h>
 # include <fcntl.h>
 # include <algorithm>
+# include "webserv.hpp"
 # include "Server.hpp"
 # include "Config.hpp"
+# include "Connection.hpp"
 
 # define REQUEST_URI_LIMIT_SIZE_MIN 64
 # define REQUEST_URI_LIMIT_SIZE_MAX 8192
@@ -23,6 +25,9 @@
 class ServerManager
 {
 	public:
+		static int error_fd;
+		static int access_fd;
+	private:
 		std::vector<Server> m_servers;
         Config m_config;
         int m_max_fd;
@@ -62,10 +67,17 @@ class ServerManager
 		void fdCopy(SetType fdset);
 
 		/* declare member function */
-		void printFdSets(); // function for develop
 		void createServer(const std::string& configuration_file_path);
 		void runServer();
 		void exitServer(const std::string& error_msg);
+
+		/* log function */
+		void openLog();
+		void writeCreateServerLog();
+		void writeServerHealthLog();
 };
+
+std::ostream&
+operator<<(std::ostream& out, const Server& server);
 
 #endif

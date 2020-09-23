@@ -114,4 +114,8 @@ namespace ft
 		}
 		return (ret);
 	}
+
+	void accessLog(int fd, std::string text) {
+		write(fd, text.c_str(), text.size() + 1);
+	}
 }
