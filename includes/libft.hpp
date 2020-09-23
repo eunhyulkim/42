@@ -37,6 +37,12 @@ namespace ft {
     std::map<std::string, std::string> stringVectorToMap(std::vector<std::string> stringVector, char sep = ':');
     std::string containerToString(std::vector<unsigned char> container, std::string sep = "");
     void convertTimespecToTm(time_t s, struct tm* t);
+	unsigned long ws_htonl(unsigned long x);
+	unsigned short ws_htons(unsigned short x);
+	void fdZero(fd_set *x);
+	void fdSet(int fd, fd_set *x);
+	int fdIsset(int fd, fd_set *x);
+	void fdClr(int fd, fd_set *x);
 
     template <typename T, typename V>
     bool hasKey(T& container, V& value) { return (container.find(value) != container.end()); }

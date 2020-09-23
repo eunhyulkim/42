@@ -82,7 +82,7 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 	ft::bzero(&server_addr, sizeof(struct sockaddr_in));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = inet_addr(m_host.c_str());
-	server_addr.sin_port = htons(m_port);
+	server_addr.sin_port = ft::ws_htons(m_port);
 	if(bind(m_fd, reinterpret_cast<struct sockaddr *>(&server_addr), sizeof(struct sockaddr)) == -1)
 		throw std::runtime_error("BIND ERROR");
 	if(listen(m_fd, 64) == -1)

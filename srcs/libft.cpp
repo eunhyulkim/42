@@ -386,4 +386,53 @@ namespace ft
 		makeTime(t);
 		return ;
 	}
+
+	unsigned long ws_htonl(unsigned long x)
+	{
+		unsigned int a = 0x11223344;
+		if (*(unsigned char*)&a == 0x11)
+			return (x);
+
+		return ((x & 0x000000ffU) << 24 | (x & 0x0000ff00U) << 8 | (x & 0x00ff0000U) >> 8 | (x & 0xff000000U) >> 24);
+	}
+
+	unsigned short ws_htons(unsigned short x)
+	{
+		unsigned int a = 0x11223344;
+		if (*(unsigned char*)&a == 0x11)
+			return (x);
+
+		return ((x & 0x00ffU) << 8 | (x & 0xff00U) >> 8);
+	}
+
+	void fdZero(fd_set *x)
+	{
+		for (int i = 0 ; i < 32 ; ++i)
+			x->fds_bits[i] = 0;
+	}
+
+	void fdSet(int fd, fd_set *x)
+	{
+		if (!(0 <= fd && fd < 1024))
+			return ;
+		int mask = 1 << fd % 32;
+		x->fds_bits[fd / 32] |= mask;
+	}
+
+	int fdIsset(int fd, fd_set *x)
+	{
+		if (!(0 <= fd && fd < 1024))
+			return (0);
+		int mask = 1 << fd % 32;
+		return (x->fds_bits[fd / 32] & mask);
+	}
+
+	void fdClr(int fd, fd_set *x)
+	{
+		if (!(0 <= fd && fd < 1024))
+			return ;
+		int mask = 1 << fd % 32;
+		mask = ~mask;
+		x->fds_bits[fd / 32] &= mask;
+	}
 }
