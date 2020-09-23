@@ -1,11 +1,7 @@
 #ifndef LOCATION_HPP
 # define LOCATION_HPP
 
-# include <string>
-# include <set>
-# include <map>
-# include <iostream>
-# include "libft.hpp"
+# include "webserv.hpp"
 
 class Location
 {

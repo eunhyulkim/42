@@ -1,26 +1,9 @@
 #ifndef SERVER_MANAGER_HPP
 # define SERVER_MANAGER_HPP
 
-# include <string>
-# include <iostream>
-# include <vector>
-# include <set>
-# include <sys/select.h>
-# include <sys/types.h>
-# include <sys/stat.h>
-# include <unistd.h>
-# include <fcntl.h>
-# include <algorithm>
 # include "webserv.hpp"
-# include "Server.hpp"
 # include "Config.hpp"
-# include "Connection.hpp"
-
-# define REQUEST_URI_LIMIT_SIZE_MIN 64
-# define REQUEST_URI_LIMIT_SIZE_MAX 8192
-# define REQUEST_HEADER_LIMIT_SIZE_MIN 64
-# define REQUEST_HEADER_LIMIT_SIZE_MAX 8192
-# define LIMIT_CLIENT_BODY_SIZE_MAX 8192
+# include "Server.hpp"
 
 class ServerManager
 {

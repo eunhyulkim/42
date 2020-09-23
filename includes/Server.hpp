@@ -1,38 +1,14 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# include <string>
-# include <iostream>
-# include <map>
-# include <set>
-# include <vector>
-# include <set>
-# include <queue>
-# include <sys/socket.h>
-# include <sys/types.h>
-# include <netinet/in.h>
-# include <arpa/inet.h>
-# include <dirent.h>
-# include <fcntl.h>
-# include "libft.hpp"
-# include "Location.hpp"
-# include "ServerManager.hpp"
-# include "Connection.hpp"
-# include "Request.hpp"
-# include "Response.hpp"
+# include "webserv.hpp"
 # include "Config.hpp"
+# include "Connection.hpp"
+# include "Location.hpp"
+# include "Response.hpp"
 # include "Request.hpp"
-# include "Base64.hpp"
-# include "HtmlWriter.hpp"
 
-# define SEND_RESPONSE_AT_ONCE 5
-# define RESPONSE_OVERLOAD_COUNT 20
-# define CGI_META_VARIABLE_COUNT 15
-# define CGI_SUCCESS_CODE 299
-# define HEADERS std::vector<std::string>
-# define SERVER_ALLOW_METHODS "GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE"
-
-# include <vector>
+class ServerManager;
 
 class Server
 {

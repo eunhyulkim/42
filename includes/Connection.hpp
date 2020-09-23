@@ -1,11 +1,7 @@
 #ifndef CONNECTION_HPP
 # define CONNECTION_HPP
 
-# include <string>
-# include <iostream>
-# include <sys/time.h>
-
-# define CONNECTION_OLD 30
+# include "webserv.hpp"
 
 class Connection
 {
