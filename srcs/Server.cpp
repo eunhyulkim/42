@@ -72,7 +72,7 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 	m_request_header_limit_size = std::stoi(server_map["REQUEST_HEADER_LIMIT_SIZE"]);
 	m_limit_client_body_size = std::stoi(server_map["LIMIT_CLIENT_BODY_SIZE"]);
 	m_default_error_page = ft::getStringFromFile(server_map["DEFAULT_ERROR_PAGE"]);
-	
+
 	//socket 생성
 	if((m_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
 		throw std::runtime_error("SOCKET ERROR");
@@ -92,7 +92,7 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 	m_manager->fdSet(m_fd, ServerManager::SetType::READ_SET);
 	if (m_manager->m_max_fd < m_fd)
 		m_manager->m_max_fd = m_fd;
-	
+
 	for (std::vector<std::string>::iterator it = location_blocks.begin(); it != location_blocks.end(); ++it)
 	{
 		uri = ft::split(ft::split(*it).front(), ' ')[1];
@@ -227,7 +227,7 @@ const std::queue<Response>& Server::get_m_responses() const { return (this->m_re
 ** function: solveRequest
 ** 1. check request method is allowed
 ** 2. Check authentication is required
-** 3. If uri is directory, executeAutoindex 
+** 3. If uri is directory, executeAutoindex
 ** 4. If uri is file, executeMethod
 */
 
@@ -334,6 +334,8 @@ Server::acceptNewConnection()
 
 	if ((client_fd = accept(m_fd, (struct sockaddr *)&client_addr, &client_addr_size)) == -1)
 		return ;
+	if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1)
+		return ;
 	client_ip = inet_ntoa(client_addr.sin_addr.s_addr);
 	client_port = static_cast<int>(client_addr.sin_port);
 	m_connections[client_fd] = Connection(client_fd, client_ip, client_port);
@@ -363,7 +365,7 @@ Server::run()
 	{
 		Request request;
 		int fd = it->first;
-		
+
 		++it;
 		if (hasException(fd)) {
 			closeConnection(fd);
@@ -371,7 +373,7 @@ Server::run()
 		}
 		if (hasRequest(fd))	{
 			try {
-				request = recvRequest(fd);
+				request = recvRequest(fd, it->second);
 			} catch (int status_code) {
 				createResponse(&(it->second), status_code);
 				continue ;
@@ -493,7 +495,7 @@ namespace {
 				std::string content;
 				content.append(html.makeLink(name));
 				content.append(std::string(51 - std::string(name).size(), ' '));
-				
+
 				struct stat buf;
             	struct tm t;
 				ft::bzero(&buf, sizeof(struct stat));
@@ -541,7 +543,7 @@ Server::executeAutoindex(const Request& request)
 {
 	if (request.get_m_method() != Request::Method::GET)
 		return (createResponse(request.get_m_connection(), 405, HEADERS(1, "Allow:GET")));
-	
+
 	char cwd[1024];
 	getcwd(cwd, sizeof(cwd));
 
@@ -573,7 +575,7 @@ Server::executeGet(const Request& request)
 	} catch (std::overflow_error& e) {
 		return (createResponse(request.get_m_connection(), 413));
 	}
-	
+
 	HEADERS headers(1, getMimeTypeHeader(path));
 	if (headers[0].empty())
 		return (createResponse(request.get_m_connection(), 415));
@@ -592,7 +594,7 @@ Server::executeHead(const Request& request)
 	} catch (std::overflow_error& e) {
 		return (createResponse(request.get_m_connection(), 413));
 	}
-	
+
 	HEADERS headers(1, getMimeTypeHeader(path));
 	if (headers[0].empty())
 		return (createResponse(request.get_m_connection(), 415));
@@ -794,7 +796,7 @@ Server::executeCGI(const Request& request)
 	int parent_write_fd[2];
 	int child_write_fd[2];
 	char **env;
-	
+
 	if ((env = createCGIEnv(request)) == NULL)
 		return (createResponse(request.get_m_connection(), 500));
 	pipe(parent_write_fd);
@@ -874,10 +876,129 @@ Server::sendResponse(Response response)
 	m_manager->fdClear(fd, ServerManager::WRITE_SET);
 }
 
+bool Server::hasRequest(int client_fd)
+{
+	return (m_manager->fdIsset(client_fd, ServerManager::SetType::READ_COPY_SET));
+}
+
+namespace {
+	int headerParsing(Server *server, Request &request, std::string &origin_message, Request::TransferType &transfer_type, int &content_length)
+	{
+		std::string buf;
+		bool host_header = false;
+
+		while (!std::cin.eof()) //header parsing
+		{
+			std::getline(std::cin, buf);
+			origin_message = buf + "\n";
+			if (buf == "\r" || buf == "")
+				break;
+			if (!request.isValidHeader(buf))
+				throw (400);
+			buf = ft::rtrim(buf, "\r");
+			size_t pos = buf.find(':');
+			std::string key = ft::trim(buf.substr(0, pos));
+			std::string value = ft::trim(buf.substr(pos + 1));
+			for (size_t i = 0 ; i < key.length() ; ++i) // capitalize
+				key[i] = (i == 0 || key[i - 1] == '-') ? std::toupper(key[i]) : std::tolower(key[i]);
+			if (key == "Content-Type" && value.find("chunked") != std::string::npos)
+				transfer_type = Request::TransferType::CHUNKED;
+			if (key == "Content-Length")
+			{
+				content_length = std::stoi(value);
+				if (content_length > server->get_m_limit_client_body_size())
+					throw (413);
+				if (content_length < 0)
+					throw 400;
+			}
+			if (key == "Host")
+				host_header = true;
+			request.add_header(key, value);
+		}
+		return (host_header);
+	}
+	std::string readBodyMessage(Server *server, Request &request, std::string &origin_message, Request::TransferType &transfer_type, int &content_length, int client_fd)
+	{
+		std::string buf;
+		std::string message_body;
+		char		buffer[LIMIT_CLIENT_BODY_SIZE_MAX];
+		ssize_t		read_len = 0;
+
+		if (request.get_m_method() == Request::Method::POST || request.get_m_method() == Request::Method::PUT)
+		{
+			if (transfer_type == Request::TransferType::CHUNKED)
+			{
+				if (content_length)
+					throw 400;
+				while (1)
+				{
+					std::getline(std::cin, buf);
+					origin_message += buf + "\n";
+					buf = ft::rtrim(buf, "\r");
+					if (buf == "0")
+					{
+						if ((read_len = read(client_fd, buffer, 2)) != 2 || std::strncmp(buffer, "\r\n", 2))
+							throw 400;
+						origin_message += "\r\n";
+						break;
+					}
+					content_length = std::stoi(buf);
+					if (content_length > server->get_m_limit_client_body_size())
+						throw (413);
+					if (content_length < 0)
+						throw 400;
+					read_len = read(client_fd, buffer, content_length);
+					if (read_len != content_length)
+						throw 400;
+					message_body.append(buffer, read_len);
+					origin_message += buffer;
+					if ((read_len = read(client_fd, buffer, 2)) != 2 || std::strncmp(buffer, "\r\n", 2))
+						throw 400;
+					origin_message += "\r\n";
+				}
+			}
+			else
+			{
+				read_len = read(client_fd, buffer, content_length);
+				if (read_len != content_length)
+					throw 400;
+				message_body.append(buffer, read_len);
+				origin_message += buffer;
+			}
+		}
+		else
+		{
+			if ((read_len = read(client_fd, buffer, 1024)) != -1)
+				throw 400;
+		}
+		return (message_body);
+	}
+}
+
+Request Server::recvRequest(int client_fd, Connection connection)
+{
+	std::string start_line;
+	Request::TransferType transfer_type = Request::TransferType::GENERAL;
+	int content_length = 0;
+
+	dup2(client_fd, 0);
+	std::getline(std::cin, start_line);
+	std::string origin_message = start_line + "\n";
+	start_line = ft::rtrim(start_line, "\r");
+	Request request(&connection, this, start_line);
+	if (!headerParsing(this, request, origin_message, transfer_type, content_length))
+		throw 400;
+	std::string message_body = readBodyMessage(this, request, origin_message, transfer_type, content_length, client_fd);
+	origin_message += message_body;
+	request.add_content(message_body);
+	if (request.get_m_method() == Request::Method::TRACE)
+		request.add_origin(origin_message);
+	return (request);
+}
 namespace {
 	std::string getDateHeader()
 	{
-		char buff[1024];	
+		char buff[1024];
 		struct tm t;
 		timeval now;
 
@@ -920,7 +1041,7 @@ Server::createResponse(Connection* connection, int status, HEADERS headers, std:
 		headers.push_back("Location:/");
 	if (status == 504)
 		headers.push_back("Retry-After:3600");
-	
+
 	Response response(connection, status, body);
 	HEADERS::iterator it = headers.begin();
 	for (; it != headers.end(); ++it) {

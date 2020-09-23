@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jujeong <jujeong@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/23 12:51:35 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/23 14:39:43 by jujeong          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 
 	if (parsed[1].length() > m_server->get_m_request_uri_limit_size())
 		throw 414;
-	
+
 	m_uri = parsed[1];
 	int max_uri_match = 0;
 	for (std::vector<Location>::const_iterator it = m_server->get_m_locations().begin() ; it != m_server->get_m_locations().end() ; ++it)
@@ -65,7 +65,7 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		m_uri.erase(m_uri.begin());
 	else if (root[root.size() - 1] != '/' && m_uri[0] != '/')
 		m_uri.insert(0, 1, '/');
-	
+
 	if ((m_method == GET || m_method == HEAD) && m_uri.find("?") != std::string::npos) {
 		m_query = m_uri.substr(parsed[1].find("?") + 1);
 		m_uri = m_uri.substr(0, parsed[1].find("?"));
@@ -83,7 +83,7 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 				m_uri = m_uri.substr(0, m_uri.find(token) + token.size() - 1);
 				break ;
 			}
-		}		
+		}
 	}
 
 	m_path_translated = root + m_uri;
@@ -231,20 +231,20 @@ void Request::add_origin(std::string added_origin)
 }
 
 
-void Request::add_header(std::string header)
+void Request::add_header(std::string key, std::string value)
 {
-	size_t pos = header.find(':');
-	std::string key = header.substr(0, pos);
-	std::string value = header.substr(pos + 1);
-	key = ft::trim(key);
-	value = ft::trim(value);
-	for (size_t i = 0 ; i < key.length() ; ++i) // capitalize
-		key[i] = (i == 0 || key[i - 1] == '-') ? std::toupper(key[i]) : std::tolower(key[i]);
+	// size_t pos = header.find(':');
+	// std::string key = header.substr(0, pos);
+	// std::string value = header.substr(pos + 1);
+	// key = ft::trim(key);
+	// value = ft::trim(value);
+	// for (size_t i = 0 ; i < key.length() ; ++i) // capitalize
+	// 	key[i] = (i == 0 || key[i - 1] == '-') ? std::toupper(key[i]) : std::tolower(key[i]);
 
-	if (key == "Content-Type" && value == "chunked")
-		m_transfer_type = CHUNKED;
-	if (key == "Content-Length" && std::atoi(value.c_str()) > m_server->get_m_limit_client_body_size())
-		throw 413;
+	// if (key == "Content-Type" && value == "chunked")
+	// 	m_transfer_type = CHUNKED;
+	// if (key == "Content-Length" && std::atoi(value.c_str()) > m_server->get_m_limit_client_body_size())
+	// 	throw 413;
 	std::pair<std::map<std::string, std::string>::iterator, bool> ret = m_headers.insert(std::make_pair(key, value));
 	if (!ret.second)
 		throw 400;
@@ -273,9 +273,9 @@ bool Request::isOverTime() const
 
 	if (gettimeofday(&now, NULL) == -1)
 		throw std::runtime_error("gettimeofday error");
-	
+
 	long now_nbr = now.tv_sec * 1000 + now.tv_usec;
 	long start_nbr = m_start_at.tv_sec * 1000 + m_start_at.tv_usec;
-	
+
 	return ((now_nbr - start_nbr) / 1000 >= REQUEST_TIMEOVER);
 }
