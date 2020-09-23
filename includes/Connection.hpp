@@ -1,11 +1,7 @@
 #ifndef CONNECTION_HPP
 # define CONNECTION_HPP
 
-# include <string>
-# include <iostream>
-# include <sys/time.h>
-
-# define CONNECTION_OLD 30
+# include "webserv.hpp"
 
 class Connection
 {
@@ -14,8 +10,8 @@ class Connection
 		timeval m_last_request_at;
 		std::string m_client_ip;
 		int m_client_port;
-		Connection();
 	public:
+		Connection();
 		Connection(int fd, const std::string& client_ip, int client_port);
 		Connection(const Connection& copy);
 		Connection& operator=(const Connection& obj);

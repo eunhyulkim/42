@@ -1,11 +1,7 @@
 #ifndef CONFIG_HPP
 # define CONFIG_HPP
 
-# include <string>
-# include <vector>
-# include <map>
-# include <iostream>
-# include "libft.hpp"
+# include "webserv.hpp"
 
 class Config
 {

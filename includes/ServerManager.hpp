@@ -1,26 +1,9 @@
 #ifndef SERVER_MANAGER_HPP
 # define SERVER_MANAGER_HPP
 
-# include <string>
-# include <iostream>
-# include <vector>
-# include <set>
-# include <sys/select.h>
-# include <sys/types.h>
-# include <sys/stat.h>
-# include <unistd.h>
-# include <fcntl.h>
-# include <algorithm>
 # include "webserv.hpp"
-# include "Server.hpp"
 # include "Config.hpp"
-# include "Connection.hpp"
-
-# define REQUEST_URI_LIMIT_SIZE_MIN 64
-# define REQUEST_URI_LIMIT_SIZE_MAX 8192
-# define REQUEST_HEADER_LIMIT_SIZE_MIN 64
-# define REQUEST_HEADER_LIMIT_SIZE_MAX 8192
-# define LIMIT_CLIENT_BODY_SIZE_MAX 8192
+# include "Server.hpp"
 
 class ServerManager
 {
@@ -46,7 +29,7 @@ class ServerManager
         bool isValidLocationBlock(std::string& location_block);
 	public:
 		ServerManager();
-		ServerManager(const ServerManager& copy);
+		ServerManager(const ServerManager&);
 		ServerManager& operator=(const ServerManager& obj);
 		virtual ~ServerManager();
 
@@ -68,7 +51,7 @@ class ServerManager
 		void fdCopy(SetType fdset);
 
 		/* declare member function */
-		void createServer(const std::string& configuration_file_path);
+		void createServer(const std::string& configuration_file_path, char **env);
 		void runServer();
 		void exitServer(const std::string& error_msg);
 
@@ -79,6 +62,6 @@ class ServerManager
 };
 
 std::ostream&
-operator<<(std::ostream& out, const Server& server);
+operator<<(std::ostream& out, const ServerManager&);
 
 #endif

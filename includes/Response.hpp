@@ -1,11 +1,7 @@
 #ifndef Response_HPP
 # define Response_HPP
 
-# include <string>
-# include <vector>
-# include <map>
-# include <iostream>
-# include "libft.hpp"
+# include "webserv.hpp"
 # include "Connection.hpp"
 
 class Response

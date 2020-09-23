@@ -3,30 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jujeong <jujeong@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:22 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/23 14:39:20 by jujeong          ###   ########.fr       */
+/*   Updated: 2020/09/23 22:27:49 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef REQUEST_HPP
 # define REQUEST_HPP
 
-# include <iostream>
-# include <string>
-# include <map>
-# include <sys/time.h>
-# include <sys/stat.h>
-# include <cstring>
+# include "webserv.hpp"
+# include "Connection.hpp"
 # include "Server.hpp"
-# include "libft.hpp"
+# include "Location.hpp"
 
-# define REQUEST_TIMEOVER 10
-
-class Connection;
 class Server;
-class Location;
 
 class Request
 {

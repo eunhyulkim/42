@@ -10,16 +10,17 @@
 
 Connection::Connection() {}
 Connection::Connection(int fd, const std::string& client_ip, int client_port)
-: m_client_fd(fd), m_client_ip(client_ip), m_client_port(client_port)
+: m_client_fd(fd), m_client_ip(client_ip)
 {
 	this->m_last_request_at.tv_sec = 0;
 	this->m_last_request_at.tv_usec = 0;
+	this->m_client_port = client_port;
 	set_m_last_request_at();
 }
 
 Connection::Connection(const Connection& copy)
-: m_client_fd(copy.get_m_client_fd()), m_client_ip(copy.get_m_client_ip()), m_client_port(copy.get_m_client_port()), \
-m_last_request_at(copy.get_m_last_request_at()) {}
+: m_client_fd(copy.get_m_client_fd()), m_last_request_at(copy.get_m_last_request_at()), \
+m_client_ip(copy.get_m_client_ip()), m_client_port(copy.get_m_client_port()) {}
 
 /* ************************************************************************** */
 /* ------------------------------- DESTRUCTOR ------------------------------- */
