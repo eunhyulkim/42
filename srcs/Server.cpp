@@ -295,7 +295,7 @@ Server::getLastModifiedHeader(std::string path)
 	time_t modified = getLastModified(path);
 	struct tm t;
 	char buff[1024];
-	ft::convertTimespecToTm(&modified, &t);
+	ft::convertTimespecToTm(modified, &t);
 	strftime(buff, sizeof(buff), "%a, %d %b %Y %X GMT", &t);
 	return ("Last-Modified:" + std::string(buff));
 }
@@ -318,7 +318,7 @@ Server::closeConnection(int client_fd)
 bool
 Server::hasNewConnection()
 {
-	return (m_manager->fdIsset(m_fd, ServerManager::SetType::READ_COPY_SET))
+	return (m_manager->fdIsset(m_fd, ServerManager::SetType::READ_COPY_SET));
 }
 
 void
@@ -430,9 +430,9 @@ void
 Server::solveRequest(const Request& request)
 {
 	Location* location = request.get_m_location();
-	std::string method = request.get_m_method_to_string();
+	std::string methodString = request.get_m_method_to_string();
 
-	if (!ft::hasKey(location->get_m_allow_method(), method)) {
+	if (!ft::hasKey(location->get_m_allow_method(), methodString)) {
 		HEADERS headers(1, "Allow:" + ft::containerToString(location->get_m_allow_method(), ", "));
 		return (createResponse(405, headers, ""));
 	}
@@ -448,7 +448,9 @@ Server::solveRequest(const Request& request)
 		}
 	}
 	Request::Method method = request.get_m_method();
-	if (request.get_m_uri_type() == Request::URIType::DIRECTORY)
+	if (method == Request::Method::TRACE)
+		executeTrace(request);
+	else if (request.get_m_uri_type() == Request::URIType::DIRECTORY)
 		return (executeAutoindex(request));
 	else if (request.get_m_uri_type() == Request::URIType::CGI_PROGRAM)
 		return (executeCGI(request));
@@ -464,8 +466,6 @@ Server::solveRequest(const Request& request)
 		executeDelete(request);
 	else if (method == Request::Method::OPTIONS)
 		executeOptions(request);
-	else if (method == Request::Method::TRACE)
-		executeTrace(request);	
 }
 
 /*
@@ -607,9 +607,12 @@ Server::executeTrace(const Request& request) {
 }
 
 void
-Server::executePost(const Request& request) {
-	if (request.get_m_content() == 0)
+Server::executePost(const Request& request)
+{
+	if (request.get_m_headers().find("Content-Length")->second == "0")
 		return (executeGet(request));
+	else
+		return (createResponse(400));
 }
 
 void
@@ -632,7 +635,7 @@ Server::executePut(const Request& request)
 		return (createResponse(415));
 	if ((fd = open(request.get_m_path_translated().c_str(), O_RDWR | O_CREAT)) == -1)
 		createResponse(500);
-	if (write(fd, request.get_m_content().c_str(), request.get_m_content().size()) == -1)
+	if (write(fd, request.get_m_content().c_str(), request.get_m_content().size() + 1) == -1)
 		createResponse(500);
 	close(fd);
 	if (S_ISREG(buf.st_mode))
@@ -647,10 +650,165 @@ Server::executeDelete(const Request& request) {
 		createResponse(204);
 }
 
+namespace {
+	void closeFd(int *fd) {
+		close(fd[0]);
+		close(fd[1]);
+	}
+	int getKeyIdx(char** env, char *key)
+	{
+		int		idx;
+
+		idx = 0;
+		while (env[idx])
+		{
+			if (ft::startswith(env[idx], key))
+			{
+				if (*(env[idx] + ft::strlen(key)) == '=')
+					return (idx);
+			}
+			idx++;
+		}
+		return (-1);
+	}
+	int	setEnv(char **env, char *key, char *val)
+	{
+		int		idx;
+		char	*item;
+
+		if (!key || !(*key))
+			return (0);
+		idx = getKeyIdx(env, key);
+		item = ft::strsjoin(key, "=", val, 0);
+		if (idx == -1)
+		{
+			ft::reallocDoubleStr(&env, item);
+			ft::freeStr(&item);
+		}
+		else
+		{
+			ft::freeStr(&env[idx]);
+			env[idx] = item;
+		}
+		return (1);
+	}
+	char *getEnv(char **env, char* wild_key)
+	{
+		int		key_idx;
+		int		val_idx;
+		char	*key;
+
+		if (!env || !wild_key || !(*wild_key))
+			return (0);
+		if ((key = ft::strchr(wild_key, '=')))
+			key = ft::strsub(wild_key, 0, key - wild_key);
+		else
+			key = ft::strdup(wild_key);
+		if ((key_idx = getKeyIdx(env, key)) == -1)
+		{
+			ft::freeStr(&key);
+			return (0);
+		}
+		val_idx = ft::strlen(key) + 1;
+		ft::freeStr(&key);
+		return (env[key_idx] + val_idx);
+	}
+	char *getCGIEnvValue(const Request& request, std::string token, Config *config = NULL)
+	{
+		if (token == "CONTENT_LENGH")
+			return (const_cast<char *>(std::to_string(request.get_m_content().size()).c_str()));
+		else if (token == "CONTENT_TYPE")
+			return (const_cast<char *>(request.get_m_headers().find("Content-Type")->second.c_str()));
+		else if (token == "AUTH_TYPE")
+			return (const_cast<char *>(config->get_m_cgi_version().c_str()));
+		else if (token == "PATH_INFO")
+			return (const_cast<char *>(request.get_m_path_info().c_str()));
+	}
+}
+
+char**
+Server::createCGIEnv(const Request& request)
+{
+	char **env = (char **)ft::dupDoublestr(m_config->get_m_base_env());
+	setEnv(env, "AUTH_TYPE", "");
+	if (request.get_m_method() == Request::Method::POST)
+		setEnv(env, "CONTENT_LENGTH", getCGIEnvValue(request, "CONTENT_LENGTH"));
+	else
+		setEnv(env, "CONTENT_LENGTH", "-1");
+	if (ft::hasKey(request.get_m_headers(), "Content-Type"))
+		setEnv(env, "CONTENT_TYPE", getCGIEnvValue(request, "CONTENT_TYPE"));
+	else
+		setEnv(env, "AUTH_TYPE", "");
+	setEnv(env, "GATEWAY_INTERFACE", getCGIEnvValue(request, "GATEWAY_INTERFACE", &m_manager->get_m_config()));
+	setEnv(env, "PATH_INFO", getCGIEnvValue(request, "PATH_INFO"));
+}
+
 void
 Server::executeCGI(const Request& request)
 {
-		
+	pid_t	pid;
+	int parent_write_fd[2];
+	int child_write_fd[2];
+	char **env;
+	
+	if ((env = createCGIEnv(request)) == NULL)
+		return (createResponse(500));
+	pipe(parent_write_fd);
+	pipe(child_write_fd);
+	pid = fork();
+	if (pid == 0) {
+		/* child process */
+		close(parent_write_fd[1]);
+		close(child_write_fd[0]);
+		dup2(child_write_fd[1], STDOUT_FILENO);
+		dup2(parent_write_fd[0], STDIN_FILENO);
+		close(child_write_fd[1]);
+		close(parent_write_fd[0]);
+		char *arg[2] = { const_cast<char *>(request.get_m_path_translated().c_str()), NULL };
+		if (execve("./php-cgi", arg, env) == -1)
+			exit(EXIT_FAILURE);
+	} else if (pid > 0) {
+		close(child_write_fd[1]);
+		close(parent_write_fd[0]);
+		if (request.get_m_method() == Request::Method::POST)
+			write(parent_write_fd[1], request.get_m_content().c_str(), request.get_m_content().size() + 1);
+		close(parent_write_fd[1]);
+
+	} else {
+		perror("Failed to Create Process for executeCGI");
+		closeFd(parent_write_fd);
+		closeFd(child_write_fd);
+		return (createResponse(500));
+	}
+
+	int status;
+	int readed = 0;
+	std::string body;
+	char buff[1024];
+	if (fcntl(child_write_fd[0], F_SETFL, O_NONBLOCK) == -1)
+		throw std::runtime_error("FCNTL ERROR");
+
+	while (true)
+	{
+		waitpid(pid, &status, WNOHANG);
+		if ((readed = read(child_write_fd[0], buff, sizeof(buff))) > 0) {
+			body.append(buff, readed);
+			if (body.size() > m_limit_client_body_size) {
+				close(child_write_fd[0]);
+				return (createResponse(413));
+			}
+		}
+		if (WIFEXITED(status)) {
+			close(child_write_fd[0]);
+			break ;
+		}
+		if (request.isOverTime()) {
+			close(child_write_fd[0]);
+			return (createResponse(504));
+		}
+		usleep(100000);
+	}
+	return (createResponse(200, HEADERS(), body));
 }
 
 // int Server::isSendable(int client_fd){}
@@ -658,7 +816,5 @@ Server::executeCGI(const Request& request)
 
 // bool Server::hasRequest(int client_fd){}
 // Request Server::readRequest(int client_fd){}
-
-// char** Server::createCGIEnv(Request request){}
 
 // int Server::createResponse(int status){}

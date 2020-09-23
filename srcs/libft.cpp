@@ -12,6 +12,204 @@ namespace ft
 			str[--len] = 0;
 	}
 
+	void *
+	memcpy(void *dest, const void *src, size_t len)
+	{
+		char *d = reinterpret_cast<char *>(dest);
+		const char *s = reinterpret_cast<const char *>(src);
+		while (len--)
+			*d++ = *s++;
+		return dest;
+	}
+
+	void
+	*calloc(size_t size, size_t count)
+	{
+		void		*addr;
+
+		if (!(addr = malloc(size * count)))
+			return (0);
+		memset(addr, 0, size * count);
+		return (addr);
+	}
+
+	char *
+	strdup(const char *s)
+	{
+		size_t len = strlen(s) + 1;
+		void *str = malloc(len);
+		if (str == NULL)
+			return NULL;
+		return (reinterpret_cast<char *>(ft::memcpy(str, s, len)));
+	}
+
+	int
+	free(void *ptr)
+	{
+		if (ptr)
+			free(ptr);
+		return (1);
+	}
+
+	int
+	freeStr(char **str)
+	{
+		if (!str || !(*str))
+			return (0);
+		free(*str);
+		*str = 0;
+		return (1);
+	}
+
+	int
+	lenDoubleStr(char **str)
+	{
+		int		idx;
+
+		idx = 0;
+		if (!str || !(*str))
+			return (0);
+		while (*str++)
+			idx++;
+		return (idx);
+	}
+
+	char
+	**dupDoubleStr(char **str)
+	{
+		char	**ret;
+		int		len;
+
+		len = lenDoublestr(str);
+		if (!(ret = (char **)calloc(sizeof(char *), len + 1)))
+			return (0);
+		while (len--)
+			if (!(ret[len] = strdup(str[len])))
+				return (0);
+		return (ret);
+	}
+
+	int
+	freeDoublestr(char ***doublestr_addr)
+	{
+		int 	i;
+		char	**doublestr;
+
+		if (!doublestr_addr || !(*doublestr_addr))
+			return (0);
+		i = -1;
+		doublestr = *doublestr_addr;
+		while (doublestr[++i])
+			ft::freeStr(&doublestr[i]);
+		ft::free(doublestr);
+		*doublestr_addr = 0;
+		return (1);
+	}
+
+	char
+	**reallocDoubleStr(char ***strs_ref, char *item)
+	{
+		char	**ret;
+		char	**strs;
+		int		len;
+
+		strs = *strs_ref;
+		if (!item)
+			return (strs);
+		len = lenDoublestr(strs) + 2;
+		if (!(ret = (char **)calloc(sizeof(char *), len--)))
+			return (0);
+		ret[--len] = strdup(item);
+		while (len--)
+			if (!(ret[len] = strdup(strs[len])))
+				return (0);
+		*strs_ref = ret;
+		freeDoublestr(&strs);
+		return (ret);
+	}
+
+	char
+	*strchr(const char *s, int c)
+	{
+		int		i;
+
+		i = 0;
+		while (s[i] != '\0')
+		{
+			if (s[i] == (char)c)
+				return ((char *)s + i);
+			i++;
+		}
+		if (s[i] == (char)c)
+			return ((char *)s + i);
+		return (0);
+	}
+
+	char
+	*strsub(char const *s, unsigned int start, size_t len)
+	{
+		char	*str;
+		size_t	i;
+
+		if (!s)
+			return (0);
+		if (!(str = (char *)calloc(sizeof(char), len + 1)))
+			return (0);
+		i = 0;
+		while (i < len)
+		{
+			str[i] = s[start + i];
+			i++;
+		}
+		str[i] = '\0';
+		return (str);
+	}
+
+	int
+	startswith(const char *str, const char *sub)
+	{
+		int		i;
+
+		i = 0;
+		while (sub[i] != '\0' && str[i] == sub[i])
+			i++;
+		return (sub[i] == '\0');
+	}
+
+	namespace {
+		char *strAdd(char *dst, char *src)
+		{
+			int		i;
+			int		j;
+
+			if (!src)
+				return (dst);
+			if (!dst)
+				return (src);
+			i = ft::strlen(dst);
+			j = 0;
+			while (src[j])
+				dst[i++] = src[j++];
+			return (dst);
+		}
+	}
+
+	char
+	*strsjoin(char *s1, char *s2, char *s3, char *s4)
+	{
+		char	*str;
+		int		lens;
+
+		lens = ft::strlen(s1) + ft::strlen(s2) + ft::strlen(s3) + ft::strlen(s4);
+		if (!(str = (char *)calloc(sizeof(char), lens + 1)))
+			return (0);
+		strAdd(str, s1);
+		strAdd(str, s2);
+		strAdd(str, s3);
+		strAdd(str, s4);
+		return ((char *)str);
+	}
+
 	size_t
 	pow(size_t root, size_t square) {
 		size_t idx = 0;

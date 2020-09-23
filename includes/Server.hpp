@@ -55,7 +55,7 @@ class Server
 		std::string getMimeTypeHeader(std::string path);
 		time_t getLastModified(std::string path);
 		std::string getLastModifiedHeader(std::string path);
-		char** createCGIEnv(Request request);
+		char** createCGIEnv(const Request& request);
 	public:
 		Server();
 		Server(ServerManager* server_manager, const std::string& server_block, std::vector<std::string>& location_blocks, Config* config);

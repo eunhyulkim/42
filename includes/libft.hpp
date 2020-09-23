@@ -15,6 +15,19 @@
 namespace ft {
     void bzero(void *data, size_t len);
     size_t pow(size_t root, size_t square);
+    void *memcpy(void *dest, const void *src, size_t len);
+    void *calloc(size_t size, size_t count);
+    char *strdup(const char *s);
+    int free(void *ptr);
+    int freeStr(char **str);
+    int lenDoublestr(char **str);
+    char **dupDoublestr(char **str);
+    int freeDoublestr(char ***doublestr_addr);
+    char **reallocDoubleStr(char ***strs_ref, char *item);
+    char *strchr(const char *s, int c);
+    char *strsub(char const *s, unsigned int start, size_t len);
+    int startswith(const char *str, const char *sub);
+    char *strsjoin(char *s1, char *s2, char *s3, char *s4);
     std::string ltrim(std::string s, std::string seps = " ");
     std::string rtrim(std::string s, std::string seps = " ");
     std::string trim(std::string s, std::string seps = " ");

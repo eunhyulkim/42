@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:22 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/23 00:31:33 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/23 12:29:03 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ private:
 	TransferType m_transfer_type;
 	std::string m_content;
 	std::string m_query;
+	std::string m_path_info;
 	std::string m_origin;
 	std::string m_path_translated;
 
@@ -62,7 +63,7 @@ public:
 	void add_origin(std::string added_origin);
 	void add_header(std::string header);
 	bool isValidHeader(std::string header);
-	bool isOverTime();
+	bool isOverTime() const;
 
 	Connection *get_m_connection() const;
 	Server *get_m_server() const;
@@ -76,6 +77,7 @@ public:
 	TransferType get_m_transfer_type() const;
 	const std::string &get_m_content() const;
 	const std::string &get_m_query() const;
+	const std::string &get_m_path_info() const;
 	const std::string &get_m_origin() const;
 	const std::string &get_m_path_translated() const;
 };
