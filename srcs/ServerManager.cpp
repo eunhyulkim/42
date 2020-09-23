@@ -551,6 +551,6 @@ ServerManager::writeServerHealthLog()
 	int fd = ServerManager::access_fd;
 	std::string text = "[HealthCheck][Server][Max_fd:" + std::to_string(m_max_fd) \
 	+ "][ReadFD:" + getSetFdString(fd, &m_read_set) + "][WriteFD:" + getSetFdString(fd, &m_write_set) + "]";
-	ft::log(fd, text);	
+	ft::log(fd, text);
 	return ;
 }
