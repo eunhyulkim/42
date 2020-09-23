@@ -881,82 +881,107 @@ bool Server::hasRequest(int client_fd)
 	return (m_manager->fdIsset(client_fd, ServerManager::SetType::READ_COPY_SET));
 }
 
-Request Server::recvRequest(int client_fd, Connection connection)
-{
-	enum TransferType { GENERAL, CHUNKED };
-	ssize_t		read_len = 0;
-	ssize_t		total_read_len = 0;
-	char		buffer[1024];
-	std::string	origin_message;
-	std::string start_line;
-	std::string message_body;
-	std::string buf;
-	TransferType transfer_type = GENERAL;
-	int header_size = 0;
-	int content_length = 0;
-	bool host_header = false;
+namespace {
+	int headerParsing(Server *server, Request &request, std::string &origin_message, Request::TransferType &transfer_type, int &content_length)
+	{
+		std::string buf;
+		bool host_header = false;
 
-	dup2(client_fd, 0);
-	std::getline(std::cin, start_line);
-	start_line = ft::rtrim(start_line, "\r");
-	Request request(&connection, this, start_line);
-	while (!std::cin.eof()) //header parsing
-	{
-		std::getline(std::cin, buf);
-		if (buf == "\r" || buf == "")
-			break;
-		if (!request.isValidHeader(buf))
-			throw (400);
-		buf = ft::rtrim(buf, "\r");
-		size_t pos = buf.find(':');
-		std::string key = ft::trim(buf.substr(0, pos));
-		std::string value = ft::trim(buf.substr(pos + 1));
-		for (size_t i = 0 ; i < key.length() ; ++i) // capitalize
-			key[i] = (i == 0 || key[i - 1] == '-') ? std::toupper(key[i]) : std::tolower(key[i]);
-		if (key == "Content-Type" && value.find("chunked") != std::string::npos)
-			transfer_type = CHUNKED;
-		if (key == "Content-Length")
-		{
-			content_length = std::stoi(value);
-			if (content_length > this->m_limit_client_body_size)
-				throw (413);
-		}
-		if (key == "Host")
-			host_header = true;
-		// std::cout << buf << std::endl;
-		request.add_header(key, value);
-	}
-	if (!host_header)
-		throw 400;
-	if (request.get_m_method() == Request::Method::POST || request.get_m_method() == Request::Method::PUT)
-	{
-		if (transfer_type == CHUNKED)
+		while (!std::cin.eof()) //header parsing
 		{
 			std::getline(std::cin, buf);
 			origin_message = buf + "\n";
+			if (buf == "\r" || buf == "")
+				break;
+			if (!request.isValidHeader(buf))
+				throw (400);
 			buf = ft::rtrim(buf, "\r");
-			if (content_length)
-				throw 400;
-			content_length = std::stoi(buf);
-		}
-		if (content_length < 0)
-			throw 400;
-		if (content_length > 0)
-		{
-			while ((read_len = read(client_fd, buffer, 1024)) != -1)
+			size_t pos = buf.find(':');
+			std::string key = ft::trim(buf.substr(0, pos));
+			std::string value = ft::trim(buf.substr(pos + 1));
+			for (size_t i = 0 ; i < key.length() ; ++i) // capitalize
+				key[i] = (i == 0 || key[i - 1] == '-') ? std::toupper(key[i]) : std::tolower(key[i]);
+			if (key == "Content-Type" && value.find("chunked") != std::string::npos)
+				transfer_type = Request::TransferType::CHUNKED;
+			if (key == "Content-Length")
 			{
-				message_body.append(buf, read_len);
-				total_read_len += read_len;
-				if (total_read_len >= content_length)
-					break;
+				content_length = std::stoi(value);
+				if (content_length > server->get_m_limit_client_body_size())
+					throw (413);
+				if (content_length < 0)
+					throw 400;
+			}
+			if (key == "Host")
+				host_header = true;
+			request.add_header(key, value);
+		}
+		return (host_header);
+	}
+	std::string readBodyMessage(Server *server, Request &request, std::string &origin_message, Request::TransferType &transfer_type, int &content_length, int client_fd)
+	{
+		std::string buf;
+		std::string message_body;
+		char		buffer[LIMIT_CLIENT_BODY_SIZE_MAX];
+		ssize_t		read_len = 0;
+
+		if (request.get_m_method() == Request::Method::POST || request.get_m_method() == Request::Method::PUT)
+		{
+			if (transfer_type == Request::TransferType::CHUNKED)
+			{
+				if (content_length)
+					throw 400;
+				while (1)
+				{
+					std::getline(std::cin, buf);
+					origin_message += buf + "\n";
+					buf = ft::rtrim(buf, "\r");
+					content_length = std::stoi(buf);
+					if (content_length > server->get_m_limit_client_body_size())
+						throw (413);
+					if (content_length < 0)
+						throw 400;
+					read_len = read(client_fd, buffer, content_length);
+					if (read_len != content_length)
+						throw 400;
+					message_body.append(buffer, read_len);
+					origin_message += buffer;
+					if ((read_len = read(client_fd, buffer, 2)) != 2 || std::strncmp(buffer, "\r\n", 2))
+						throw 400;
+					origin_message += "\r\n";
+				}
+			}
+			else
+			{
+				read_len = read(client_fd, buffer, content_length);
+				if (read_len != content_length)
+					throw 400;
+				message_body.append(buffer, read_len);
+				origin_message += buffer;
 			}
 		}
+		else
+		{
+			if ((read_len = read(client_fd, buffer, 1024)) != -1)
+				throw 400;
+		}
+		return (message_body);
 	}
-	else
-	{
-		if ((read_len = read(client_fd, buffer, 1024)) != -1)
-			throw 400;
-	}
+}
+
+Request Server::recvRequest(int client_fd, Connection connection)
+{
+	std::string start_line;
+	Request::TransferType transfer_type = Request::TransferType::GENERAL;
+	int content_length = 0;
+
+	dup2(client_fd, 0);
+	std::getline(std::cin, start_line);
+	std::string origin_message = start_line + "\n";
+	start_line = ft::rtrim(start_line, "\r");
+	Request request(&connection, this, start_line);
+	if (!headerParsing(this, request, origin_message, transfer_type, content_length))
+		throw 400;
+	std::string message_body = readBodyMessage(this, request, origin_message, transfer_type, content_length, client_fd);
 	origin_message += message_body;
 	request.add_content(message_body);
 	if (request.get_m_method() == Request::Method::TRACE)
