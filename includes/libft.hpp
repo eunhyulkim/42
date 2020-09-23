@@ -21,12 +21,12 @@ namespace ft {
     char *strdup(const char *s);
     int free(void *ptr);
     int freeStr(char **str);
-    int lenDoublestr(char **str);
+    int lenDoubleStr(char **str);
     int freeDoublestr(char ***doublestr_addr);
     char *strchr(const char *s, int c);
     char *strsub(char const *s, unsigned int start, size_t len);
     int startswith(const char *str, const char *sub);
-    char *strsjoin(char *s1, char *s2, char *s3, char *s4);
+    char *strsjoin(std::string s1 = "", std::string s2 = "", std::string s3 = "", std::string s4 = "", std::string s5 = ""); 
     std::string ltrim(std::string s, std::string seps = " ");
     std::string rtrim(std::string s, std::string seps = " ");
     std::string trim(std::string s, std::string seps = " ");

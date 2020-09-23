@@ -51,7 +51,7 @@ class ServerManager
 		void fdCopy(SetType fdset);
 
 		/* declare member function */
-		void createServer(const std::string& configuration_file_path);
+		void createServer(const std::string& configuration_file_path, char **env);
 		void runServer();
 		void exitServer(const std::string& error_msg);
 
@@ -62,6 +62,6 @@ class ServerManager
 };
 
 std::ostream&
-operator<<(std::ostream& out, const Server&);
+operator<<(std::ostream& out, const ServerManager&);
 
 #endif

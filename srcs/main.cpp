@@ -9,9 +9,9 @@ int main(int ac, char *av[], char **env)
     else {
         try {
             if (ac == 2)
-                manager.createServer(av[1]);
+                manager.createServer(av[1], env);
             else
-                manager.createServer(DEFAULT_CONFIG_FILE_PATH);
+                manager.createServer(DEFAULT_CONFIG_FILE_PATH, env);
         } catch (std::exception& e) {
             manager.exitServer(e.what());
         }

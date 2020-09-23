@@ -51,7 +51,7 @@ ServerManager& ServerManager::operator=(const ServerManager& obj)
 }
 
 std::ostream&
-operator<<(std::ostream& out, const Server&) {
+operator<<(std::ostream& out, const ServerManager&) {
 	return (out);
 }
 
@@ -411,7 +411,7 @@ ServerManager::openLog()
 }
 
 void
-ServerManager::createServer(const std::string& configuration_file_path)
+ServerManager::createServer(const std::string& configuration_file_path, char **env)
 {
 	std::string config_string = ft::getStringFromFile(configuration_file_path);
 	std::string config_block;
@@ -421,6 +421,7 @@ ServerManager::createServer(const std::string& configuration_file_path)
 		throw (std::invalid_argument("Failed to split configuration string"));
 	if (!isValidConfigBlock(config_block))
 		throw (std::invalid_argument("Config block is not valid."));
+	m_config = Config(config_block, env);
 	for (size_t i = 0; i < server_strings.size(); ++i)
 	{
 		std::string server_block;

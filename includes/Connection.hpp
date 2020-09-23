@@ -10,8 +10,8 @@ class Connection
 		timeval m_last_request_at;
 		std::string m_client_ip;
 		int m_client_port;
-		Connection();
 	public:
+		Connection();
 		Connection(int fd, const std::string& client_ip, int client_port);
 		Connection(const Connection& copy);
 		Connection& operator=(const Connection& obj);

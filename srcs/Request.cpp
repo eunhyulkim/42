@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/23 21:22:49 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/23 22:27:40 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,6 +192,7 @@ const std::map<std::string, std::string> &Request::get_m_headers() const { retur
 Request::TransferType	Request::get_m_transfer_type() const { return (m_transfer_type); }
 const std::string		&Request::get_m_content() const { return (m_content); }
 const std::string		&Request::get_m_query() const { return (m_query); }
+const std::string		&Request::get_m_path_info() const { return (m_query); }
 const std::string		&Request::get_m_origin() const { return (m_origin); }
 const std::string		&Request::get_m_path_translated() const { return (m_path_translated); }
 std::string 			Request::get_m_method_to_string() const

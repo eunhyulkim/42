@@ -149,38 +149,14 @@ namespace ft
 		return (sub[i] == '\0');
 	}
 
-	namespace {
-		char *strAdd(char *dst, char *src)
-		{
-			int		i;
-			int		j;
-
-			if (!src)
-				return (dst);
-			if (!dst)
-				return (src);
-			i = ft::strlen(dst);
-			j = 0;
-			while (src[j])
-				dst[i++] = src[j++];
-			return (dst);
-		}
-	}
-
 	char
-	*strsjoin(char *s1, char *s2, char *s3, char *s4)
+	*strsjoin(std::string s1, std::string s2, std::string s3, std::string s4, std::string s5)
 	{
-		char	*str;
-		int		lens;
-
-		lens = ft::strlen(s1) + ft::strlen(s2) + ft::strlen(s3) + ft::strlen(s4);
-		if (!(str = (char *)calloc(sizeof(char), lens + 1)))
-			return (0);
-		strAdd(str, s1);
-		strAdd(str, s2);
-		strAdd(str, s3);
-		strAdd(str, s4);
-		return ((char *)str);
+		s1.append(s2);
+		s1.append(s3);
+		s1.append(s4);
+		s1.append(s5);
+		return (strdup(s1.c_str()));
 	}
 
 	size_t
@@ -258,7 +234,7 @@ namespace ft
 
 		while ((read_cnt = read(fd, buff, 1024)) > 0) {
 			ret.append(buff, read_cnt);
-			if (max_size != -1 && ret.size() > static_cast<int>(max_size))
+			if (max_size != -1 && static_cast<int>(ret.size()) > max_size)
 				throw (std::overflow_error("overflow max_size in getStringFromFile"));
 		}
 		close(fd);
