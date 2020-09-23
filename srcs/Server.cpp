@@ -671,25 +671,14 @@ namespace {
 		}
 		return (-1);
 	}
-	int	setEnv(char **env, char *key, char *val)
+	int	setEnv(char **env, int idx, char *key, char *val)
 	{
-		int		idx;
 		char	*item;
 
 		if (!key || !(*key))
 			return (0);
-		idx = getKeyIdx(env, key);
 		item = ft::strsjoin(key, "=", val, 0);
-		if (idx == -1)
-		{
-			ft::reallocDoubleStr(&env, item);
-			ft::freeStr(&item);
-		}
-		else
-		{
-			ft::freeStr(&env[idx]);
-			env[idx] = item;
-		}
+		env[idx] = item;
 		return (1);
 	}
 	char *getEnv(char **env, char* wild_key)
@@ -713,34 +702,89 @@ namespace {
 		ft::freeStr(&key);
 		return (env[key_idx] + val_idx);
 	}
-	char *getCGIEnvValue(const Request& request, std::string token, Config *config = NULL)
+	char **dupBaseEnvWithExtraSpace(Config *config)
 	{
-		if (token == "CONTENT_LENGH")
-			return (const_cast<char *>(std::to_string(request.get_m_content().size()).c_str()));
-		else if (token == "CONTENT_TYPE")
-			return (const_cast<char *>(request.get_m_headers().find("Content-Type")->second.c_str()));
+		char **base_env = config->get_m_base_env();
+		char **cgi_env = NULL;
+		int idx = 0;
+		int len = ft::lenDoublestr(base_env);
+
+		if ((cgi_env = reinterpret_cast<char **>(malloc(sizeof(char *) * (len + CGI_META_VARIABLE_COUNT + 1)))) == 0)
+			return (NULL);
+		while (base_env[idx] != NULL) {
+			cgi_env[idx] = base_env[idx];
+			++idx;
+		}
+		while (idx < len + CGI_META_VARIABLE_COUNT + 1)
+			cgi_env[idx++] = NULL;
+		return (cgi_env);
+	}
+	char *getCGIEnvValue(const Request& request, std::string token, Config *config = NULL, Server *server = NULL)
+	{
+		if (token == "CONTENT_LENGH") {
+			if (request.get_m_method() == Request::Method::POST)
+				return (const_cast<char *>(std::to_string(request.get_m_content().size()).c_str()));
+			return (const_cast<char *>(std::string("-1").c_str()));
+		}
+		else if (token == "CONTENT_TYPE") {
+			if (ft::hasKey(request.get_m_headers(), "Content-Type"))
+				return (const_cast<char *>(request.get_m_headers().find("Content-Type")->second.c_str()));
+			return (const_cast<char *>(std::string().c_str()));
+		}
 		else if (token == "AUTH_TYPE")
 			return (const_cast<char *>(config->get_m_cgi_version().c_str()));
 		else if (token == "PATH_INFO")
 			return (const_cast<char *>(request.get_m_path_info().c_str()));
+		else if (token == "PATH_TRANSLATED")
+			return (const_cast<char *>(request.get_m_path_translated().c_str()));
+		else if (token == "QUERY_STRING")
+			return (const_cast<char *>(request.get_m_query().c_str()));
+		else if (token == "REMOTE_ADDR")
+			return (const_cast<char *>(request.get_m_connection()->get_m_client_ip().c_str()));
+		else if (token == "REQUEST_METHOD")
+			return (const_cast<char *>(request.get_m_method_to_string().c_str()));
+		else if (token == "REQUEST_URI") {
+			std::string request_uri = request.get_m_uri();
+			request_uri.append(request.get_m_query());
+			request_uri.append(request.get_m_path_info());
+			return (const_cast<char *>(request_uri.c_str()));
+		}
+		else if (token == "SCRIPT_NAME")
+			return (const_cast<char *>(request.get_m_uri().c_str()));
+		else if (token == "SERVER_NAME")
+			return (const_cast<char *>(server->get_m_server_name().c_str()));
+		else if (token == "SERVER_PORT")
+			return (const_cast<char *>(std::to_string(server->get_m_port()).c_str()));
+		else if (token == "SERVER_PROTOCOL")
+			return (const_cast<char *>(config->get_m_http_version().c_str()));
+		else if (token == "SERVER_SOFTWARE")
+			return (const_cast<char *>((config->get_m_software_name() + config->get_m_software_version()).c_str()));
+		return (NULL);
 	}
 }
 
 char**
 Server::createCGIEnv(const Request& request)
 {
-	char **env = (char **)ft::dupDoublestr(m_config->get_m_base_env());
-	setEnv(env, "AUTH_TYPE", "");
-	if (request.get_m_method() == Request::Method::POST)
-		setEnv(env, "CONTENT_LENGTH", getCGIEnvValue(request, "CONTENT_LENGTH"));
-	else
-		setEnv(env, "CONTENT_LENGTH", "-1");
-	if (ft::hasKey(request.get_m_headers(), "Content-Type"))
-		setEnv(env, "CONTENT_TYPE", getCGIEnvValue(request, "CONTENT_TYPE"));
-	else
-		setEnv(env, "AUTH_TYPE", "");
-	setEnv(env, "GATEWAY_INTERFACE", getCGIEnvValue(request, "GATEWAY_INTERFACE", &m_manager->get_m_config()));
-	setEnv(env, "PATH_INFO", getCGIEnvValue(request, "PATH_INFO"));
+	char **env = dupBaseEnvWithExtraSpace(m_config);
+	int idx = ft::lenDoublestr(m_config->get_m_base_env());
+	setEnv(env, idx++, "AUTH_TYPE", "");
+	setEnv(env, idx++, "CONTENT_LENGTH", getCGIEnvValue(request, "CONTENT_LENGTH"));
+	setEnv(env, idx++, "CONTENT_TYPE", getCGIEnvValue(request, "CONTENT_TYPE"));
+	setEnv(env, idx++, "GATEWAY_INTERFACE", getCGIEnvValue(request, "GATEWAY_INTERFACE", &m_manager->get_m_config()));
+	setEnv(env, idx++, "PATH_INFO", getCGIEnvValue(request, "PATH_INFO"));
+	setEnv(env, idx++, "PATH_TRANSLATED", getCGIEnvValue(request, "PATH_TRANSLATED"));
+	setEnv(env, idx++, "QUERY_STRING", getCGIEnvValue(request, "QUERY_STRING"));
+	setEnv(env, idx++, "REMOTE_ADDR", getCGIEnvValue(request, "REMOTE_ADDR"));
+	setEnv(env, idx++, "REQUEST_METHOD", getCGIEnvValue(request, "REQUEST_METHOD"));
+	setEnv(env, idx++, "REQUEST_URI", getCGIEnvValue(request, "REQUEST_URI"));
+	setEnv(env, idx++, "SCRIPT_NAME", getCGIEnvValue(request, "SCRIPT_NAME"));
+	setEnv(env, idx++, "SERVER_NAME", getCGIEnvValue(request, "SERVER_NAME", NULL, this));
+	setEnv(env, idx++, "SERVER_PORT", getCGIEnvValue(request, "SERVER_PORT", NULL, this));
+	setEnv(env, idx++, "SERVER_PROTOCOL", getCGIEnvValue(request, "SERVER_PROTOCOL", &m_manager->get_m_config()));
+	setEnv(env, idx++, "SERVER_SOFTWARE", getCGIEnvValue(request, "SERVER_SOFTWARE", &m_manager->get_m_config()));
+
+	return (env);
 }
 
 void

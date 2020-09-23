@@ -74,21 +74,6 @@ namespace ft
 		return (idx);
 	}
 
-	char
-	**dupDoubleStr(char **str)
-	{
-		char	**ret;
-		int		len;
-
-		len = lenDoublestr(str);
-		if (!(ret = (char **)calloc(sizeof(char *), len + 1)))
-			return (0);
-		while (len--)
-			if (!(ret[len] = strdup(str[len])))
-				return (0);
-		return (ret);
-	}
-
 	int
 	freeDoublestr(char ***doublestr_addr)
 	{
@@ -104,28 +89,6 @@ namespace ft
 		ft::free(doublestr);
 		*doublestr_addr = 0;
 		return (1);
-	}
-
-	char
-	**reallocDoubleStr(char ***strs_ref, char *item)
-	{
-		char	**ret;
-		char	**strs;
-		int		len;
-
-		strs = *strs_ref;
-		if (!item)
-			return (strs);
-		len = lenDoublestr(strs) + 2;
-		if (!(ret = (char **)calloc(sizeof(char *), len--)))
-			return (0);
-		ret[--len] = strdup(item);
-		while (len--)
-			if (!(ret[len] = strdup(strs[len])))
-				return (0);
-		*strs_ref = ret;
-		freeDoublestr(&strs);
-		return (ret);
 	}
 
 	char

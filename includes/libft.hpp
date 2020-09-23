@@ -21,9 +21,7 @@ namespace ft {
     int free(void *ptr);
     int freeStr(char **str);
     int lenDoublestr(char **str);
-    char **dupDoublestr(char **str);
     int freeDoublestr(char ***doublestr_addr);
-    char **reallocDoubleStr(char ***strs_ref, char *item);
     char *strchr(const char *s, int c);
     char *strsub(char const *s, unsigned int start, size_t len);
     int startswith(const char *str, const char *sub);
