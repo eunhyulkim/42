@@ -4,6 +4,7 @@
 # include <string>
 # include <iostream>
 # include <map>
+# include <set>
 # include <vector>
 # include <set>
 # include <queue>
@@ -100,10 +101,10 @@ class Server
 		bool isSendable(int client_fd);
 		void sendResponse(Response response);
 
-		// bool hasRequest(int client_fd);
-		// Request recvRequest(int client_fd);
+		bool hasRequest(int client_fd);
+		Request recvRequest(int client_fd, Connection connection);
 
-		void solveRequest(const Request& request);		
+		void solveRequest(const Request& request);
 		void executeAutoindex(const Request& request);
 		void executeGet(const Request& request);
 		void executeHead(const Request& request);
@@ -113,7 +114,7 @@ class Server
 		void executeOptions(const Request& request);
 		void executeTrace(const Request& request);
 		void executeCGI(const Request& request);
-		
+
 		void createResponse(Connection* connection, int status, HEADERS headers = HEADERS(), std::string body = "");
 };
 

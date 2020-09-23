@@ -51,6 +51,7 @@ class ServerManager
 		virtual ~ServerManager();
 
 		/* getter & setter function */
+		const std::vector<Server>& get_m_servers() const;
 		Config get_m_config() const;
 		int get_m_max_fd() const;
 		void set_m_max_fd(int max_fd);

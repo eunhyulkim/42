@@ -59,6 +59,7 @@ operator<<(std::ostream& out, const Server& server) {
 /* --------------------------------- GETTER --------------------------------- */
 /* ************************************************************************** */
 
+const std::vector<Server>& ServerManager::get_m_servers() const { return (this->m_servers); }
 Config ServerManager::get_m_config() const { return (this->m_config); }
 int ServerManager::get_m_max_fd() const { return (this->m_max_fd); }
 
