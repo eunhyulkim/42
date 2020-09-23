@@ -27,6 +27,7 @@
 # define SEND_RESPONSE_AT_ONCE 5
 # define RESPONSE_OVERLOAD_COUNT 20
 # define CGI_META_VARIABLE_COUNT 15
+# define CGI_SUCCESS_CODE 299
 # define HEADERS std::vector<std::string>
 # define SERVER_ALLOW_METHODS "GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE"
 
@@ -34,6 +35,7 @@
 
 class Server
 {
+	public:
 	private:
 		static std::map<std::string, std::string> mime_types;
 		ServerManager* m_manager;
@@ -112,7 +114,7 @@ class Server
 		void executeTrace(const Request& request);
 		void executeCGI(const Request& request);
 		
-		void createResponse(int status, std::vector<std::string> headers = std::vector<std::string>(), std::string arg = "");
+		void createResponse(Connection* connection, int status, HEADERS headers = HEADERS(), std::string body = "");
 };
 
 /* global operator overload */
