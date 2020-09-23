@@ -12,9 +12,9 @@ class Response
 {
 	public:
 		enum ConnectionType { CLOSE, KEEP_ALIVE, };
-	private:
 		enum TransferType { GENERAL, CHUNKED };
 		static std::map<int, std::string> status; // 확인
+	private:
 		Connection* m_connection;
 		ConnectionType m_connection_type;
 		int m_status_code;
