@@ -488,6 +488,7 @@ ServerManager::runServer()
 				int fd = it2->first;
 				if (fd != it->get_m_fd() && it2->second.isOverTime())
 					it->closeConnection(fd);
+				++it2;
 			}
 		}
 	}
