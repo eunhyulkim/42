@@ -30,7 +30,7 @@ class Connection
 		/* setter function */
 		void set_m_last_request_at();
 
-		bool isOverTime();
+		bool isOverTime() const;
 };
 
 /* global operator overload */

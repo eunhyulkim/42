@@ -107,9 +107,12 @@ std::string Response::get_m_content() const { return (this->m_content); }
 
 void Response::addHeader(std::string header_key, std::string header_value)
 {
-	this->m_headers[header_key] = header_value;
-	if (header_key == "Transfer-Encoding" && header_value == "chunked")
+	if (header_key == "Transfer-Encoding" && header_value.find("chunked") != std::string::npos)
 		this->m_trasfer_type = CHUNKED;
+	else if (header_key == "Connection" && header_value == "close")
+		this->m_connection_type = CLOSE;
+	else
+		this->m_headers[header_key] = header_value;
 }
 
 const char *Response::c_str()
@@ -138,6 +141,7 @@ std::map<int, std::string> make_status ()
 	status_map[204] = "No Content";
 	status_map[205] = "Reset Content";
 	status_map[206] = "Partial Content";
+	status_map[299] = "CGI OK";
 	status_map[300] = "Multiple Choice";
 	status_map[301] = "Moved Permanently";
 	status_map[303] = "See Other";

@@ -92,7 +92,7 @@ void Connection::set_m_last_request_at()
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
 /* ************************************************************************** */
 
-bool Connection::isOverTime()
+bool Connection::isOverTime() const
 {
 	timeval now;
 
