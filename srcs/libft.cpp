@@ -412,6 +412,23 @@ namespace ft
 		x->fds_bits[fd / 32] &= mask;
 	}
 
+	std::string
+	getSetFdString(int max_fd, fd_set* fset)
+	{
+		std::string ret;
+		bool first = true;
+		for (int i = 0; i <= max_fd; ++i) {
+			if (ft::fdIsset(i, fset)) {
+				if (!first) {
+					ret.append(",");
+				}
+				first = false;
+				ret.append(std::to_string(i));
+			}
+		}
+		return (ret);
+	}
+
 	void log(int fd, std::string text) {
 		write(fd, text.c_str(), text.size());
 	}
@@ -419,7 +436,7 @@ namespace ft
 	bool isRightTime(int second) {
 		timeval t;
 		gettimeofday(&t, NULL);
-		if (t.tv_sec % second == 0)
+		if (t.tv_sec % second == 0 && t.tv_usec == 0)
 			return (true);
 		return (false);
 	}

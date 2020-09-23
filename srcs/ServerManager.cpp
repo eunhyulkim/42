@@ -1,4 +1,5 @@
 #include "ServerManager.hpp"
+#include <errno.h>
 
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
@@ -404,9 +405,9 @@ ServerManager::fdCopy(SetType fdset)
 void
 ServerManager::openLog()
 {
-	if ((ServerManager::access_fd = open(ACCESS_LOG_PATH, O_WRONLY | O_CREAT | O_APPEND)) == -1)
+	if ((ServerManager::access_fd = open(ACCESS_LOG_PATH, O_WRONLY | O_CREAT | O_APPEND, 0755)) == -1)
 		return ;
-	if ((ServerManager::error_fd = open(ERROR_LOG_PATH, O_WRONLY | O_CREAT | O_APPEND)) == -1)
+	if ((ServerManager::error_fd = open(ERROR_LOG_PATH, O_WRONLY | O_CREAT | O_APPEND, 0755)) == -1)
 		return ;
 }
 
@@ -437,7 +438,6 @@ ServerManager::createServer(const std::string& configuration_file_path, char **e
 		}
 		m_servers.push_back(Server(this, server_block, location_blocks, &this->m_config));
 	}
-	std::cout << "create server" << std::endl;
 	writeCreateServerLog();
 }
 
@@ -462,13 +462,16 @@ ServerManager::runServer()
 	g_live = true;
 	while (g_live)
 	{
+		writeServerHealthLog();
+
 		this->m_read_copy_set = this->m_read_set;
 		this->m_write_copy_set = this->m_write_set;
 		this->m_error_copy_set = this->m_error_set;
 
-		int n = select(this->m_max_fd, &this->m_read_copy_set, &this->m_write_copy_set, &this->m_error_copy_set, &timeout);
+		int n = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, &this->m_error_copy_set, &timeout);
 		if (n == -1)
 		{
+			perror("select fail: ");
 			throw std::runtime_error("select error");
 		}
 		else if (n == 0)
@@ -476,16 +479,14 @@ ServerManager::runServer()
 			continue ;
 		}
 		for (std::vector<Server>::iterator it = m_servers.begin() ; it != m_servers.end() ; ++it)
-		{
+		{	
 			it->run();
-			writeServerHealthLog();
 
 			std::map<int, Connection>::const_iterator it2 = it->get_m_connections().begin();
 			while (it2 != it->get_m_connections().end())
 			{
 				int fd = it2->first;
-				
-				if (it2->second.isOverTime())
+				if (fd != it->get_m_fd() && it2->second.isOverTime())
 					it->closeConnection(fd);
 			}
 		}
@@ -504,40 +505,25 @@ ServerManager::exitServer(const std::string& error_msg)
 /* ************************************************************************** */
 
 namespace {
-	std::string
-	getSetFdString(int max_fd, fd_set* fset)
-	{
-		std::string ret;
-		bool first;
-		for (int i = 0; i < max_fd; ++i) {
-			if (ft::fdIsset(i, fset)) {
-				if (!first) {
-					ret.append(",");
-				}
-				first = false;
-				ret.append(std::to_string(i));
-			}
-		}
-		return (ret);
-	}
 }
 
 void
 ServerManager::writeCreateServerLog()
 {
-	std::string text = "[Created][Servers]" + std::to_string(m_servers.size()) + " servers created successfully.";
+	std::string text = "[Created][Servers]" + std::to_string(m_servers.size()) + " servers created successfully.\n";
 	ft::log(ServerManager::access_fd, text);
 	return ;
 }
 
 void
-ServerManager::writeServerHealthLog()
+ServerManager::writeServerHealthLog(bool ignore_interval)
 {
-	if (!ft::isRightTime(5))
+	if (ignore_interval == false && !ft::isRightTime(5))
 		return ;
 	int fd = ServerManager::access_fd;
 	std::string text = "[HealthCheck][Server][Max_fd:" + std::to_string(m_max_fd) \
-	+ "][ReadFD:" + getSetFdString(fd, &m_read_set) + "][WriteFD:" + getSetFdString(fd, &m_write_set) + "]";
+	+ "][ReadFD:" + ft::getSetFdString(m_max_fd, &m_read_set) + "][RequestFD:" + ft::getSetFdString(m_max_fd, &m_read_copy_set) \
+	+ "][WriteFD:" + ft::getSetFdString(m_max_fd, &m_write_set) + "]\n";
 	ft::log(fd, text);
 	return ;
 }

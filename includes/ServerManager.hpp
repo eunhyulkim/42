@@ -58,7 +58,7 @@ class ServerManager
 		/* log function */
 		void openLog();
 		void writeCreateServerLog();
-		void writeServerHealthLog();
+		void writeServerHealthLog(bool ignore_interval = false);
 };
 
 std::ostream&

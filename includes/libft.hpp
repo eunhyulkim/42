@@ -44,6 +44,7 @@ namespace ft {
 	int fdIsset(int fd, fd_set *x);
 	void fdClr(int fd, fd_set *x);
     void log(int fd, std::string text);
+    std::string getSetFdString(int max_fd, fd_set* fset);
     bool isRightTime(int second);
 
     template <typename T, typename V>

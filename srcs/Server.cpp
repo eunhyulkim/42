@@ -123,10 +123,7 @@ Server::Server(const Server& copy)
 /* ------------------------------- DESTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-Server::~Server()
-{
-	close(m_fd);
-}
+Server::~Server(){}
 
 /* ************************************************************************** */
 /* -------------------------------- OVERLOAD -------------------------------- */
@@ -349,7 +346,7 @@ void
 Server::run()
 {
 	int response_count = 0;
-	while (!m_responses.empty() || response_count < SEND_RESPONSE_AT_ONCE)
+	while (!m_responses.empty() && response_count < SEND_RESPONSE_AT_ONCE)
 	{
 		++response_count;
 		Response response(m_responses.front());
