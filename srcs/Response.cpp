@@ -115,7 +115,7 @@ void Response::addHeader(std::string header_key, std::string header_value)
 		this->m_headers[header_key] = header_value;
 }
 
-const char *Response::c_str()
+std::string Response::getString()
 {
 	std::string message;
 	std::map<std::string, std::string>::iterator it = this->m_headers.begin();
@@ -127,7 +127,7 @@ const char *Response::c_str()
 	}
 	message += "\r\n";
 	message += this->m_content;
-	return (message.c_str());
+	return (message);
 }
 
 std::map<int, std::string> make_status ()
