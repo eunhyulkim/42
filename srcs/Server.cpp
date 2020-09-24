@@ -863,7 +863,6 @@ namespace {
 		while (!std::cin.eof()) //header parsing
 		{
 			std::getline(std::cin, buf);
-			ft::log(ServerManager::access_fd, buf);
 			origin_message = buf + "\n";
 			if (buf == "\r" || buf == "")
 				break;

@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/24 09:43:27 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/24 16:31:54 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		}
 	}
 	else if (S_ISDIR(buf.st_mode)) m_uri_type = DIRECTORY;
-	else if (m_method != PUT || m_method != TRACE)
+	else if (m_method != PUT && m_method != TRACE)
 		throw 404;
 
 	m_protocol = parsed[2];
