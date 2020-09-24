@@ -695,46 +695,46 @@ namespace {
 			cgi_env[idx++] = NULL;
 		return (cgi_env);
 	}
-	char *getCGIEnvValue(const Request& request, std::string token, Server *server = NULL, Config config = Config())
+	std::string getCGIEnvValue(const Request& request, std::string token, Server *server = NULL, Config config = Config())
 	{
 		if (token == "CONTENT_LENGH") {
 			if (request.get_m_method() == Request::POST)
-				return (const_cast<char *>(std::to_string(request.get_m_content().size()).c_str()));
-			return (const_cast<char *>(std::string("-1").c_str()));
+				return (std::to_string(request.get_m_content().size()));
+			return (std::string("-1"));
 		}
 		else if (token == "CONTENT_TYPE") {
 			if (ft::hasKey(request.get_m_headers(), "Content-Type"))
-				return (const_cast<char *>(request.get_m_headers().find("Content-Type")->second.c_str()));
-			return (const_cast<char *>(std::string().c_str()));
+				return (request.get_m_headers().find("Content-Type")->second);
+			return (std::string());
 		}
 		else if (token == "AUTH_TYPE")
-			return (const_cast<char *>(config.get_m_cgi_version().c_str()));
+			return (config.get_m_cgi_version());
 		else if (token == "PATH_INFO")
-			return (const_cast<char *>(request.get_m_path_info().c_str()));
+			return (request.get_m_path_info());
 		else if (token == "PATH_TRANSLATED")
-			return (const_cast<char *>(request.get_m_path_translated().c_str()));
+			return (request.get_m_path_translated());
 		else if (token == "QUERY_STRING")
-			return (const_cast<char *>(request.get_m_query().c_str()));
+			return (request.get_m_query());
 		else if (token == "REMOTE_ADDR")
-			return (const_cast<char *>(request.get_m_connection()->get_m_client_ip().c_str()));
+			return (request.get_m_connection()->get_m_client_ip());
 		else if (token == "REQUEST_METHOD")
-			return (const_cast<char *>(request.get_m_method_to_string().c_str()));
+			return (request.get_m_method_to_string());
 		else if (token == "REQUEST_URI") {
 			std::string request_uri = request.get_m_uri();
 			request_uri.append(request.get_m_query());
 			request_uri.append(request.get_m_path_info());
-			return (const_cast<char *>(request_uri.c_str()));
+			return (request_uri);
 		}
 		else if (token == "SCRIPT_NAME")
-			return (const_cast<char *>(request.get_m_uri().c_str()));
+			return (request.get_m_uri());
 		else if (token == "SERVER_NAME")
-			return (const_cast<char *>(server->get_m_server_name().c_str()));
+			return (server->get_m_server_name());
 		else if (token == "SERVER_PORT")
-			return (const_cast<char *>(std::to_string(server->get_m_port()).c_str()));
+			return (std::to_string(server->get_m_port()));
 		else if (token == "SERVER_PROTOCOL")
-			return (const_cast<char *>(config.get_m_cgi_version().c_str()));
+			return (config.get_m_cgi_version());
 		else if (token == "SERVER_SOFTWARE")
-			return (const_cast<char *>((config.get_m_software_name() + config.get_m_software_version()).c_str()));
+			return (config.get_m_software_name() + config.get_m_software_version());
 		return (NULL);
 	}
 }
@@ -845,7 +845,7 @@ Server::sendResponse(Response response)
 {
 	int fd = response.get_m_connection()->get_m_client_fd();
 
-	send(fd, response.c_str(), ft::strlen(response.c_str()), 0);
+	send(fd, response.getString().c_str(), ft::strlen(response.getString().c_str()), 0);
 	m_manager->fdClear(fd, ServerManager::WRITE_SET);
 }
 
