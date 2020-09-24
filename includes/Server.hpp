@@ -72,7 +72,7 @@ class Server
 		bool hasException(int client_fd);
 		void closeConnection(int client_fd);
 		bool hasNewConnection();
-		void acceptNewConnection();
+		bool acceptNewConnection();
 		void run();
 
 		bool isSendable(int client_fd);
@@ -93,6 +93,14 @@ class Server
 		void executeCGI(const Request& request);
 
 		void createResponse(Connection* connection, int status, HEADERS headers = HEADERS(), std::string body = "");
+
+		/* log function */
+		void writeDetectNewConnectionLog();
+		void writeCreateNewConnectionLog(int client_fd, std::string client_ip, int client_port);
+		void reportCreateNewConnectionLog();
+		void writeDetectNewRequestLog(const Connection& connection);
+		void writeCreateNewRequestLog(const Request& request);
+		void reportCreateNewRequestLog(const Connection& connection, int status);
 };
 
 /* global operator overload */
