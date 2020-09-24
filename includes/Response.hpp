@@ -34,7 +34,7 @@ class Response
 		TransferType get_m_transfer_type() const;
 		std::string get_m_content() const;
 		void addHeader(std::string header_key, std::string header_value);
-		const char* c_str();
+		std::string getString();
 };
 
 /* global operator overload */
