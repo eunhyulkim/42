@@ -1023,6 +1023,7 @@ Server::createResponse(Connection* connection, int status, HEADERS headers, std:
 	}
 	writeCreateNewResponseLog(response);
 	m_responses.push(response);
+	m_manager->fdSet(response.get_m_connection()->get_m_client_fd(), ServerManager::WRITE_SET);
 }
 
 /* ************************************************************************** */
