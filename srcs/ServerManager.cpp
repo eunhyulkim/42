@@ -406,9 +406,9 @@ ServerManager::fdCopy(SetType fdset)
 void
 ServerManager::openLog()
 {
-	if ((ServerManager::access_fd = open(ACCESS_LOG_PATH, O_WRONLY | O_CREAT | O_APPEND, 0755)) == -1)
+	if ((ServerManager::access_fd = open(ACCESS_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
 		return ;
-	if ((ServerManager::error_fd = open(ERROR_LOG_PATH, O_WRONLY | O_CREAT | O_APPEND, 0755)) == -1)
+	if ((ServerManager::error_fd = open(ERROR_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
 		return ;
 }
 
@@ -468,7 +468,7 @@ ServerManager::runServer()
 
 		this->m_read_copy_set = this->m_read_set;
 		this->m_write_copy_set = this->m_write_set;
-		this->m_error_copy_set = this->m_error_set;
+		this->m_error_copy_set = this->m_read_set;
 
 		int n = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, &this->m_error_copy_set, &timeout);
 		if (n == -1)
@@ -477,9 +477,7 @@ ServerManager::runServer()
 			throw std::runtime_error("select error");
 		}
 		else if (n == 0)
-		{
 			continue ;
-		}
 		writeServerHealthLog(true);
 		for (std::vector<Server>::iterator it = m_servers.begin() ; it != m_servers.end() ; ++it)
 		{	
@@ -489,9 +487,11 @@ ServerManager::runServer()
 			while (it2 != it->get_m_connections().end())
 			{
 				int fd = it2->first;
-				if (!ft::hasKey(m_server_fdset, fd) && it2->second.isOverTime())
+				if (!ft::hasKey(m_server_fdset, fd) && it2->second.isOverTime()) {
+					++it2;
 					it->closeConnection(fd);
-				++it2;
+				} else
+					++it2;
 			}
 		}
 	}
