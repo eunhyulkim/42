@@ -12,6 +12,7 @@ class ServerManager
 		static int access_fd;
 	private:
 		std::vector<Server> m_servers;
+		std::set<int> m_server_fdset;
         Config m_config;
         int m_max_fd;
         fd_set m_read_set;
@@ -35,6 +36,7 @@ class ServerManager
 
 		/* getter & setter function */
 		const std::vector<Server>& get_m_servers() const;
+		const std::set<int>& get_m_server_fdset() const;
 		Config get_m_config() const;
 		int get_m_max_fd() const;
 		void set_m_max_fd(int max_fd);
