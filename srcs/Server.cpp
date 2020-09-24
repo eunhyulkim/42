@@ -1021,6 +1021,7 @@ Server::createResponse(Connection* connection, int status, HEADERS headers, std:
 		std::string value = (*it).substr((*it).find(":") + 1);
 		response.addHeader(key, value);
 	}
+	writeCreateNewResponseLog(response);
 	m_responses.push(response);
 }
 
@@ -1083,6 +1084,17 @@ Server::reportCreateNewRequestLog(const Connection& connection, int status)
 	std::string text = "[Failed][Request][Server:" + m_server_name + "][CIP:"
 	+ connection.get_m_client_ip() + "][CFD:" + std::to_string(connection.get_m_client_fd()) + "]["
 	+ std::to_string(status) + "] Failed to create new connection.\n";
+	ft::log(ServerManager::access_fd, text);
+	return ;
+}
+
+void
+Server::writeCreateNewResponseLog(const Response& response)
+{
+	std::string text = "[Created][Response][Server:" + m_server_name + "][" \
+	+ std::to_string(response.get_m_status_code()) + "][" + response.get_m_status_description() + "][headers:" \
+	+ response.get_m_headers().size() + "][body" + response.get_m_content().size();
+	text.append(" New response created.\n");
 	ft::log(ServerManager::access_fd, text);
 	return ;
 }

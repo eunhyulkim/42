@@ -101,6 +101,7 @@ class Server
 		void writeDetectNewRequestLog(const Connection& connection);
 		void writeCreateNewRequestLog(const Request& request);
 		void reportCreateNewRequestLog(const Connection& connection, int status);
+		void writeCreateNewResponseLog(const Response& response);
 };
 
 /* global operator overload */
