@@ -375,7 +375,7 @@ Server::run()
 		else if (hasRequest(fd))	{
 			writeDetectNewRequestLog(it2->second);
 			try {
-				request = recvRequest(fd, it2->second);
+				request = recvRequest(fd, &it2->second);
 			} catch (int status_code) {
 				createResponse(&(it2->second), status_code);
 				reportCreateNewRequestLog(it2->second, status_code);
@@ -946,7 +946,7 @@ namespace {
 	}
 }
 
-Request Server::recvRequest(int client_fd, Connection connection)
+Request Server::recvRequest(int client_fd, Connection* connection)
 {
 	std::string start_line;
 	Request::TransferType transfer_type = Request::GENERAL;
@@ -956,7 +956,7 @@ Request Server::recvRequest(int client_fd, Connection connection)
 	std::getline(std::cin, start_line);
 	std::string origin_message = start_line + "\n";
 	start_line = ft::rtrim(start_line, "\r");
-	Request request(&connection, this, start_line);
+	Request request(connection, this, start_line);
 	if (!headerParsing(this, request, origin_message, transfer_type, content_length))
 		throw 400;
 	std::string message_body = readBodyMessage(this, request, origin_message, transfer_type, content_length, client_fd);
@@ -1093,8 +1093,9 @@ void
 Server::writeCreateNewResponseLog(const Response& response)
 {
 	std::string text = "[Created][Response][Server:" + m_server_name + "][" \
-	+ std::to_string(response.get_m_status_code()) + "][" + response.get_m_status_description() + "][headers:" \
-	+ response.get_m_headers().size() + "][body" + response.get_m_content().size();
+	+ std::to_string(response.get_m_status_code()) + "][" + response.get_m_status_description() + "][CFD:" \
+	+ std::to_string(response.get_m_connection()->get_m_client_fd()) + "][headers:" \
+	+ std::to_string(response.get_m_headers().size()) + "][body" + std::to_string(response.get_m_content().size()) + "]";
 	text.append(" New response created.\n");
 	ft::log(ServerManager::access_fd, text);
 	return ;

@@ -1,0 +1,19 @@
+
+[Created][Servers]1 servers created successfully.
+[HealthCheck][Server][Max_fd:5][Connection:5][Response:]
+[HealthCheck][Server][Max_fd:5][Connection:5][Response:]
+[Detected][Connection][Server:default][Host:127.0.0.1] New connection detected.
+[Created][Connection][Server:default][CFD:6][IP:127.0.0.1][Port:33753]
+[HealthCheck][Server][Max_fd:6][Connection:5,6][Response:]
+[Detected][Connection][Server:default][Host:127.0.0.1] New connection detected.
+[Created][Connection][Server:default][CFD:7][IP:127.0.0.1][Port:34009]
+[HealthCheck][Server][Max_fd:7][Connection:5,6,7][Response:]
+[Detected][Request][Server:default][CIP:127.0.0.1][CFD:6] New request detected.
+[Created][Request][Server:default][Method:GET][URI:/][Path:/Users/gim-eunhyul/42seoul/subject/webserv/config/www/][Query:] New request created.
+[Created][Response][Server:default][200][OK][CFD:6][headers:4][body2585] New response created.
+[HealthCheck][Server][Max_fd:7][Connection:5,6,7][Response:6]
+[HealthCheck][Server][Max_fd:7][Connection:5,6,7][Response:6]
+[HealthCheck][Server][Max_fd:7][Connection:5,6,7][Response:]
+[Detected][Request][Server:default][CIP:127.0.0.1][CFD:6] New request detected.
+[Created][Response][Server:default][404][Not Found][CFD:6][headers:4][body621] New response created.
+[Failed][Request][Server:default][CIP:127.0.0.1][CFD:6][404] Failed to create new connection.

@@ -79,7 +79,7 @@ class Server
 		void sendResponse(Response response);
 
 		bool hasRequest(int client_fd);
-		Request recvRequest(int client_fd, Connection connection);
+		Request recvRequest(int client_fd, Connection* connection);
 
 		void solveRequest(const Request& request);
 		void executeAutoindex(const Request& request);
