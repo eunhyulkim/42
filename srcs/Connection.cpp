@@ -99,9 +99,7 @@ bool Connection::isOverTime() const
 
 	if (gettimeofday(&now, NULL) == -1)
 		throw std::runtime_error("gettimeofday error");
-	
-	long now_nbr = now.tv_sec * 1000 + now.tv_usec;
-	long start_nbr = m_last_request_at.tv_sec * 1000 + m_last_request_at.tv_usec;
-	
-	return ((now_nbr - start_nbr) / 1000 >= CONNECTION_OLD);
+	long now_nbr = now.tv_sec + now.tv_usec / 1000000;
+	long start_nbr = m_last_request_at.tv_sec + m_last_request_at.tv_usec / 1000000;
+	return ((now_nbr - start_nbr) >= CONNECTION_OLD);
 }

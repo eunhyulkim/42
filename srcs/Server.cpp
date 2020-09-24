@@ -303,6 +303,7 @@ Server::hasException(int client_fd) {
 void
 Server::closeConnection(int client_fd)
 {
+	writeCloseConnectionLog(client_fd);
 	close(client_fd);
 	m_manager->fdClear(client_fd, ServerManager::READ_SET);
 	m_connections.erase(client_fd);
@@ -835,6 +836,8 @@ Server::isSendable(int client_fd)
 {
 	if (m_manager->fdIsset(client_fd, ServerManager::ERROR_COPY_SET))
 		return (false);
+	else if (!m_manager->fdIsset(client_fd, ServerManager::READ_SET))
+		return (false);
 	else if (m_manager->fdIsset(client_fd, ServerManager::WRITE_COPY_SET))
 		return (true);
 	return (false);
@@ -968,6 +971,7 @@ Request Server::recvRequest(int client_fd, Connection* connection)
 	request.add_content(message_body);
 	if (request.get_m_method() == Request::TRACE)
 		request.add_origin(origin_message);
+	connection->set_m_last_request_at();
 	return (request);
 }
 
@@ -1106,15 +1110,11 @@ Server::writeCreateNewResponseLog(const Response& response)
 	return ;
 }
 
-// void
-// Server::writeServerHealthLog(bool ignore_interval)
-// {
-// 	if (ignore_interval == false && !ft::isRightTime(SERVER_HEALTH_LOG_TIME))
-// 		return ;
-// 	int fd = ServerManager::access_fd;
-// 	std::string text = "[HealthCheck][Server][Max_fd:" + std::to_string(m_max_fd) \
-// 	+ "][ReadFD:" + ft::getSetFdString(m_max_fd, &m_read_set) + "][RequestFD:" + ft::getSetFdString(m_max_fd, &m_read_copy_set) \
-// 	+ "][WriteFD:" + ft::getSetFdString(m_max_fd, &m_write_set) + "]\n";
-// 	ft::log(fd, text);
-// 	return ;
-// }
+void
+Server::writeCloseConnectionLog(int client_fd)
+{
+	std::string text = "[Deleted][Connection][Server:" + m_server_name + "][CFD:" \
+	+ std::to_string(client_fd) + "] Connection closed.\n";
+	ft::log(ServerManager::access_fd, text);
+	return ;
+}
