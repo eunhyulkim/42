@@ -699,42 +699,42 @@ namespace {
 	{
 		if (token == "CONTENT_LENGH") {
 			if (request.get_m_method() == Request::POST)
-				return ((std::to_string(request.get_m_content().size())));
-			return ((std::string("-1")));
+				return (std::to_string(request.get_m_content().size()));
+			return (std::string("-1"));
 		}
 		else if (token == "CONTENT_TYPE") {
 			if (ft::hasKey(request.get_m_headers(), "Content-Type"))
-				return ((request.get_m_headers().find("Content-Type")->second));
-			return ((std::string()));
+				return (request.get_m_headers().find("Content-Type")->second);
+			return (std::string());
 		}
 		else if (token == "AUTH_TYPE")
-			return ((config.get_m_cgi_version()));
+			return (config.get_m_cgi_version());
 		else if (token == "PATH_INFO")
-			return ((request.get_m_path_info()));
+			return (request.get_m_path_info());
 		else if (token == "PATH_TRANSLATED")
-			return ((request.get_m_path_translated()));
+			return (request.get_m_path_translated());
 		else if (token == "QUERY_STRING")
-			return ((request.get_m_query()));
+			return (request.get_m_query());
 		else if (token == "REMOTE_ADDR")
-			return ((request.get_m_connection()->get_m_client_ip()));
+			return (request.get_m_connection()->get_m_client_ip());
 		else if (token == "REQUEST_METHOD")
-			return ((request.get_m_method_to_string()));
+			return (request.get_m_method_to_string());
 		else if (token == "REQUEST_URI") {
 			std::string request_uri = request.get_m_uri();
 			request_uri.append(request.get_m_query());
 			request_uri.append(request.get_m_path_info());
-			return ((request_uri));
+			return (request_uri);
 		}
 		else if (token == "SCRIPT_NAME")
-			return ((request.get_m_uri()));
+			return (request.get_m_uri());
 		else if (token == "SERVER_NAME")
-			return ((server->get_m_server_name()));
+			return (server->get_m_server_name());
 		else if (token == "SERVER_PORT")
-			return ((std::to_string(server->get_m_port())));
+			return (std::to_string(server->get_m_port()));
 		else if (token == "SERVER_PROTOCOL")
-			return ((config.get_m_cgi_version()));
+			return (config.get_m_cgi_version());
 		else if (token == "SERVER_SOFTWARE")
-			return (((config.get_m_software_name() + config.get_m_software_version())));
+			return (config.get_m_software_name() + config.get_m_software_version());
 		return (NULL);
 	}
 }
