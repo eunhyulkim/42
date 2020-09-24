@@ -480,6 +480,7 @@ ServerManager::runServer()
 		{
 			continue ;
 		}
+		writeServerHealthLog(true);
 		for (std::vector<Server>::iterator it = m_servers.begin() ; it != m_servers.end() ; ++it)
 		{	
 			it->run();

@@ -378,7 +378,7 @@ Server::run()
 				request = recvRequest(fd, it2->second);
 			} catch (int status_code) {
 				createResponse(&(it2->second), status_code);
-				reportCreateNewRequestLog(it2->second, status);
+				reportCreateNewRequestLog(it2->second, status_code);
 				continue ;
 			} catch (std::exception& e) {
 				createResponse(&(it2->second), 500);
