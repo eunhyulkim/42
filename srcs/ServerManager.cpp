@@ -61,6 +61,7 @@ operator<<(std::ostream& out, const ServerManager&) {
 /* ************************************************************************** */
 
 const std::vector<Server>& ServerManager::get_m_servers() const { return (this->m_servers); }
+const std::set<int>& ServerManager::get_m_server_fdset() const { return (this->m_server_fdset); }
 Config ServerManager::get_m_config() const { return (this->m_config); }
 int ServerManager::get_m_max_fd() const { return (this->m_max_fd); }
 
@@ -437,6 +438,7 @@ ServerManager::createServer(const std::string& configuration_file_path, char **e
 				+ "-" + std::to_string(j) + ") is not valid."));
 		}
 		m_servers.push_back(Server(this, server_block, location_blocks, &this->m_config));
+		m_server_fdset.insert(m_servers.back().get_m_fd());
 	}
 	writeCreateServerLog();
 }
@@ -486,7 +488,7 @@ ServerManager::runServer()
 			while (it2 != it->get_m_connections().end())
 			{
 				int fd = it2->first;
-				if (fd != it->get_m_fd() && it2->second.isOverTime())
+				if (!ft::hasKey(m_server_fdset, fd) && it2->second.isOverTime())
 					it->closeConnection(fd);
 				++it2;
 			}
