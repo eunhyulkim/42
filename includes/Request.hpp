@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:22 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/23 22:27:49 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/24 09:42:58 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,9 @@ private:
 	TransferType m_transfer_type;
 	std::string m_content;
 	std::string m_query;
+	std::string m_path_translated;
 	std::string m_path_info;
 	std::string m_origin;
-	std::string m_path_translated;
 
 public:
 	Request();

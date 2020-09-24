@@ -519,12 +519,11 @@ ServerManager::writeCreateServerLog()
 void
 ServerManager::writeServerHealthLog(bool ignore_interval)
 {
-	if (ignore_interval == false && !ft::isRightTime(5))
+	if (ignore_interval == false && !ft::isRightTime(SERVER_HEALTH_LOG_TIME))
 		return ;
 	int fd = ServerManager::access_fd;
 	std::string text = "[HealthCheck][Server][Max_fd:" + std::to_string(m_max_fd) \
-	+ "][ReadFD:" + ft::getSetFdString(m_max_fd, &m_read_set) + "][RequestFD:" + ft::getSetFdString(m_max_fd, &m_read_copy_set) \
-	+ "][WriteFD:" + ft::getSetFdString(m_max_fd, &m_write_set) + "]\n";
+	+ "][Connection:" + ft::getSetFdString(m_max_fd, &m_read_set) + "][Response:" + ft::getSetFdString(m_max_fd, &m_write_set) + "]\n";
 	ft::log(fd, text);
 	return ;
 }

@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/23 22:27:40 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/24 09:43:27 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,6 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 			}
 		}
 	}
-
 	m_path_translated = root + m_uri;
 	struct stat buf;
 	stat(m_path_translated.c_str(), &buf);
@@ -121,6 +120,7 @@ Request::Request(const Request &x)
 	m_transfer_type = x.m_transfer_type;
 	m_content = x.m_content;
 	m_query = x.m_query;
+	m_path_translated = x.m_path_translated;
 	m_path_info = x.m_path_info;
 	m_origin = x.m_origin;
 }
@@ -156,6 +156,7 @@ Request &Request::operator=(const Request &x)
 	m_transfer_type = x.m_transfer_type;
 	m_content = x.m_content;
 	m_query = x.m_query;
+	m_path_translated = x.m_path_translated;
 	m_path_info = x.m_path_info;
 	m_origin = x.m_origin;
 

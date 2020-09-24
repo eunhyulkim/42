@@ -99,9 +99,6 @@ HtmlWriter::add_tag(std::string front_token, std::string tag, std::string conten
 	if (newline && !content.empty())
 		token.append("\n");
 	token.append("</" + tag + ">\n");
-	std::cout << "TOKEN" << std::endl;
-	std::cout << token << std::endl;
-	std::cout << std::boolalpha << newline << std::endl;
 	m_body.insert(m_body.find(front_token) + front_token.size(), token);
 }
 

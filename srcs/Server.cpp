@@ -306,8 +306,9 @@ Server::closeConnection(int client_fd)
 	close(client_fd);
 	m_manager->fdClear(client_fd, ServerManager::READ_SET);
 	m_connections.erase(client_fd);
-	if (m_manager->get_m_max_fd() >= client_fd)
-		m_manager->set_m_max_fd(client_fd - 1);
+	if (m_manager->get_m_max_fd() == client_fd) {
+		m_manager->set_m_max_fd(m_manager->get_m_max_fd() - 1);
+	}
 }
 
 bool
@@ -316,7 +317,7 @@ Server::hasNewConnection()
 	return (m_manager->fdIsset(m_fd, ServerManager::READ_COPY_SET));
 }
 
-void
+bool
 Server::acceptNewConnection()
 {
 	struct sockaddr_in	client_addr;
@@ -328,18 +329,19 @@ Server::acceptNewConnection()
 	ft::bzero(&client_addr, client_addr_size);
 
 	if ((client_fd = accept(m_fd, (struct sockaddr *)&client_addr, &client_addr_size)) == -1)
-		return ;
+		return (false);
 	if (m_manager->get_m_max_fd() < client_fd)
 		m_manager->set_m_max_fd(client_fd);
 	if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1)
-		return ;
+		return (false);
 	client_ip = inet_ntoa(client_addr.sin_addr.s_addr);
 	client_port = static_cast<int>(client_addr.sin_port);
 	m_connections[client_fd] = Connection(client_fd, client_ip, client_port);
 	m_manager->fdSet(client_fd, ServerManager::READ_SET);
 	if (client_fd > m_manager->get_m_max_fd())
 		m_manager->set_m_max_fd(client_fd);
-	return ;
+	writeCreateNewConnectionLog(client_fd, client_ip, client_port);
+	return (true);
 }
 
 void
@@ -361,34 +363,42 @@ Server::run()
 	while (it != m_connections.end())
 	{
 		Request request;
-		int fd = it->first;
+		std::map<int, Connection>::iterator it2 = it++;
+		int fd = it2->first;
 
-		++it;
-		if (hasException(fd)) {
+		if (m_fd == fd)
+			continue ;
+		else if (hasException(fd)) {
 			closeConnection(fd);
 			continue ;
 		}
-		if (hasRequest(fd))	{
+		else if (hasRequest(fd))	{
+			writeDetectNewRequestLog(it2->second);
 			try {
-				request = recvRequest(fd, it->second);
+				request = recvRequest(fd, it2->second);
 			} catch (int status_code) {
-				createResponse(&(it->second), status_code);
+				createResponse(&(it2->second), status_code);
+				reportCreateNewRequestLog(it2->second, status);
 				continue ;
 			} catch (std::exception& e) {
-				createResponse(&(it->second), 500);
+				createResponse(&(it2->second), 500);
+				reportCreateNewRequestLog(it2->second, 500);
 				continue ;
 			}
 			if (m_responses.size() > RESPONSE_OVERLOAD_COUNT) {
-				createResponse(&(it->second), 503);
+				createResponse(&(it2->second), 503);
+				reportCreateNewRequestLog(it2->second, 503);
 				closeConnection(fd);
 				continue ;
 			}
+			writeCreateNewRequestLog(request);
 			solveRequest(request);
+			m_manager->writeServerHealthLog(true);
 		}
 	}
-
 	if (hasNewConnection())
 	{
+		writeDetectNewConnectionLog();
 		if (m_connections.size() >= (1024 / m_manager->get_m_servers().size()))
 		{
 			std::map<int, Connection>::iterator it = m_connections.begin();
@@ -400,7 +410,8 @@ Server::run()
 				return ;
 			closeConnection(it->first);
 		}
-		acceptNewConnection();
+		if (!acceptNewConnection())
+			reportCreateNewConnectionLog();
 	}
 }
 
@@ -971,6 +982,7 @@ namespace {
 		return ("Server:" + server->get_m_server_name());
 	}
 }
+
 void
 Server::createResponse(Connection* connection, int status, HEADERS headers, std::string body)
 {
@@ -1011,3 +1023,79 @@ Server::createResponse(Connection* connection, int status, HEADERS headers, std:
 	}
 	m_responses.push(response);
 }
+
+/* ************************************************************************** */
+/* ------------------------------- LOG FUNCTION ----------------------------- */
+/* ************************************************************************** */
+
+void
+Server::writeDetectNewConnectionLog()
+{
+	std::string text = "[Detected][Connection][Server:" + m_server_name + "][Host:" + m_host \
+	+ "] New connection detected.\n";
+	ft::log(ServerManager::access_fd, text);
+	return ;
+}
+
+void
+Server::writeCreateNewConnectionLog(int client_fd, std::string client_ip, int client_port)
+{
+	std::string text = "[Created][Connection][Server:" + m_server_name + "][CFD:" \
+	+ std::to_string(client_fd) + "][IP:" + client_ip + "][Port:" + std::to_string(client_port) + "]\n";
+	ft::log(ServerManager::access_fd, text);
+	return ;
+}
+
+void
+Server::reportCreateNewConnectionLog()
+{
+	std::string text = "[Failed][Connection][Server:" + m_server_name + "][Host:" + m_host \
+	+ "] Failed to create new connection.\n";
+	ft::log(ServerManager::access_fd, text);
+	return ;
+}
+
+void
+Server::writeDetectNewRequestLog(const Connection& connection)
+{
+	std::string text = "[Detected][Request][Server:" + m_server_name + "][CIP:"
+	+ connection.get_m_client_ip() + "][CFD:" + std::to_string(connection.get_m_client_fd()) + "]"
+	+ " New request detected.\n";
+	ft::log(ServerManager::access_fd, text);
+	return ;
+}
+
+void
+Server::writeCreateNewRequestLog(const Request& request)
+{
+	std::string text = "[Created][Request][Server:" + m_server_name + "][Method:" \
+	+ request.get_m_method_to_string() + "][URI:" + request.get_m_uri() + "][Path:" + request.get_m_path_translated() + "]";
+	if (request.get_m_method() == Request::GET)
+		text.append("[Query:" + request.get_m_query() + "]");
+	text.append(" New request created.\n");
+	ft::log(ServerManager::access_fd, text);
+	return ;
+}
+
+void
+Server::reportCreateNewRequestLog(const Connection& connection, int status)
+{
+	std::string text = "[Failed][Request][Server:" + m_server_name + "][CIP:"
+	+ connection.get_m_client_ip() + "][CFD:" + std::to_string(connection.get_m_client_fd()) + "]["
+	+ std::to_string(status) + "] Failed to create new connection.\n";
+	ft::log(ServerManager::access_fd, text);
+	return ;
+}
+
+// void
+// Server::writeServerHealthLog(bool ignore_interval)
+// {
+// 	if (ignore_interval == false && !ft::isRightTime(SERVER_HEALTH_LOG_TIME))
+// 		return ;
+// 	int fd = ServerManager::access_fd;
+// 	std::string text = "[HealthCheck][Server][Max_fd:" + std::to_string(m_max_fd) \
+// 	+ "][ReadFD:" + ft::getSetFdString(m_max_fd, &m_read_set) + "][RequestFD:" + ft::getSetFdString(m_max_fd, &m_read_copy_set) \
+// 	+ "][WriteFD:" + ft::getSetFdString(m_max_fd, &m_write_set) + "]\n";
+// 	ft::log(fd, text);
+// 	return ;
+// }
