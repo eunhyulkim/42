@@ -60,16 +60,6 @@ class Server
 		const std::map<int, Connection>& get_m_connections() const;
 		const std::queue<Response>& get_m_responses() const;
 
-		/* setter function */
-		// void set_m_server_name(std::string server_name);
-		// void set_m_host(std::string host);
-		// void set_m_port(int port);
-		// void set_m_fd(int fd);
-		// void set_m_request_uri_limit_size(int request_uri_limit_size);
-		// void set_m_request_header_limit_size(int request_header_limit_size);
-		// void set_m_limit_client_body_size(int limit_client_body_size);
-		// void set_m_default_error_page(std::string default_error_page);
-
 		/* declare member function */
 		bool hasException(int client_fd);
 		void closeConnection(int client_fd);
@@ -102,7 +92,7 @@ class Server
 		void reportCreateNewConnectionLog();
 		void writeDetectNewRequestLog(const Connection& connection);
 		void writeCreateNewRequestLog(const Request& request);
-		void reportCreateNewRequestLog(const Connection& connection, int status);
+		void reportCreateNewRequestLog(Connection* connection, int status);
 		void writeCreateNewResponseLog(const Response& response);
 		void writeCloseConnectionLog(int client_fd);
 };

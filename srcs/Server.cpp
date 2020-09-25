@@ -367,19 +367,14 @@ Server::runRecvAndSolve(std::map<int, Connection>::iterator it)
 	try {
 		request = recvRequest(fd, &it->second);
 	} catch (int status_code) {
-		reportCreateNewRequestLog(it->second, status_code);
-		if (status_code >= 40000)
-			status_code /= 100;
 		createResponse(&(it->second), status_code);
 		return (false);
 	} catch (std::exception& e) {
-		reportCreateNewRequestLog(it->second, 500);
-		createResponse(&(it->second), 500);
+		createResponse(&(it->second), 50001);
 		return (false);
 	}
 	if (m_responses.size() > RESPONSE_OVERLOAD_COUNT) {
 		createResponse(&(it->second), 503);
-		reportCreateNewRequestLog(it->second, 503);
 		return (false);
 	}
 	writeCreateNewRequestLog(request);
@@ -579,7 +574,7 @@ Server::executeAutoindex(const Request& request)
 		HtmlWriter html;
 		makeAutoindexForm(html, request);
 		if (!makeAutoindexContent(html, cwd))
-			return (createResponse(request.get_m_connection(), 500));
+			return (createResponse(request.get_m_connection(), 50002));
 		createResponse(request.get_m_connection(), 200, HEADERS(), html.get_m_body());
 	}
 	else
@@ -663,9 +658,9 @@ Server::executePut(const Request& request)
 	if (headers[0].empty())
 		return (createResponse(request.get_m_connection(), 415));
 	if ((fd = open(request.get_m_path_translated().c_str(), O_RDWR | O_CREAT)) == -1)
-		createResponse(request.get_m_connection(), 500);
+		createResponse(request.get_m_connection(), 50003);
 	if (write(fd, request.get_m_content().c_str(), request.get_m_content().size()) == -1)
-		createResponse(request.get_m_connection(), 500);
+		createResponse(request.get_m_connection(), 50004);
 	close(fd);
 	if (S_ISREG(buf.st_mode))
 		return (createResponse(request.get_m_connection(), 204));
@@ -787,7 +782,7 @@ Server::executeCGI(const Request& request)
 	char **env;
 
 	if ((env = createCGIEnv(request)) == NULL)
-		return (createResponse(request.get_m_connection(), 500));
+		return (createResponse(request.get_m_connection(), 50005));
 	pipe(parent_write_fd);
 	pipe(child_write_fd);
 	pid = fork();
@@ -809,10 +804,9 @@ Server::executeCGI(const Request& request)
 			write(parent_write_fd[1], request.get_m_content().c_str(), request.get_m_content().size());
 		close(parent_write_fd[1]);
 	} else {
-		perror("Failed to Create Process for executeCGI");
 		closeFd(parent_write_fd);
 		closeFd(child_write_fd);
-		return (createResponse(request.get_m_connection(), 500));
+		return (createResponse(request.get_m_connection(), 50006));
 	}
 
 	int status;
@@ -897,7 +891,7 @@ namespace {
 			{
 				content_length = std::stoi(value);
 				if (content_length > static_cast<int>(server->get_m_limit_client_body_size()))
-					throw (413);
+					throw (41303);
 				if (content_length < 0)
 					throw 40001;
 			}
@@ -937,7 +931,7 @@ namespace {
 					}
 					content_length = std::stoi(buf);
 					if (content_length > static_cast<int>(server->get_m_limit_client_body_size()))
-						throw (413);
+						throw (41304);
 					if (content_length < 0)
 						throw 40005;
 					read_len = read(client_fd, buffer, content_length);
@@ -1009,6 +1003,10 @@ namespace {
 void
 Server::createResponse(Connection* connection, int status, HEADERS headers, std::string body)
 {
+	if (status >= 40000) {
+		reportCreateNewRequestLog(connection, status);
+		status /= 100;
+	}
 	headers.push_back(getDateHeader());
 	headers.push_back(getServerHeader(this));
 	if (status == CGI_SUCCESS_CODE) {
@@ -1103,10 +1101,10 @@ Server::writeCreateNewRequestLog(const Request& request)
 }
 
 void
-Server::reportCreateNewRequestLog(const Connection& connection, int status)
+Server::reportCreateNewRequestLog(Connection* connection, int status)
 {
 	std::string text = "[Failed][Request][Server:" + m_server_name + "][CIP:"
-	+ connection.get_m_client_ip() + "][CFD:" + std::to_string(connection.get_m_client_fd()) + "]["
+	+ connection->get_m_client_ip() + "][CFD:" + std::to_string(connection->get_m_client_fd()) + "]["
 	+ std::to_string(status) + "][" + Response::status[status] + "] Failed to create new Request.\n";
 	ft::log(ServerManager::access_fd, text);
 	return ;
