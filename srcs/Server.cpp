@@ -380,7 +380,6 @@ Server::runRecvAndSolve(std::map<int, Connection>::iterator it)
 	if (m_responses.size() > RESPONSE_OVERLOAD_COUNT) {
 		createResponse(&(it->second), 503);
 		reportCreateNewRequestLog(it->second, 503);
-		closeConnection(fd);
 		return (false);
 	}
 	writeCreateNewRequestLog(request);
@@ -665,7 +664,7 @@ Server::executePut(const Request& request)
 		return (createResponse(request.get_m_connection(), 415));
 	if ((fd = open(request.get_m_path_translated().c_str(), O_RDWR | O_CREAT)) == -1)
 		createResponse(request.get_m_connection(), 500);
-	if (write(fd, request.get_m_content().c_str(), request.get_m_content().size() + 1) == -1)
+	if (write(fd, request.get_m_content().c_str(), request.get_m_content().size()) == -1)
 		createResponse(request.get_m_connection(), 500);
 	close(fd);
 	if (S_ISREG(buf.st_mode))
@@ -807,9 +806,8 @@ Server::executeCGI(const Request& request)
 		close(child_write_fd[1]);
 		close(parent_write_fd[0]);
 		if (request.get_m_method() == Request::POST)
-			write(parent_write_fd[1], request.get_m_content().c_str(), request.get_m_content().size() + 1);
+			write(parent_write_fd[1], request.get_m_content().c_str(), request.get_m_content().size());
 		close(parent_write_fd[1]);
-
 	} else {
 		perror("Failed to Create Process for executeCGI");
 		closeFd(parent_write_fd);
