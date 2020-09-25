@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/24 21:24:56 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/26 00:16:06 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		throw std::runtime_error("gettimeofday error");
 
 	std::vector<std::string> parsed = ft::split(start_line, ' ');
-	if (parsed.size() != 3) throw 400;
+	if (parsed.size() != 3) throw 4010;
 	if (parsed[0] == "GET") m_method = GET;
 	else if (parsed[0] == "HEAD") m_method = HEAD;
 	else if (parsed[0] == "POST") m_method = POST;
@@ -36,7 +36,11 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 	else if (parsed[0] == "DELETE") m_method = DELETE;
 	else if (parsed[0] == "OPTIONS") m_method = OPTIONS;
 	else if (parsed[0] == "TRACE") m_method = TRACE;
-	else throw 400;
+	else {
+		std::cout << parsed[0] << std::endl;
+		std::cout << parsed[9].size() << std::endl;
+		throw 4011;
+	}
 
 	if (parsed[1].length() > m_server->get_m_request_uri_limit_size())
 		throw 414;
