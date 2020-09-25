@@ -28,6 +28,8 @@ class ServerManager
         bool isValidConfigBlock(std::string& config_block);
         bool isValidServerBlock(std::string& server_block);
         bool isValidLocationBlock(std::string& location_block);
+		void copyFdSet();
+		void closeOldConnection(std::vector<Server>::iterator it);
 	public:
 		ServerManager();
 		ServerManager(const ServerManager&);
