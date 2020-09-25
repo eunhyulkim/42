@@ -368,8 +368,8 @@ Server::runRecvAndSolve(std::map<int, Connection>::iterator it)
 		request = recvRequest(fd, &it->second);
 	} catch (int status_code) {
 		reportCreateNewRequestLog(it->second, status_code);
-		if (status_code >= 4000)
-			status_code /= 10;
+		if (status_code >= 40000)
+			status_code /= 100;
 		createResponse(&(it->second), status_code);
 		return (false);
 	} catch (std::exception& e) {
@@ -884,7 +884,7 @@ namespace {
 			if (buf == "\r" || buf == "")
 				break;
 			if (!request.isValidHeader(buf))
-				throw (4000);
+				throw (40000);
 			buf = ft::rtrim(buf, "\r");
 			size_t pos = buf.find(':');
 			std::string key = ft::trim(buf.substr(0, pos));
@@ -899,14 +899,14 @@ namespace {
 				if (content_length > static_cast<int>(server->get_m_limit_client_body_size()))
 					throw (413);
 				if (content_length < 0)
-					throw 4001;
+					throw 40001;
 			}
 			if (key == "Host")
 				host_header = true;
 			request.add_header(key, value);
 		}
 		if (!host_header)
-			throw (4002);
+			throw (40002);
 		return (host_header);
 	}
 
@@ -922,7 +922,7 @@ namespace {
 			if (transfer_type == Request::CHUNKED)
 			{
 				if (content_length)
-					throw 4003;
+					throw 40003;
 				while (1)
 				{
 					std::getline(std::cin, buf);
@@ -931,7 +931,7 @@ namespace {
 					if (buf == "0")
 					{
 						if ((read_len = read(client_fd, buffer, 2)) != 2 || std::strncmp(buffer, "\r\n", 2))
-							throw 4004;
+							throw 40004;
 						origin_message += "\r\n";
 						break;
 					}
@@ -939,14 +939,14 @@ namespace {
 					if (content_length > static_cast<int>(server->get_m_limit_client_body_size()))
 						throw (413);
 					if (content_length < 0)
-						throw 4005;
+						throw 40005;
 					read_len = read(client_fd, buffer, content_length);
 					if (read_len != content_length)
-						throw 4006;
+						throw 40006;
 					message_body.append(buffer, read_len);
 					origin_message += buffer;
 					if ((read_len = read(client_fd, buffer, 2)) != 2 || std::strncmp(buffer, "\r\n", 2))
-						throw 4007;
+						throw 40007;
 					origin_message += "\r\n";
 				}
 			}
@@ -954,7 +954,7 @@ namespace {
 			{
 				read_len = read(client_fd, buffer, content_length);
 				if (read_len != content_length)
-					throw 4008;
+					throw 40008;
 				message_body.append(buffer, read_len);
 				origin_message += buffer;
 			}
@@ -962,7 +962,7 @@ namespace {
 		else
 		{
 			if ((read_len = read(client_fd, buffer, 1024)) != -1)
-				throw 4009;
+				throw 40009;
 		}
 		return (message_body);
 	}

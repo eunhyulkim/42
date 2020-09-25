@@ -174,17 +174,17 @@ std::map<int, std::string> make_status ()
 	status_map[504] = "Gateway Timeout";
 	status_map[505] = "HTTP Version Not Supported";
 
-	status_map[4000] = "Bad Request: Unvalid Header";
-	status_map[4001] = "Bad Request: Content-Length header value is less than 0";
-	status_map[4002] = "Bad Request: Not Found host header";
-	status_map[4003] = "Bad Request: Found Content-Length header in chunked transfer-encoding";
-	status_map[4004] = "Bad Request: In chunked request, last read operation is failed";
-	status_map[4005] = "Bad Request: In chunked request, failed to convert trnasfer-size";
-	status_map[4006] = "Bad Request: In chunked request, readed-size and treansfer-size is not equal";
-	status_map[4007] = "Bad Request: In chunked request, not found '\\r\\n' at end of line.";
-	status_map[4008] = "Bad Request: In chunked request, not found '\\r\\n' at end of line.";
-	status_map[4009] = "Bad Request: found body in method other than GET, POST, TRACE.";
-	status_map[4010] = "Bad Request: start line element count is not 3";
-	status_map[4010] = "Bad Request: Method is not normal.";
+	status_map[40000] = "Bad Request: Unvalid Header";
+	status_map[40001] = "Bad Request: Content-Length header value is less than 0";
+	status_map[40002] = "Bad Request: Not Found host header";
+	status_map[40003] = "Bad Request: Found Content-Length header in chunked transfer-encoding";
+	status_map[40004] = "Bad Request: In chunked request, last read operation is failed";
+	status_map[40005] = "Bad Request: In chunked request, failed to convert trnasfer-size";
+	status_map[40006] = "Bad Request: In chunked request, readed-size and treansfer-size is not equal";
+	status_map[40007] = "Bad Request: In chunked request, not found '\\r\\n' at end of line.";
+	status_map[40008] = "Bad Request: In chunked request, not found '\\r\\n' at end of line.";
+	status_map[40009] = "Bad Request: found body in method other than GET, POST, TRACE.";
+	status_map[40010] = "Bad Request: start line element count is not 3";
+	status_map[40011] = "Bad Request: Method is not normal.";
 	return (status_map);
 }
