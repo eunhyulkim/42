@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/26 00:16:06 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/26 01:06:53 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 {
 	if (gettimeofday(&m_start_at, NULL) == -1)
 		throw std::runtime_error("gettimeofday error");
-
 	std::vector<std::string> parsed = ft::split(start_line, ' ');
-	if (parsed.size() != 3) throw 4010;
+	if (parsed.size() != 3)
+	throw 40010;
 	if (parsed[0] == "GET") m_method = GET;
 	else if (parsed[0] == "HEAD") m_method = HEAD;
 	else if (parsed[0] == "POST") m_method = POST;
@@ -36,11 +36,7 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 	else if (parsed[0] == "DELETE") m_method = DELETE;
 	else if (parsed[0] == "OPTIONS") m_method = OPTIONS;
 	else if (parsed[0] == "TRACE") m_method = TRACE;
-	else {
-		std::cout << parsed[0] << std::endl;
-		std::cout << parsed[9].size() << std::endl;
-		throw 4011;
-	}
+	else throw 40011;
 
 	if (parsed[1].length() > m_server->get_m_request_uri_limit_size())
 		throw 414;
@@ -56,7 +52,7 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		}
 	}
 	if (!max_uri_match)
-		throw 404;
+		throw 40401;
 	if (m_location->get_m_allow_method().find(parsed[0]) == m_location->get_m_allow_method().end())
 		throw 405;
 
@@ -102,7 +98,7 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 	}
 	else if (S_ISDIR(buf.st_mode)) m_uri_type = DIRECTORY;
 	else if (m_method != PUT && m_method != TRACE)
-		throw 404;
+		throw 40402;
 
 	m_protocol = parsed[2];
 	if (m_protocol != "HTTP/1.1")
@@ -219,7 +215,7 @@ std::string 			Request::get_m_method_to_string() const
 void Request::add_content(std::string added_content)
 {
 	if (m_content.size() + added_content.size() > m_server->get_m_limit_client_body_size())
-		throw 413;
+		throw 41301;
 	m_content.append(added_content);
 }
 
@@ -228,7 +224,7 @@ void Request::add_origin(std::string added_origin)
 	if (m_method != TRACE)
 		return ;
 	if (m_origin.size() + added_origin.size() > m_server->get_m_limit_client_body_size())
-		throw 413;
+		throw 41302;
 	m_origin.append(added_origin);
 }
 
@@ -249,7 +245,7 @@ void Request::add_header(std::string key, std::string value)
 	// 	throw 413;
 	std::pair<std::map<std::string, std::string>::iterator, bool> ret = m_headers.insert(std::make_pair(key, value));
 	if (!ret.second)
-		throw 400;
+		throw 40013;
 }
 
 /* ************************************************************************** */
@@ -263,7 +259,7 @@ void Request::add_header(std::string key, std::string value)
 bool Request::isValidHeader(std::string header)
 {
 	if (header.size() > m_server->get_m_request_header_limit_size())
-		throw 400;
+		throw 40012;
 	if (header.find(':') == std::string::npos)
 		return (false);
 	return (true);
