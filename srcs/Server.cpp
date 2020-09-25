@@ -368,8 +368,8 @@ Server::runRecvAndSolve(std::map<int, Connection>::iterator it)
 		request = recvRequest(fd, &it->second);
 	} catch (int status_code) {
 		reportCreateNewRequestLog(it->second, status_code);
-		if (status_code != 413)
-			status_code = 400;
+		if (status_code >= 4000)
+			status_code /= 10;
 		createResponse(&(it->second), status_code);
 		return (false);
 	} catch (std::exception& e) {
@@ -884,7 +884,7 @@ namespace {
 			if (buf == "\r" || buf == "")
 				break;
 			if (!request.isValidHeader(buf))
-				throw (400);
+				throw (4000);
 			buf = ft::rtrim(buf, "\r");
 			size_t pos = buf.find(':');
 			std::string key = ft::trim(buf.substr(0, pos));
@@ -899,14 +899,14 @@ namespace {
 				if (content_length > static_cast<int>(server->get_m_limit_client_body_size()))
 					throw (413);
 				if (content_length < 0)
-					throw 401;
+					throw 4001;
 			}
 			if (key == "Host")
 				host_header = true;
 			request.add_header(key, value);
 		}
 		if (!host_header)
-			throw (402);
+			throw (4002);
 		return (host_header);
 	}
 
@@ -917,12 +917,12 @@ namespace {
 		char		buffer[LIMIT_CLIENT_BODY_SIZE_MAX];
 		ssize_t		read_len = 0;
 
-		if (request.get_m_method() == Request::POST || request.get_m_method() == Request::PUT)
+		if (request.get_m_method() == Request::POST || request.get_m_method() == Request::PUT || request.get_m_method() == Request::TRACE)
 		{
 			if (transfer_type == Request::CHUNKED)
 			{
 				if (content_length)
-					throw 403;
+					throw 4003;
 				while (1)
 				{
 					std::getline(std::cin, buf);
@@ -931,7 +931,7 @@ namespace {
 					if (buf == "0")
 					{
 						if ((read_len = read(client_fd, buffer, 2)) != 2 || std::strncmp(buffer, "\r\n", 2))
-							throw 404;
+							throw 4004;
 						origin_message += "\r\n";
 						break;
 					}
@@ -939,14 +939,14 @@ namespace {
 					if (content_length > static_cast<int>(server->get_m_limit_client_body_size()))
 						throw (413);
 					if (content_length < 0)
-						throw 405;
+						throw 4005;
 					read_len = read(client_fd, buffer, content_length);
 					if (read_len != content_length)
-						throw 406;
+						throw 4006;
 					message_body.append(buffer, read_len);
 					origin_message += buffer;
 					if ((read_len = read(client_fd, buffer, 2)) != 2 || std::strncmp(buffer, "\r\n", 2))
-						throw 407;
+						throw 4007;
 					origin_message += "\r\n";
 				}
 			}
@@ -954,7 +954,7 @@ namespace {
 			{
 				read_len = read(client_fd, buffer, content_length);
 				if (read_len != content_length)
-					throw 408;
+					throw 4008;
 				message_body.append(buffer, read_len);
 				origin_message += buffer;
 			}
@@ -962,7 +962,7 @@ namespace {
 		else
 		{
 			if ((read_len = read(client_fd, buffer, 1024)) != -1)
-				throw 409;
+				throw 4009;
 		}
 		return (message_body);
 	}
@@ -1107,7 +1107,7 @@ Server::reportCreateNewRequestLog(const Connection& connection, int status)
 {
 	std::string text = "[Failed][Request][Server:" + m_server_name + "][CIP:"
 	+ connection.get_m_client_ip() + "][CFD:" + std::to_string(connection.get_m_client_fd()) + "]["
-	+ std::to_string(status) + "] Failed to create new Request.\n";
+	+ std::to_string(status) + "][" + Response::status[status] + "] Failed to create new Request.\n";
 	ft::log(ServerManager::access_fd, text);
 	return ;
 }

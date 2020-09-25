@@ -122,9 +122,13 @@ std::string Response::getString()
 
 	message = "HTTP/1.1 " + std::to_string(this->m_status_code) + " " + this->m_status_description + "\r\n";
 	for (; it != this->m_headers.end(); ++it)
-	{
 		message += it->first + ": " + it->second + "\r\n";
-	}
+	if (m_connection_type == CLOSE || m_status_code < 200 || m_status_code > 299)
+		message += "Connection: close\r\n";
+	else
+		message += "Connection: Keep-Alive\r\n";
+	if (m_trasfer_type == CHUNKED)
+		message += "transfer-encoding: chunked\r\n";
 	message += "\r\n";
 	message += this->m_content;
 	return (message);
@@ -169,5 +173,18 @@ std::map<int, std::string> make_status ()
 	status_map[503] = "Service Unavailable";
 	status_map[504] = "Gateway Timeout";
 	status_map[505] = "HTTP Version Not Supported";
+
+	status_map[4000] = "Bad Request: Unvalid Header";
+	status_map[4001] = "Bad Request: Content-Length header value is less than 0";
+	status_map[4002] = "Bad Request: Not Found host header";
+	status_map[4003] = "Bad Request: Found Content-Length header in chunked transfer-encoding";
+	status_map[4004] = "Bad Request: In chunked request, last read operation is failed";
+	status_map[4005] = "Bad Request: In chunked request, failed to convert trnasfer-size";
+	status_map[4006] = "Bad Request: In chunked request, readed-size and treansfer-size is not equal";
+	status_map[4007] = "Bad Request: In chunked request, not found '\\r\\n' at end of line.";
+	status_map[4008] = "Bad Request: In chunked request, not found '\\r\\n' at end of line.";
+	status_map[4009] = "Bad Request: found body in method other than GET, POST, TRACE.";
+	status_map[4010] = "Bad Request: start line element count is not 3";
+	status_map[4010] = "Bad Request: Method is not normal.";
 	return (status_map);
 }
