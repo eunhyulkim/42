@@ -453,6 +453,29 @@ changeSignal(int sig)
 }
 
 void
+ServerManager::copyFdSet()
+{
+	this->m_read_copy_set = this->m_read_set;
+	this->m_write_copy_set = this->m_write_set;
+	this->m_error_copy_set = this->m_read_set;
+}
+
+void
+ServerManager::closeOldConnection(std::vector<Server>::iterator server_it)
+{
+	std::map<int, Connection>::const_iterator it = server_it->get_m_connections().begin();
+	while (it != server_it->get_m_connections().end())
+	{
+		int fd = it->first;
+		if (!ft::hasKey(m_server_fdset, fd) && it->second.isOverTime() && !fdIsset(it->first, WRITE_SET)) {
+			++it;
+			server_it->closeConnection(fd);
+		} else
+			++it;
+	}
+}
+
+void
 ServerManager::runServer()
 {
 	signal(SIGINT, changeSignal);
@@ -464,35 +487,23 @@ ServerManager::runServer()
 	g_live = true;
 	while (g_live)
 	{
+		int cnt;
 		writeServerHealthLog();
+		copyFdSet();
 
-		this->m_read_copy_set = this->m_read_set;
-		this->m_write_copy_set = this->m_write_set;
-		this->m_error_copy_set = this->m_read_set;
-
-		int n = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, &this->m_error_copy_set, &timeout);
-		if (n == -1)
+		if ((cnt = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, \
+		&this->m_error_copy_set, &timeout)) == -1)
 		{
 			perror("select fail: ");
 			throw std::runtime_error("select error");
 		}
-		else if (n == 0)
+		else if (cnt == 0)
 			continue ;
 		writeServerHealthLog(true);
 		for (std::vector<Server>::iterator it = m_servers.begin() ; it != m_servers.end() ; ++it)
-		{	
+		{
 			it->run();
-
-			std::map<int, Connection>::const_iterator it2 = it->get_m_connections().begin();
-			while (it2 != it->get_m_connections().end())
-			{
-				int fd = it2->first;
-				if (!ft::hasKey(m_server_fdset, fd) && it2->second.isOverTime()) {
-					++it2;
-					it->closeConnection(fd);
-				} else
-					++it2;
-			}
+			closeOldConnection(it);
 		}
 	}
 }

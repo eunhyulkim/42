@@ -306,6 +306,7 @@ Server::closeConnection(int client_fd)
 	writeCloseConnectionLog(client_fd);
 	close(client_fd);
 	m_manager->fdClear(client_fd, ServerManager::READ_SET);
+	m_manager->fdClear(client_fd, ServerManager::WRITE_SET);
 	m_connections.erase(client_fd);
 	if (m_manager->get_m_max_fd() == client_fd) {
 		m_manager->set_m_max_fd(m_manager->get_m_max_fd() - 1);
@@ -346,24 +347,60 @@ Server::acceptNewConnection()
 }
 
 void
+Server::runSend()
+{
+	Response response(m_responses.front());
+	m_responses.pop();
+	if (isSendable(response.get_m_connection()->get_m_client_fd()))
+		sendResponse(response);
+	if (response.get_m_connection_type() == Response::CLOSE)
+		closeConnection(response.get_m_connection()->get_m_client_fd());
+}
+
+bool
+Server::runRecvAndSolve(std::map<int, Connection>::iterator it)
+{
+	Request request;
+	int fd = it->first;
+	writeDetectNewRequestLog(it->second);
+
+	try {
+		request = recvRequest(fd, &it->second);
+	} catch (int status_code) {
+		reportCreateNewRequestLog(it->second, status_code);
+		if (status_code != 413)
+			status_code = 400;
+		createResponse(&(it->second), status_code);
+		return (false);
+	} catch (std::exception& e) {
+		reportCreateNewRequestLog(it->second, 500);
+		createResponse(&(it->second), 500);
+		return (false);
+	}
+	if (m_responses.size() > RESPONSE_OVERLOAD_COUNT) {
+		createResponse(&(it->second), 503);
+		reportCreateNewRequestLog(it->second, 503);
+		closeConnection(fd);
+		return (false);
+	}
+	writeCreateNewRequestLog(request);
+	solveRequest(request);
+	m_manager->writeServerHealthLog(true);
+	return (true);
+}
+
+void
 Server::run()
 {
 	int response_count = 0;
-	while (!m_responses.empty() && response_count < SEND_RESPONSE_AT_ONCE)
-	{
+	while (!m_responses.empty() && response_count < SEND_RESPONSE_AT_ONCE) {
+		runSend();
 		++response_count;
-		Response response(m_responses.front());
-		m_responses.pop();
-		if (isSendable(response.get_m_connection()->get_m_client_fd()))
-			sendResponse(response);
-		if (response.get_m_connection_type() == Response::CLOSE)
-			closeConnection(response.get_m_connection()->get_m_client_fd());
 	}
 
 	std::map<int, Connection>::iterator it = m_connections.begin();
 	while (it != m_connections.end())
 	{
-		Request request;
 		std::map<int, Connection>::iterator it2 = it++;
 		int fd = it2->first;
 
@@ -374,29 +411,8 @@ Server::run()
 			continue ;
 		}
 		else if (hasRequest(fd))	{
-			writeDetectNewRequestLog(it2->second);
-			try {
-				request = recvRequest(fd, &it2->second);
-			} catch (int status_code) {
-				reportCreateNewRequestLog(it2->second, status_code);
-				if (status_code != 413)
-					status_code = 400;
-				createResponse(&(it2->second), status_code);
+			if (!runRecvAndSolve(it2))
 				continue ;
-			} catch (std::exception& e) {
-				reportCreateNewRequestLog(it2->second, 500);
-				createResponse(&(it2->second), 500);
-				continue ;
-			}
-			if (m_responses.size() > RESPONSE_OVERLOAD_COUNT) {
-				createResponse(&(it2->second), 503);
-				reportCreateNewRequestLog(it2->second, 503);
-				closeConnection(fd);
-				continue ;
-			}
-			writeCreateNewRequestLog(request);
-			solveRequest(request);
-			m_manager->writeServerHealthLog(true);
 		}
 	}
 	if (hasNewConnection())

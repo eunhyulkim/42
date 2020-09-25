@@ -32,6 +32,8 @@ class Server
 	private:
 		void basic_decode(std::string data, std::string& key, std::string& value);
 		std::string inet_ntoa(unsigned int address);
+		void runSend();
+		bool runRecvAndSolve(std::map<int, Connection>::iterator it);
 		std::string getExtension(std::string path);
 		std::string getMimeTypeHeader(std::string path);
 		time_t getLastModified(std::string path);
