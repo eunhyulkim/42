@@ -7,6 +7,7 @@
 
 int ServerManager::error_fd = -1;
 int ServerManager::access_fd = -1;
+int ServerManager::stdin_fd = dup(0);
 
 /* ************************************************************************** */
 /* ------------------------------ CONSTRUCTOR ------------------------------- */

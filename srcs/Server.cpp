@@ -304,7 +304,8 @@ void
 Server::closeConnection(int client_fd)
 {
 	writeCloseConnectionLog(client_fd);
-	close(client_fd);
+	if (close(client_fd) == -1)
+		perror("close error:");
 	m_manager->fdClear(client_fd, ServerManager::READ_SET);
 	m_manager->fdClear(client_fd, ServerManager::WRITE_SET);
 	m_connections.erase(client_fd);
@@ -357,22 +358,41 @@ Server::runSend()
 		closeConnection(response.get_m_connection()->get_m_client_fd());
 }
 
+void Server::redirectFdToStdin(int fd) {
+	if (dup2(fd, 0) == -1)
+		perror("dup2 error:");
+}
+void Server::revertStdinFd()
+{
+	std::string buff;
+	while (std::cin)
+		std::getline(std::cin, buff);
+	std::cin.clear();
+	if (close(0) == -1)
+		perror("close error:");
+	if (dup2(ServerManager::stdin_fd, 0) == -1)
+		perror("stdin revert error");
+}
+
 bool
 Server::runRecvAndSolve(std::map<int, Connection>::iterator it)
 {
 	Request request;
 	int fd = it->first;
 	writeDetectNewRequestLog(it->second);
-
+	redirectFdToStdin(fd);
 	try {
 		request = recvRequest(fd, &it->second);
 	} catch (int status_code) {
 		createResponse(&(it->second), status_code);
+		revertStdinFd();
 		return (false);
 	} catch (std::exception& e) {
 		createResponse(&(it->second), 50001);
+		revertStdinFd();
 		return (false);
 	}
+	revertStdinFd();
 	if (m_responses.size() > RESPONSE_OVERLOAD_COUNT) {
 		createResponse(&(it->second), 503);
 		return (false);
@@ -542,7 +562,7 @@ namespace {
 		html.add_tag("/h1>\n", "hr", "", true);
 		html.add_tag("hr>\n", "pre", "", true);
 	}
-	int getValidIndexFd(const Request& request, char *cwd)
+	int getValidIndexFd(const Request& request)
 	{
 		std::set<std::string> index = request.get_m_location()->get_m_index();
 		std::set<std::string>::iterator it = index.begin();
@@ -551,7 +571,10 @@ namespace {
 		std::string path, body;
 		for (; it != index.end(); ++it)
 		{
-			path = std::string(cwd) + "/" + *it;
+			path = request.get_m_location()->get_m_root_path();
+			if (path != "/")
+				path.append("/");
+			path.append("/" + *it);
 			stat(path.c_str(), &buf);
 			if (S_ISREG(buf.st_mode) && (fd = open(path.c_str(), O_RDONLY)) > -1)
 				break ;
@@ -579,7 +602,7 @@ Server::executeAutoindex(const Request& request)
 	}
 	else
 	{
-		int fd = getValidIndexFd(request, cwd);
+		int fd = getValidIndexFd(request);
 		if (fd == -1)
 			return (createResponse(request.get_m_connection(), 404));
 		return (createResponse(request.get_m_connection(), 200, HEADERS(), ft::getStringFromFd(fd)));
@@ -856,7 +879,7 @@ Server::sendResponse(Response response)
 {
 	int fd = response.get_m_connection()->get_m_client_fd();
 
-	send(fd, response.getString().c_str(), ft::strlen(response.getString().c_str()), 0);
+	send(fd, response.getString().c_str(), response.getString().size(), 0);
 	m_manager->fdClear(fd, ServerManager::WRITE_SET);
 }
 
@@ -968,10 +991,10 @@ Request Server::recvRequest(int client_fd, Connection* connection)
 	Request::TransferType transfer_type = Request::GENERAL;
 	int content_length = 0;
 
-	dup2(client_fd, 0);
 	std::getline(std::cin, start_line);
 	std::string origin_message = start_line + "\n";
 	start_line = ft::rtrim(start_line, "\r");
+	// std::cout << "start_line: " << start_line << std::endl;
 	Request request(connection, this, start_line);
 	headerParsing(this, request, origin_message, transfer_type, content_length);
 	std::string message_body = readBodyMessage(this, request, origin_message, transfer_type, content_length, client_fd);
@@ -1017,6 +1040,7 @@ Server::createResponse(Connection* connection, int status, HEADERS headers, std:
 		body = body.substr(body.find("\n\n") + 2);
 		status = 200;
 	} else if (!body.empty()) {
+		// headers.push_back("Content-Encoding:binary");
 		headers.push_back("Content-Length:" + std::to_string(body.size()));
 	} else if (status >= 400 && status <= 599) {
 		body = m_default_error_page;

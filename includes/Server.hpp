@@ -39,6 +39,8 @@ class Server
 		time_t getLastModified(std::string path);
 		std::string getLastModifiedHeader(std::string path);
 		char** createCGIEnv(const Request& request);
+		void redirectFdToStdin(int fd);
+		void revertStdinFd();
 	public:
 		Server();
 		Server(ServerManager* server_manager, const std::string& server_block, std::vector<std::string>& location_blocks, Config* config);
