@@ -306,6 +306,8 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 		std::set<std::string> data_set = ft::stringVectorToSet(ft::split(map_block[key[2]], ' '));
 		std::string method[] = {"GET", "POST", "HEAD", "PUT", "DELETE", "TRACE", "OPTIONS"};
 		std::set<std::string> method_set(method, method + sizeof(method) / sizeof(method[0]));
+		if (data_set.empty())
+			return (false);
 		for (std::set<std::string>::iterator it = data_set.begin(); it != data_set.end(); ++it) {
 			if ((*it).empty() || !ft::hasKey(method_set, *it))
 				return (false);
@@ -314,7 +316,7 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 
 	if (ft::hasKey(map_block, key[6])) {
 		std::set<std::string> cgi_set = ft::stringVectorToSet(ft::split(map_block[key[6]], ' '));
-		if (!std::all_of(cgi_set.begin(), cgi_set.end(), isValidCgi))
+		if (cgi_set.empty() || !std::all_of(cgi_set.begin(), cgi_set.end(), isValidCgi))
 			return (false);
 	}
 	
