@@ -37,9 +37,7 @@ Response::Response(const Response& copy)
 /* ------------------------------- DESTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-Response::~Response()
-{
-}
+Response::~Response() {}
 
 /* ************************************************************************** */
 /* -------------------------------- OVERLOAD -------------------------------- */
@@ -124,14 +122,16 @@ std::string Response::getString()
 		message += "Connection: close\r\n";
 	else
 		message += "Connection: Keep-Alive\r\n";
-	if (m_trasfer_type == CHUNKED)
-		message += "transfer-encoding: chunked\r\n";
+	if (m_trasfer_type == CHUNKED) {
+		message += "Transfer-Encoding: chunked\r\n";
+	}
 	message += "\r\n";
 	message += this->m_content;
 	return (message);
 }
 
-std::map<int, std::string> make_status ()
+std::map<int, std::string>
+make_status ()
 {
 	std::map<int, std::string> status_map;
 
