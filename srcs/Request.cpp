@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/26 01:06:53 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/26 16:44:59 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,7 @@ std::ostream &operator<<(std::ostream &out, const Request &request)
 	out << "URI: " << request.get_m_uri() << std::endl;
 	out << "URI_TYPE: " << request.get_m_uri_type() << " (DIRECTORY, FILE, CGI_PROGRAM)" << std::endl;
 	out << "PROTOCOL: " << request.get_m_protocol() << std::endl;
-	out << "HEADERS:" << std::endl;
+	out << "headers_t:" << std::endl;
 	for (std::map<std::string, std::string>::const_iterator it = request.get_m_headers().begin() ; it != request.get_m_headers().end() ; ++it)
 		out << "KEY: " << (*it).first << ", " << "VALUE: " << (*it).second << std::endl;
 	out << "TRANSFER_TYPE: " << request.get_m_transfer_type() << " (GENERAL, CHUNKED)" << std::endl;
@@ -272,8 +272,8 @@ bool Request::isOverTime() const
 	if (gettimeofday(&now, NULL) == -1)
 		throw std::runtime_error("gettimeofday error");
 
-	long now_nbr = now.tv_sec * 1000 + now.tv_usec;
-	long start_nbr = m_start_at.tv_sec * 1000 + m_start_at.tv_usec;
+	long now_nbr = now.tv_sec + now.tv_usec / 1000000;
+	long start_nbr = m_start_at.tv_sec + m_start_at.tv_usec / 1000000;
 
-	return ((now_nbr - start_nbr) / 1000 >= REQUEST_TIMEOVER);
+	return ((now_nbr - start_nbr) >= REQUEST_TIMEOVER_SECOND);
 }

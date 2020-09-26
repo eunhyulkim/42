@@ -535,7 +535,7 @@ ServerManager::writeCreateServerLog()
 void
 ServerManager::writeServerHealthLog(bool ignore_interval)
 {
-	if (ignore_interval == false && !ft::isRightTime(SERVER_HEALTH_LOG_TIME))
+	if (ignore_interval == false && !ft::isRightTime(SERVER_HEALTH_LOG_SECOND))
 		return ;
 	int fd = ServerManager::access_fd;
 	std::string text = "[HealthCheck][Server][Max_fd:" + std::to_string(m_max_fd) \

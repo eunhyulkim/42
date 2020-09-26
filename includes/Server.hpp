@@ -86,7 +86,7 @@ class Server
 		void executeTrace(const Request& request);
 		void executeCGI(const Request& request);
 
-		void createResponse(Connection* connection, int status, HEADERS headers = HEADERS(), std::string body = "");
+		void createResponse(Connection* connection, int status, headers_t headers = headers_t(), std::string body = "");
 
 		/* log function */
 		void writeDetectNewConnectionLog();
