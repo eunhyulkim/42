@@ -10,10 +10,7 @@ std::map<int, std::string> Response::status = make_status();
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-Response::Response()
-{
-
-}
+Response::Response() {}
 
 Response::Response(Connection *connection, int status_code, std::string body)
 {

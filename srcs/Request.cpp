@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/27 01:05:52 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/27 01:17:26 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -283,9 +283,18 @@ void Request::add_origin(std::string added_origin)
 	m_origin.append(added_origin);
 }
 
-
-void Request::add_header(std::string key, std::string value)
+void Request::add_header(std::string header)
 {
+	size_t pos = header.find(':');
+	std::string key = ft::trim(header.substr(0, pos));
+	std::string value = ft::trim(header.substr(pos + 1));
+	for (size_t i = 0 ; i < key.length() ; ++i)
+		key[i] = (i == 0 || key[i - 1] == '-') ? std::toupper(key[i]) : std::tolower(key[i]);
+
+	std::pair<std::map<std::string, std::string>::iterator, bool> ret = m_headers.insert(std::make_pair(key, value));
+	if (!ret.second)
+		throw (40013);
+
 	if (key == "Content-Type" && value.find("chunked") != std::string::npos)
 		m_transfer_type = CHUNKED;
 	if (key == "Content-Length")
@@ -296,9 +305,8 @@ void Request::add_header(std::string key, std::string value)
 		if (content_length < 0)
 			throw (40001);
 	}
-	std::pair<std::map<std::string, std::string>::iterator, bool> ret = m_headers.insert(std::make_pair(key, value));
-	if (!ret.second)
-		throw 40013;
+
+	return ;
 }
 
 /* ************************************************************************** */

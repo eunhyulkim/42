@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:22 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/27 00:52:37 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/27 01:17:35 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,10 +71,12 @@ public:
 	const std::string &get_m_origin() const;
 	const std::string &get_m_path_translated() const;
 
-	/* member function */
+	/* setter */
 	void add_content(std::string added_content);
 	void add_origin(std::string added_origin);
-	void add_header(std::string key, std::string value);
+	void add_header(std::string header);
+
+	/* member function */
 	bool isValidHeader(std::string header);
 	bool isOverTime() const;
 };
