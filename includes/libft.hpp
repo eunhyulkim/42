@@ -12,21 +12,25 @@
 # include <exception>
 # include <sys/time.h>
 
-namespace ft {
+namespace ft
+{
+    /* OLD LIBFT */
     void bzero(void *data, size_t len);
-    size_t strlen(const char *s);
-    size_t pow(size_t root, size_t square);
     void *memcpy(void *dest, const void *src, size_t len);
     void *calloc(size_t size, size_t count);
     char *strdup(const char *s);
     int free(void *ptr);
     int freeStr(char **str);
-    int lenDoubleStr(char **str);
     int freeDoublestr(char ***doublestr_addr);
+    size_t strlen(const char *s);
     char *strchr(const char *s, int c);
     char *strsub(char const *s, unsigned int start, size_t len);
-    int startswith(const char *str, const char *sub);
     char *strsjoin(std::string s1 = "", std::string s2 = "", std::string s3 = "", std::string s4 = "", std::string s5 = ""); 
+    int startswith(const char *str, const char *sub);
+    int lenDoubleStr(char **str);
+    size_t pow(size_t root, size_t square);
+
+    /* C++ LIBFT */
     std::string ltrim(std::string s, std::string seps = " ");
     std::string rtrim(std::string s, std::string seps = " ");
     std::string trim(std::string s, std::string seps = " ");
@@ -36,17 +40,24 @@ namespace ft {
     std::set<std::string> stringVectorToSet(std::vector<std::string> stringVector);
     std::map<std::string, std::string> stringVectorToMap(std::vector<std::string> stringVector, char sep = ':');
     std::string containerToString(std::vector<unsigned char> container, std::string sep = "");
+    
+    /* TCP function */
     void convertTimespecToTm(time_t s, struct tm* t);
 	unsigned long ws_htonl(unsigned long x);
 	unsigned short ws_htons(unsigned short x);
+
+    /* Log util function */
+    bool isRightTime(int second);
+    void log(int access_fd, int error_fd, std::string text);
+
+    /* Fdset operator */
 	void fdZero(fd_set *x);
 	void fdSet(int fd, fd_set *x);
 	int fdIsset(int fd, fd_set *x);
 	void fdClr(int fd, fd_set *x);
-    void log(int access_fd, int error_fd, std::string text);
     std::string getSetFdString(int max_fd, fd_set* fset);
-    bool isRightTime(int second);
 
+    /* Template function */
     template <typename T, typename V>
     bool hasKey(T& container, V& value) { return (container.find(value) != container.end()); }
     template <typename T>

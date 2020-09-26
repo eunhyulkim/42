@@ -2,6 +2,11 @@
 
 namespace ft
 {
+
+/* ************************************************************************** */
+/* -------------------------------- OLD LIBFT ------------------------------- */
+/* ************************************************************************** */
+
 	void
 	bzero(void *data, size_t len)
 	{
@@ -10,16 +15,6 @@ namespace ft
 		str = (unsigned char *)data;
 		while (len > 0)
 			str[--len] = 0;
-	}
-
-	size_t
-	strlen(const char *s)
-	{
-		size_t i = 0;
-
-		while (s[i] != '\0')
-			i++;
-		return (i);
 	}
 
 	void *
@@ -72,19 +67,6 @@ namespace ft
 	}
 
 	int
-	lenDoubleStr(char **str)
-	{
-		int		idx;
-
-		idx = 0;
-		if (!str || !(*str))
-			return (0);
-		while (*str++)
-			idx++;
-		return (idx);
-	}
-
-	int
 	freeDoublestr(char ***doublestr_addr)
 	{
 		int 	i;
@@ -99,6 +81,16 @@ namespace ft
 		ft::free(doublestr);
 		*doublestr_addr = 0;
 		return (1);
+	}
+
+	size_t
+	strlen(const char *s)
+	{
+		size_t i = 0;
+
+		while (s[i] != '\0')
+			i++;
+		return (i);
 	}
 
 	char
@@ -138,6 +130,16 @@ namespace ft
 		return (str);
 	}
 
+	char
+	*strsjoin(std::string s1, std::string s2, std::string s3, std::string s4, std::string s5)
+	{
+		s1.append(s2);
+		s1.append(s3);
+		s1.append(s4);
+		s1.append(s5);
+		return (strdup(s1.c_str()));
+	}
+
 	int
 	startswith(const char *str, const char *sub)
 	{
@@ -149,14 +151,17 @@ namespace ft
 		return (sub[i] == '\0');
 	}
 
-	char
-	*strsjoin(std::string s1, std::string s2, std::string s3, std::string s4, std::string s5)
+	int
+	lenDoubleStr(char **str)
 	{
-		s1.append(s2);
-		s1.append(s3);
-		s1.append(s4);
-		s1.append(s5);
-		return (strdup(s1.c_str()));
+		int		idx;
+
+		idx = 0;
+		if (!str || !(*str))
+			return (0);
+		while (*str++)
+			idx++;
+		return (idx);
 	}
 
 	size_t
@@ -168,6 +173,10 @@ namespace ft
 		}
 		return (ret);
 	}
+
+/* ************************************************************************** */
+/* -------------------------------- C++ LIBFT ------------------------------- */
+/* ************************************************************************** */
 
 	std::string
 	ltrim(std::string s, std::string seps)
@@ -304,6 +313,10 @@ namespace ft
 		return (ret);
     }
 
+/* ************************************************************************** */
+/* ------------------------------ TCP FUNCTION ------------------------------ */
+/* ************************************************************************** */
+
 	namespace {
 		template<typename T>
 		void addDevideResult(int& ret, T& data, int number)
@@ -381,6 +394,10 @@ namespace ft
 		return ((x & 0x00ffU) << 8 | (x & 0xff00U) >> 8);
 	}
 
+/* ************************************************************************** */
+/* ---------------------------- FDSET OPERATOR ------------------------------ */
+/* ************************************************************************** */
+
 	void fdZero(fd_set *x)
 	{
 		for (int i = 0 ; i < 32 ; ++i)
@@ -428,6 +445,10 @@ namespace ft
 		}
 		return (ret);
 	}
+
+/* ************************************************************************** */
+/* --------------------------- LOG UTIL FUNCTION ---------------------------- */
+/* ************************************************************************** */
 
 	void log(int access_fd, int error_fd, std::string text) {
 		if (access_fd != -1)
