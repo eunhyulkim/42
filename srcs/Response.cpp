@@ -188,6 +188,7 @@ std::map<int, std::string> make_status ()
 	status_map[40011] = "Bad Request: Method is not normal.";
 	status_map[40012] = "Bad Request: header size is greater than request limit size";
 	status_map[40013] = "Bad Request: failed to add request header to map(maybe: duplicate header)";
+	status_map[40014] = "Bad Request: URI parse failed(translated-path is empty)";
 	status_map[40401] = "Not Found: No suitable location";
 	status_map[40402] = "Not Found: Requested uri is not in serever";
 	status_map[41301] = "Payload Too Large: Failed to add content";

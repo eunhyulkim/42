@@ -889,7 +889,7 @@ bool Server::hasRequest(int client_fd)
 }
 
 namespace {
-	int headerParsing(Server *server, Request &request, std::string &origin_message, Request::TransferType &transfer_type, int &content_length)
+	void headerParsing(Server *server, Request &request, std::string &origin_message, Request::TransferType &transfer_type, int &content_length)
 	{
 		std::string buf;
 		bool host_header = false;
@@ -908,23 +908,11 @@ namespace {
 			std::string value = ft::trim(buf.substr(pos + 1));
 			for (size_t i = 0 ; i < key.length() ; ++i) // capitalize
 				key[i] = (i == 0 || key[i - 1] == '-') ? std::toupper(key[i]) : std::tolower(key[i]);
-			if (key == "Content-Type" && value.find("chunked") != std::string::npos)
-				transfer_type = Request::CHUNKED;
-			if (key == "Content-Length")
-			{
-				content_length = std::stoi(value);
-				if (content_length > static_cast<int>(server->get_m_limit_client_body_size()))
-					throw (41303);
-				if (content_length < 0)
-					throw 40001;
-			}
-			if (key == "Host")
-				host_header = true;
 			request.add_header(key, value);
 		}
-		if (!host_header)
+		if (!ft::hasKey(request.get_m_headers(), "Host"))
 			throw (40002);
-		return (host_header);
+		return ;
 	}
 
 	std::string readBodyMessage(Server *server, Request &request, std::string &origin_message, Request::TransferType &transfer_type, int &content_length, int client_fd)

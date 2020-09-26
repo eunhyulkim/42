@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/26 16:44:59 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/27 01:05:52 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,26 +22,31 @@
 
 Request::Request() {}
 
-Request::Request(Connection *connection, Server *server, std::string start_line): m_connection(connection), m_server(server), m_transfer_type(GENERAL)
+bool
+Request::parseMethod(std::string methodString)
 {
-	if (gettimeofday(&m_start_at, NULL) == -1)
-		throw std::runtime_error("gettimeofday error");
-	std::vector<std::string> parsed = ft::split(start_line, ' ');
-	if (parsed.size() != 3)
-	throw 40010;
-	if (parsed[0] == "GET") m_method = GET;
-	else if (parsed[0] == "HEAD") m_method = HEAD;
-	else if (parsed[0] == "POST") m_method = POST;
-	else if (parsed[0] == "PUT") m_method = PUT;
-	else if (parsed[0] == "DELETE") m_method = DELETE;
-	else if (parsed[0] == "OPTIONS") m_method = OPTIONS;
-	else if (parsed[0] == "TRACE") m_method = TRACE;
-	else throw 40011;
+	if (methodString == "GET")
+		m_method = GET;
+	else if (methodString == "HEAD")
+		m_method = HEAD;
+	else if (methodString == "POST")
+		m_method = POST;
+	else if (methodString == "PUT")
+		m_method = PUT;
+	else if (methodString == "DELETE")
+		m_method = DELETE;
+	else if (methodString == "OPTIONS")
+		m_method = OPTIONS;
+	else if (methodString == "TRACE")
+		m_method = TRACE;
+	else
+		return (false);
+	return (true);
+}
 
-	if (parsed[1].length() > m_server->get_m_request_uri_limit_size())
-		throw 414;
-
-	m_uri = parsed[1];
+bool
+Request::assignLocationMatchingUri(std::string uri)
+{
 	size_t max_uri_match = 0;
 	for (std::vector<Location>::const_iterator it = m_server->get_m_locations().begin() ; it != m_server->get_m_locations().end() ; ++it)
 	{
@@ -52,57 +57,94 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		}
 	}
 	if (!max_uri_match)
-		throw 40401;
-	if (m_location->get_m_allow_method().find(parsed[0]) == m_location->get_m_allow_method().end())
-		throw 405;
+		return (false);
+	return (true);
+}
 
-	std::string root = m_location->get_m_root_path();
-	if (root[root.size() - 1] == '/' && m_uri[0] == '/')
-		m_uri.erase(m_uri.begin());
-	else if (root[root.size() - 1] != '/' && m_uri[0] != '/')
-		m_uri.insert(0, 1, '/');
+std::string
+Request::parseUri()
+{
+	std::string uri = m_uri;
 
-	if ((m_method == GET || m_method == HEAD) && m_uri.find("?") != std::string::npos) {
-		m_query = m_uri.substr(parsed[1].find("?") + 1);
-		m_uri = m_uri.substr(0, parsed[1].find("?"));
-		if (m_query.find("/") != std::string::npos && m_query.find("/") != m_query.size() - 1) {
-			m_path_info = m_query.substr(m_query.find("/") + 1);
-			m_query = m_query.substr(0, m_query.find("/"));
-		}
-	} else if (m_method == POST) {
-		for (std::set<std::string>::const_iterator it = m_location->get_m_cgi().begin() ; it != m_location->get_m_cgi().end() ; ++it)
-		{
-			std::string token = *it + "/";
-			if (m_uri.find(token) != std::string::npos && m_uri.find(token) + (token).size() < m_uri.size())
-			{
-				m_path_info = m_uri.substr(m_uri.find(token) + token.size());
-				m_uri = m_uri.substr(0, m_uri.find(token) + token.size() - 1);
-				break ;
-			}
-		}
-	}
-	m_path_translated = root + m_uri;
-	struct stat buf;
-	stat(m_path_translated.c_str(), &buf);
-	m_uri_type = FILE;
-	if (S_ISREG(buf.st_mode))
+	for (std::set<std::string>::const_iterator it = m_location->get_m_cgi().begin() ; it != m_location->get_m_cgi().end() ; ++it)
 	{
-		for (std::set<std::string>::const_iterator it = m_location->get_m_cgi().begin() ; it != m_location->get_m_cgi().end() ; ++it)
+		if (m_uri.find(*it) != std::string::npos)
 		{
-			if (m_path_translated.find(*it, m_path_translated.length() - (*it).length()) != std::string::npos)
-			{
-				m_uri_type = CGI_PROGRAM;
-				break ;
+			int idx = uri.find(*it);
+			m_uri_type = CGI_PROGRAM;
+			if ((m_method == GET || m_method == HEAD) && uri.find("?") != std::string::npos) {
+				m_query = uri.substr(uri.find("?" + 1));
+				uri = uri.substr(0, uri.find("?"));
 			}
+			if (uri.size() > idx + it->size() + 1) {
+				m_path_info = uri.substr(idx + it->size() + 1);
+				uri = uri.substr(0, idx + it->size());
+			}
+			break ;
 		}
 	}
-	else if (S_ISDIR(buf.st_mode)) m_uri_type = DIRECTORY;
-	else if (m_method != PUT && m_method != TRACE)
-		throw 40402;
 
-	m_protocol = parsed[2];
-	if (m_protocol != "HTTP/1.1")
-		throw 505;
+	m_path_translated = getTranslatedPath(m_location->get_m_root_path(), uri);
+	return (m_path_translated);
+}
+
+namespace {
+	std::string getTranslatedPath(std::string root, std::string uri)
+	{
+		if (root.empty() || uri.empty())
+			return ("");
+		if (root[root.size() - 1] == '/' && uri[0] == '/')
+			uri.erase(uri.begin());
+		else if (root[root.size() - 1] != '/' && uri[0] != '/')
+			uri.insert(0, 1, '/');
+		return (root + uri);
+	}
+	bool isFile(std::string path)
+	{
+		struct stat buf;
+		stat(path.c_str(), &buf);
+		return (S_ISREG(buf.st_mode));
+	}
+	bool isDirectory(std::string path)
+	{
+		struct stat buf;
+		stat(path.c_str(), &buf);
+		return (S_ISDIR(buf.st_mode));	
+	}
+}
+Request::Request(Connection *connection, Server *server, std::string start_line): m_connection(connection), m_server(server), m_transfer_type(GENERAL)
+{
+	if (gettimeofday(&m_start_at, NULL) == -1)
+		throw std::runtime_error("gettimeofday function failed in request generator");
+	
+	std::vector<std::string> parsed = ft::split(start_line, ' ');
+	if (parsed.size() != 3)
+		throw (40010);
+	if (!parseMethod(parsed[0]))
+		throw (40011);
+	if (parsed[1].length() > m_server->get_m_request_uri_limit_size())
+		throw (414);
+
+	m_uri = parsed[1];
+	if (!(assignLocationMatchingUri(m_uri)))
+		throw (40401);
+	if (!ft::hasKey(m_location->get_m_allow_method(), get_m_method_to_string()))
+		throw (405);
+	
+	std::string translated_path = parseUri();
+	if (!translated_path.empty())
+		throw (40014);
+	if (isFile(m_path_translated))
+		m_uri_type = FILE;
+	else if (isDirectory(m_path_translated))
+		m_uri_type = DIRECTORY;
+	else if (m_method == PUT || m_method == TRACE)
+		m_uri_type = FILE_TO_CREATE;
+	else
+		throw (40402);
+
+	if ((m_protocol = parsed[2]) != "HTTP/1.1")
+		throw (505);
 }
 
 Request::Request(const Request &x)
@@ -131,7 +173,20 @@ Request::Request(const Request &x)
 
 Request::~Request()
 {
+	m_connection = NULL;
+	m_server = NULL;
+	m_location = NULL;
+	m_start_at.tv_sec = 0;
+	m_start_at.tv_usec = 0;
 
+	m_uri.clear();
+	m_protocol.clear();
+	m_headers.clear();
+	m_content.clear();
+	m_query.clear();
+	m_path_translated.clear();
+	m_path_info.clear();
+	m_origin.clear();
 }
 
 /* ************************************************************************** */
@@ -196,7 +251,7 @@ const std::string		&Request::get_m_query() const { return (m_query); }
 const std::string		&Request::get_m_path_info() const { return (m_query); }
 const std::string		&Request::get_m_origin() const { return (m_origin); }
 const std::string		&Request::get_m_path_translated() const { return (m_path_translated); }
-std::string 			Request::get_m_method_to_string() const
+const std::string 		&Request::get_m_method_to_string() const
 {
 	if (m_method == GET) return (std::string("GET"));
 	else if (m_method == HEAD) return (std::string("HEAD"));
@@ -215,7 +270,7 @@ std::string 			Request::get_m_method_to_string() const
 void Request::add_content(std::string added_content)
 {
 	if (m_content.size() + added_content.size() > m_server->get_m_limit_client_body_size())
-		throw 41301;
+		throw (41301);
 	m_content.append(added_content);
 }
 
@@ -224,25 +279,23 @@ void Request::add_origin(std::string added_origin)
 	if (m_method != TRACE)
 		return ;
 	if (m_origin.size() + added_origin.size() > m_server->get_m_limit_client_body_size())
-		throw 41302;
+		throw (41302);
 	m_origin.append(added_origin);
 }
 
 
 void Request::add_header(std::string key, std::string value)
 {
-	// size_t pos = header.find(':');
-	// std::string key = header.substr(0, pos);
-	// std::string value = header.substr(pos + 1);
-	// key = ft::trim(key);
-	// value = ft::trim(value);
-	// for (size_t i = 0 ; i < key.length() ; ++i) // capitalize
-	// 	key[i] = (i == 0 || key[i - 1] == '-') ? std::toupper(key[i]) : std::tolower(key[i]);
-
-	// if (key == "Content-Type" && value == "chunked")
-	// 	m_transfer_type = CHUNKED;
-	// if (key == "Content-Length" && std::atoi(value.c_str()) > m_server->get_m_limit_client_body_size())
-	// 	throw 413;
+	if (key == "Content-Type" && value.find("chunked") != std::string::npos)
+		m_transfer_type = CHUNKED;
+	if (key == "Content-Length")
+	{
+		int content_length = std::stoi(value);
+		if (content_length > static_cast<int>(m_server->get_m_limit_client_body_size()))
+			throw (41303);
+		if (content_length < 0)
+			throw (40001);
+	}
 	std::pair<std::map<std::string, std::string>::iterator, bool> ret = m_headers.insert(std::make_pair(key, value));
 	if (!ret.second)
 		throw 40013;
