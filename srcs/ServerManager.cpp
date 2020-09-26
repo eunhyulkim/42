@@ -20,11 +20,21 @@ ServerManager::ServerManager()
     ft::fdZero(&m_read_copy_set);
     ft::fdZero(&m_write_set);
     ft::fdZero(&m_write_copy_set);
-    ft::fdZero(&m_error_set);
     ft::fdZero(&m_error_copy_set);
 }
 
-ServerManager::ServerManager(const ServerManager&) {}
+ServerManager::ServerManager(const ServerManager& obj)
+{
+	m_servers = obj.m_servers;
+	m_server_fdset = obj.m_server_fdset;
+	m_config = obj.m_config;
+	m_max_fd = obj.m_max_fd;
+	m_read_set = obj.m_read_set;
+	m_read_copy_set = obj.m_read_copy_set;
+	m_write_set = obj.m_write_set;
+	m_write_copy_set = obj.m_write_copy_set;
+	m_error_copy_set = obj.m_error_copy_set;
+}
 
 /* ************************************************************************** */
 /* ------------------------------- DESTRUCTOR ------------------------------- */
@@ -37,7 +47,6 @@ ServerManager::~ServerManager()
     ft::fdZero(&m_read_copy_set);
     ft::fdZero(&m_write_set);
     ft::fdZero(&m_write_copy_set);
-    ft::fdZero(&m_error_set);
     ft::fdZero(&m_error_copy_set);
 }
 
@@ -49,6 +58,15 @@ ServerManager& ServerManager::operator=(const ServerManager& obj)
 {
 	if (this == &obj)
 		return (*this);
+	m_servers = obj.m_servers;
+	m_server_fdset = obj.m_server_fdset;
+	m_config = obj.m_config;
+	m_max_fd = obj.m_max_fd;
+	m_read_set = obj.m_read_set;
+	m_read_copy_set = obj.m_read_copy_set;
+	m_write_set = obj.m_write_set;
+	m_write_copy_set = obj.m_write_copy_set;
+	m_error_copy_set = obj.m_error_copy_set;
 	return (*this);
 }
 
@@ -124,7 +142,7 @@ namespace {
 	}
 	
 	bool isValidIpByte(std::string s) { return ((std::stoi(s) >= 0) && (std::stoi(s) <= 255)); }
-	bool isValidCgi(std::string data) { return (!data.empty() && data[0] == '.'); }
+	bool isValidCgi(std::string data) { return (data == ".php"); }
 }
 
 bool
@@ -325,8 +343,6 @@ ServerManager::fdSet(int fd, SetType fdset)
 		ft::fdSet(fd, &this->m_read_set);
 	else if (fdset == READ_COPY_SET)
 		ft::fdSet(fd, &this->m_read_copy_set);
-	else if (fdset == ERROR_SET)
-		ft::fdSet(fd, &this->m_error_set);
 	else if (fdset == ERROR_COPY_SET)
 		ft::fdSet(fd, &this->m_error_copy_set);
 }
@@ -342,8 +358,6 @@ ServerManager::fdZero(SetType fdset)
 		ft::fdZero(&this->m_read_set);
 	else if (fdset == READ_COPY_SET)
 		ft::fdZero(&this->m_read_copy_set);
-	else if (fdset == ERROR_SET)
-		ft::fdZero(&this->m_error_set);
 	else if (fdset == ERROR_COPY_SET)
 		ft::fdZero(&this->m_error_copy_set);
 }
@@ -359,8 +373,6 @@ ServerManager::fdClear(int fd, SetType fdset)
 		ft::fdClr(fd, &this->m_read_set);
 	else if (fdset == READ_COPY_SET)
 		ft::fdClr(fd, &this->m_read_copy_set);
-	else if (fdset == ERROR_SET)
-		ft::fdClr(fd, &this->m_error_set);
 	else if (fdset == ERROR_COPY_SET)
 		ft::fdClr(fd, &this->m_error_copy_set);
 }
@@ -378,8 +390,6 @@ ServerManager::fdIsset(int fd, SetType fdset)
 		ret = ft::fdIsset(fd, &this->m_read_set);
 	else if (fdset == READ_COPY_SET)
 		ret = ft::fdIsset(fd, &this->m_read_copy_set);
-	else if (fdset == ERROR_SET)
-		ret = ft::fdIsset(fd, &this->m_error_set);
 	else if (fdset == ERROR_COPY_SET)
 		ret = ft::fdIsset(fd, &this->m_error_copy_set);
 	return (ret);
@@ -388,30 +398,23 @@ ServerManager::fdIsset(int fd, SetType fdset)
 void
 ServerManager::fdCopy(SetType fdset)
 {
-	if (fdset == WRITE_SET) {
+	if (fdset == WRITE_SET || fdset == ALL_SET) {
 		ft::fdZero(&this->m_write_copy_set);
 		this->m_write_copy_set = this->m_write_set;
-	} else if (fdset == READ_SET) {
+	}
+	if (fdset == READ_SET || fdset == ALL_SET) {
 		ft::fdZero(&this->m_read_copy_set);
 		this->m_read_copy_set = this->m_read_set;
-	} else if (fdset == ERROR_SET) {
+	} 
+	if (fdset == ERROR_SET || fdset == ALL_SET) {
 		ft::fdZero(&this->m_error_copy_set);
-		this->m_error_copy_set = this->m_error_set;
+		this->m_error_copy_set = this->m_read_set;
 	}
 }
 
 /* ************************************************************************** */
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
 /* ************************************************************************** */
-
-void
-ServerManager::openLog()
-{
-	if ((ServerManager::access_fd = open(ACCESS_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
-		return ;
-	if ((ServerManager::error_fd = open(ERROR_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
-		return ;
-}
 
 void
 ServerManager::createServer(const std::string& configuration_file_path, char **env)
@@ -454,14 +457,6 @@ changeSignal(int sig)
 }
 
 void
-ServerManager::copyFdSet()
-{
-	this->m_read_copy_set = this->m_read_set;
-	this->m_write_copy_set = this->m_write_set;
-	this->m_error_copy_set = this->m_read_set;
-}
-
-void
 ServerManager::closeOldConnection(std::vector<Server>::iterator server_it)
 {
 	std::map<int, Connection>::const_iterator it = server_it->get_m_connections().begin();
@@ -490,12 +485,12 @@ ServerManager::runServer()
 	{
 		int cnt;
 		writeServerHealthLog();
-		copyFdSet();
+		fdCopy(ALL_SET);
 
 		if ((cnt = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, \
 		&this->m_error_copy_set, &timeout)) == -1)
 		{
-			perror("select fail: ");
+			ft::log(ServerManager::access_fd, ServerManager::error_fd, "[Failed][Function]Select function failed(return -1)");
 			throw std::runtime_error("select error");
 		}
 		else if (cnt == 0)
@@ -520,14 +515,20 @@ ServerManager::exitServer(const std::string& error_msg)
 /* ------------------------------- LOG FUNCTION ----------------------------- */
 /* ************************************************************************** */
 
-namespace {
+void
+ServerManager::openLog()
+{
+	if ((ServerManager::access_fd = open(ACCESS_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
+		return ;
+	if ((ServerManager::error_fd = open(ERROR_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
+		return ;
 }
 
 void
 ServerManager::writeCreateServerLog()
 {
 	std::string text = "[Created][Servers]" + std::to_string(m_servers.size()) + " servers created successfully.\n";
-	ft::log(ServerManager::access_fd, text);
+	ft::log(ServerManager::access_fd, -1, text);
 	return ;
 }
 
@@ -539,6 +540,6 @@ ServerManager::writeServerHealthLog(bool ignore_interval)
 	int fd = ServerManager::access_fd;
 	std::string text = "[HealthCheck][Server][Max_fd:" + std::to_string(m_max_fd) \
 	+ "][Connection:" + ft::getSetFdString(m_max_fd, &m_read_set) + "][Response:" + ft::getSetFdString(m_max_fd, &m_write_set) + "]\n";
-	ft::log(fd, text);
+	ft::log(fd, -1, text);
 	return ;
 }

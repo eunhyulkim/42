@@ -1080,7 +1080,7 @@ Server::writeDetectNewConnectionLog()
 {
 	std::string text = "[Detected][Connection][Server:" + m_server_name + "][Host:" + m_host \
 	+ "] New connection detected.\n";
-	ft::log(ServerManager::access_fd, text);
+	ft::log(ServerManager::access_fd, -1, text);
 	return ;
 }
 
@@ -1089,7 +1089,7 @@ Server::writeCreateNewConnectionLog(int client_fd, std::string client_ip, int cl
 {
 	std::string text = "[Created][Connection][Server:" + m_server_name + "][CFD:" \
 	+ std::to_string(client_fd) + "][IP:" + client_ip + "][Port:" + std::to_string(client_port) + "]\n";
-	ft::log(ServerManager::access_fd, text);
+	ft::log(ServerManager::access_fd, -1, text);
 	return ;
 }
 
@@ -1098,7 +1098,7 @@ Server::reportCreateNewConnectionLog()
 {
 	std::string text = "[Failed][Connection][Server:" + m_server_name + "][Host:" + m_host \
 	+ "] Failed to create new connection.\n";
-	ft::log(ServerManager::access_fd, text);
+	ft::log(ServerManager::access_fd, ServerManager::error_fd, text);
 	return ;
 }
 
@@ -1108,7 +1108,7 @@ Server::writeDetectNewRequestLog(const Connection& connection)
 	std::string text = "[Detected][Request][Server:" + m_server_name + "][CIP:"
 	+ connection.get_m_client_ip() + "][CFD:" + std::to_string(connection.get_m_client_fd()) + "]"
 	+ " New request detected.\n";
-	ft::log(ServerManager::access_fd, text);
+	ft::log(ServerManager::access_fd, -1, text);
 	return ;
 }
 
@@ -1120,7 +1120,7 @@ Server::writeCreateNewRequestLog(const Request& request)
 	if (request.get_m_method() == Request::GET)
 		text.append("[Query:" + request.get_m_query() + "]");
 	text.append(" New request created.\n");
-	ft::log(ServerManager::access_fd, text);
+	ft::log(ServerManager::access_fd, -1, text);
 	return ;
 }
 
@@ -1130,7 +1130,7 @@ Server::reportCreateNewRequestLog(Connection* connection, int status)
 	std::string text = "[Failed][Request][Server:" + m_server_name + "][CIP:"
 	+ connection->get_m_client_ip() + "][CFD:" + std::to_string(connection->get_m_client_fd()) + "]["
 	+ std::to_string(status) + "][" + Response::status[status] + "] Failed to create new Request.\n";
-	ft::log(ServerManager::access_fd, text);
+	ft::log(ServerManager::access_fd, ServerManager::error_fd, text);
 	return ;
 }
 
@@ -1142,7 +1142,7 @@ Server::writeCreateNewResponseLog(const Response& response)
 	+ std::to_string(response.get_m_connection()->get_m_client_fd()) + "][headers:" \
 	+ std::to_string(response.get_m_headers().size()) + "][body:" + std::to_string(response.get_m_content().size()) + "]";
 	text.append(" New response created.\n");
-	ft::log(ServerManager::access_fd, text);
+	ft::log(ServerManager::access_fd, -1, text);
 	return ;
 }
 
@@ -1151,6 +1151,6 @@ Server::writeCloseConnectionLog(int client_fd)
 {
 	std::string text = "[Deleted][Connection][Server:" + m_server_name + "][CFD:" \
 	+ std::to_string(client_fd) + "] Connection closed.\n";
-	ft::log(ServerManager::access_fd, text);
+	ft::log(ServerManager::access_fd, -1, text);
 	return ;
 }

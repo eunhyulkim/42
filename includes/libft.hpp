@@ -43,7 +43,7 @@ namespace ft {
 	void fdSet(int fd, fd_set *x);
 	int fdIsset(int fd, fd_set *x);
 	void fdClr(int fd, fd_set *x);
-    void log(int fd, std::string text);
+    void log(int access_fd, int error_fd, std::string text);
     std::string getSetFdString(int max_fd, fd_set* fset);
     bool isRightTime(int second);
 

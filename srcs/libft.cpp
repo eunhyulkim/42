@@ -429,8 +429,11 @@ namespace ft
 		return (ret);
 	}
 
-	void log(int fd, std::string text) {
-		write(fd, text.c_str(), text.size());
+	void log(int access_fd, int error_fd, std::string text) {
+		if (access_fd != -1)
+			write(access_fd, text.c_str(), text.size());
+		if (error_fd != -1)
+			write(error_fd, text.c_str(), text.size());
 	}
 	
 	bool isRightTime(int second) {
