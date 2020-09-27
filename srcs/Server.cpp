@@ -423,77 +423,6 @@ bool Server::hasRequest(int client_fd) {
 	return (false);
 }
 
-namespace {
-	bool isMethodHasBody(const Request::Method& method) {
-		return (method == Request::POST || method == Request::PUT || method == Request::TRACE);
-	}
-	std::string readBodyMessageGeneral(Request& request, int client_fd)
-	{
-		char buffer[GENERAL_TRANSFER_BUFFER_SIZE] = { '\0', };
-		int content_length = std::stoi(request.get_m_headers().find("Content-Length")->second);
-		int read_len;
-		std::string body;
-
-		while (content_length > GENERAL_TRANSFER_BUFFER_SIZE)
-		{
-			if ((read_len = read(client_fd, buffer, sizeof(buffer) - 1)) < 0)
-				throw (40017);
-			body.append(buffer, read_len);
-			content_length -= read_len;
-		}
-		if ((read_len = read(client_fd, buffer, content_length)) < 0)
-			throw (40017);
-		if (read_len != content_length)
-			throw (40017);
-		body.append(buffer, read_len);
-		return (body);
-	}
-	std::string readBodyMessageChunked(int client_fd, std::string& origin_message)
-	{
-		char buffer[CHUNKED_TRNASFER_BUFFER_SIZE] = { '\0', };
-		int content_length;
-		int read_len;
-		std::string body;
-
-		while (true)
-		{
-			if (ft::getline(client_fd, buffer, sizeof(buffer)) < 0)
-				throw (40016);
-			origin_message.append(buffer + std::string("\n"));
-			if ((content_length = std::stoi(std::string(buffer), 0, 16)) <= 0)
-			{
-				if (content_length < 0)
-					throw (40005);
-				read_len = ft::getline(client_fd, buffer, sizeof(buffer));
-				if (read_len < 0 || read_len > 1 || (read_len == 1 && buffer[0] != '\r'))
-					throw (40004);
-				origin_message.append(buffer + std::string("\n"));
-				break ;
-			}
-			while (content_length > CHUNKED_TRNASFER_BUFFER_SIZE)
-			{
-				if ((read_len = read(client_fd, buffer, sizeof(buffer) - 1)) < 0)
-					throw (40017);
-				body.append(buffer, read_len);
-				origin_message.append(buffer, read_len);
-				content_length -= read_len;
-			}
-			if ((read_len = read(client_fd, buffer, content_length)) < 0)
-				throw (40017);
-			if (read_len != content_length)
-				throw (40017);
-			body.append(buffer, read_len);
-			origin_message.append(buffer, content_length);
-			read_len = ft::getline(client_fd, buffer, sizeof(buffer));
-			if (read_len < 0 || read_len > 1 || (read_len == 1 && buffer[0] != '\r'))
-				throw (40004);
-			origin_message.append(buffer + std::string("\n"));
-		}
-		return (body);
-	}
-
-}
-
 std::string
 Server::getStartLine(int client_fd)
 {
@@ -549,6 +478,85 @@ Server::headerParsing(Request &request, std::string &origin_message, int client_
 	if (!ft::hasKey(request.get_m_headers(), "Host"))
 		throw (40002);
 	return ;
+}
+
+
+namespace {
+	bool isMethodHasBody(const Request::Method& method) {
+		return (method == Request::POST || method == Request::PUT || method == Request::TRACE);
+	}
+	std::string readBodyMessageGeneral(Request& request, int client_fd)
+	{
+		char buffer[GENERAL_TRANSFER_BUFFER_SIZE] = { '\0', };
+		int content_length = std::stoi(request.get_m_headers().find("Content-Length")->second);
+		int read_len;
+		std::string body;
+
+		while (content_length > GENERAL_TRANSFER_BUFFER_SIZE)
+		{
+			if ((read_len = read(client_fd, buffer, sizeof(buffer) - 1)) < 0)
+				throw (40017);
+			body.append(buffer, read_len);
+			content_length -= read_len;
+		}
+		if ((read_len = read(client_fd, buffer, content_length)) < 0)
+			throw (40017);
+		if (read_len != content_length)
+			throw (40017);
+		body.append(buffer, read_len);
+		return (body);
+	}
+	int getChunkedSize(int client_fd, char *buffer, int buffer_size)
+	{
+		if (ft::getline(client_fd, buffer, sizeof(buffer)) < 0)
+			throw (40016);
+		int content_length = std::stoi(std::string(buffer), 0, 16);
+		if (content_length < 0)
+			throw (40005);
+		return (content_length);
+	}
+	bool isValidateLineEnd(int client_fd, char* buffer, int buffer_size)
+	{
+		int read_len = ft::getline(client_fd, buffer, buffer_size);
+		if (read_len < 0 || read_len > 1 || (read_len == 1 && buffer[0] != '\r'))
+			throw (40004);
+		return (true);
+	}
+	std::string readBodyMessageChunked(int client_fd, std::string& origin_message)
+	{
+		char buffer[CHUNKED_TRNASFER_BUFFER_SIZE] = { '\0', };
+		int content_length;
+		int read_len;
+		std::string body;
+
+		while (true)
+		{
+			content_length = getChunkedSize(client_fd, buffer, sizeof(buffer));
+			origin_message.append(buffer + std::string("\n"));
+			if (content_length == 0 && isValidateLineEnd(client_fd, buffer, sizeof(buffer)))
+			{
+				origin_message.append(buffer + std::string("\n"));
+				break ;
+			}
+			while (content_length > CHUNKED_TRNASFER_BUFFER_SIZE)
+			{
+				if ((read_len = read(client_fd, buffer, sizeof(buffer) - 1)) < 0)
+					throw (40017);
+				body.append(buffer, read_len);
+				origin_message.append(buffer, read_len);
+				content_length -= read_len;
+			}
+			if ((read_len = read(client_fd, buffer, content_length)) < 0)
+				throw (40017);
+			if (read_len != content_length)
+				throw (40017);
+			body.append(buffer, read_len);
+			origin_message.append(buffer, content_length);
+			if (isValidateLineEnd(client_fd, buffer, sizeof(buffer)))
+				origin_message.append(buffer + std::string("\n"));
+		}
+		return (body);
+	}
 }
 
 std::string
