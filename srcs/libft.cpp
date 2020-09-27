@@ -313,6 +313,20 @@ namespace ft
 		return (ret);
     }
 
+	int getline(int fd, char* line, int buffer_size)
+	{
+		int idx = 0;
+		int len = -1;
+		if ((len = recv(fd, line, buffer_size, MSG_PEEK | MSG_DONTWAIT)) == -1)
+			return (-1);
+		while (idx < len && line[idx] != '\n')
+			++idx;
+		if (idx == len)
+			return (len * -1);
+		read(fd, line, idx + 1);
+		line[idx] = '\0';
+		return (idx);
+	}
 /* ************************************************************************** */
 /* ------------------------------ TCP FUNCTION ------------------------------ */
 /* ************************************************************************** */

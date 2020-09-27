@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/27 01:17:26 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/27 18:30:50 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ Request::assignLocationMatchingUri(std::string uri)
 	size_t max_uri_match = 0;
 	for (std::vector<Location>::const_iterator it = m_server->get_m_locations().begin() ; it != m_server->get_m_locations().end() ; ++it)
 	{
-		if (std::strncmp(it->get_m_uri().c_str(), m_uri.c_str(), it->get_m_uri().length()) == 0 && it->get_m_uri().length() > max_uri_match)
+		if (std::strncmp(it->get_m_uri().c_str(), uri.c_str(), it->get_m_uri().length()) == 0 && it->get_m_uri().length() > max_uri_match)
 		{
 			m_location = const_cast<Location *>(&(*it));
 			max_uri_match = it->get_m_uri().length();
@@ -59,6 +59,19 @@ Request::assignLocationMatchingUri(std::string uri)
 	if (!max_uri_match)
 		return (false);
 	return (true);
+}
+
+namespace {
+	std::string getTranslatedPath(std::string root, std::string uri)
+	{
+		if (root.empty() || uri.empty())
+			return ("");
+		if (root[root.size() - 1] == '/' && uri[0] == '/')
+			uri.erase(uri.begin());
+		else if (root[root.size() - 1] != '/' && uri[0] != '/')
+			uri.insert(0, 1, '/');
+		return (root + uri);
+	}
 }
 
 std::string
@@ -73,7 +86,7 @@ Request::parseUri()
 			int idx = uri.find(*it);
 			m_uri_type = CGI_PROGRAM;
 			if ((m_method == GET || m_method == HEAD) && uri.find("?") != std::string::npos) {
-				m_query = uri.substr(uri.find("?" + 1));
+				m_query = uri.substr(uri.find("?") + 1);
 				uri = uri.substr(0, uri.find("?"));
 			}
 			if (uri.size() > idx + it->size() + 1) {
@@ -89,16 +102,6 @@ Request::parseUri()
 }
 
 namespace {
-	std::string getTranslatedPath(std::string root, std::string uri)
-	{
-		if (root.empty() || uri.empty())
-			return ("");
-		if (root[root.size() - 1] == '/' && uri[0] == '/')
-			uri.erase(uri.begin());
-		else if (root[root.size() - 1] != '/' && uri[0] != '/')
-			uri.insert(0, 1, '/');
-		return (root + uri);
-	}
 	bool isFile(std::string path)
 	{
 		struct stat buf;
@@ -123,14 +126,13 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 	if (!parseMethod(parsed[0]))
 		throw (40011);
 	if (parsed[1].length() > m_server->get_m_request_uri_limit_size())
-		throw (414);
+		throw (41401);
 
 	m_uri = parsed[1];
 	if (!(assignLocationMatchingUri(m_uri)))
 		throw (40401);
 	if (!ft::hasKey(m_location->get_m_allow_method(), get_m_method_to_string()))
-		throw (405);
-	
+		throw (405);	
 	std::string translated_path = parseUri();
 	if (!translated_path.empty())
 		throw (40014);
@@ -251,7 +253,7 @@ const std::string		&Request::get_m_query() const { return (m_query); }
 const std::string		&Request::get_m_path_info() const { return (m_query); }
 const std::string		&Request::get_m_origin() const { return (m_origin); }
 const std::string		&Request::get_m_path_translated() const { return (m_path_translated); }
-const std::string 		&Request::get_m_method_to_string() const
+std::string 		Request::get_m_method_to_string() const
 {
 	if (m_method == GET) return (std::string("GET"));
 	else if (m_method == HEAD) return (std::string("HEAD"));

@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:22 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/27 01:17:35 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/27 18:20:29 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ public:
 	Server *get_m_server() const;
 	Location *get_m_location() const;
 	Method get_m_method() const;
-	const std::string &get_m_method_to_string() const;
+	std::string get_m_method_to_string() const;
 	const std::string &get_m_uri() const;
 	URIType get_m_uri_type() const;
 	const std::string &get_m_protocol() const;

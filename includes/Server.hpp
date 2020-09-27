@@ -30,17 +30,41 @@ class Server
 		std::map<int, Connection> m_connections;
 		std::queue<Response> m_responses;
 	private:
+		/* util */
 		void basic_decode(std::string data, std::string& key, std::string& value);
 		std::string inet_ntoa(unsigned int address);
-		void runSend();
+		
+		/* send operation */
+		bool isSendable(int client_fd);
+		void sendResponse(Response response);
+		bool runSend();
+
+		/* connection management */
+		bool hasException(int client_fd);
+		int getUnuseConnectionFd();
+		bool hasNewConnection();
+		bool acceptNewConnection();
+
+		/* read operation */
+		void redirectFdToStdin(int fd);
+		void revertStdinFd();
+		bool hasRequest(int client_fd);
+		std::string getStartLine(int client_fd);
+		int getHeaderLine(int client_fd, std::string& line);
+		void headerParsing(Request &request, std::string& origin_message, int client_fd);
+		std::string readBodyMessage(Request &request, std::string& origin_message, int client_fd);
+		Request recvRequest(int client_fd, Connection* connection);
 		bool runRecvAndSolve(std::map<int, Connection>::iterator it);
+
+		/* cgi */
+		char** createCGIEnv(const Request& request);
+
+		/* create response */
 		std::string getExtension(std::string path);
 		std::string getMimeTypeHeader(std::string path);
 		time_t getLastModified(std::string path);
 		std::string getLastModifiedHeader(std::string path);
-		char** createCGIEnv(const Request& request);
-		void redirectFdToStdin(int fd);
-		void revertStdinFd();
+
 	public:
 		Server();
 		Server(ServerManager* server_manager, const std::string& server_block, std::vector<std::string>& location_blocks, Config* config);
@@ -63,17 +87,9 @@ class Server
 		const std::queue<Response>& get_m_responses() const;
 
 		/* declare member function */
-		bool hasException(int client_fd);
-		void closeConnection(int client_fd);
-		bool hasNewConnection();
-		bool acceptNewConnection();
 		void run();
 
-		bool isSendable(int client_fd);
-		void sendResponse(Response response);
-
-		bool hasRequest(int client_fd);
-		Request recvRequest(int client_fd, Connection* connection);
+		void closeConnection(int client_fd);
 
 		void solveRequest(const Request& request);
 		void executeAutoindex(const Request& request);

@@ -108,7 +108,7 @@ std::string Location::get_m_uri() const { return (this->m_uri); }
 std::string Location::get_m_root_path() const { return (this->m_root_path); }
 std::string Location::get_m_auth_basic_realm() const { return (this->m_auth_basic_realm); }
 const std::map<std::string, std::string>& Location::get_m_auth_basic_file() const { return (this->m_auth_basic_file); }
-const std::set<std::string>& Location::get_m_allow_method() const { return (this->m_allow_method); }
+std::set<std::string> Location::get_m_allow_method() const { return (this->m_allow_method); }
 const std::set<std::string>& Location::get_m_index() const { return (this->m_index); }
 const std::set<std::string>& Location::get_m_cgi() const { return (this->m_cgi); }
 const bool& Location::get_m_autoindex() const { return (this->m_autoindex); }

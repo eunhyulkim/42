@@ -45,6 +45,10 @@
 # define CGI_SUCCESS_CODE 299
 # define CGI_META_VARIABLE_COUNT 15
 # define STACKED_RESPONSE_COUNT 20
+
+# define CHUNKED_TRNASFER_BUFFER_SIZE 8192
+# define GENERAL_TRANSFER_BUFFER_SIZE 8192
+
 # define SERVER_HEALTH_LOG_SECOND 5
 
 typedef std::vector<std::string> headers_t;

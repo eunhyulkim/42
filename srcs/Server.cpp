@@ -217,7 +217,7 @@ const std::queue<Response>& Server::get_m_responses() const { return (this->m_re
 /* exception code */
 
 /* ************************************************************************** */
-/* ---------------------------- MEMBER FUNCTION ----------------------------- */
+/* ---------------------------------- UTIL ---------------------------------- */
 /* ************************************************************************** */
 
 /*
@@ -250,6 +250,362 @@ Server::inet_ntoa(unsigned int address)
 	ret.append(std::to_string((address >> 24) & 0xFF));
 	return (ret);
 }
+
+/* ************************************************************************** */
+/* ----------------------------- SEND OPERATION ----------------------------- */
+/* ************************************************************************** */
+
+bool
+Server::isSendable(int client_fd)
+{
+	if (m_manager->fdIsset(client_fd, ServerManager::ERROR_COPY_SET))
+		return (false);
+	else if (!m_manager->fdIsset(client_fd, ServerManager::READ_SET))
+		return (false);
+	else if (m_manager->fdIsset(client_fd, ServerManager::WRITE_COPY_SET))
+		return (true);
+	return (false);
+}
+
+void
+Server::sendResponse(Response response)
+{
+	int fd = response.get_m_connection()->get_m_client_fd();
+
+	send(fd, response.getString().c_str(), response.getString().size(), 0);
+	m_manager->fdClear(fd, ServerManager::WRITE_SET);
+}
+
+bool
+Server::runSend()
+{
+	Response response(m_responses.front());
+	int fd = response.get_m_connection()->get_m_client_fd();
+	if (isSendable(fd))
+	{
+		sendResponse(response);
+		if (response.get_m_connection_type() == Response::CLOSE)
+			closeConnection(fd);
+		m_responses.pop();
+	}
+	else if (!m_manager->fdIsset(fd, ServerManager::ERROR_COPY_SET) \
+	&& m_manager->fdIsset(fd, ServerManager::READ_SET)) {
+		m_manager->fdSet(fd, ServerManager::WRITE_SET);
+		return (false);
+	}
+	else
+		m_responses.pop();
+
+	return (true);
+}
+
+/* ************************************************************************** */
+/* -------------------------- CONNECTION MANAGEMENT ------------------------- */
+/* ************************************************************************** */
+
+bool
+Server::hasException(int client_fd) {
+	return (m_manager->fdIsset(client_fd, ServerManager::ERROR_COPY_SET));
+}
+
+void
+Server::closeConnection(int client_fd)
+{
+	writeCloseConnectionLog(client_fd);
+	
+	// if (lseek(client_fd, 0, SEEK_END) == -1)
+	// 	ft::log(ServerManager::access_fd, ServerManager::error_fd, \
+	// 	"[Failed][Function] lseek function failed in closeConnection method");
+
+	char buff[1024];
+	while (read(client_fd, buff, sizeof(buff) > 0))
+		;
+
+	if (close(client_fd) == -1)
+		ft::log(ServerManager::access_fd, ServerManager::error_fd, \
+		"[Failed][Function] close function failed in closeConnection method");
+	m_manager->fdClear(client_fd, ServerManager::READ_SET);
+	m_manager->fdClear(client_fd, ServerManager::WRITE_SET);
+	m_connections.erase(client_fd);
+	if (m_manager->get_m_max_fd() == client_fd) {
+		m_manager->set_m_max_fd(client_fd - 1);
+		for (int i = client_fd - 1; i > 0; i--) {
+			if (m_manager->fdIsset(i, ServerManager::READ_SET)) {
+				m_manager->set_m_max_fd(i);
+				break ;
+			}
+		}
+	}
+}
+
+int
+Server::getUnuseConnectionFd()
+{
+	std::map<int, Connection>::iterator it = m_connections.begin();
+	for (; it != m_connections.end(); ++it) {
+		if (!m_manager->fdIsset(it->first, ServerManager::WRITE_SET))
+			return (it->first);
+	}
+	return (-1);
+}
+
+bool
+Server::hasNewConnection()
+{
+	return (m_manager->fdIsset(m_fd, ServerManager::READ_COPY_SET));
+}
+
+bool
+Server::acceptNewConnection()
+{
+	struct sockaddr_in	client_addr;
+	socklen_t			client_addr_size = sizeof(struct sockaddr);
+	int 				client_fd;
+	std::string			client_ip;
+	int					client_port;
+
+	ft::bzero(&client_addr, client_addr_size);
+
+	if ((client_fd = accept(m_fd, (struct sockaddr *)&client_addr, &client_addr_size)) == -1) {
+		ft::log(ServerManager::access_fd, ServerManager::error_fd, \
+		"[Failed][Function]failed to cerate client_fd by accept function");
+		return (false);
+	}
+	if (m_manager->get_m_max_fd() < client_fd)
+		m_manager->set_m_max_fd(client_fd);
+	if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1)
+		return (false);
+	client_ip = inet_ntoa(client_addr.sin_addr.s_addr);
+	client_port = static_cast<int>(client_addr.sin_port);
+	m_connections[client_fd] = Connection(client_fd, client_ip, client_port);
+	m_manager->fdSet(client_fd, ServerManager::READ_SET);
+	writeCreateNewConnectionLog(client_fd, client_ip, client_port);
+	return (true);
+}
+
+/* ************************************************************************** */
+/* ----------------------------- READ OPERATION ----------------------------- */
+/* ************************************************************************** */
+
+void Server::redirectFdToStdin(int fd) {
+	if (dup2(fd, 0) == -1)
+		ft::log(ServerManager::access_fd, ServerManager::error_fd, \
+		"[Failed][function] dup2 function failed in redirectFdToStdin method.");
+}
+
+void Server::revertStdinFd()
+{
+	std::string buff;
+	while (std::cin)
+		std::getline(std::cin, buff);
+	std::cin.clear();
+	if (close(0) == -1)
+		ft::log(ServerManager::access_fd, ServerManager::error_fd, \
+		"[Failed][function] close function failed in revertStdinFd.");
+	if (dup2(ServerManager::stdin_fd, 0) == -1)
+		ft::log(ServerManager::access_fd, ServerManager::error_fd, \
+		"[Failed][function] dup2 function failed in revertStdinFd method.");
+}
+
+bool Server::hasRequest(int client_fd) {
+	return (m_manager->fdIsset(client_fd, ServerManager::READ_COPY_SET));
+}
+
+namespace {
+	bool isMethodHasBody(const Request::Method& method) {
+		return (method == Request::POST || method == Request::PUT || method == Request::TRACE);
+	}
+	std::string readBodyMessageGeneral(Request& request, int client_fd)
+	{
+		char buffer[GENERAL_TRANSFER_BUFFER_SIZE] = { '\0', };
+		int content_length = std::stoi(request.get_m_headers().find("Content-Length")->second);
+		int read_len;
+		std::string body;
+
+		while (content_length > GENERAL_TRANSFER_BUFFER_SIZE)
+		{
+			if ((read_len = read(client_fd, buffer, sizeof(buffer) - 1)) < 0)
+				throw (40017);
+			body.append(buffer, read_len);
+			content_length -= read_len;
+		}
+		if ((read_len = read(client_fd, buffer, content_length)) < 0)
+			throw (40017);
+		if (read_len != content_length)
+			throw (40017);
+		body.append(buffer, read_len);
+		return (body);
+	}
+	std::string readBodyMessageChunked(int client_fd, std::string& origin_message)
+	{
+		char buffer[CHUNKED_TRNASFER_BUFFER_SIZE] = { '\0', };
+		int content_length;
+		int read_len;
+		std::string body;
+
+		while (true)
+		{
+			if (ft::getline(client_fd, buffer, sizeof(buffer)) < 0)
+				throw (40016);
+			if ((content_length = std::atoi(buffer)) <= 0)
+			{
+				if (content_length < 0)
+					throw (40005);
+				read_len = ft::getline(client_fd, buffer, sizeof(buffer));
+				if (read_len < 0 || read_len > 1 || (read_len == 1 && buffer[0] != '\r'))
+					throw (40004);
+				origin_message.append(std::string(buffer) + "\n");
+				break ;
+			}
+			while (content_length > CHUNKED_TRNASFER_BUFFER_SIZE)
+			{
+				if ((read_len = read(client_fd, buffer, sizeof(buffer) - 1)) < 0)
+					throw (40017);
+				body.append(buffer, read_len);
+				origin_message.append(buffer, read_len);
+				content_length -= read_len;
+			}
+			if ((read_len = read(client_fd, buffer, content_length)) < 0)
+				throw (40017);
+			if (read_len != content_length)
+				throw (40017);
+			body.append(buffer, read_len);
+			read_len = ft::getline(client_fd, buffer, sizeof(buffer));
+			if (read_len < 0 || read_len > 1 || (read_len == 1 && buffer[0] != '\r'))
+				throw (40004);
+			if (read_len == 1)
+				origin_message.append(buffer + std::string("\r\n"), read_len + 2);
+			else
+				origin_message.append(buffer + std::string("\n"), read_len + 1);
+		}
+		return (body);
+	}
+
+}
+
+std::string
+Server::getStartLine(int client_fd)
+{
+	char buff[REQUEST_URI_LIMIT_SIZE_MAX];
+	int ret = -1;
+	
+	ft::bzero(buff, sizeof(buff));
+	if ((ret = ft::getline(client_fd, buff, this->get_m_request_uri_limit_size())) <= 0) {
+		if (ret == 0)
+			return (std::string(""));
+		if (ret < -1)
+			throw (41402);
+		throw (50007);
+	}
+	return (std::string(buff, buff + ret));
+}
+	
+int
+Server::getHeaderLine(int client_fd, std::string& line)
+{
+	char buff[REQUEST_URI_LIMIT_SIZE_MAX];
+	int ret = -1;
+	
+	ft::bzero(buff, sizeof(buff));
+	if ((ret = ft::getline(client_fd, buff, this->get_m_request_header_limit_size())) <= 0) {
+		if (ret == 0) {
+			line = "";
+			return (0);
+		}
+		if (ret < -1)
+			throw (41401);
+		throw (50007);
+	}
+	line = std::string(buff, buff + ret);
+	return (ret);
+}
+
+void
+Server::headerParsing(Request &request, std::string &origin_message, int client_fd)
+{
+	std::string line;
+
+	while (getHeaderLine(client_fd, line) >= 0)
+	{
+		origin_message += (line + "\n");
+		if (line == "\r" || line == "")
+			break ;
+		line = ft::rtrim(line, "\r");
+		if (!request.isValidHeader(line))
+			throw (40000);
+		request.add_header(line);
+	}
+	if (!ft::hasKey(request.get_m_headers(), "Host"))
+		throw (40002);
+	return ;
+}
+
+std::string
+Server::readBodyMessage(Request &request, std::string &origin_message, int client_fd)
+{
+	std::string message_body;
+
+	if (!isMethodHasBody(request.get_m_method()))
+		return (std::string(""));
+	else if (request.get_m_transfer_type() == Request::CHUNKED)
+		message_body = readBodyMessageChunked(client_fd, origin_message);
+	else if (ft::hasKey(request.get_m_headers(), "Content-Length"))
+	{
+		message_body = readBodyMessageGeneral(request, client_fd);
+		origin_message.append(message_body);
+	}
+	else
+		throw (411);
+	return (message_body);
+}
+
+Request
+Server::recvRequest(int client_fd, Connection* connection)
+{
+	std::string start_line;
+
+	start_line = getStartLine(client_fd);
+	std::string origin_message = start_line + "\n";
+	start_line = ft::rtrim(start_line, "\r");
+	// std::cout << "start_line: " << start_line << std::endl;
+	Request request(connection, this, start_line);
+	headerParsing(request, origin_message, client_fd);
+	std::string message_body = readBodyMessage(request, origin_message, client_fd);
+	request.add_content(message_body);
+	if (request.get_m_method() == Request::TRACE)
+		request.add_origin(origin_message);
+	connection->set_m_last_request_at();
+	return (request);
+}
+
+bool
+Server::runRecvAndSolve(std::map<int, Connection>::iterator it)
+{
+	Request request;
+	int fd = it->first;
+	writeDetectNewRequestLog(it->second);
+	try {
+		request = recvRequest(fd, &it->second);
+	} catch (int status_code) {
+		createResponse(&(it->second), status_code);
+		return (false);
+	} catch (std::exception& e) {
+		createResponse(&(it->second), 50001);
+		return (false);
+	}
+	if (m_responses.size() > STACKED_RESPONSE_COUNT) {
+		createResponse(&(it->second), 503);
+		return (false);
+	}
+	writeCreateNewRequestLog(request);
+	solveRequest(request);
+	m_manager->writeServerHealthLog(true);
+	return (true);
+}
+
+/* ************************************************************************** */
+/* ---------------------------- MEMBER FUNCTION ----------------------------- */
+/* ************************************************************************** */
 
 std::string
 Server::getExtension(std::string path)
@@ -295,120 +651,14 @@ Server::getLastModifiedHeader(std::string path)
 	return ("Last-Modified:" + std::string(buff));
 }
 
-bool
-Server::hasException(int client_fd) {
-	return (m_manager->fdIsset(client_fd, ServerManager::ERROR_COPY_SET));
-}
-
-void
-Server::closeConnection(int client_fd)
-{
-	writeCloseConnectionLog(client_fd);
-	if (close(client_fd) == -1)
-		perror("close error:");
-	m_manager->fdClear(client_fd, ServerManager::READ_SET);
-	m_manager->fdClear(client_fd, ServerManager::WRITE_SET);
-	m_connections.erase(client_fd);
-	if (m_manager->get_m_max_fd() == client_fd) {
-		m_manager->set_m_max_fd(m_manager->get_m_max_fd() - 1);
-	}
-}
-
-bool
-Server::hasNewConnection()
-{
-	return (m_manager->fdIsset(m_fd, ServerManager::READ_COPY_SET));
-}
-
-bool
-Server::acceptNewConnection()
-{
-	struct sockaddr_in	client_addr;
-	socklen_t			client_addr_size = sizeof(struct sockaddr);
-	int 				client_fd;
-	std::string			client_ip;
-	int					client_port;
-
-	ft::bzero(&client_addr, client_addr_size);
-
-	if ((client_fd = accept(m_fd, (struct sockaddr *)&client_addr, &client_addr_size)) == -1)
-		return (false);
-	if (m_manager->get_m_max_fd() < client_fd)
-		m_manager->set_m_max_fd(client_fd);
-	if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1)
-		return (false);
-	client_ip = inet_ntoa(client_addr.sin_addr.s_addr);
-	client_port = static_cast<int>(client_addr.sin_port);
-	m_connections[client_fd] = Connection(client_fd, client_ip, client_port);
-	m_manager->fdSet(client_fd, ServerManager::READ_SET);
-	if (client_fd > m_manager->get_m_max_fd())
-		m_manager->set_m_max_fd(client_fd);
-	writeCreateNewConnectionLog(client_fd, client_ip, client_port);
-	return (true);
-}
-
-void
-Server::runSend()
-{
-	Response response(m_responses.front());
-	m_responses.pop();
-	if (isSendable(response.get_m_connection()->get_m_client_fd()))
-		sendResponse(response);
-	if (response.get_m_connection_type() == Response::CLOSE)
-		closeConnection(response.get_m_connection()->get_m_client_fd());
-}
-
-void Server::redirectFdToStdin(int fd) {
-	if (dup2(fd, 0) == -1)
-		perror("dup2 error:");
-}
-void Server::revertStdinFd()
-{
-	std::string buff;
-	while (std::cin)
-		std::getline(std::cin, buff);
-	std::cin.clear();
-	if (close(0) == -1)
-		perror("close error:");
-	if (dup2(ServerManager::stdin_fd, 0) == -1)
-		perror("stdin revert error");
-}
-
-bool
-Server::runRecvAndSolve(std::map<int, Connection>::iterator it)
-{
-	Request request;
-	int fd = it->first;
-	writeDetectNewRequestLog(it->second);
-	redirectFdToStdin(fd);
-	try {
-		request = recvRequest(fd, &it->second);
-	} catch (int status_code) {
-		createResponse(&(it->second), status_code);
-		revertStdinFd();
-		return (false);
-	} catch (std::exception& e) {
-		createResponse(&(it->second), 50001);
-		revertStdinFd();
-		return (false);
-	}
-	revertStdinFd();
-	if (m_responses.size() > STACKED_RESPONSE_COUNT) {
-		createResponse(&(it->second), 503);
-		return (false);
-	}
-	writeCreateNewRequestLog(request);
-	solveRequest(request);
-	m_manager->writeServerHealthLog(true);
-	return (true);
-}
 
 void
 Server::run()
 {
 	int response_count = 0;
 	while (!m_responses.empty() && response_count < SEND_RESPONSE_AT_ONCE) {
-		runSend();
+		if (!runSend())
+			break ;
 		++response_count;
 	}
 
@@ -429,19 +679,17 @@ Server::run()
 				continue ;
 		}
 	}
+
+
 	if (hasNewConnection())
 	{
 		writeDetectNewConnectionLog();
 		if (m_connections.size() >= (1024 / m_manager->get_m_servers().size()))
 		{
-			std::map<int, Connection>::iterator it = m_connections.begin();
-			for (; it != m_connections.end(); ++it) {
-				if (!m_manager->fdIsset(it->first, ServerManager::WRITE_SET))
-					break ;
-			}
-			if (it == m_connections.end())
+			int fd = getUnuseConnectionFd();
+			if (fd == -1)
 				return ;
-			closeConnection(it->first);
+			closeConnection(fd);
 		}
 		if (!acceptNewConnection())
 			reportCreateNewConnectionLog();
@@ -475,6 +723,9 @@ Server::solveRequest(const Request& request)
 	Location* location = request.get_m_location();
 	std::string methodString = request.get_m_method_to_string();
 
+	std::set<std::string> test_set;
+	if (ft::hasKey(test_set, methodString))
+		;
 	if (!ft::hasKey(location->get_m_allow_method(), methodString)) {
 		headers_t headers(1, "Allow:" + ft::containerToString(location->get_m_allow_method(), ", "));
 		return (createResponse(request.get_m_connection(), 405, headers, ""));
@@ -860,138 +1111,6 @@ Server::executeCGI(const Request& request)
 		usleep(100000);
 	}
 	return (createResponse(request.get_m_connection(), 200, headers_t(), body));
-}
-
-bool
-Server::isSendable(int client_fd)
-{
-	if (m_manager->fdIsset(client_fd, ServerManager::ERROR_COPY_SET))
-		return (false);
-	else if (!m_manager->fdIsset(client_fd, ServerManager::READ_SET))
-		return (false);
-	else if (m_manager->fdIsset(client_fd, ServerManager::WRITE_COPY_SET))
-		return (true);
-	return (false);
-}
-
-void
-Server::sendResponse(Response response)
-{
-	int fd = response.get_m_connection()->get_m_client_fd();
-
-	send(fd, response.getString().c_str(), response.getString().size(), 0);
-	m_manager->fdClear(fd, ServerManager::WRITE_SET);
-}
-
-bool Server::hasRequest(int client_fd)
-{
-	return (m_manager->fdIsset(client_fd, ServerManager::READ_COPY_SET));
-}
-
-namespace {
-	void headerParsing(Server *server, Request &request, std::string &origin_message, Request::TransferType &transfer_type, int &content_length)
-	{
-		std::string buf;
-		bool host_header = false;
-
-		while (!std::cin.eof()) //header parsing
-		{
-			std::getline(std::cin, buf);
-			origin_message = buf + "\n";
-			if (buf == "\r" || buf == "")
-				break;
-			if (!request.isValidHeader(buf))
-				throw (40000);
-			buf = ft::rtrim(buf, "\r");
-			size_t pos = buf.find(':');
-			std::string key = ft::trim(buf.substr(0, pos));
-			std::string value = ft::trim(buf.substr(pos + 1));
-			for (size_t i = 0 ; i < key.length() ; ++i) // capitalize
-				key[i] = (i == 0 || key[i - 1] == '-') ? std::toupper(key[i]) : std::tolower(key[i]);
-			request.add_header(key, value);
-		}
-		if (!ft::hasKey(request.get_m_headers(), "Host"))
-			throw (40002);
-		return ;
-	}
-
-	std::string readBodyMessage(Server *server, Request &request, std::string &origin_message, Request::TransferType &transfer_type, int &content_length, int client_fd)
-	{
-		std::string buf;
-		std::string message_body;
-		char		buffer[LIMIT_CLIENT_BODY_SIZE_MAX];
-		ssize_t		read_len = 0;
-
-		if (request.get_m_method() == Request::POST || request.get_m_method() == Request::PUT || request.get_m_method() == Request::TRACE)
-		{
-			if (transfer_type == Request::CHUNKED)
-			{
-				if (content_length)
-					throw 40003;
-				while (1)
-				{
-					std::getline(std::cin, buf);
-					origin_message += buf + "\n";
-					buf = ft::rtrim(buf, "\r");
-					if (buf == "0")
-					{
-						if ((read_len = read(client_fd, buffer, 2)) != 2 || std::strncmp(buffer, "\r\n", 2))
-							throw 40004;
-						origin_message += "\r\n";
-						break;
-					}
-					content_length = std::stoi(buf);
-					if (content_length > static_cast<int>(server->get_m_limit_client_body_size()))
-						throw (41304);
-					if (content_length < 0)
-						throw 40005;
-					read_len = read(client_fd, buffer, content_length);
-					if (read_len != content_length)
-						throw 40006;
-					message_body.append(buffer, read_len);
-					origin_message += buffer;
-					if ((read_len = read(client_fd, buffer, 2)) != 2 || std::strncmp(buffer, "\r\n", 2))
-						throw 40007;
-					origin_message += "\r\n";
-				}
-			}
-			else
-			{
-				read_len = read(client_fd, buffer, content_length);
-				if (read_len != content_length)
-					throw 40008;
-				message_body.append(buffer, read_len);
-				origin_message += buffer;
-			}
-		}
-		else
-		{
-			if ((read_len = read(client_fd, buffer, 1024)) != -1)
-				throw 40009;
-		}
-		return (message_body);
-	}
-}
-
-Request Server::recvRequest(int client_fd, Connection* connection)
-{
-	std::string start_line;
-	Request::TransferType transfer_type = Request::GENERAL;
-	int content_length = 0;
-
-	std::getline(std::cin, start_line);
-	std::string origin_message = start_line + "\n";
-	start_line = ft::rtrim(start_line, "\r");
-	// std::cout << "start_line: " << start_line << std::endl;
-	Request request(connection, this, start_line);
-	headerParsing(this, request, origin_message, transfer_type, content_length);
-	std::string message_body = readBodyMessage(this, request, origin_message, transfer_type, content_length, client_fd);
-	origin_message += message_body;
-	request.add_content(message_body);
-	if (request.get_m_method() == Request::TRACE)
-		request.add_origin(origin_message);
-	connection->set_m_last_request_at();
-	return (request);
 }
 
 namespace {
