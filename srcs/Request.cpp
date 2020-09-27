@@ -6,11 +6,12 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/27 18:30:50 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/27 21:20:18 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
+#include "ServerManager.hpp"
 
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
@@ -115,14 +116,17 @@ namespace {
 		return (S_ISDIR(buf.st_mode));	
 	}
 }
-Request::Request(Connection *connection, Server *server, std::string start_line): m_connection(connection), m_server(server), m_transfer_type(GENERAL)
+Request::Request(Connection *connection, Server *server, std::string start_line)
+: m_connection(connection), m_server(server), m_transfer_type(GENERAL)
 {
 	if (gettimeofday(&m_start_at, NULL) == -1)
 		throw std::runtime_error("gettimeofday function failed in request generator");
 	
 	std::vector<std::string> parsed = ft::split(start_line, ' ');
-	if (parsed.size() != 3)
+	if (parsed.size() != 3) {
+		ft::log(ServerManager::access_fd, ServerManager::error_fd, "[StartLine]" + start_line);
 		throw (40010);
+	}
 	if (!parseMethod(parsed[0]))
 		throw (40011);
 	if (parsed[1].length() > m_server->get_m_request_uri_limit_size())
@@ -132,9 +136,14 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 	if (!(assignLocationMatchingUri(m_uri)))
 		throw (40401);
 	if (!ft::hasKey(m_location->get_m_allow_method(), get_m_method_to_string()))
+	{
+		std::set<std::string>::iterator it = m_location->get_m_allow_method().begin();
+		while (it != m_location->get_m_allow_method().end()) 
+			++it;
 		throw (405);	
+	}
 	std::string translated_path = parseUri();
-	if (!translated_path.empty())
+	if (translated_path.empty())
 		throw (40014);
 	if (isFile(m_path_translated))
 		m_uri_type = FILE;
@@ -144,7 +153,6 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		m_uri_type = FILE_TO_CREATE;
 	else
 		throw (40402);
-
 	if ((m_protocol = parsed[2]) != "HTTP/1.1")
 		throw (505);
 }
@@ -297,7 +305,7 @@ void Request::add_header(std::string header)
 	if (!ret.second)
 		throw (40013);
 
-	if (key == "Content-Type" && value.find("chunked") != std::string::npos)
+	if (key == "Transfer-Encoding" && value.find("chunked") != std::string::npos)
 		m_transfer_type = CHUNKED;
 	if (key == "Content-Length")
 	{

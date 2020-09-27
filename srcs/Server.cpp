@@ -317,8 +317,8 @@ Server::closeConnection(int client_fd)
 	// 	ft::log(ServerManager::access_fd, ServerManager::error_fd, \
 	// 	"[Failed][Function] lseek function failed in closeConnection method");
 
-	char buff[1024];
-	while (read(client_fd, buff, sizeof(buff) > 0))
+	char buff[GENERAL_TRANSFER_BUFFER_SIZE];
+	while (read(client_fd, buff, GENERAL_TRANSFER_BUFFER_SIZE) > 0)
 		;
 
 	if (close(client_fd) == -1)
@@ -408,7 +408,19 @@ void Server::revertStdinFd()
 }
 
 bool Server::hasRequest(int client_fd) {
-	return (m_manager->fdIsset(client_fd, ServerManager::READ_COPY_SET));
+	if (!m_manager->fdIsset(client_fd, ServerManager::READ_COPY_SET))
+		return (false);
+	char buffer[LIMIT_CLIENT_BODY_SIZE_MAX];
+	int idx = 3;
+	int len = -1;
+	if ((len = recv(client_fd, buffer, LIMIT_CLIENT_BODY_SIZE_MAX, MSG_PEEK)) == -1)
+		return (false);
+	while (idx < len) {
+		if (buffer[idx - 3] == '\r' && buffer[idx - 2] == '\n' && buffer[idx - 1] == '\r' && buffer[idx] == '\n')
+			return (true);
+		++idx;
+	}
+	return (false);
 }
 
 namespace {
@@ -447,14 +459,15 @@ namespace {
 		{
 			if (ft::getline(client_fd, buffer, sizeof(buffer)) < 0)
 				throw (40016);
-			if ((content_length = std::atoi(buffer)) <= 0)
+			origin_message.append(buffer + std::string("\n"));
+			if ((content_length = std::stoi(std::string(buffer), 0, 16)) <= 0)
 			{
 				if (content_length < 0)
 					throw (40005);
 				read_len = ft::getline(client_fd, buffer, sizeof(buffer));
 				if (read_len < 0 || read_len > 1 || (read_len == 1 && buffer[0] != '\r'))
 					throw (40004);
-				origin_message.append(std::string(buffer) + "\n");
+				origin_message.append(buffer + std::string("\n"));
 				break ;
 			}
 			while (content_length > CHUNKED_TRNASFER_BUFFER_SIZE)
@@ -470,13 +483,11 @@ namespace {
 			if (read_len != content_length)
 				throw (40017);
 			body.append(buffer, read_len);
+			origin_message.append(buffer, content_length);
 			read_len = ft::getline(client_fd, buffer, sizeof(buffer));
 			if (read_len < 0 || read_len > 1 || (read_len == 1 && buffer[0] != '\r'))
 				throw (40004);
-			if (read_len == 1)
-				origin_message.append(buffer + std::string("\r\n"), read_len + 2);
-			else
-				origin_message.append(buffer + std::string("\n"), read_len + 1);
+			origin_message.append(buffer + std::string("\n"));
 		}
 		return (body);
 	}
@@ -575,6 +586,7 @@ Server::recvRequest(int client_fd, Connection* connection)
 	if (request.get_m_method() == Request::TRACE)
 		request.add_origin(origin_message);
 	connection->set_m_last_request_at();
+	ft::log(ServerManager::access_fd, -1, "[Detected][Request][Message][↓]\n\n" + origin_message);
 	return (request);
 }
 
@@ -599,7 +611,6 @@ Server::runRecvAndSolve(std::map<int, Connection>::iterator it)
 	}
 	writeCreateNewRequestLog(request);
 	solveRequest(request);
-	m_manager->writeServerHealthLog(true);
 	return (true);
 }
 
@@ -661,7 +672,7 @@ Server::run()
 			break ;
 		++response_count;
 	}
-
+	
 	std::map<int, Connection>::iterator it = m_connections.begin();
 	while (it != m_connections.end())
 	{

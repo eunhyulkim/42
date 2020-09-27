@@ -317,8 +317,10 @@ namespace ft
 	{
 		int idx = 0;
 		int len = -1;
-		if ((len = recv(fd, line, buffer_size, MSG_PEEK | MSG_DONTWAIT)) == -1)
+		if ((len = recv(fd, line, buffer_size, MSG_PEEK)) == -1) {
+			perror("msg_peek error:");
 			return (-1);
+		}
 		while (idx < len && line[idx] != '\n')
 			++idx;
 		if (idx == len)

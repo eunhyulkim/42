@@ -190,7 +190,7 @@ make_status ()
 	status_map[40016] = "Bad Request: In chunked request, failed to read trnasfer-size";
 	status_map[40017] = "Bad Request: In general request, failed to read content by content-length";
 	status_map[40401] = "Not Found: No suitable location";
-	status_map[40402] = "Not Found: Requested uri is not in serever";
+	status_map[40402] = "Not Found: Requested uri is not in server";
 	status_map[41301] = "Payload Too Large: Failed to add content";
 	status_map[41302] = "Payload Too Large: Failed to add origin";
 	status_map[41303] = "Payload Too Large: Content length header value is over than header limit size.";
