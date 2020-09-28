@@ -274,6 +274,7 @@ Server::sendResponse(Response response)
 
 	send(fd, response.getString().c_str(), response.getString().size(), 0);
 	m_manager->fdClear(fd, ServerManager::WRITE_SET);
+	ft::log(ServerManager::access_fd, ServerManager::error_fd, "[Sended]Response");
 }
 
 bool
@@ -407,7 +408,7 @@ void Server::revertStdinFd()
 		"[Failed][function] dup2 function failed in revertStdinFd method.");
 }
 
-bool Server::hasRequest(int client_fd) {
+bool Server::hasRequest(int client_fd, Request::Method& method) {
 	if (!m_manager->fdIsset(client_fd, ServerManager::READ_COPY_SET))
 		return (false);
 	char buffer[LIMIT_CLIENT_BODY_SIZE_MAX];
@@ -415,6 +416,8 @@ bool Server::hasRequest(int client_fd) {
 	int len = -1;
 	if ((len = recv(client_fd, buffer, LIMIT_CLIENT_BODY_SIZE_MAX, MSG_PEEK)) == -1)
 		return (false);
+	if (len >= 4 && std::string(buffer, buffer + 4) == "HEAD")
+		method = Request::HEAD;
 	while (idx < len) {
 		if (buffer[idx - 3] == '\r' && buffer[idx - 2] == '\n' && buffer[idx - 1] == '\r' && buffer[idx] == '\n')
 			return (true);
@@ -612,7 +615,7 @@ Server::recvRequest(int client_fd, Connection* connection)
 }
 
 bool
-Server::runRecvAndSolve(std::map<int, Connection>::iterator it)
+Server::runRecvAndSolve(std::map<int, Connection>::iterator it, Request::Method method)
 {
 	Request request;
 	int fd = it->first;
@@ -620,15 +623,15 @@ Server::runRecvAndSolve(std::map<int, Connection>::iterator it)
 	try {
 		request = recvRequest(fd, &it->second);
 	} catch (int status_code) {
-		createResponse(&(it->second), status_code);
+		createResponse(&(it->second), status_code, headers_t(), "", method);
 		return (false);
 	} catch (std::exception& e) {
 		ft::log(ServerManager::access_fd, ServerManager::error_fd, std::string("[Failed][Request] Failed to create request because ") + e.what());
-		createResponse(&(it->second), 50001);
+		createResponse(&(it->second), 50001, headers_t(), "", method);
 		return (false);
 	}
 	if (m_responses.size() > STACKED_RESPONSE_COUNT) {
-		createResponse(&(it->second), 50301);
+		createResponse(&(it->second), 50301, headers_t(), "", method);
 		return (false);
 	}
 	writeCreateNewRequestLog(request);
@@ -700,6 +703,7 @@ Server::run()
 	{
 		std::map<int, Connection>::iterator it2 = it++;
 		int fd = it2->first;
+		Request::Method method = Request::DEFAULT;
 
 		if (m_fd == fd)
 			continue ;
@@ -707,10 +711,8 @@ Server::run()
 			closeConnection(fd);
 			continue ;
 		}
-		else if (hasRequest(fd))	{
-			if (!runRecvAndSolve(it2))
-				continue ;
-		}
+		else if (hasRequest(fd, method))
+			runRecvAndSolve(it2, method);
 	}
 
 
@@ -742,11 +744,11 @@ namespace {
 		return (key.empty() || value.empty() || !ft::hasKey(location->get_m_auth_basic_file(), key)
 		|| location->get_m_auth_basic_file().find(key)->second != value);
 	}
-	void makeResponse401(Server* server, const Request& request) {
+	void makeResponse401(Server* server, const Request& request, Request::Method method) {
 		std::string header = "WWW-Authenticate:Basic realm=\"";
 		header.append(request.get_m_location()->get_m_auth_basic_realm());
 		header.append("\", charset=\"UTF-8\"");
-		return (server->createResponse(request.get_m_connection(), 40101, headers_t(1, header)));
+		return (server->createResponse(request.get_m_connection(), 40101, headers_t(1, header), "", method));
 	}
 }
 
@@ -754,24 +756,24 @@ void
 Server::solveRequest(const Request& request)
 {
 	Location* location = request.get_m_location();
+	Request::Method method = request.get_m_method();
 	std::string methodString = request.get_m_method_to_string();
 
 	if (!ft::hasKey(location->get_m_allow_method(), methodString)) {
 		headers_t headers(1, "Allow:" + ft::containerToString(location->get_m_allow_method(), ", "));
-		return (createResponse(request.get_m_connection(), 40501, headers, ""));
+		return (createResponse(request.get_m_connection(), 40501, headers, "", method));
 	}
 	if (isAuthorizationRequired(location)) {
 		if (!hasCredential(request)) {
-			return (makeResponse401(this, request));
+			return (makeResponse401(this, request, method));
 		} else {
 			std::vector<std::string> credential = ft::split(request.get_m_headers().find("Authorization")->second, ' ');
 			if (!isValidCredentialForm(credential))
-				return (createResponse(request.get_m_connection(), 40022));
+				return (createResponse(request.get_m_connection(), 40022, headers_t(), "", method));
 			else if (!isValidCredentialContent(location, credential))
-				return (createResponse(request.get_m_connection(), 40301));
+				return (createResponse(request.get_m_connection(), 40301, headers_t(), "", method));
 		}
 	}
-	Request::Method method = request.get_m_method();
 	if (method == Request::TRACE)
 		executeTrace(request);
 	else if (request.get_m_uri_type() == Request::DIRECTORY)
@@ -867,8 +869,10 @@ namespace {
 void
 Server::executeAutoindex(const Request& request)
 {
-	if (request.get_m_method() != Request::GET)
-		return (createResponse(request.get_m_connection(), 40502, headers_t(1, "Allow:GET")));
+	Request::Method method = request.get_m_method();
+	
+	if (method != Request::GET)
+		return (createResponse(request.get_m_connection(), 40502, headers_t(1, "Allow:GET"), "", method));
 
 	char cwd[1024];
 	getcwd(cwd, sizeof(cwd));
@@ -879,14 +883,14 @@ Server::executeAutoindex(const Request& request)
 		makeAutoindexForm(html, request);
 		if (!makeAutoindexContent(html, cwd))
 			return (createResponse(request.get_m_connection(), 50002));
-		createResponse(request.get_m_connection(), 200, headers_t(), html.get_m_body());
+		return (createResponse(request.get_m_connection(), 200, headers_t(), html.get_m_body(), method));
 	}
 	else
 	{
 		int fd = getValidIndexFd(request);
 		if (fd == -1)
 			return (createResponse(request.get_m_connection(), 40403));
-		return (createResponse(request.get_m_connection(), 200, headers_t(), ft::getStringFromFd(fd)));
+		return (createResponse(request.get_m_connection(), 200, headers_t(), ft::getStringFromFd(fd), method));
 	}
 }
 
@@ -926,7 +930,7 @@ Server::executeHead(const Request& request)
 		return (createResponse(request.get_m_connection(), 41502));
 	headers.push_back(getLastModifiedHeader(path));
 	headers.push_back("content-length:" + std::to_string(body.size()));
-	return (createResponse(request.get_m_connection(), 200, headers));
+	return (createResponse(request.get_m_connection(), 200, headers, "", Request::HEAD));
 }
 
 void
@@ -960,16 +964,16 @@ Server::executePut(const Request& request)
 	stat(request.get_m_path_translated().c_str(), &buf);
 	headers_t headers(1, getMimeTypeHeader(request.get_m_path_translated()));
 	if (headers[0].empty())
-		return (createResponse(request.get_m_connection(), 41503));
+		return (createResponse(request.get_m_connection(), 41503, headers_t(), "", Request::HEAD));
 	if ((fd = open(request.get_m_path_translated().c_str(), O_RDWR | O_CREAT | O_TRUNC, 0777)) == -1)
-		return (createResponse(request.get_m_connection(), 50003));
+		return (createResponse(request.get_m_connection(), 50003, headers_t(), "", Request::HEAD));
 	if (write(fd, request.get_m_content().c_str(), request.get_m_content().size()) == -1)
-		return (createResponse(request.get_m_connection(), 50004));
+		return (createResponse(request.get_m_connection(), 50004, headers_t(), "", Request::HEAD));
 	close(fd);
 	if (S_ISREG(buf.st_mode))
-		return (createResponse(request.get_m_connection(), 204));
+		return (createResponse(request.get_m_connection(), 204, headers_t(), "", Request::HEAD));
 	headers.push_back("Location:" + m_host + "/" + request.get_m_uri());
-	return (createResponse(request.get_m_connection(), 201, headers, request.get_m_content()));
+	return (createResponse(request.get_m_connection(), 201, headers, request.get_m_content(), Request::HEAD));
 }
 
 void
@@ -992,7 +996,7 @@ namespace {
 		if (key.empty())
 			return (0);
 		item = ft::strsjoin(key, std::string("="), val);
-		std::cout << "item: " << item << std::endl;
+		// std::cout << "item: " << item << std::endl;
 		env[idx] = item;
 		return (1);
 	}
@@ -1062,33 +1066,23 @@ namespace {
 char**
 Server::createCGIEnv(const Request& request)
 {
-	std::cout << "dupBaseEnvWithExtraSpace try" << std::endl;
 	char **env = dupBaseEnvWithExtraSpace(m_config);
-	std::cout << "ft::lenDOubleStr try" << std::endl;
 	int idx = ft::lenDoubleStr(m_config->get_m_base_env());
-	std::cout << idx << std::endl;
 	setEnv(env, idx++, "AUTH_TYPE", "");
 	setEnv(env, idx++, "CONTENT_LENGTH", getCGIEnvValue(request, "CONTENT_LENGTH"));
 	setEnv(env, idx++, "CONTENT_TYPE", getCGIEnvValue(request, "CONTENT_TYPE"));
-	std::cout << "setEnv try" << std::endl;
 	setEnv(env, idx++, "GATEWAY_INTERFACE", getCGIEnvValue(request, "GATEWAY_INTERFACE", NULL, m_manager->get_m_config()));
-	std::cout << "setEnv try" << std::endl;
 	setEnv(env, idx++, "PATH_INFO", getCGIEnvValue(request, "PATH_INFO"));
-	std::cout << "setEnv try" << std::endl;
 	setEnv(env, idx++, "PATH_TRANSLATED", getCGIEnvValue(request, "PATH_TRANSLATED"));
 	setEnv(env, idx++, "QUERY_STRING", getCGIEnvValue(request, "QUERY_STRING"));
 	setEnv(env, idx++, "REMOTE_ADDR", getCGIEnvValue(request, "REMOTE_ADDR"));
 	setEnv(env, idx++, "REQUEST_METHOD", getCGIEnvValue(request, "REQUEST_METHOD"));
 	setEnv(env, idx++, "REQUEST_URI", getCGIEnvValue(request, "REQUEST_URI"));
-	std::cout << "setEnv try" << std::endl;
 	setEnv(env, idx++, "SCRIPT_NAME", getCGIEnvValue(request, "SCRIPT_NAME"));
 	setEnv(env, idx++, "SERVER_NAME", getCGIEnvValue(request, "SERVER_NAME", this));
 	setEnv(env, idx++, "SERVER_PORT", getCGIEnvValue(request, "SERVER_PORT", this));
-	std::cout << "setEnv try" << std::endl;
 	setEnv(env, idx++, "SERVER_PROTOCOL", getCGIEnvValue(request, "SERVER_PROTOCOL", NULL, m_manager->get_m_config()));
-	std::cout << "setEnv try" << std::endl;
 	setEnv(env, idx++, "SERVER_SOFTWARE", getCGIEnvValue(request, "SERVER_SOFTWARE", NULL, m_manager->get_m_config()));
-	std::cout << "setEnv try" << std::endl;
 	return (env);
 }
 
@@ -1099,11 +1093,10 @@ Server::executeCGI(const Request& request)
 	int parent_write_fd[2];
 	int child_write_fd[2];
 	char **env;
+	Request::Method method = request.get_m_method();
 
-	std::cout << "CREATE CGI ENV TRY" << std::endl;
 	if ((env = createCGIEnv(request)) == NULL)
-		return (createResponse(request.get_m_connection(), 50005));
-	std::cout << "CREATE CGI ENV SUCCESS" << std::endl;
+		return (createResponse(request.get_m_connection(), 50005, headers_t(), "", method));
 	pipe(parent_write_fd);
 	pipe(child_write_fd);
 	pid = fork();
@@ -1118,7 +1111,6 @@ Server::executeCGI(const Request& request)
 		char *arg[2] = { const_cast<char *>(request.get_m_path_translated().c_str()), NULL };
 		if (execve("./php-cgi", arg, env) == -1)
 			exit(EXIT_FAILURE);
-		std::cout << "failure" << std::endl;
 	} else if (pid > 0) {
 		close(child_write_fd[1]);
 		close(parent_write_fd[0]);
@@ -1128,7 +1120,7 @@ Server::executeCGI(const Request& request)
 	} else {
 		closeFd(parent_write_fd);
 		closeFd(child_write_fd);
-		return (createResponse(request.get_m_connection(), 50006));
+		return (createResponse(request.get_m_connection(), 50006, headers_t(), "", method));
 	}
 
 	int status;
@@ -1145,7 +1137,7 @@ Server::executeCGI(const Request& request)
 			body.append(buff, readed);
 			if (body.size() > m_limit_client_body_size) {
 				close(child_write_fd[0]);
-				return (createResponse(request.get_m_connection(), 41306));
+				return (createResponse(request.get_m_connection(), 41306, headers_t(), "", method));
 			}
 		}
 		if (WIFEXITED(status)) {
@@ -1154,7 +1146,7 @@ Server::executeCGI(const Request& request)
 		}
 		if (request.isOverTime()) {
 			close(child_write_fd[0]);
-			return (createResponse(request.get_m_connection(), 50401));
+			return (createResponse(request.get_m_connection(), 50401, headers_t(), "", method));
 		}
 		usleep(100000);
 	}
@@ -1179,7 +1171,7 @@ namespace {
 }
 
 void
-Server::createResponse(Connection* connection, int status, headers_t headers, std::string body)
+Server::createResponse(Connection* connection, int status, headers_t headers, std::string body, Request::Method method)
 {
 	if (status >= 40000) {
 		reportCreateNewRequestLog(connection, status);
@@ -1213,7 +1205,8 @@ Server::createResponse(Connection* connection, int status, headers_t headers, st
 		headers.push_back("Location:/");
 	if (status == 504)
 		headers.push_back("Retry-After:3600");
-
+	if (method == Request::HEAD)
+		body = "";
 	Response response(connection, status, body);
 	headers_t::iterator it = headers.begin();
 	for (; it != headers.end(); ++it) {

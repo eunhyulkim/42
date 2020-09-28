@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:22 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/27 19:57:44 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/28 13:14:57 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 # include "webserv.hpp"
 # include "Connection.hpp"
-# include "Server.hpp"
 # include "Location.hpp"
 
 class Server;
@@ -23,7 +22,7 @@ class Server;
 class Request
 {
 public:
-	enum Method { GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE };
+	enum Method { DEFAULT, GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE };
 	enum URIType { DIRECTORY, FILE, FILE_TO_CREATE, CGI_PROGRAM };
 	enum TransferType { GENERAL, CHUNKED };
 private:

@@ -5,10 +5,10 @@
 # include "Config.hpp"
 # include "Connection.hpp"
 # include "Location.hpp"
-# include "Response.hpp"
 # include "Request.hpp"
+# include "Response.hpp"
 
-class Request;
+// class Request;
 class ServerManager;
 
 class Server
@@ -48,13 +48,13 @@ class Server
 		/* read operation */
 		void redirectFdToStdin(int fd);
 		void revertStdinFd();
-		bool hasRequest(int client_fd);
+		bool hasRequest(int client_fd, Request::Method& method);
 		std::string getStartLine(int client_fd);
 		int getHeaderLine(int client_fd, std::string& line);
 		void headerParsing(Request &request, std::string& origin_message, int client_fd);
 		std::string readBodyMessage(Request &request, std::string& origin_message, int client_fd);
 		Request recvRequest(int client_fd, Connection* connection);
-		bool runRecvAndSolve(std::map<int, Connection>::iterator it);
+		bool runRecvAndSolve(std::map<int, Connection>::iterator it, Request::Method method);
 
 		/* cgi */
 		char** createCGIEnv(const Request& request);
@@ -102,7 +102,7 @@ class Server
 		void executeTrace(const Request& request);
 		void executeCGI(const Request& request);
 
-		void createResponse(Connection* connection, int status, headers_t headers = headers_t(), std::string body = "");
+		void createResponse(Connection* connection, int status, headers_t headers = headers_t(), std::string body = "", Request::Method method = Request::DEFAULT);
 
 		/* log function */
 		void writeDetectNewConnectionLog();
