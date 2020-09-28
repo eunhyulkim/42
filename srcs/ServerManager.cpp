@@ -486,7 +486,6 @@ ServerManager::runServer()
 	while (g_live)
 	{
 		int cnt;
-		writeServerHealthLog();
 		fdCopy(ALL_SET);
 
 		if ((cnt = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, \
@@ -497,6 +496,7 @@ ServerManager::runServer()
 		}
 		else if (cnt == 0)
 			continue ;
+		writeServerHealthLog();
 		for (std::vector<Server>::iterator it = m_servers.begin() ; it != m_servers.end() ; ++it)
 		{
 			it->run();

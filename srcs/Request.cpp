@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/27 21:20:18 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/28 03:44:54 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,36 +125,29 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 	std::vector<std::string> parsed = ft::split(start_line, ' ');
 	if (parsed.size() != 3) {
 		ft::log(ServerManager::access_fd, ServerManager::error_fd, "[StartLine]" + start_line);
-		throw (40010);
+		throw (40000);
 	}
 	if (!parseMethod(parsed[0]))
-		throw (40011);
+		throw (40001);
 	if (parsed[1].length() > m_server->get_m_request_uri_limit_size())
 		throw (41401);
 
 	m_uri = parsed[1];
 	if (!(assignLocationMatchingUri(m_uri)))
 		throw (40401);
-	if (!ft::hasKey(m_location->get_m_allow_method(), get_m_method_to_string()))
-	{
-		std::set<std::string>::iterator it = m_location->get_m_allow_method().begin();
-		while (it != m_location->get_m_allow_method().end()) 
-			++it;
-		throw (405);	
-	}
 	std::string translated_path = parseUri();
 	if (translated_path.empty())
-		throw (40014);
-	if (isFile(m_path_translated))
+		throw (40002);
+	if (isFile(m_path_translated) && m_uri_type != CGI_PROGRAM)
 		m_uri_type = FILE;
 	else if (isDirectory(m_path_translated))
 		m_uri_type = DIRECTORY;
 	else if (m_method == PUT || m_method == TRACE)
 		m_uri_type = FILE_TO_CREATE;
-	else
+	else if (m_uri_type != CGI_PROGRAM)
 		throw (40402);
 	if ((m_protocol = parsed[2]) != "HTTP/1.1")
-		throw (505);
+		throw (50501);
 }
 
 Request::Request(const Request &x)
@@ -303,7 +296,7 @@ void Request::add_header(std::string header)
 
 	std::pair<std::map<std::string, std::string>::iterator, bool> ret = m_headers.insert(std::make_pair(key, value));
 	if (!ret.second)
-		throw (40013);
+		throw (40003);
 
 	if (key == "Transfer-Encoding" && value.find("chunked") != std::string::npos)
 		m_transfer_type = CHUNKED;
@@ -313,7 +306,7 @@ void Request::add_header(std::string header)
 		if (content_length > static_cast<int>(m_server->get_m_limit_client_body_size()))
 			throw (41303);
 		if (content_length < 0)
-			throw (40001);
+			throw (40004);
 	}
 
 	return ;
@@ -330,7 +323,7 @@ void Request::add_header(std::string header)
 bool Request::isValidHeader(std::string header)
 {
 	if (header.size() > m_server->get_m_request_header_limit_size())
-		throw 40012;
+		throw (40005);
 	if (header.find(':') == std::string::npos)
 		return (false);
 	return (true);

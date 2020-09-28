@@ -434,8 +434,8 @@ Server::getStartLine(int client_fd)
 		if (ret == 0)
 			return (std::string(""));
 		if (ret < -1)
-			throw (41402);
-		throw (50007);
+			throw (40006);
+		throw (40007);
 	}
 	return (std::string(buff, buff + ret));
 }
@@ -443,7 +443,7 @@ Server::getStartLine(int client_fd)
 int
 Server::getHeaderLine(int client_fd, std::string& line)
 {
-	char buff[REQUEST_URI_LIMIT_SIZE_MAX];
+	char buff[REQUEST_HEADER_LIMIT_SIZE_MAX];
 	int ret = -1;
 	
 	ft::bzero(buff, sizeof(buff));
@@ -453,8 +453,8 @@ Server::getHeaderLine(int client_fd, std::string& line)
 			return (0);
 		}
 		if (ret < -1)
-			throw (41401);
-		throw (50007);
+			throw (40008);
+		throw (40009);
 	}
 	line = std::string(buff, buff + ret);
 	return (ret);
@@ -472,11 +472,11 @@ Server::headerParsing(Request &request, std::string &origin_message, int client_
 			break ;
 		line = ft::rtrim(line, "\r");
 		if (!request.isValidHeader(line))
-			throw (40000);
+			throw (40010);
 		request.add_header(line);
 	}
 	if (!ft::hasKey(request.get_m_headers(), "Host"))
-		throw (40002);
+		throw (40011);
 	return ;
 }
 
@@ -495,31 +495,44 @@ namespace {
 		while (content_length > GENERAL_TRANSFER_BUFFER_SIZE)
 		{
 			if ((read_len = read(client_fd, buffer, sizeof(buffer) - 1)) < 0)
-				throw (40017);
+				throw (40012);
 			body.append(buffer, read_len);
 			content_length -= read_len;
 		}
 		if ((read_len = read(client_fd, buffer, content_length)) < 0)
-			throw (40017);
+			throw (40013);
 		if (read_len != content_length)
-			throw (40017);
+			throw (40014);
 		body.append(buffer, read_len);
 		return (body);
 	}
 	int getChunkedSize(int client_fd, char *buffer, int buffer_size)
 	{
-		if (ft::getline(client_fd, buffer, sizeof(buffer)) < 0)
-			throw (40016);
-		int content_length = std::stoi(std::string(buffer), 0, 16);
+		int content_length;
+		if (ft::getline(client_fd, buffer, buffer_size) < 0)
+			throw (40015);
+		try {
+			content_length = std::stoi(std::string(buffer), 0, 16);
+		} catch (std::exception& e) {
+			throw (40017);
+		}
 		if (content_length < 0)
-			throw (40005);
+			throw (40016);
+		if (content_length == 0)
+		{
+			if (buffer[0] != '0')
+				throw (40017);
+			else if (!(buffer[1] == '\0' || (buffer[1] == '\r' && buffer[2] == '\0')))
+				throw (40017);
+		}
 		return (content_length);
 	}
 	bool isValidateLineEnd(int client_fd, char* buffer, int buffer_size)
 	{
 		int read_len = ft::getline(client_fd, buffer, buffer_size);
+
 		if (read_len < 0 || read_len > 1 || (read_len == 1 && buffer[0] != '\r'))
-			throw (40004);
+			throw (40018);
 		return (true);
 	}
 	std::string readBodyMessageChunked(int client_fd, std::string& origin_message)
@@ -541,15 +554,15 @@ namespace {
 			while (content_length > CHUNKED_TRNASFER_BUFFER_SIZE)
 			{
 				if ((read_len = read(client_fd, buffer, sizeof(buffer) - 1)) < 0)
-					throw (40017);
+					throw (40019);
 				body.append(buffer, read_len);
 				origin_message.append(buffer, read_len);
 				content_length -= read_len;
 			}
 			if ((read_len = read(client_fd, buffer, content_length)) < 0)
-				throw (40017);
+				throw (40020);
 			if (read_len != content_length)
-				throw (40017);
+				throw (40021);
 			body.append(buffer, read_len);
 			origin_message.append(buffer, content_length);
 			if (isValidateLineEnd(client_fd, buffer, sizeof(buffer)))
@@ -574,7 +587,7 @@ Server::readBodyMessage(Request &request, std::string &origin_message, int clien
 		origin_message.append(message_body);
 	}
 	else
-		throw (411);
+		throw (41101);
 	return (message_body);
 }
 
@@ -610,11 +623,12 @@ Server::runRecvAndSolve(std::map<int, Connection>::iterator it)
 		createResponse(&(it->second), status_code);
 		return (false);
 	} catch (std::exception& e) {
+		ft::log(ServerManager::access_fd, ServerManager::error_fd, std::string("[Failed][Request] Failed to create request because ") + e.what());
 		createResponse(&(it->second), 50001);
 		return (false);
 	}
 	if (m_responses.size() > STACKED_RESPONSE_COUNT) {
-		createResponse(&(it->second), 503);
+		createResponse(&(it->second), 50301);
 		return (false);
 	}
 	writeCreateNewRequestLog(request);
@@ -732,7 +746,7 @@ namespace {
 		std::string header = "WWW-Authenticate:Basic realm=\"";
 		header.append(request.get_m_location()->get_m_auth_basic_realm());
 		header.append("\", charset=\"UTF-8\"");
-		return (server->createResponse(request.get_m_connection(), 401, headers_t(1, header)));
+		return (server->createResponse(request.get_m_connection(), 40101, headers_t(1, header)));
 	}
 }
 
@@ -742,12 +756,9 @@ Server::solveRequest(const Request& request)
 	Location* location = request.get_m_location();
 	std::string methodString = request.get_m_method_to_string();
 
-	std::set<std::string> test_set;
-	if (ft::hasKey(test_set, methodString))
-		;
 	if (!ft::hasKey(location->get_m_allow_method(), methodString)) {
 		headers_t headers(1, "Allow:" + ft::containerToString(location->get_m_allow_method(), ", "));
-		return (createResponse(request.get_m_connection(), 405, headers, ""));
+		return (createResponse(request.get_m_connection(), 40501, headers, ""));
 	}
 	if (isAuthorizationRequired(location)) {
 		if (!hasCredential(request)) {
@@ -755,9 +766,9 @@ Server::solveRequest(const Request& request)
 		} else {
 			std::vector<std::string> credential = ft::split(request.get_m_headers().find("Authorization")->second, ' ');
 			if (!isValidCredentialForm(credential))
-				return (createResponse(request.get_m_connection(), 400));
+				return (createResponse(request.get_m_connection(), 40022));
 			else if (!isValidCredentialContent(location, credential))
-				return (createResponse(request.get_m_connection(), 403));
+				return (createResponse(request.get_m_connection(), 40301));
 		}
 	}
 	Request::Method method = request.get_m_method();
@@ -857,7 +868,7 @@ void
 Server::executeAutoindex(const Request& request)
 {
 	if (request.get_m_method() != Request::GET)
-		return (createResponse(request.get_m_connection(), 405, headers_t(1, "Allow:GET")));
+		return (createResponse(request.get_m_connection(), 40502, headers_t(1, "Allow:GET")));
 
 	char cwd[1024];
 	getcwd(cwd, sizeof(cwd));
@@ -874,7 +885,7 @@ Server::executeAutoindex(const Request& request)
 	{
 		int fd = getValidIndexFd(request);
 		if (fd == -1)
-			return (createResponse(request.get_m_connection(), 404));
+			return (createResponse(request.get_m_connection(), 40403));
 		return (createResponse(request.get_m_connection(), 200, headers_t(), ft::getStringFromFd(fd)));
 	}
 }
@@ -888,12 +899,12 @@ Server::executeGet(const Request& request)
 	try {
 		body = ft::getStringFromFile(path, m_limit_client_body_size);
 	} catch (std::overflow_error& e) {
-		return (createResponse(request.get_m_connection(), 413));
+		return (createResponse(request.get_m_connection(), 41304));
 	}
 
 	headers_t headers(1, getMimeTypeHeader(path));
 	if (headers[0].empty())
-		return (createResponse(request.get_m_connection(), 415));
+		return (createResponse(request.get_m_connection(), 41501));
 	headers.push_back(getLastModifiedHeader(path));
 	return (createResponse(request.get_m_connection(), 200, headers, body));
 }
@@ -907,12 +918,12 @@ Server::executeHead(const Request& request)
 	try {
 		body = ft::getStringFromFile(path, m_limit_client_body_size);
 	} catch (std::overflow_error& e) {
-		return (createResponse(request.get_m_connection(), 413));
+		return (createResponse(request.get_m_connection(), 41305));
 	}
 
 	headers_t headers(1, getMimeTypeHeader(path));
 	if (headers[0].empty())
-		return (createResponse(request.get_m_connection(), 415));
+		return (createResponse(request.get_m_connection(), 41502));
 	headers.push_back(getLastModifiedHeader(path));
 	headers.push_back("content-length:" + std::to_string(body.size()));
 	return (createResponse(request.get_m_connection(), 200, headers));
@@ -929,7 +940,7 @@ Server::executePost(const Request& request)
 	if (request.get_m_headers().find("Content-Length")->second == "0")
 		return (executeGet(request));
 	else
-		return (createResponse(request.get_m_connection(), 400));
+		return (createResponse(request.get_m_connection(), 40023));
 }
 
 void
@@ -949,11 +960,11 @@ Server::executePut(const Request& request)
 	stat(request.get_m_path_translated().c_str(), &buf);
 	headers_t headers(1, getMimeTypeHeader(request.get_m_path_translated()));
 	if (headers[0].empty())
-		return (createResponse(request.get_m_connection(), 415));
-	if ((fd = open(request.get_m_path_translated().c_str(), O_RDWR | O_CREAT)) == -1)
-		createResponse(request.get_m_connection(), 50003);
+		return (createResponse(request.get_m_connection(), 41503));
+	if ((fd = open(request.get_m_path_translated().c_str(), O_RDWR | O_CREAT | O_TRUNC, 0777)) == -1)
+		return (createResponse(request.get_m_connection(), 50003));
 	if (write(fd, request.get_m_content().c_str(), request.get_m_content().size()) == -1)
-		createResponse(request.get_m_connection(), 50004);
+		return (createResponse(request.get_m_connection(), 50004));
 	close(fd);
 	if (S_ISREG(buf.st_mode))
 		return (createResponse(request.get_m_connection(), 204));
@@ -965,6 +976,8 @@ void
 Server::executeDelete(const Request& request) {
 	if (unlink(request.get_m_path_translated().c_str()) == -1)
 		createResponse(request.get_m_connection(), 204);
+	else
+		return (createResponse(request.get_m_connection(), 204));
 }
 
 namespace {
@@ -979,6 +992,7 @@ namespace {
 		if (key.empty())
 			return (0);
 		item = ft::strsjoin(key, std::string("="), val);
+		std::cout << "item: " << item << std::endl;
 		env[idx] = item;
 		return (1);
 	}
@@ -992,7 +1006,7 @@ namespace {
 		if ((cgi_env = reinterpret_cast<char **>(malloc(sizeof(char *) * (len + CGI_META_VARIABLE_COUNT + 1)))) == 0)
 			return (NULL);
 		while (base_env[idx] != NULL) {
-			cgi_env[idx] = base_env[idx];
+			cgi_env[idx] = ft::strdup(base_env[idx]);
 			++idx;
 		}
 		while (idx < len + CGI_META_VARIABLE_COUNT + 1)
@@ -1001,7 +1015,7 @@ namespace {
 	}
 	std::string getCGIEnvValue(const Request& request, std::string token, Server *server = NULL, Config config = Config())
 	{
-		if (token == "CONTENT_LENGH") {
+		if (token == "CONTENT_LENGTH") {
 			if (request.get_m_method() == Request::POST)
 				return (std::to_string(request.get_m_content().size()));
 			return (std::string("-1"));
@@ -1039,6 +1053,8 @@ namespace {
 			return (config.get_m_cgi_version());
 		else if (token == "SERVER_SOFTWARE")
 			return (config.get_m_software_name() + config.get_m_software_version());
+		else if (token == "GATEWAY_INTERFACE")
+			return (config.get_m_cgi_version());
 		return (NULL);
 	}
 }
@@ -1046,23 +1062,33 @@ namespace {
 char**
 Server::createCGIEnv(const Request& request)
 {
+	std::cout << "dupBaseEnvWithExtraSpace try" << std::endl;
 	char **env = dupBaseEnvWithExtraSpace(m_config);
+	std::cout << "ft::lenDOubleStr try" << std::endl;
 	int idx = ft::lenDoubleStr(m_config->get_m_base_env());
+	std::cout << idx << std::endl;
 	setEnv(env, idx++, "AUTH_TYPE", "");
 	setEnv(env, idx++, "CONTENT_LENGTH", getCGIEnvValue(request, "CONTENT_LENGTH"));
 	setEnv(env, idx++, "CONTENT_TYPE", getCGIEnvValue(request, "CONTENT_TYPE"));
+	std::cout << "setEnv try" << std::endl;
 	setEnv(env, idx++, "GATEWAY_INTERFACE", getCGIEnvValue(request, "GATEWAY_INTERFACE", NULL, m_manager->get_m_config()));
+	std::cout << "setEnv try" << std::endl;
 	setEnv(env, idx++, "PATH_INFO", getCGIEnvValue(request, "PATH_INFO"));
+	std::cout << "setEnv try" << std::endl;
 	setEnv(env, idx++, "PATH_TRANSLATED", getCGIEnvValue(request, "PATH_TRANSLATED"));
 	setEnv(env, idx++, "QUERY_STRING", getCGIEnvValue(request, "QUERY_STRING"));
 	setEnv(env, idx++, "REMOTE_ADDR", getCGIEnvValue(request, "REMOTE_ADDR"));
 	setEnv(env, idx++, "REQUEST_METHOD", getCGIEnvValue(request, "REQUEST_METHOD"));
 	setEnv(env, idx++, "REQUEST_URI", getCGIEnvValue(request, "REQUEST_URI"));
+	std::cout << "setEnv try" << std::endl;
 	setEnv(env, idx++, "SCRIPT_NAME", getCGIEnvValue(request, "SCRIPT_NAME"));
 	setEnv(env, idx++, "SERVER_NAME", getCGIEnvValue(request, "SERVER_NAME", this));
 	setEnv(env, idx++, "SERVER_PORT", getCGIEnvValue(request, "SERVER_PORT", this));
+	std::cout << "setEnv try" << std::endl;
 	setEnv(env, idx++, "SERVER_PROTOCOL", getCGIEnvValue(request, "SERVER_PROTOCOL", NULL, m_manager->get_m_config()));
+	std::cout << "setEnv try" << std::endl;
 	setEnv(env, idx++, "SERVER_SOFTWARE", getCGIEnvValue(request, "SERVER_SOFTWARE", NULL, m_manager->get_m_config()));
+	std::cout << "setEnv try" << std::endl;
 	return (env);
 }
 
@@ -1074,8 +1100,10 @@ Server::executeCGI(const Request& request)
 	int child_write_fd[2];
 	char **env;
 
+	std::cout << "CREATE CGI ENV TRY" << std::endl;
 	if ((env = createCGIEnv(request)) == NULL)
 		return (createResponse(request.get_m_connection(), 50005));
+	std::cout << "CREATE CGI ENV SUCCESS" << std::endl;
 	pipe(parent_write_fd);
 	pipe(child_write_fd);
 	pid = fork();
@@ -1090,6 +1118,7 @@ Server::executeCGI(const Request& request)
 		char *arg[2] = { const_cast<char *>(request.get_m_path_translated().c_str()), NULL };
 		if (execve("./php-cgi", arg, env) == -1)
 			exit(EXIT_FAILURE);
+		std::cout << "failure" << std::endl;
 	} else if (pid > 0) {
 		close(child_write_fd[1]);
 		close(parent_write_fd[0]);
@@ -1116,7 +1145,7 @@ Server::executeCGI(const Request& request)
 			body.append(buff, readed);
 			if (body.size() > m_limit_client_body_size) {
 				close(child_write_fd[0]);
-				return (createResponse(request.get_m_connection(), 413));
+				return (createResponse(request.get_m_connection(), 41306));
 			}
 		}
 		if (WIFEXITED(status)) {
@@ -1125,7 +1154,7 @@ Server::executeCGI(const Request& request)
 		}
 		if (request.isOverTime()) {
 			close(child_write_fd[0]);
-			return (createResponse(request.get_m_connection(), 504));
+			return (createResponse(request.get_m_connection(), 50401));
 		}
 		usleep(100000);
 	}
@@ -1269,6 +1298,7 @@ Server::writeCreateNewResponseLog(const Response& response)
 	+ std::to_string(response.get_m_headers().size()) + "][body:" + std::to_string(response.get_m_content().size()) + "]";
 	text.append(" New response created.\n");
 	ft::log(ServerManager::access_fd, -1, text);
+	ft::log(ServerManager::access_fd, -1, "[Detected][Response][Message][↓]" + response.getString() + "\n\n");
 	return ;
 }
 

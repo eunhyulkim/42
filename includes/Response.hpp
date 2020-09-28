@@ -38,7 +38,7 @@ class Response
 		void addHeader(std::string header_key, std::string header_value);
 
 		/* member function */	
-		std::string getString();
+		std::string getString() const;
 };
 
 /* global operator overload */

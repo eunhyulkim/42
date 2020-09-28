@@ -110,10 +110,10 @@ void Response::addHeader(std::string header_key, std::string header_value)
 		this->m_headers[header_key] = header_value;
 }
 
-std::string Response::getString()
+std::string Response::getString() const
 {
 	std::string message;
-	std::map<std::string, std::string>::iterator it = this->m_headers.begin();
+	std::map<std::string, std::string>::const_iterator it = this->m_headers.begin();
 
 	message = "HTTP/1.1 " + std::to_string(this->m_status_code) + " " + this->m_status_description + "\r\n";
 	for (; it != this->m_headers.end(); ++it)
@@ -171,38 +171,59 @@ make_status ()
 	status_map[504] = "Gateway Timeout";
 	status_map[505] = "HTTP Version Not Supported";
 
-	status_map[40000] = "Bad Request: Unvalid Header(maybe not found ':')";
-	status_map[40001] = "Bad Request: Content-Length header value is less than 0";
-	status_map[40002] = "Bad Request: Not Found host header";
-	status_map[40003] = "Bad Request: Found Content-Length header in chunked transfer-encoding";
-	status_map[40004] = "Bad Request: In chunked request, last read operation is failed";
-	status_map[40005] = "Bad Request: In chunked request, failed to convert trnasfer-size";
-	status_map[40006] = "Bad Request: In chunked request, readed-size and treansfer-size is not equal";
-	status_map[40007] = "Bad Request: In chunked request, not found '\\r\\n' at end of line.";
-	status_map[40008] = "Bad Request: In chunked request, content-length less than read count.";
-	status_map[40009] = "Bad Request: found body in method other than GET, POST, TRACE.";
-	status_map[40010] = "Bad Request: start line element count is not 3";
-	status_map[40011] = "Bad Request: Method is not normal.";
-	status_map[40012] = "Bad Request: header size is greater than request limit size";
-	status_map[40013] = "Bad Request: failed to add request header to map(maybe: duplicate header),";
-	status_map[40014] = "Bad Request: URI parse failed(translated-path is empty).";
-	status_map[40015] = "Bad Request: In chunked request, content-length greater than read count.";
-	status_map[40016] = "Bad Request: In chunked request, failed to read trnasfer-size";
-	status_map[40017] = "Bad Request: In general request, failed to read content by content-length";
+	status_map[40000] = "Bad Request: start line element count is not 3";
+	status_map[40001] = "Bad Request: Method is not normal";
+	status_map[40002] = "Bad Request: URI parse failed(translated-path is empty)";
+	status_map[40003] = "Bad Request: failed to add request header to map(maybe: duplicate header)";
+	status_map[40004] = "Bad Request: Content-Length header value is less than 0";
+	status_map[40005] = "Bad Request: header size is greater than request header limit size";
+	status_map[40006] = "Bad Request: start line size is greater than request uri limit size";
+	status_map[40007] = "Bad Request: Failed to get start line(recv function failure)";
+	status_map[40008] = "Bad Request: header line size is greater than request header limit size";
+	status_map[40009] = "Bad Request: Failed to get header line(recv function failure)";
+	status_map[40010] = "Bad Request: Unvalid Header(maybe not found ':')";
+	status_map[40011] = "Bad Request: Not Found host header";
+	status_map[40012] = "Bad Request: In general request, failed to read content by large content-length";
+	status_map[40013] = "Bad Request: In general request, failed to read content by normal content-length";
+	status_map[40014] = "Bad Request: In general request, readed-size and content-length value is not equal";
+	status_map[40015] = "Bad Request: In chunked request, failed to read trnasfer-size";
+	status_map[40016] = "Bad Request: In chunked request, failed to convert trnasfer-size(maybe negative number)";
+	status_map[40017] = "Bad Request: In chunked request, failed to convert trnasfer-size(maybe not number)";
+	status_map[40018] = "Bad Request: In chunked request, for of end-line is not '\\r\\n'";
+	status_map[40019] = "Bad Request: In chunked request, failed to read content by large content-length";
+	status_map[40020] = "Bad Request: In chunked request, failed to read content by normal content-length";
+	status_map[40021] = "Bad Request: In chunked request, readed-size and content-length value is not equal";
+	status_map[40022] = "Bad Request: Credential Form unvalid";
+	status_map[40023] = "Bad Request: Not CGI-prgoram, POST method, Content-Length is not 0";
+	
+	status_map[40101] = "Unauthorized";
+	status_map[40301] = "Forbidden: Credential Content unvalid";	
 	status_map[40401] = "Not Found: No suitable location";
 	status_map[40402] = "Not Found: Requested uri is not in server";
-	status_map[41301] = "Payload Too Large: Failed to add content";
-	status_map[41302] = "Payload Too Large: Failed to add origin";
-	status_map[41303] = "Payload Too Large: Content length header value is over than header limit size.";
-	status_map[41304] = "Payload Too Large: transfer-size(in chunked request) is over than header limit size.";
+	status_map[40403] = "Not Found: Autoindex off, index file is not found";
+	status_map[40501] = "Method Not Allowed";
+	status_map[40502] = "Bad Request: Access Directory other than GET method";
+	status_map[41101] = "Length Required";
+	status_map[41301] = "Payload Too Large: Failed to add content in request";
+	status_map[41302] = "Payload Too Large: Failed to add origin in request";
+	status_map[41303] = "Payload Too Large: Content length header value is over than body limit size";
+	status_map[41304] = "Payload Too Large: File size is too large in GET method";
+	status_map[41305] = "Payload Too Large: File size is too large in HEAD method";
+	status_map[41306] = "Payload Too Large: CGI output size is too large";
 	status_map[41401] = "Bad Request: uri size is greater than request uri limit size";
-	status_map[41402] = "Bad Request: start line size is greater than request uri limit size";
+	status_map[41501] = "Unsupported Media Type: in GET method";
+	status_map[41502] = "Unsupported Media Type: in HEAD method";
+	status_map[41503] = "Unsupported Media Type: in PUT method";
+
 	status_map[50001] = "Internal Server Error: recvRequest function throw std::exception";
 	status_map[50002] = "Internal Server Error: MakeAutoindex function failed";
-	status_map[50003] = "Internal Server Error: in executePUT method, failed to create or open file";
-	status_map[50004] = "Internal Server Error: in executePUT method, failed to write content";
-	status_map[50005] = "Internal Server Error: in executeCGI method, createCGIEnv function return NULL";
+	status_map[50003] = "Internal Server Error: in PUT method, failed to create or open file";
+	status_map[50004] = "Internal Server Error: in PUT method, failed to write content";
+	status_map[50005] = "Internal Server Error: createCGIEnv function return NULL";
 	status_map[50006] = "Internal Server Error: Failed to fork process for executeCGI";
-	status_map[50007] = "Internal Server Error: failed to read start line in recvRequest.";
+	status_map[50301] = "Internal Server Error: Too many Stacked Response exists";
+	status_map[50401] = "Gateway Timeout";
+	status_map[50501] = "HTTP Version Not Supported";
+
 	return (status_map);
 }
