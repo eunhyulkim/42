@@ -11,6 +11,7 @@ class ServerManager
 		static int error_fd;
 		static int access_fd;
 		static int stdin_fd;
+		static int stdout_fd;
 	private:
 		std::vector<Server> m_servers;
 		std::set<int> m_server_fdset;

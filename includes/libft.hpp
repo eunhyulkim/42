@@ -13,6 +13,8 @@
 # include <sys/time.h>
 # include <sys/types.h>
 # include <sys/socket.h>
+# include <sys/stat.h>
+# include <dirent.h>
 
 namespace ft
 {
@@ -43,6 +45,8 @@ namespace ft
     std::map<std::string, std::string> stringVectorToMap(std::vector<std::string> stringVector, char sep = ':');
     std::string containerToString(std::vector<unsigned char> container, std::string sep = "");
     int getline(int fd, char *line, int max_buffer_size);
+    bool isFile(std::string path);
+    bool isDirectory(std::string path);
     
     /* TCP function */
     void convertTimespecToTm(time_t s, struct tm* t);
@@ -63,11 +67,12 @@ namespace ft
     /* Template function */
     template <typename T, typename V>
     bool hasKey(T container, V value) { return (container.find(value) != container.end()); }
+    
     template <typename T>
     std::string containerToString(T container, std::string sep = " ")
     {
         std::string ret;
-		for (typename T::iterator it = container.begin(); it != container.end(); ++it)
+		for (typename T::iterator it = container.begin(); it != container.end(); it++)
 		{
 			ret.append(*it);
 			if (++it != container.end())

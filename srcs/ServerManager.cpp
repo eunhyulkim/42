@@ -8,6 +8,7 @@
 int ServerManager::error_fd = -1;
 int ServerManager::access_fd = -1;
 int ServerManager::stdin_fd = dup(0);
+int ServerManager::stdout_fd = dup(1);
 
 /* ************************************************************************** */
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
@@ -142,7 +143,7 @@ namespace {
 	}
 	
 	bool isValidIpByte(std::string s) { return ((std::stoi(s) >= 0) && (std::stoi(s) <= 255)); }
-	bool isValidCgi(std::string data) { return (data == ".php"); }
+	bool isValidCgi(std::string data) { return (data[0] == '.'); }
 }
 
 bool

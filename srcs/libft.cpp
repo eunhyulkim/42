@@ -303,7 +303,7 @@ namespace ft
 	std::string containerToString(std::vector<unsigned char> container, std::string sep)
 	{
         std::string ret;
-		for (std::vector<unsigned char>::iterator it = container.begin(); it != container.end(); ++it)
+		for (std::vector<unsigned char>::iterator it = container.begin(); it != container.end(); it++)
 		{
 			ret.append(1, *it);
 			if (++it != container.end())
@@ -317,10 +317,8 @@ namespace ft
 	{
 		int idx = 0;
 		int len = -1;
-		if ((len = recv(fd, line, buffer_size, MSG_PEEK)) == -1) {
-			perror("msg_peek error:");
+		if ((len = recv(fd, line, buffer_size, MSG_PEEK)) == -1)
 			return (-1);
-		}
 		while (idx < len && line[idx] != '\n')
 			++idx;
 		if (idx == len)
@@ -328,6 +326,20 @@ namespace ft
 		read(fd, line, idx + 1);
 		line[idx] = '\0';
 		return (idx);
+	}
+
+	bool isFile(std::string path)
+	{
+		struct stat buf;
+		stat(path.c_str(), &buf);
+		return (S_ISREG(buf.st_mode));
+	}
+
+	bool isDirectory(std::string path)
+	{
+		struct stat buf;
+		stat(path.c_str(), &buf);
+		return (S_ISDIR(buf.st_mode));	
 	}
 /* ************************************************************************** */
 /* ------------------------------ TCP FUNCTION ------------------------------ */
@@ -346,6 +358,7 @@ namespace ft
 			t->tm_year -= 1900;
 		}
 	}
+
 	void convertTimespecToTm(time_t s, struct tm* t)
 	{
 		ft::bzero(t, sizeof(struct tm));

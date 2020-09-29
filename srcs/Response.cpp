@@ -201,6 +201,7 @@ make_status ()
 	status_map[40401] = "Not Found: No suitable location";
 	status_map[40402] = "Not Found: Requested uri is not in server";
 	status_map[40403] = "Not Found: Autoindex off, index file is not found";
+	status_map[40404] = "Not Found: CGI file is not found";
 	status_map[40501] = "Method Not Allowed";
 	status_map[40502] = "Bad Request: Access Directory other than GET method";
 	status_map[41101] = "Length Required";

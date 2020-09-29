@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/28 03:44:54 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/29 16:16:29 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,10 @@ namespace {
 			uri.erase(uri.begin());
 		else if (root[root.size() - 1] != '/' && uri[0] != '/')
 			uri.insert(0, 1, '/');
-		return (root + uri);
+		char buff[1024];
+		ft::bzero(buff, sizeof(buff));
+		getcwd(buff, sizeof(buff));
+		return (std::string(buff) + "/cgi-bin" + uri);
 	}
 }
 
@@ -82,7 +85,7 @@ Request::parseUri()
 
 	for (std::set<std::string>::const_iterator it = m_location->get_m_cgi().begin() ; it != m_location->get_m_cgi().end() ; ++it)
 	{
-		if (m_uri.find(*it) != std::string::npos)
+		if (uri.find(*it) != std::string::npos)
 		{
 			int idx = uri.find(*it);
 			m_uri_type = CGI_PROGRAM;
@@ -90,32 +93,18 @@ Request::parseUri()
 				m_query = uri.substr(uri.find("?") + 1);
 				uri = uri.substr(0, uri.find("?"));
 			}
-			if (uri.size() > idx + it->size() + 1) {
-				m_path_info = uri.substr(idx + it->size() + 1);
+			m_path_info = uri;
+			if (uri.size() > idx + it->size() + 1)
 				uri = uri.substr(0, idx + it->size());
-			}
 			break ;
 		}
 	}
-
 	m_path_translated = getTranslatedPath(m_location->get_m_root_path(), uri);
+	if (m_uri_type == CGI_PROGRAM && !ft::isFile(m_path_translated))
+		throw (40404);
 	return (m_path_translated);
 }
 
-namespace {
-	bool isFile(std::string path)
-	{
-		struct stat buf;
-		stat(path.c_str(), &buf);
-		return (S_ISREG(buf.st_mode));
-	}
-	bool isDirectory(std::string path)
-	{
-		struct stat buf;
-		stat(path.c_str(), &buf);
-		return (S_ISDIR(buf.st_mode));	
-	}
-}
 Request::Request(Connection *connection, Server *server, std::string start_line)
 : m_connection(connection), m_server(server), m_transfer_type(GENERAL)
 {
@@ -138,9 +127,9 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 	std::string translated_path = parseUri();
 	if (translated_path.empty())
 		throw (40002);
-	if (isFile(m_path_translated) && m_uri_type != CGI_PROGRAM)
+	if (ft::isFile(m_path_translated) && m_uri_type != CGI_PROGRAM)
 		m_uri_type = FILE;
-	else if (isDirectory(m_path_translated))
+	else if (ft::isDirectory(m_path_translated))
 		m_uri_type = DIRECTORY;
 	else if (m_method == PUT || m_method == TRACE)
 		m_uri_type = FILE_TO_CREATE;
@@ -251,7 +240,7 @@ const std::map<std::string, std::string> &Request::get_m_headers() const { retur
 Request::TransferType	Request::get_m_transfer_type() const { return (m_transfer_type); }
 const std::string		&Request::get_m_content() const { return (m_content); }
 const std::string		&Request::get_m_query() const { return (m_query); }
-const std::string		&Request::get_m_path_info() const { return (m_query); }
+const std::string		&Request::get_m_path_info() const { return (m_path_info); }
 const std::string		&Request::get_m_origin() const { return (m_origin); }
 const std::string		&Request::get_m_path_translated() const { return (m_path_translated); }
 std::string 		Request::get_m_method_to_string() const

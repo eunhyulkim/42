@@ -46,8 +46,9 @@ class Server
 		bool acceptNewConnection();
 
 		/* read operation */
-		void redirectFdToStdin(int fd);
-		void revertStdinFd();
+		// void redirectStdInOut(int in_fd, int out_fd);
+		void revertStdInOut();
+		void createCGIResponse(int& status, headers_t& headers, std::string& body);
 		bool hasRequest(int client_fd, Request::Method& method);
 		std::string getStartLine(int client_fd);
 		int getHeaderLine(int client_fd, std::string& line);
@@ -112,6 +113,7 @@ class Server
 		void writeCreateNewRequestLog(const Request& request);
 		void reportCreateNewRequestLog(Connection* connection, int status);
 		void writeCreateNewResponseLog(const Response& response);
+		void writeSendResponseLog(const Response& response);
 		void writeCloseConnectionLog(int client_fd);
 };
 
