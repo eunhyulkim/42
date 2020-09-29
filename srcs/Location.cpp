@@ -19,7 +19,7 @@ Location::Location(const std::string& location_uri, std::string location_block)
 	if (ft::hasKey(map_block, "auth_basic_file")) {
 		std::vector<std::string> content = ft::split(ft::getStringFromFile(map_block.find("auth_basic_file")->second), '\n');
 		for (size_t i = 0; i < content.size(); ++i) {
-			std::vector<std::string> v = ft::split(content[i]);
+			std::vector<std::string> v = ft::split(content[i], ':');
 			if (v.size() != 2 || ft::trim(v[0]).empty() || ft::trim(v[1]).empty())
 				throw std::invalid_argument("auth_basic_file format is invalid");
 			std::string key = ft::trim(v[0]);
@@ -108,7 +108,7 @@ std::string Location::get_m_uri() const { return (this->m_uri); }
 std::string Location::get_m_root_path() const { return (this->m_root_path); }
 std::string Location::get_m_auth_basic_realm() const { return (this->m_auth_basic_realm); }
 const std::map<std::string, std::string>& Location::get_m_auth_basic_file() const { return (this->m_auth_basic_file); }
-const std::set<std::string>& Location::get_m_allow_method() const { return (this->m_allow_method); }
+std::set<std::string> Location::get_m_allow_method() const { return (this->m_allow_method); }
 const std::set<std::string>& Location::get_m_index() const { return (this->m_index); }
 const std::set<std::string>& Location::get_m_cgi() const { return (this->m_cgi); }
 const bool& Location::get_m_autoindex() const { return (this->m_autoindex); }

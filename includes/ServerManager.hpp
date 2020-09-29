@@ -11,6 +11,7 @@ class ServerManager
 		static int error_fd;
 		static int access_fd;
 		static int stdin_fd;
+		static int stdout_fd;
 	private:
 		std::vector<Server> m_servers;
 		std::set<int> m_server_fdset;
@@ -20,7 +21,6 @@ class ServerManager
         fd_set m_read_copy_set;
         fd_set m_write_set;
         fd_set m_write_copy_set;
-        fd_set m_error_set;
         fd_set m_error_copy_set;
 		
 		/* functions for parse configuration files */
@@ -29,7 +29,6 @@ class ServerManager
         bool isValidConfigBlock(std::string& config_block);
         bool isValidServerBlock(std::string& server_block);
         bool isValidLocationBlock(std::string& location_block);
-		void copyFdSet();
 		void closeOldConnection(std::vector<Server>::iterator it);
 	public:
 		ServerManager();
@@ -37,7 +36,7 @@ class ServerManager
 		ServerManager& operator=(const ServerManager& obj);
 		virtual ~ServerManager();
 
-		/* getter & setter function */
+		/* getter & setter */
 		const std::vector<Server>& get_m_servers() const;
 		const std::set<int>& get_m_server_fdset() const;
 		Config get_m_config() const;
@@ -45,9 +44,9 @@ class ServerManager
 		void set_m_max_fd(int max_fd);
 		void set_m_config(const Config& config);
 		
-		/* FD functions to access the ServerManager from Server */
+		/* FD functions */
 		enum SetType {
-			WRITE_SET, WRITE_COPY_SET, READ_SET, READ_COPY_SET, ERROR_SET, ERROR_COPY_SET,
+			WRITE_SET, WRITE_COPY_SET, READ_SET, READ_COPY_SET, ERROR_SET, ERROR_COPY_SET, ALL_SET
 		};
 		void fdSet(int fd, SetType fdset);
 		void fdZero(SetType fdset);
@@ -55,7 +54,7 @@ class ServerManager
 		bool fdIsset(int fd, SetType fdset);
 		void fdCopy(SetType fdset);
 
-		/* declare member function */
+		/* member function */
 		void createServer(const std::string& configuration_file_path, char **env);
 		void runServer();
 		void exitServer(const std::string& error_msg);

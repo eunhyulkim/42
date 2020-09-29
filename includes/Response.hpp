@@ -33,8 +33,12 @@ class Response
 		const std::map<std::string, std::string>& get_m_headers() const;
 		TransferType get_m_transfer_type() const;
 		std::string get_m_content() const;
+
+		/* setter */
 		void addHeader(std::string header_key, std::string header_value);
-		std::string getString();
+
+		/* member function */	
+		std::string getString() const;
 };
 
 /* global operator overload */

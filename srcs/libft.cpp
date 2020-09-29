@@ -2,6 +2,11 @@
 
 namespace ft
 {
+
+/* ************************************************************************** */
+/* -------------------------------- OLD LIBFT ------------------------------- */
+/* ************************************************************************** */
+
 	void
 	bzero(void *data, size_t len)
 	{
@@ -10,16 +15,6 @@ namespace ft
 		str = (unsigned char *)data;
 		while (len > 0)
 			str[--len] = 0;
-	}
-
-	size_t
-	strlen(const char *s)
-	{
-		size_t i = 0;
-
-		while (s[i] != '\0')
-			i++;
-		return (i);
 	}
 
 	void *
@@ -72,19 +67,6 @@ namespace ft
 	}
 
 	int
-	lenDoubleStr(char **str)
-	{
-		int		idx;
-
-		idx = 0;
-		if (!str || !(*str))
-			return (0);
-		while (*str++)
-			idx++;
-		return (idx);
-	}
-
-	int
 	freeDoublestr(char ***doublestr_addr)
 	{
 		int 	i;
@@ -99,6 +81,16 @@ namespace ft
 		ft::free(doublestr);
 		*doublestr_addr = 0;
 		return (1);
+	}
+
+	size_t
+	strlen(const char *s)
+	{
+		size_t i = 0;
+
+		while (s[i] != '\0')
+			i++;
+		return (i);
 	}
 
 	char
@@ -138,6 +130,16 @@ namespace ft
 		return (str);
 	}
 
+	char
+	*strsjoin(std::string s1, std::string s2, std::string s3, std::string s4, std::string s5)
+	{
+		s1.append(s2);
+		s1.append(s3);
+		s1.append(s4);
+		s1.append(s5);
+		return (strdup(s1.c_str()));
+	}
+
 	int
 	startswith(const char *str, const char *sub)
 	{
@@ -149,14 +151,17 @@ namespace ft
 		return (sub[i] == '\0');
 	}
 
-	char
-	*strsjoin(std::string s1, std::string s2, std::string s3, std::string s4, std::string s5)
+	int
+	lenDoubleStr(char **str)
 	{
-		s1.append(s2);
-		s1.append(s3);
-		s1.append(s4);
-		s1.append(s5);
-		return (strdup(s1.c_str()));
+		int		idx;
+
+		idx = 0;
+		if (!str || !(*str))
+			return (0);
+		while (*str++)
+			idx++;
+		return (idx);
 	}
 
 	size_t
@@ -168,6 +173,10 @@ namespace ft
 		}
 		return (ret);
 	}
+
+/* ************************************************************************** */
+/* -------------------------------- C++ LIBFT ------------------------------- */
+/* ************************************************************************** */
 
 	std::string
 	ltrim(std::string s, std::string seps)
@@ -294,7 +303,7 @@ namespace ft
 	std::string containerToString(std::vector<unsigned char> container, std::string sep)
 	{
         std::string ret;
-		for (std::vector<unsigned char>::iterator it = container.begin(); it != container.end(); ++it)
+		for (std::vector<unsigned char>::iterator it = container.begin(); it != container.end(); it++)
 		{
 			ret.append(1, *it);
 			if (++it != container.end())
@@ -303,6 +312,38 @@ namespace ft
 		}
 		return (ret);
     }
+
+	int getline(int fd, char* line, int buffer_size)
+	{
+		int idx = 0;
+		int len = -1;
+		if ((len = recv(fd, line, buffer_size, MSG_PEEK)) == -1)
+			return (-1);
+		while (idx < len && line[idx] != '\n')
+			++idx;
+		if (idx == len)
+			return (len * -1);
+		read(fd, line, idx + 1);
+		line[idx] = '\0';
+		return (idx);
+	}
+
+	bool isFile(std::string path)
+	{
+		struct stat buf;
+		stat(path.c_str(), &buf);
+		return (S_ISREG(buf.st_mode));
+	}
+
+	bool isDirectory(std::string path)
+	{
+		struct stat buf;
+		stat(path.c_str(), &buf);
+		return (S_ISDIR(buf.st_mode));	
+	}
+/* ************************************************************************** */
+/* ------------------------------ TCP FUNCTION ------------------------------ */
+/* ************************************************************************** */
 
 	namespace {
 		template<typename T>
@@ -317,6 +358,7 @@ namespace ft
 			t->tm_year -= 1900;
 		}
 	}
+
 	void convertTimespecToTm(time_t s, struct tm* t)
 	{
 		ft::bzero(t, sizeof(struct tm));
@@ -381,6 +423,10 @@ namespace ft
 		return ((x & 0x00ffU) << 8 | (x & 0xff00U) >> 8);
 	}
 
+/* ************************************************************************** */
+/* ---------------------------- FDSET OPERATOR ------------------------------ */
+/* ************************************************************************** */
+
 	void fdZero(fd_set *x)
 	{
 		for (int i = 0 ; i < 32 ; ++i)
@@ -429,8 +475,15 @@ namespace ft
 		return (ret);
 	}
 
-	void log(int fd, std::string text) {
-		write(fd, text.c_str(), text.size());
+/* ************************************************************************** */
+/* --------------------------- LOG UTIL FUNCTION ---------------------------- */
+/* ************************************************************************** */
+
+	void log(int access_fd, int error_fd, std::string text) {
+		if (access_fd != -1)
+			write(access_fd, text.c_str(), text.size());
+		if (error_fd != -1)
+			write(error_fd, text.c_str(), text.size());
 	}
 	
 	bool isRightTime(int second) {

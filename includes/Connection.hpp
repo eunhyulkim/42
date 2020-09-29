@@ -26,6 +26,7 @@ class Connection
 		/* setter function */
 		void set_m_last_request_at();
 
+		/* member function */
 		bool isOverTime() const;
 };
 
