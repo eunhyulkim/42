@@ -455,6 +455,7 @@ bool g_live;
 void
 changeSignal(int sig)
 {
+	ft::log(ServerManager::access_fd, -1, "signal execute");
 	(void)sig;
 	g_live = false;
 }

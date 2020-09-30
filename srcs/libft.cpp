@@ -321,7 +321,7 @@ namespace ft
 			return (-1);
 		while (idx < len && line[idx] != '\n')
 			++idx;
-		if (idx == len)
+		if (line[idx] != '\n')
 			return (len * -1);
 		read(fd, line, idx + 1);
 		line[idx] = '\0';

@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/29 16:16:29 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/09/30 02:36:50 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,23 +65,23 @@ Request::assignLocationMatchingUri(std::string uri)
 namespace {
 	std::string getTranslatedPath(std::string root, std::string uri)
 	{
-		if (root.empty() || uri.empty())
-			return ("");
+		if (uri.empty())
+			return (root);
 		if (root[root.size() - 1] == '/' && uri[0] == '/')
 			uri.erase(uri.begin());
 		else if (root[root.size() - 1] != '/' && uri[0] != '/')
 			uri.insert(0, 1, '/');
-		char buff[1024];
-		ft::bzero(buff, sizeof(buff));
-		getcwd(buff, sizeof(buff));
-		return (std::string(buff) + "/cgi-bin" + uri);
+		return (root + uri);
 	}
 }
 
 std::string
 Request::parseUri()
 {
-	std::string uri = m_uri;
+	std::string root = m_location->get_m_uri();
+	std::string uri = (root == "/") ? "/" : m_uri.substr(m_uri.find(root) + root.size());
+	std::string main_path = uri;
+	std::string refer_path = uri;
 
 	for (std::set<std::string>::const_iterator it = m_location->get_m_cgi().begin() ; it != m_location->get_m_cgi().end() ; ++it)
 	{
@@ -92,17 +92,23 @@ Request::parseUri()
 			if ((m_method == GET || m_method == HEAD) && uri.find("?") != std::string::npos) {
 				m_query = uri.substr(uri.find("?") + 1);
 				uri = uri.substr(0, uri.find("?"));
-			}
-			m_path_info = uri;
-			if (uri.size() > idx + it->size() + 1)
-				uri = uri.substr(0, idx + it->size());
+				m_path_info = m_uri.substr(0, uri.find("?"));
+			} else
+				m_path_info = m_uri;			
+			main_path = uri.substr(0, idx + it->size());
+			refer_path = uri.substr(idx + it->size());
 			break ;
 		}
 	}
-	m_path_translated = getTranslatedPath(m_location->get_m_root_path(), uri);
-	if (m_uri_type == CGI_PROGRAM && !ft::isFile(m_path_translated))
+	std::cout << "main_path: " << main_path << std::endl;
+	std::cout << "refer_path: " << refer_path << std::endl;
+	m_script_translated = getTranslatedPath(m_location->get_m_root_path(), main_path);
+	m_path_translated = getTranslatedPath(m_location->get_m_root_path(), refer_path);
+	std::cout << "m_script_translated: " << m_script_translated << std::endl;
+	std::cout << "m_path_translated: " << m_path_translated << std::endl;
+	if (m_uri_type == CGI_PROGRAM && !ft::isFile(m_script_translated))
 		throw (40404);
-	return (m_path_translated);
+	return (m_script_translated);
 }
 
 Request::Request(Connection *connection, Server *server, std::string start_line)
@@ -127,9 +133,10 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 	std::string translated_path = parseUri();
 	if (translated_path.empty())
 		throw (40002);
-	if (ft::isFile(m_path_translated) && m_uri_type != CGI_PROGRAM)
+	std::cout << "result: " << translated_path << std::endl;
+	if (ft::isFile(translated_path) && m_uri_type != CGI_PROGRAM)
 		m_uri_type = FILE;
-	else if (ft::isDirectory(m_path_translated))
+	else if (ft::isDirectory(translated_path))
 		m_uri_type = DIRECTORY;
 	else if (m_method == PUT || m_method == TRACE)
 		m_uri_type = FILE_TO_CREATE;
@@ -155,6 +162,7 @@ Request::Request(const Request &x)
 	m_content = x.m_content;
 	m_query = x.m_query;
 	m_path_translated = x.m_path_translated;
+	m_script_translated = x.m_script_translated;
 	m_path_info = x.m_path_info;
 	m_origin = x.m_origin;
 }
@@ -177,6 +185,7 @@ Request::~Request()
 	m_content.clear();
 	m_query.clear();
 	m_path_translated.clear();
+	m_script_translated.clear();
 	m_path_info.clear();
 	m_origin.clear();
 }
@@ -204,6 +213,7 @@ Request &Request::operator=(const Request &x)
 	m_content = x.m_content;
 	m_query = x.m_query;
 	m_path_translated = x.m_path_translated;
+	m_script_translated = x.m_script_translated;
 	m_path_info = x.m_path_info;
 	m_origin = x.m_origin;
 
@@ -243,6 +253,7 @@ const std::string		&Request::get_m_query() const { return (m_query); }
 const std::string		&Request::get_m_path_info() const { return (m_path_info); }
 const std::string		&Request::get_m_origin() const { return (m_origin); }
 const std::string		&Request::get_m_path_translated() const { return (m_path_translated); }
+const std::string		&Request::get_m_script_translated() const { return (m_script_translated); }
 std::string 		Request::get_m_method_to_string() const
 {
 	if (m_method == GET) return (std::string("GET"));

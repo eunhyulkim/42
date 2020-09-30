@@ -11,7 +11,7 @@
 Location::Location() {}
 Location::Location(const std::string& location_uri, std::string location_block)
 : m_uri(location_uri)
-{
+{	
 	std::map<std::string, std::string> map_block = ft::stringVectorToMap(ft::split(location_block, '\n'), ' ');
 	this->m_root_path = map_block.find("root")->second;
 	if (ft::hasKey(map_block, "auth_basic_realm"))
