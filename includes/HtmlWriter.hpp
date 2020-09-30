@@ -1,8 +1,7 @@
 #ifndef HTML_WRITER_HPP
 # define HTML_WRITER_HPP
 
-# include <string>
-# include <iostream>
+# include "webserv.hpp"
 
 class HtmlWriter
 {

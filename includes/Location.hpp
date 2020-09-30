@@ -1,11 +1,7 @@
 #ifndef LOCATION_HPP
 # define LOCATION_HPP
 
-# include <string>
-# include <set>
-# include <map>
-# include <iostream>
-# include "libft.hpp"
+# include "webserv.hpp"
 
 class Location
 {
@@ -30,7 +26,7 @@ class Location
         std::string get_m_root_path() const;
         std::string get_m_auth_basic_realm() const;
         const std::map<std::string, std::string>& get_m_auth_basic_file() const;
-        const std::set<std::string>& get_m_allow_method() const;
+        std::set<std::string> get_m_allow_method() const;
         const std::set<std::string>& get_m_index() const;
         const std::set<std::string>& get_m_cgi() const;
         const bool& get_m_autoindex() const;

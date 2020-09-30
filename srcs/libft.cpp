@@ -2,6 +2,11 @@
 
 namespace ft
 {
+
+/* ************************************************************************** */
+/* -------------------------------- OLD LIBFT ------------------------------- */
+/* ************************************************************************** */
+
 	void
 	bzero(void *data, size_t len)
 	{
@@ -10,16 +15,6 @@ namespace ft
 		str = (unsigned char *)data;
 		while (len > 0)
 			str[--len] = 0;
-	}
-
-	size_t
-	strlen(const char *s)
-	{
-		size_t i = 0;
-
-		while (s[i] != '\0')
-			i++;
-		return (i);
 	}
 
 	void *
@@ -72,19 +67,6 @@ namespace ft
 	}
 
 	int
-	lenDoubleStr(char **str)
-	{
-		int		idx;
-
-		idx = 0;
-		if (!str || !(*str))
-			return (0);
-		while (*str++)
-			idx++;
-		return (idx);
-	}
-
-	int
 	freeDoublestr(char ***doublestr_addr)
 	{
 		int 	i;
@@ -99,6 +81,16 @@ namespace ft
 		ft::free(doublestr);
 		*doublestr_addr = 0;
 		return (1);
+	}
+
+	size_t
+	strlen(const char *s)
+	{
+		size_t i = 0;
+
+		while (s[i] != '\0')
+			i++;
+		return (i);
 	}
 
 	char
@@ -138,6 +130,16 @@ namespace ft
 		return (str);
 	}
 
+	char
+	*strsjoin(std::string s1, std::string s2, std::string s3, std::string s4, std::string s5)
+	{
+		s1.append(s2);
+		s1.append(s3);
+		s1.append(s4);
+		s1.append(s5);
+		return (strdup(s1.c_str()));
+	}
+
 	int
 	startswith(const char *str, const char *sub)
 	{
@@ -149,38 +151,17 @@ namespace ft
 		return (sub[i] == '\0');
 	}
 
-	namespace {
-		char *strAdd(char *dst, char *src)
-		{
-			int		i;
-			int		j;
-
-			if (!src)
-				return (dst);
-			if (!dst)
-				return (src);
-			i = ft::strlen(dst);
-			j = 0;
-			while (src[j])
-				dst[i++] = src[j++];
-			return (dst);
-		}
-	}
-
-	char
-	*strsjoin(char *s1, char *s2, char *s3, char *s4)
+	int
+	lenDoubleStr(char **str)
 	{
-		char	*str;
-		int		lens;
+		int		idx;
 
-		lens = ft::strlen(s1) + ft::strlen(s2) + ft::strlen(s3) + ft::strlen(s4);
-		if (!(str = (char *)calloc(sizeof(char), lens + 1)))
+		idx = 0;
+		if (!str || !(*str))
 			return (0);
-		strAdd(str, s1);
-		strAdd(str, s2);
-		strAdd(str, s3);
-		strAdd(str, s4);
-		return ((char *)str);
+		while (*str++)
+			idx++;
+		return (idx);
 	}
 
 	size_t
@@ -192,6 +173,10 @@ namespace ft
 		}
 		return (ret);
 	}
+
+/* ************************************************************************** */
+/* -------------------------------- C++ LIBFT ------------------------------- */
+/* ************************************************************************** */
 
 	std::string
 	ltrim(std::string s, std::string seps)
@@ -231,7 +216,7 @@ namespace ft
 	}
 
 	std::string
-	getStringFromFile(std::string file_path, size_t max_size)
+	getStringFromFile(std::string file_path, int max_size)
 	{
 		int fd = -1;
 		size_t read_cnt = 0;
@@ -242,7 +227,7 @@ namespace ft
 			throw (std::invalid_argument("Failed open to " + file_path));
 		while ((read_cnt = read(fd, buff, 1024)) > 0) {
 			ret.append(buff, read_cnt);
-			if (max_size != -1 && ret.size() > max_size)
+			if (max_size != -1 && static_cast<int>(ret.size()) > max_size)
 				throw (std::overflow_error("overflow max_size in getStringFromFile"));
 		}
 		close(fd);
@@ -250,7 +235,7 @@ namespace ft
 	}
 
 	std::string
-	getStringFromFd(int fd, size_t max_size)
+	getStringFromFd(int fd, int max_size)
 	{
 		int read_cnt = 0;
 		char buff[1024];
@@ -258,7 +243,7 @@ namespace ft
 
 		while ((read_cnt = read(fd, buff, 1024)) > 0) {
 			ret.append(buff, read_cnt);
-			if (max_size != -1 && ret.size() > max_size)
+			if (max_size != -1 && static_cast<int>(ret.size()) > max_size)
 				throw (std::overflow_error("overflow max_size in getStringFromFile"));
 		}
 		close(fd);
@@ -286,7 +271,7 @@ namespace ft
 	{
 		std::set<std::string> ret;
 
-		for (int i = 0; i < stringVector.size(); ++i) {
+		for (size_t i = 0; i < stringVector.size(); ++i) {
 			ret.insert(stringVector[i]);
 		}
 		return (ret);
@@ -299,7 +284,7 @@ namespace ft
 
 		if (stringVector.size() == 0)
 			return ret;
-		for (int i = 0; i < stringVector.size(); ++i)
+		for (size_t i = 0; i < stringVector.size(); ++i)
 		{
 			if (stringVector[i].find(sep) == std::string::npos)
 				throw (std::invalid_argument("Not found sep in string"));
@@ -318,7 +303,7 @@ namespace ft
 	std::string containerToString(std::vector<unsigned char> container, std::string sep)
 	{
         std::string ret;
-		for (std::vector<unsigned char>::iterator it = container.begin(); it != container.end(); ++it)
+		for (std::vector<unsigned char>::iterator it = container.begin(); it != container.end(); it++)
 		{
 			ret.append(1, *it);
 			if (++it != container.end())
@@ -327,6 +312,38 @@ namespace ft
 		}
 		return (ret);
     }
+
+	int getline(int fd, char* line, int buffer_size)
+	{
+		int idx = 0;
+		int len = -1;
+		if ((len = recv(fd, line, buffer_size, MSG_PEEK)) == -1)
+			return (-1);
+		while (idx < len && line[idx] != '\n')
+			++idx;
+		if (idx == len)
+			return (len * -1);
+		read(fd, line, idx + 1);
+		line[idx] = '\0';
+		return (idx);
+	}
+
+	bool isFile(std::string path)
+	{
+		struct stat buf;
+		stat(path.c_str(), &buf);
+		return (S_ISREG(buf.st_mode));
+	}
+
+	bool isDirectory(std::string path)
+	{
+		struct stat buf;
+		stat(path.c_str(), &buf);
+		return (S_ISDIR(buf.st_mode));	
+	}
+/* ************************************************************************** */
+/* ------------------------------ TCP FUNCTION ------------------------------ */
+/* ************************************************************************** */
 
 	namespace {
 		template<typename T>
@@ -341,6 +358,7 @@ namespace ft
 			t->tm_year -= 1900;
 		}
 	}
+
 	void convertTimespecToTm(time_t s, struct tm* t)
 	{
 		ft::bzero(t, sizeof(struct tm));
@@ -405,6 +423,10 @@ namespace ft
 		return ((x & 0x00ffU) << 8 | (x & 0xff00U) >> 8);
 	}
 
+/* ************************************************************************** */
+/* ---------------------------- FDSET OPERATOR ------------------------------ */
+/* ************************************************************************** */
+
 	void fdZero(fd_set *x)
 	{
 		for (int i = 0 ; i < 32 ; ++i)
@@ -436,7 +458,39 @@ namespace ft
 		x->fds_bits[fd / 32] &= mask;
 	}
 
-	void log(int fd, std::string text) {
-		write(fd, text.c_str(), text.size() + 1);
+	std::string
+	getSetFdString(int max_fd, fd_set* fset)
+	{
+		std::string ret;
+		bool first = true;
+		for (int i = 0; i <= max_fd; ++i) {
+			if (ft::fdIsset(i, fset)) {
+				if (!first) {
+					ret.append(",");
+				}
+				first = false;
+				ret.append(std::to_string(i));
+			}
+		}
+		return (ret);
+	}
+
+/* ************************************************************************** */
+/* --------------------------- LOG UTIL FUNCTION ---------------------------- */
+/* ************************************************************************** */
+
+	void log(int access_fd, int error_fd, std::string text) {
+		if (access_fd != -1)
+			write(access_fd, text.c_str(), text.size());
+		if (error_fd != -1)
+			write(error_fd, text.c_str(), text.size());
+	}
+	
+	bool isRightTime(int second) {
+		timeval t;
+		gettimeofday(&t, NULL);
+		if (t.tv_sec % second == 0 && t.tv_usec == 0)
+			return (true);
+		return (false);
 	}
 }

@@ -1,4 +1,5 @@
 #include "ServerManager.hpp"
+#include <errno.h>
 
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
@@ -6,6 +7,8 @@
 
 int ServerManager::error_fd = -1;
 int ServerManager::access_fd = -1;
+int ServerManager::stdin_fd = dup(0);
+int ServerManager::stdout_fd = dup(1);
 
 /* ************************************************************************** */
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
@@ -18,11 +21,21 @@ ServerManager::ServerManager()
     ft::fdZero(&m_read_copy_set);
     ft::fdZero(&m_write_set);
     ft::fdZero(&m_write_copy_set);
-    ft::fdZero(&m_error_set);
     ft::fdZero(&m_error_copy_set);
 }
 
-ServerManager::ServerManager(const ServerManager& copy) {}
+ServerManager::ServerManager(const ServerManager& obj)
+{
+	m_servers = obj.m_servers;
+	m_server_fdset = obj.m_server_fdset;
+	m_config = obj.m_config;
+	m_max_fd = obj.m_max_fd;
+	m_read_set = obj.m_read_set;
+	m_read_copy_set = obj.m_read_copy_set;
+	m_write_set = obj.m_write_set;
+	m_write_copy_set = obj.m_write_copy_set;
+	m_error_copy_set = obj.m_error_copy_set;
+}
 
 /* ************************************************************************** */
 /* ------------------------------- DESTRUCTOR ------------------------------- */
@@ -35,7 +48,6 @@ ServerManager::~ServerManager()
     ft::fdZero(&m_read_copy_set);
     ft::fdZero(&m_write_set);
     ft::fdZero(&m_write_copy_set);
-    ft::fdZero(&m_error_set);
     ft::fdZero(&m_error_copy_set);
 }
 
@@ -47,11 +59,20 @@ ServerManager& ServerManager::operator=(const ServerManager& obj)
 {
 	if (this == &obj)
 		return (*this);
+	m_servers = obj.m_servers;
+	m_server_fdset = obj.m_server_fdset;
+	m_config = obj.m_config;
+	m_max_fd = obj.m_max_fd;
+	m_read_set = obj.m_read_set;
+	m_read_copy_set = obj.m_read_copy_set;
+	m_write_set = obj.m_write_set;
+	m_write_copy_set = obj.m_write_copy_set;
+	m_error_copy_set = obj.m_error_copy_set;
 	return (*this);
 }
 
 std::ostream&
-operator<<(std::ostream& out, const Server& server) {
+operator<<(std::ostream& out, const ServerManager&) {
 	return (out);
 }
 
@@ -60,6 +81,7 @@ operator<<(std::ostream& out, const Server& server) {
 /* ************************************************************************** */
 
 const std::vector<Server>& ServerManager::get_m_servers() const { return (this->m_servers); }
+const std::set<int>& ServerManager::get_m_server_fdset() const { return (this->m_server_fdset); }
 Config ServerManager::get_m_config() const { return (this->m_config); }
 int ServerManager::get_m_max_fd() const { return (this->m_max_fd); }
 
@@ -89,7 +111,7 @@ namespace {
 		bool is_group_line = false;
 		std::vector<std::string> ret;
 		std::vector<std::string> remain;
-		for (int i = 0; i < lines.size(); ++i)
+		for (size_t i = 0; i < lines.size(); ++i)
 		{
 			std::string line = lines[i];
 			if (line.empty())
@@ -121,7 +143,7 @@ namespace {
 	}
 	
 	bool isValidIpByte(std::string s) { return ((std::stoi(s) >= 0) && (std::stoi(s) <= 255)); }
-	bool isValidCgi(std::string data) { return (!data.empty() && data[0] == '.'); }
+	bool isValidCgi(std::string data) { return (data[0] == '.'); }
 }
 
 bool
@@ -129,7 +151,7 @@ ServerManager::splitConfigString(std::string config_string, std::string& config_
 std::vector<std::string>& server_strings)
 {
 	std::vector<std::string> lines = ft::split(config_string);
-	for (int i = 0; i < lines.size(); ++i)
+	for (size_t i = 0; i < lines.size(); ++i)
 		lines[i] = ft::rtrim(lines[i], " \t");
 	server_strings = groupLineWithCondition(lines, "server {", "}", INCLUDE_NOT);
 	config_block = ft::containerToString(lines, "\n");
@@ -142,7 +164,7 @@ ServerManager::splitServerString(std::string server_string, std::string& server_
 std::vector<std::string>& location_blocks)
 {
 	std::vector<std::string> lines = ft::split(server_string);
-	for (int i = 0; i < lines.size(); ++i)
+	for (size_t i = 0; i < lines.size(); ++i)
 		lines[i] = ft::trim(lines[i], " \t");
 	location_blocks = groupLineWithCondition(lines, "location ", "}", INCLUDE_START);
 	server_block = ft::containerToString(lines, "\n");
@@ -285,6 +307,8 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 		std::set<std::string> data_set = ft::stringVectorToSet(ft::split(map_block[key[2]], ' '));
 		std::string method[] = {"GET", "POST", "HEAD", "PUT", "DELETE", "TRACE", "OPTIONS"};
 		std::set<std::string> method_set(method, method + sizeof(method) / sizeof(method[0]));
+		if (data_set.empty())
+			return (false);
 		for (std::set<std::string>::iterator it = data_set.begin(); it != data_set.end(); ++it) {
 			if ((*it).empty() || !ft::hasKey(method_set, *it))
 				return (false);
@@ -293,7 +317,7 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 
 	if (ft::hasKey(map_block, key[6])) {
 		std::set<std::string> cgi_set = ft::stringVectorToSet(ft::split(map_block[key[6]], ' '));
-		if (!std::all_of(cgi_set.begin(), cgi_set.end(), isValidCgi))
+		if (cgi_set.empty() || !std::all_of(cgi_set.begin(), cgi_set.end(), isValidCgi))
 			return (false);
 	}
 	
@@ -322,8 +346,6 @@ ServerManager::fdSet(int fd, SetType fdset)
 		ft::fdSet(fd, &this->m_read_set);
 	else if (fdset == READ_COPY_SET)
 		ft::fdSet(fd, &this->m_read_copy_set);
-	else if (fdset == ERROR_SET)
-		ft::fdSet(fd, &this->m_error_set);
 	else if (fdset == ERROR_COPY_SET)
 		ft::fdSet(fd, &this->m_error_copy_set);
 }
@@ -339,8 +361,6 @@ ServerManager::fdZero(SetType fdset)
 		ft::fdZero(&this->m_read_set);
 	else if (fdset == READ_COPY_SET)
 		ft::fdZero(&this->m_read_copy_set);
-	else if (fdset == ERROR_SET)
-		ft::fdZero(&this->m_error_set);
 	else if (fdset == ERROR_COPY_SET)
 		ft::fdZero(&this->m_error_copy_set);
 }
@@ -356,8 +376,6 @@ ServerManager::fdClear(int fd, SetType fdset)
 		ft::fdClr(fd, &this->m_read_set);
 	else if (fdset == READ_COPY_SET)
 		ft::fdClr(fd, &this->m_read_copy_set);
-	else if (fdset == ERROR_SET)
-		ft::fdClr(fd, &this->m_error_set);
 	else if (fdset == ERROR_COPY_SET)
 		ft::fdClr(fd, &this->m_error_copy_set);
 }
@@ -375,8 +393,6 @@ ServerManager::fdIsset(int fd, SetType fdset)
 		ret = ft::fdIsset(fd, &this->m_read_set);
 	else if (fdset == READ_COPY_SET)
 		ret = ft::fdIsset(fd, &this->m_read_copy_set);
-	else if (fdset == ERROR_SET)
-		ret = ft::fdIsset(fd, &this->m_error_set);
 	else if (fdset == ERROR_COPY_SET)
 		ret = ft::fdIsset(fd, &this->m_error_copy_set);
 	return (ret);
@@ -385,15 +401,17 @@ ServerManager::fdIsset(int fd, SetType fdset)
 void
 ServerManager::fdCopy(SetType fdset)
 {
-	if (fdset == WRITE_SET) {
+	if (fdset == WRITE_SET || fdset == ALL_SET) {
 		ft::fdZero(&this->m_write_copy_set);
 		this->m_write_copy_set = this->m_write_set;
-	} else if (fdset == READ_SET) {
+	}
+	if (fdset == READ_SET || fdset == ALL_SET) {
 		ft::fdZero(&this->m_read_copy_set);
 		this->m_read_copy_set = this->m_read_set;
-	} else if (fdset == ERROR_SET) {
+	} 
+	if (fdset == ERROR_SET || fdset == ALL_SET) {
 		ft::fdZero(&this->m_error_copy_set);
-		this->m_error_copy_set = this->m_error_set;
+		this->m_error_copy_set = this->m_read_set;
 	}
 }
 
@@ -401,47 +419,19 @@ ServerManager::fdCopy(SetType fdset)
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
 /* ************************************************************************** */
 
-namespace
-{
-	void
-	printFdSet(fd_set s, int max_fd)
-	{
-		bool first = true;
-		for (int i = 0; i <= max_fd; ++i)
-		{
-			if (ft::fdIsset(i, &s))
-			{
-				if (!first) {
-					std::cout << " ";
-				}
-				first = false;
-				std::cout << i;
-			}
-		}
-	}
-}
-
 void
-ServerManager::openLog()
-{
-	if ((ServerManager::access_fd = open(ACCESS_LOG_PATH, O_WRONLY | O_CREAT | O_APPEND)) == -1)
-		return ;
-	if ((ServerManager::error_fd = open(ERROR_LOG_PATH, O_WRONLY | O_CREAT | O_APPEND)) == -1)
-		return ;
-}
-
-void
-ServerManager::createServer(const std::string& configuration_file_path)
+ServerManager::createServer(const std::string& configuration_file_path, char **env)
 {
 	std::string config_string = ft::getStringFromFile(configuration_file_path);
 	std::string config_block;
 	std::vector<std::string> server_strings;
 
-	if (splitConfigString(config_string, config_block, server_strings))
+	if (!splitConfigString(config_string, config_block, server_strings))
 		throw (std::invalid_argument("Failed to split configuration string"));
 	if (!isValidConfigBlock(config_block))
 		throw (std::invalid_argument("Config block is not valid."));
-	for (int i = 0; i < server_strings.size(); ++i)
+	m_config = Config(config_block, env);
+	for (size_t i = 0; i < server_strings.size(); ++i)
 	{
 		std::string server_block;
 		std::vector<std::string> location_blocks;
@@ -449,13 +439,15 @@ ServerManager::createServer(const std::string& configuration_file_path)
 			throw (std::invalid_argument("Failed to split Sever string(" + std::to_string(i) + ")"));
 		if (!isValidServerBlock(server_block))
 			throw (std::invalid_argument("Server block(" + std::to_string(i) + ") is not valid."));
-		for (int j = 0; j < location_blocks.size(); ++j) {
+		for (size_t j = 0; j < location_blocks.size(); ++j) {
 			if (!isValidLocationBlock(location_blocks[j]))
 				throw (std::invalid_argument("Location block(" + std::to_string(i) \
 				+ "-" + std::to_string(j) + ") is not valid."));
 		}
 		m_servers.push_back(Server(this, server_block, location_blocks, &this->m_config));
+		m_server_fdset.insert(m_servers.back().get_m_fd());
 	}
+	writeCreateServerLog();
 }
 
 bool g_live;
@@ -465,6 +457,21 @@ changeSignal(int sig)
 {
 	(void)sig;
 	g_live = false;
+}
+
+void
+ServerManager::closeOldConnection(std::vector<Server>::iterator server_it)
+{
+	std::map<int, Connection>::const_iterator it = server_it->get_m_connections().begin();
+	while (it != server_it->get_m_connections().end())
+	{
+		int fd = it->first;
+		if (!ft::hasKey(m_server_fdset, fd) && it->second.isOverTime() && !fdIsset(it->first, WRITE_SET)) {
+			++it;
+			server_it->closeConnection(fd);
+		} else
+			++it;
+	}
 }
 
 void
@@ -479,31 +486,22 @@ ServerManager::runServer()
 	g_live = true;
 	while (g_live)
 	{
-		this->m_read_copy_set = this->m_read_set;
-		this->m_write_copy_set = this->m_write_set;
-		this->m_error_copy_set = this->m_error_set;
+		int cnt;
+		fdCopy(ALL_SET);
 
-		int n = select(this->m_max_fd, &this->m_read_copy_set, &this->m_write_copy_set, &this->m_error_copy_set, &timeout);
-		if (n == -1)
+		if ((cnt = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, \
+		&this->m_error_copy_set, &timeout)) == -1)
 		{
+			ft::log(ServerManager::access_fd, ServerManager::error_fd, "[Failed][Function]Select function failed(return -1)");
 			throw std::runtime_error("select error");
 		}
-		else if (n == 0)
-		{
+		else if (cnt == 0)
 			continue ;
-		}
+		writeServerHealthLog();
 		for (std::vector<Server>::iterator it = m_servers.begin() ; it != m_servers.end() ; ++it)
 		{
 			it->run();
-
-			std::map<int, Connection>::const_iterator it2 = it->get_m_connections().begin();
-			while (it2 != it->get_m_connections().end())
-			{
-				int fd = it2->first;
-				
-				if (it2->second.isOverTime())
-					it->closeConnection(fd);
-			}
+			closeOldConnection(it);
 		}
 	}
 }
@@ -519,39 +517,31 @@ ServerManager::exitServer(const std::string& error_msg)
 /* ------------------------------- LOG FUNCTION ----------------------------- */
 /* ************************************************************************** */
 
-namespace {
-	std::string
-	getSetFdString(int max_fd, fd_set* fset)
-	{
-		std::string ret;
-		bool first;
-		for (int i = 0; i < max_fd; ++i) {
-			if (ft::fdIsset(i, fset)) {
-				if (!first) {
-					ret.append(",");
-				}
-				first = false;
-				ret.append(std::to_string(i));
-			}
-		}
-		return (ret);
-	}
+void
+ServerManager::openLog()
+{
+	if ((ServerManager::access_fd = open(ACCESS_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
+		return ;
+	if ((ServerManager::error_fd = open(ERROR_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
+		return ;
 }
 
 void
 ServerManager::writeCreateServerLog()
 {
-	std::string text = "[Created][Servers]" + std::to_string(m_servers.size()) + " servers created successfully.";
-	ft::log(ServerManager::access_fd, text);
+	std::string text = "[Created][Servers]" + std::to_string(m_servers.size()) + " servers created successfully.\n";
+	ft::log(ServerManager::access_fd, -1, text);
 	return ;
 }
 
 void
-ServerManager::writeServerHealthLog()
+ServerManager::writeServerHealthLog(bool ignore_interval)
 {
+	if (ignore_interval == false && !ft::isRightTime(SERVER_HEALTH_LOG_SECOND))
+		return ;
 	int fd = ServerManager::access_fd;
 	std::string text = "[HealthCheck][Server][Max_fd:" + std::to_string(m_max_fd) \
-	+ "][ReadFD:" + getSetFdString(fd, &m_read_set) + "][WriteFD:" + getSetFdString(fd, &m_write_set) + "]";
-	ft::log(fd, text);
+	+ "][Connection:" + ft::getSetFdString(m_max_fd, &m_read_set) + "][Response:" + ft::getSetFdString(m_max_fd, &m_write_set) + "]\n";
+	ft::log(fd, -1, text);
 	return ;
 }

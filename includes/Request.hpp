@@ -3,36 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jujeong <jujeong@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:22 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/23 14:39:20 by jujeong          ###   ########.fr       */
+/*   Updated: 2020/09/28 13:14:57 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef REQUEST_HPP
 # define REQUEST_HPP
 
-# include <iostream>
-# include <string>
-# include <map>
-# include <sys/time.h>
-# include <sys/stat.h>
-# include <cstring>
-# include "Server.hpp"
-# include "libft.hpp"
+# include "webserv.hpp"
+# include "Connection.hpp"
+# include "Location.hpp"
 
-# define REQUEST_TIMEOVER 10
-
-class Connection;
 class Server;
-class Location;
 
 class Request
 {
 public:
-	enum Method { GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE };
-	enum URIType { DIRECTORY, FILE, CGI_PROGRAM };
+	enum Method { DEFAULT, GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE };
+	enum URIType { DIRECTORY, FILE, FILE_TO_CREATE, CGI_PROGRAM };
 	enum TransferType { GENERAL, CHUNKED };
 private:
 	Connection *m_connection;
@@ -48,10 +39,13 @@ private:
 	TransferType m_transfer_type;
 	std::string m_content;
 	std::string m_query;
+	std::string m_path_translated;
 	std::string m_path_info;
 	std::string m_origin;
-	std::string m_path_translated;
 
+	bool parseMethod(std::string method_string);
+	bool assignLocationMatchingUri(std::string uri);
+	std::string parseUri();
 public:
 	Request();
 	Request(Connection *conneciton, Server *server, std::string start_line);
@@ -59,12 +53,7 @@ public:
 	Request &operator=(const Request &x);
 	virtual ~Request();
 
-	void add_content(std::string added_content);
-	void add_origin(std::string added_origin);
-	void add_header(std::string key, std::string value);
-	bool isValidHeader(std::string header);
-	bool isOverTime() const;
-
+	/* getter */
 	Connection *get_m_connection() const;
 	Server *get_m_server() const;
 	Location *get_m_location() const;
@@ -80,6 +69,15 @@ public:
 	const std::string &get_m_path_info() const;
 	const std::string &get_m_origin() const;
 	const std::string &get_m_path_translated() const;
+
+	/* setter */
+	void add_content(std::string added_content);
+	void add_origin(std::string added_origin);
+	void add_header(std::string header);
+
+	/* member function */
+	bool isValidHeader(std::string header);
+	bool isOverTime() const;
 };
 
 /* global operator overload */

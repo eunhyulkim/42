@@ -1,38 +1,15 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# include <string>
-# include <iostream>
-# include <map>
-# include <set>
-# include <vector>
-# include <set>
-# include <queue>
-# include <sys/socket.h>
-# include <sys/types.h>
-# include <netinet/in.h>
-# include <arpa/inet.h>
-# include <dirent.h>
-# include <fcntl.h>
-# include "libft.hpp"
-# include "Location.hpp"
-# include "ServerManager.hpp"
+# include "webserv.hpp"
+# include "Config.hpp"
 # include "Connection.hpp"
+# include "Location.hpp"
 # include "Request.hpp"
 # include "Response.hpp"
-# include "Config.hpp"
-# include "Request.hpp"
-# include "Base64.hpp"
-# include "HtmlWriter.hpp"
 
-# define SEND_RESPONSE_AT_ONCE 5
-# define RESPONSE_OVERLOAD_COUNT 20
-# define CGI_META_VARIABLE_COUNT 15
-# define CGI_SUCCESS_CODE 299
-# define HEADERS std::vector<std::string>
-# define SERVER_ALLOW_METHODS "GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE"
-
-# include <vector>
+// class Request;
+class ServerManager;
 
 class Server
 {
@@ -44,22 +21,51 @@ class Server
 		std::string m_host;
 		int m_port;
 		int m_fd;
-		int m_request_uri_limit_size;
-		int m_request_header_limit_size;
-		int m_limit_client_body_size;
+		size_t m_request_uri_limit_size;
+		size_t m_request_header_limit_size;
+		size_t m_limit_client_body_size;
 		std::string m_default_error_page;
 		Config* m_config;
 		std::vector<Location> m_locations;
 		std::map<int, Connection> m_connections;
 		std::queue<Response> m_responses;
 	private:
+		/* util */
 		void basic_decode(std::string data, std::string& key, std::string& value);
 		std::string inet_ntoa(unsigned int address);
+		
+		/* send operation */
+		bool isSendable(int client_fd);
+		void sendResponse(Response response);
+		bool runSend();
+
+		/* connection management */
+		bool hasException(int client_fd);
+		int getUnuseConnectionFd();
+		bool hasNewConnection();
+		bool acceptNewConnection();
+
+		/* read operation */
+		// void redirectStdInOut(int in_fd, int out_fd);
+		void revertStdInOut();
+		void createCGIResponse(int& status, headers_t& headers, std::string& body);
+		bool hasRequest(int client_fd, Request::Method& method);
+		std::string getStartLine(int client_fd);
+		int getHeaderLine(int client_fd, std::string& line);
+		void headerParsing(Request &request, std::string& origin_message, int client_fd);
+		std::string readBodyMessage(Request &request, std::string& origin_message, int client_fd);
+		Request recvRequest(int client_fd, Connection* connection);
+		bool runRecvAndSolve(std::map<int, Connection>::iterator it, Request::Method method);
+
+		/* cgi */
+		char** createCGIEnv(const Request& request);
+
+		/* create response */
 		std::string getExtension(std::string path);
 		std::string getMimeTypeHeader(std::string path);
 		time_t getLastModified(std::string path);
 		std::string getLastModifiedHeader(std::string path);
-		char** createCGIEnv(const Request& request);
+
 	public:
 		Server();
 		Server(ServerManager* server_manager, const std::string& server_block, std::vector<std::string>& location_blocks, Config* config);
@@ -72,37 +78,19 @@ class Server
 		const std::string& get_m_host() const;
 		int get_m_port() const;
 		int get_m_fd() const;
-		int get_m_request_uri_limit_size() const;
-		int get_m_request_header_limit_size() const;
-		int get_m_limit_client_body_size() const;
+		size_t get_m_request_uri_limit_size() const;
+		size_t get_m_request_header_limit_size() const;
+		size_t get_m_limit_client_body_size() const;
 		const std::string& get_m_default_error_page() const;
 		Config* get_m_config() const;
 		const std::vector<Location>& get_m_locations() const;
 		const std::map<int, Connection>& get_m_connections() const;
 		const std::queue<Response>& get_m_responses() const;
 
-		/* setter function */
-		// void set_m_server_name(std::string server_name);
-		// void set_m_host(std::string host);
-		// void set_m_port(int port);
-		// void set_m_fd(int fd);
-		// void set_m_request_uri_limit_size(int request_uri_limit_size);
-		// void set_m_request_header_limit_size(int request_header_limit_size);
-		// void set_m_limit_client_body_size(int limit_client_body_size);
-		// void set_m_default_error_page(std::string default_error_page);
-
 		/* declare member function */
-		bool hasException(int client_fd);
-		void closeConnection(int client_fd);
-		bool hasNewConnection();
-		void acceptNewConnection();
 		void run();
 
-		bool isSendable(int client_fd);
-		void sendResponse(Response response);
-
-		bool hasRequest(int client_fd);
-		Request recvRequest(int client_fd, Connection connection);
+		void closeConnection(int client_fd);
 
 		void solveRequest(const Request& request);
 		void executeAutoindex(const Request& request);
@@ -115,7 +103,18 @@ class Server
 		void executeTrace(const Request& request);
 		void executeCGI(const Request& request);
 
-		void createResponse(Connection* connection, int status, HEADERS headers = HEADERS(), std::string body = "");
+		void createResponse(Connection* connection, int status, headers_t headers = headers_t(), std::string body = "", Request::Method method = Request::DEFAULT);
+
+		/* log function */
+		void writeDetectNewConnectionLog();
+		void writeCreateNewConnectionLog(int client_fd, std::string client_ip, int client_port);
+		void reportCreateNewConnectionLog();
+		void writeDetectNewRequestLog(const Connection& connection);
+		void writeCreateNewRequestLog(const Request& request);
+		void reportCreateNewRequestLog(Connection* connection, int status);
+		void writeCreateNewResponseLog(const Response& response);
+		void writeSendResponseLog(const Response& response);
+		void writeCloseConnectionLog(int client_fd);
 };
 
 /* global operator overload */
