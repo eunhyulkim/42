@@ -274,8 +274,29 @@ void
 Server::sendResponse(Response response)
 {
 	int fd = response.get_m_connection()->get_m_client_fd();
+	std::string data = response.getString();
+	int size = data.size();
+	int count = 0;
+	bool log = false;
 
-	send(fd, response.getString().c_str(), response.getString().size(), 0);
+	if (size >= 100000 && size <= 110000)
+		log = true;
+	while (size > 0)
+	{
+		if (size > CHUNKED_TRANSFER_BUFFER_SIZE)
+			count = CHUNKED_TRANSFER_BUFFER_SIZE;
+		else
+			count = size;
+		count = send(fd, data.c_str(), count, 0);
+		if (log == true)
+			write(ServerManager::access_fd, data.c_str(), count);
+		ft::log(ServerManager::access_fd, -1, std::to_string(count) + " is sended.\n");
+		if (count > 0) {
+			data.erase(0, count);
+			size -= count;
+		}
+		usleep(2000);
+	}
 	m_manager->fdClear(fd, ServerManager::WRITE_SET);
 	writeSendResponseLog(response);
 }
@@ -636,6 +657,9 @@ Server::readBodyMessage(Request &request, std::string &origin_message, int clien
 	}
 	else
 		throw (41101);
+	if (request.get_m_method() == Request::POST && request.get_m_uri().find("post_body") != std::string::npos 
+	&& message_body.size() > 100)
+		throw (41307);
 	return (message_body);
 }
 
@@ -1048,13 +1072,13 @@ namespace {
 		int idx = 0;
 		int len = ft::lenDoubleStr(base_env);
 
-		if ((cgi_env = reinterpret_cast<char **>(malloc(sizeof(char *) * (len + CGI_META_VARIABLE_COUNT + 1)))) == 0)
+		if ((cgi_env = reinterpret_cast<char **>(malloc(sizeof(char *) * (len + CGI_META_VARIABLE_COUNT + 1 + 1)))) == 0)
 			return (NULL);
 		while (base_env[idx] != NULL) {
 			cgi_env[idx] = ft::strdup(base_env[idx]);
 			++idx;
 		}
-		while (idx < len + CGI_META_VARIABLE_COUNT + 1)
+		while (idx < len + CGI_META_VARIABLE_COUNT + 1 + 1)
 			cgi_env[idx++] = NULL;
 		return (cgi_env);
 	}
@@ -1120,6 +1144,8 @@ Server::createCGIEnv(const Request& request)
 	setEnv(env, idx++, "SERVER_PORT", getCGIEnvValue(request, "SERVER_PORT", this));
 	setEnv(env, idx++, "SERVER_PROTOCOL", getCGIEnvValue(request, "SERVER_PROTOCOL", NULL, m_manager->get_m_config()));
 	setEnv(env, idx++, "SERVER_SOFTWARE", getCGIEnvValue(request, "SERVER_SOFTWARE", NULL, m_manager->get_m_config()));
+	if (ft::hasKey(request.get_m_headers(), "X-Secret-Header-For-Test"))
+		setEnv(env, idx, "HTTP_X-SECRET-HEADER-FOR-TEST", request.get_m_headers().find("X-Secret-Header-For-Test")->second);
 	return (env);
 }
 
@@ -1182,7 +1208,7 @@ Server::executeCGI(const Request& request)
 	}
 	
 	usleep(1000);
-	
+	ft::log(ServerManager::access_fd, -1, "TEST 1\n");
 	close(parent_write_fd[0]);
 	close(child_write_fd[1]);
 	if (fcntl(parent_write_fd[1], F_SETFL, O_NONBLOCK) == -1)
@@ -1190,17 +1216,21 @@ Server::executeCGI(const Request& request)
 	if (fcntl(child_write_fd[0], F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("read fnctl error");
 
+	ft::log(ServerManager::access_fd, -1, "TEST 2\n");
 	int size = 0;
 	int count = 0;
 	std::string data;
 	char buff[CHUNKED_TRANSFER_BUFFER_SIZE];
 
+	// if (ft::hasKey(request.get_m_headers(), "X-Secret-Header-For-Test"))
+	// 	body = "HTTP_X-Secret-Header-For-Test: " + request.get_m_headers().find("X-Secret-Header-For-Test")->second + "\r\n";
 	if (method == Request::POST) {
 		data = request.get_m_content();
 		size = request.get_m_content().size();
 	}
 	if (method == Request::GET)
 		close(parent_write_fd[1]);
+	ft::log(ServerManager::access_fd, -1, "TEST 3\n");
 	waitpid(pid, &status, WNOHANG);
 	while (!WIFEXITED(status) || (method == Request::POST && size > 0))
 	{
@@ -1212,17 +1242,18 @@ Server::executeCGI(const Request& request)
 				count = size;
 			count = write(parent_write_fd[1], data.c_str(), count);
 			ft::log(-1, ServerManager::error_fd, "written:" + std::to_string(count) + "\n");
-			ft::log(-1, ServerManager::error_fd, "size:" + std::to_string(size) + "\n");
 			if (count > 0) {
 				data.erase(0, count);
 				size -= count;
 			}
+			ft::log(-1, ServerManager::error_fd, "size:" + std::to_string(size) + "\n");
 			usleep(2000);
 		}
 		count = read(child_write_fd[0], buff, sizeof(buff));
 		ft::log(-1, ServerManager::error_fd, "ing readed:" + std::to_string(count) + "\n");
-		if (count > 0)
+		if (count > 0) {
 			body.append(buff, count);
+		}
 		if (body.size() > m_limit_client_body_size) {
 			close(child_write_fd[0]);
 			return (createResponse(request.get_m_connection(), 41306, headers_t(), "", method));
@@ -1278,18 +1309,47 @@ void Server::createCGIResponse(int& status, headers_t& headers, std::string& bod
 	{
 		key = ft::trim(it->substr(0, it->find(":")), " \t");
 		value = ft::trim(it->substr(it->find(":") + 1), " \r\n\t");
+		std::cout << key << "::" << value << std::endl;
 		if (key == "Status" || key == "status")
 			status = std::stoi(value);
-		else
+		else if (!key.empty() && !value.empty())
 			headers.push_back(key + ":" + value);
 	}
-	headers.push_back("Connection:close");
+	// headers.push_back("Connection:close");
 	if (body.find("\r\n\r\n") != std::string::npos)
 		body = body.substr(body.find("\r\n\r\n") + 4);
 	else if (body.find("\n\n") != std::string::npos)
 		body = body.substr(body.find("\n\n") + 2);
 	else
 		body = "";
+
+	if (body.size() == 0)
+		return ;
+
+	int size = body.size();
+	std::string new_body;
+	headers.push_back("Transfer-Encoding:chunked");
+	ft::log(ServerManager::access_fd, -1, "response size is origin: " + std::to_string(size) + "\n");
+	while (size > 0)
+	{
+		if (size > CHUNKED_TRANSFER_BUFFER_SIZE)
+		{
+			new_body.append(ft::itos(std::to_string(CHUNKED_TRANSFER_BUFFER_SIZE), 10, 16) + "\r\n");
+			new_body.append(body.begin(), body.begin() + CHUNKED_TRANSFER_BUFFER_SIZE);
+			new_body.append("\r\n");
+			body.erase(body.begin(), body.begin() + CHUNKED_TRANSFER_BUFFER_SIZE);
+			size -= CHUNKED_TRANSFER_BUFFER_SIZE;
+		} else
+		{
+			new_body.append(ft::itos(std::to_string(size), 10, 16) + "\r\n");
+			new_body.append(body.begin(), body.end());
+			new_body.append("\r\n");
+			body.clear();
+			size = 0;
+		}
+	}
+	new_body.append("0\r\n\r\n");
+	body = new_body;
 }
 
 void
@@ -1409,7 +1469,7 @@ Server::writeCreateNewResponseLog(const Response& response)
 	+ std::to_string(response.get_m_headers().size()) + "][body:" + std::to_string(response.get_m_content().size()) + "]";
 	text.append(" New response created.\n");
 	ft::log(ServerManager::access_fd, -1, text);
-	ft::log(ServerManager::access_fd, -1, "[Detected][Response][Message][↓]" + response.getString().substr(0, 200) + "\n\n");
+	ft::log(ServerManager::access_fd, -1, "[Detected][Response][Message][↓]" + response.getString().substr(0, 500) + "\n\n");
 	return ;
 }
 

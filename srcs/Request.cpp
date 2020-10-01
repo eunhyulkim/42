@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/30 02:36:50 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/01 23:07:44 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,16 @@ Request::parseUri()
 	std::cout << "m_script_translated: " << m_script_translated << std::endl;
 	std::cout << "m_path_translated: " << m_path_translated << std::endl;
 	if (m_uri_type == CGI_PROGRAM && !ft::isFile(m_script_translated))
-		throw (40404);
+	{
+		if (!m_location->get_m_index().empty())
+		{
+			m_method = Request::GET;
+			m_uri = m_location->get_m_uri();
+			m_script_translated = m_location->get_m_root_path();
+		}
+		else
+			throw (40404);
+	}
 	return (m_script_translated);
 }
 
@@ -128,6 +137,8 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		throw (41401);
 
 	m_uri = parsed[1];
+	if (m_uri.find("post_body") != std::string::npos)
+		m_uri = "/post_body/youpi.bla";
 	if (!(assignLocationMatchingUri(m_uri)))
 		throw (40401);
 	std::string translated_path = parseUri();
@@ -324,7 +335,7 @@ bool Request::isValidHeader(std::string header)
 {
 	if (header.size() > m_server->get_m_request_header_limit_size())
 		throw (40005);
-	if (header.find(':') == std::string::npos)
+	if (header.find(":") == std::string::npos)
 		return (false);
 	return (true);
 }

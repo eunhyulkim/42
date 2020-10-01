@@ -108,6 +108,7 @@ void Response::addHeader(std::string header_key, std::string header_value)
 		this->m_connection_type = CLOSE;
 	else
 		this->m_headers[header_key] = header_value;
+	std::cout << header_key << "*:*" << header_value << std::endl;
 }
 
 std::string Response::getString() const
@@ -211,6 +212,7 @@ make_status ()
 	status_map[41304] = "Payload Too Large: File size is too large in GET method";
 	status_map[41305] = "Payload Too Large: File size is too large in HEAD method";
 	status_map[41306] = "Payload Too Large: CGI output size is too large";
+	status_map[41307] = "Payload Too Large: LOCATION SIZE OVER";
 	status_map[41401] = "Bad Request: uri size is greater than request uri limit size";
 	status_map[41501] = "Unsupported Media Type: in GET method";
 	status_map[41502] = "Unsupported Media Type: in HEAD method";

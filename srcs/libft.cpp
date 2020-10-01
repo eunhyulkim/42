@@ -174,6 +174,28 @@ namespace ft
 		return (ret);
 	}
 
+	std::string
+	itos(std::string number, size_t from, size_t to)
+	{
+		std::string base = "0123456789abcdefghijklmnopqrstuvwxyz";
+		std::string ret;
+		bool sign = false;
+		size_t data = std::stoi(number, 0, from);
+
+		if (number.empty())
+			return ("0");
+		if (data < 0)
+		{
+			data *= -1;
+			sign = true;
+		}
+		while (data > 0)
+		{
+			ret.insert(ret.begin(), base[data % to]);
+			data /= to;
+		}
+		return (ret);
+	}
 /* ************************************************************************** */
 /* -------------------------------- C++ LIBFT ------------------------------- */
 /* ************************************************************************** */

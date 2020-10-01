@@ -33,6 +33,7 @@ namespace ft
     int startswith(const char *str, const char *sub);
     int lenDoubleStr(char **str);
     size_t pow(size_t root, size_t square);
+    std::string itos(std::string number, size_t from, size_t to);
 
     /* C++ LIBFT */
     std::string ltrim(std::string s, std::string seps = " ");
