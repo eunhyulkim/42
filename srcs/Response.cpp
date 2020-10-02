@@ -12,7 +12,7 @@ std::map<int, std::string> Response::status = make_status();
 
 Response::Response() {}
 
-Response::Response(Connection *connection, int status_code, std::string body)
+Response::Response(Connection& connection, int status_code, std::string body)
 {
 	this->m_connection = connection;
 	this->m_connection_type = KEEP_ALIVE;

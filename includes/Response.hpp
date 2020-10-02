@@ -12,7 +12,7 @@ class Response
 		enum TransferType { GENERAL, CHUNKED };
 		static std::map<int, std::string> status; // 확인
 	private:
-		Connection* m_connection;
+		Connection m_connection;
 		ConnectionType m_connection_type;
 		int m_status_code;
 		std::string m_status_description;
@@ -21,7 +21,7 @@ class Response
 		std::string m_content;
 	public:
 		Response();
-		Response(Connection *connection, int status_code, std::string body = "");
+		Response(Connection& connection, int status_code, std::string body = "");
 		Response(const Response& copy);
 		Response& operator=(const Response& obj);
 		virtual ~Response();

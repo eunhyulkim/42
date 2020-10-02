@@ -1,4 +1,4 @@
-buf.siz#include "Server.hpp"
+#include "Server.hpp"
 #include "ServerManager.hpp"
 
 /* ************************************************************************** */
@@ -456,6 +456,33 @@ Server::acceptNewConnection()
 /* ----------------------------- READ OPERATION ----------------------------- */
 /* ************************************************************************** */
 
+namespace {
+	bool isMethodHasBody(const Request::Method& method) {
+		return (method == Request::POST || method == Request::PUT || method == Request::TRACE);
+	}
+	int getChunkedSize(std::string& buf, std::string& len)
+	{
+		int content_length;
+		if (!ft::getline(buf, len) && buf.size() > 10)
+			throw (40015);
+		try {
+			content_length = std::stoi(len, 0, 16);
+		} catch (std::exception& e) {
+			throw (40017);
+		}
+		if (content_length < 0)
+			throw (40016);
+		if (content_length == 0)
+		{
+			if (len[0] != '0')
+				throw (40017);
+			else if (!(len[1] == '\0' || (len[1] == '\r' && len[2] == '\0')))
+				throw (40017);
+		}
+		return (content_length);
+	}
+}
+
 bool Server::hasRequest(Connection& connection)
 {
 	Connection::Status status = connection.get_m_status();
@@ -568,92 +595,6 @@ Server::parseBody(Connection& connection, Request& request)
 		request.addOrigin(len + "\r\n");
 		request.addOrigin(buf.substr(0, content_length + 2));
 		connection.decreaseRbuf(content_length + 2);
-	}
-}
-
-namespace {
-	bool isMethodHasBody(const Request::Method& method) {
-		return (method == Request::POST || method == Request::PUT || method == Request::TRACE);
-	}
-	int getChunkedSize(std::string& buf, std::string& len)
-	{
-		int content_length;
-		if (!ft::getline(buf, len) && buf.size() > 10)
-			throw (40015);
-		try {
-			content_length = std::stoi(len, 0, 16);
-		} catch (std::exception& e) {
-			throw (40017);
-		}
-		if (content_length < 0)
-			throw (40016);
-		if (content_length == 0)
-		{
-			if (len[0] != '0')
-				throw (40017);
-			else if (!(len[1] == '\0' || (len[1] == '\r' && len[2] == '\0')))
-				throw (40017);
-		}
-		return (content_length);
-	}
-
-	bool isValidateLineEnd(int client_fd, char* buffer, int buffer_size)
-	{
-		int read_len = ft::getline(client_fd, buffer, buffer_size);
-		if (read_len < 0 || read_len > 1 || (read_len == 1 && buffer[0] != '\r'))
-			throw (40018);
-		return (true);
-	}
-	std::string readBodyMessageChunked(int client_fd, std::string& origin_message)
-	{
-		char buffer[CHUNKED_TRANSFER_BUFFER_SIZE] = { '\0', };
-		int content_length = 0;
-		int total_length = 0;
-		int read_len;
-		std::string body;
-
-		while (true)
-		{
-			content_length = getChunkedSize(client_fd, buffer, sizeof(buffer));
-			origin_message.append(buffer + std::string("\n"));
-			if (content_length == 0 && isValidateLineEnd(client_fd, buffer, sizeof(buffer)))
-				break ;
-			if (content_length > 0)
-				total_length += content_length;
-			// while (content_length > CHUNKED_TRNASFER_BUFFER_SIZE)
-			while (content_length > CHUNKED_TRANSFER_BUFFER_SIZE)
-			{
-				usleep(2000);
-				if ((read_len = read(client_fd, buffer, CHUNKED_TRANSFER_BUFFER_SIZE)) > 0)
-				{
-						// throw (40019);
-					body.append(buffer, read_len);
-					origin_message.append(buffer, read_len);
-					content_length -= read_len;
-				}
-			}
-			while (content_length > 0)
-			{
-				usleep(2000);
-				if ((read_len = read(client_fd, buffer, content_length)) > 0)
-				{
-						// throw (40019);
-					body.append(buffer, read_len);
-					origin_message.append(buffer, read_len);
-					content_length -= read_len;
-				}
-			}
-			// if ((read_len = read(client_fd, buffer, content_length)) < 0)
-			// 	throw (40020);
-			// if (read_len != content_length)
-			// 	throw (40021);
-			// body.append(buffer, read_len);
-			// origin_message.append(buffer, content_length);
-			if (isValidateLineEnd(client_fd, buffer, sizeof(buffer)))
-				origin_message.append(buffer + std::string("\n"));
-
-		}
-		return (body);
 	}
 }
 
@@ -817,11 +758,11 @@ namespace {
 		return (key.empty() || value.empty() || !ft::hasKey(location->get_m_auth_basic_file(), key)
 		|| location->get_m_auth_basic_file().find(key)->second != value);
 	}
-	void makeResponse401(Server* server, const Request& request, Request::Method method) {
+	void makeResponse401(Server* server, const Request& request, Connection& connection) {
 		std::string header = "WWW-Authenticate:Basic realm=\"";
 		header.append(request.get_m_location()->get_m_auth_basic_realm());
 		header.append("\", charset=\"UTF-8\"");
-		return (server->createResponse(connection, 40101, headers_t(1, header), "", method));
+		return (server->createResponse(connection, 40101, headers_t(1, header)));
 	}
 }
 
@@ -838,7 +779,7 @@ Server::solveRequest(Connection& connection, const Request& request)
 	}
 	if (isAuthorizationRequired(location)) {
 		if (!hasCredential(request)) {
-			return (makeResponse401(this, request, method));
+			return (makeResponse401(this, request, connection));
 		} else {
 			std::vector<std::string> credential = ft::split(request.get_m_headers().find("Authorization")->second, ' ');
 			if (!isValidCredentialForm(credential))
@@ -848,7 +789,7 @@ Server::solveRequest(Connection& connection, const Request& request)
 		}
 	}
 	if (method == Request::TRACE)
-		executeTrace(request);
+		executeTrace(connection, request);
 	else if (request.get_m_uri_type() == Request::DIRECTORY)
 		return (executeAutoindex(connection, request));
 	else if (request.get_m_uri_type() == Request::CGI_PROGRAM)
@@ -995,7 +936,7 @@ Server::executeHead(Connection& connection, const Request& request)
 
 	headers_t headers(1, getMimeTypeHeader(path));
 	if (headers[0].empty())
-		return (createResponse(connection, 41502, headers_t(), "", Request::HEAD));
+		return (createResponse(connection, 41502));
 	headers.push_back(getLastModifiedHeader(path));
 	headers.push_back("content-length:" + std::to_string(body.size()));
 	return (createResponse(connection, 200, headers));
@@ -1004,7 +945,7 @@ Server::executeHead(Connection& connection, const Request& request)
 void
 Server::executeTrace(Connection& connection, const Request& request)
 {
-	createResponse(request.get_m_connection(), 200, headers_t(1, "Content-Type:text/plain"), request.get_m_origin());
+	createResponse(connection, 200, headers_t(1, "Content-Type:text/plain"), request.get_m_origin());
 }
 
 void
@@ -1333,8 +1274,8 @@ Server::createResponse(Connection& connection, int status, headers_t headers, st
 		headers.push_back("Retry-After:3600");
 	if (connection.get_m_request().get_m_method() == Request::HEAD)
 		body = "";
-
-	Response response(connection, status, body);
+	Response& response = const_cast<Response&>(connection.get_m_response());
+	response = Response(connection, status, body);
 	headers_t::iterator it = headers.begin();
 	for (; it != headers.end(); ++it) {
 		std::string key = ft::rtrim((*it).substr(0, (*it).find(":")), " ");
