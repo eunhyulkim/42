@@ -29,7 +29,7 @@ namespace ft
     size_t strlen(const char *s);
     char *strchr(const char *s, int c);
     char *strsub(char const *s, unsigned int start, size_t len);
-    char *strsjoin(std::string s1 = "", std::string s2 = "", std::string s3 = "", std::string s4 = "", std::string s5 = ""); 
+    char *strsjoin(std::string s1 = "", std::string s2 = "", std::string s3 = "", std::string s4 = "", std::string s5 = "");
     int startswith(const char *str, const char *sub);
     int lenDoubleStr(char **str);
     size_t pow(size_t root, size_t square);
@@ -46,9 +46,11 @@ namespace ft
     std::map<std::string, std::string> stringVectorToMap(std::vector<std::string> stringVector, char sep = ':');
     std::string containerToString(std::vector<unsigned char> container, std::string sep = "");
     int getline(int fd, char *line, int max_buffer_size);
+    int getline(std::string& data, char *line, int max_buffer_size);
+	int getline(std::string& data, std::string& line);
     bool isFile(std::string path);
     bool isDirectory(std::string path);
-    
+
     /* TCP function */
     void convertTimespecToTm(time_t s, struct tm* t);
 	unsigned long ws_htonl(unsigned long x);
@@ -68,7 +70,7 @@ namespace ft
     /* Template function */
     template <typename T, typename V>
     bool hasKey(T container, V value) { return (container.find(value) != container.end()); }
-    
+
     template <typename T>
     std::string containerToString(T container, std::string sep = " ")
     {

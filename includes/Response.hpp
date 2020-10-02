@@ -2,7 +2,8 @@
 # define Response_HPP
 
 # include "webserv.hpp"
-# include "Connection.hpp"
+
+class Connection;
 
 class Response
 {
@@ -18,8 +19,8 @@ class Response
 		std::map<std::string, std::string> m_headers;
 		TransferType m_trasfer_type;
 		std::string m_content;
-		Response();
 	public:
+		Response();
 		Response(Connection *connection, int status_code, std::string body = "");
 		Response(const Response& copy);
 		Response& operator=(const Response& obj);
@@ -36,6 +37,7 @@ class Response
 
 		/* setter */
 		void addHeader(std::string header_key, std::string header_value);
+		void addContent(const std::string& body);
 
 		/* member function */	
 		std::string getString() const;

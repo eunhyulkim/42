@@ -321,7 +321,7 @@ namespace ft
 		}
 		return (ret);
 	}
-	
+
 	std::string containerToString(std::vector<unsigned char> container, std::string sep)
 	{
         std::string ret;
@@ -350,6 +350,50 @@ namespace ft
 		return (idx);
 	}
 
+	int getline(std::string& data, char* line, int buffer_size)
+	{
+		if (data.find("\n") == std::string::npos)
+		{
+			if (data.size() == buffer_size)
+				throw (std::overflow_error("line size is greather than buffer size"));
+			else
+				return (-1);
+		}
+
+		int pos = data.find("\n");
+		std::string str = rtrim(data.substr(0, pos), "\r");
+		data.erase(0, pos + 1);
+		std::strncpy(line, str.c_str(), buffer_size);
+		return (data.size());
+	}
+
+	int getline(std::string& data, std::string& line, int buffer_size)
+	{
+		if (data.find("\n") == std::string::npos)
+		{
+			if (data.size() == buffer_size)
+				throw (std::overflow_error("line size is greather than buffer size"));
+			else
+				return (-1);
+		}
+
+		int pos = data.find("\n");
+		line = rtrim(data.substr(0, pos), "\r");
+		data.erase(0, pos + 1);
+		return (data.size());
+	}
+
+	int getline(std::string& data, std::string& line)
+	{
+		if (data.find("\r\n") == std::string::npos)
+			return (0);
+
+		int pos = data.find("\r\n");
+		line = data.substr(0, pos);
+		data.erase(0, pos + 2);
+		return (1);
+	}
+
 	bool isFile(std::string path)
 	{
 		struct stat buf;
@@ -361,7 +405,7 @@ namespace ft
 	{
 		struct stat buf;
 		stat(path.c_str(), &buf);
-		return (S_ISDIR(buf.st_mode));	
+		return (S_ISDIR(buf.st_mode));
 	}
 /* ************************************************************************** */
 /* ------------------------------ TCP FUNCTION ------------------------------ */
@@ -399,7 +443,7 @@ namespace ft
 		ft::addDevideResult(t->tm_hour, data, 3600);
 		ft::addDevideResult(t->tm_min, data, 60);
 		t->tm_sec = data;
-	
+
 		while (t->tm_yday > 365) {
 			if (t->tm_year % 4 == 0 && (t->tm_year % 100 != 0 || t->tm_year % 400 == 0)) {
 				if (t->tm_yday == 366)
@@ -507,7 +551,7 @@ namespace ft
 		if (error_fd != -1)
 			write(error_fd, text.c_str(), text.size());
 	}
-	
+
 	bool isRightTime(int second) {
 		timeval t;
 		gettimeofday(&t, NULL);

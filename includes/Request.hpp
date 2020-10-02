@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: yopar <yopar@student.42seoulseoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:22 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/29 19:00:28 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/02 21:36:435 by yopar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 # define REQUEST_HPP
 
 # include "webserv.hpp"
-# include "Connection.hpp"
 # include "Location.hpp"
 
+class Connection;
 class Server;
 
 class Request
@@ -25,17 +25,20 @@ public:
 	enum Method { DEFAULT, GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE };
 	enum URIType { DIRECTORY, FILE, FILE_TO_CREATE, CGI_PROGRAM };
 	enum TransferType { GENERAL, CHUNKED };
+	enum Phase { READY, ON_HEADER, ON_BODY, COMPLETE };
 private:
-	Connection *m_connection;
+	Connection& m_connection;
 	Server *m_server;
 	Location *m_location;
 	timeval m_start_at;
+	Phase m_phase;
 
 	Method m_method;
 	std::string m_uri;
 	URIType m_uri_type;
 	std::string m_protocol;
 	std::map<std::string, std::string> m_headers;
+	int m_speical_heade_count;
 	TransferType m_transfer_type;
 	std::string m_content;
 	std::string m_query;
@@ -49,7 +52,7 @@ private:
 	std::string parseUri();
 public:
 	Request();
-	Request(Connection *conneciton, Server *server, std::string start_line);
+	Request(Connection& conneciton, Server *server, std::string start_line);
 	Request(const Request &x);
 	Request &operator=(const Request &x);
 	virtual ~Request();
@@ -71,11 +74,15 @@ public:
 	const std::string &get_m_origin() const;
 	const std::string &get_m_path_translated() const;
 	const std::string &get_m_script_translated() const;
+	Phase get_m_phase() const;
+	int get_m_special_header_count() const;
 
 	/* setter */
-	void add_content(std::string added_content);
-	void add_origin(std::string added_origin);
-	void add_header(std::string header);
+	void addContent(std::string added_content);
+	void addOrigin(std::string added_origin);
+	void addHeader(std::string header);
+	void set_m_phase(Phase phase);
+	void addSpecialHeaderCount();
 
 	/* member function */
 	bool isValidHeader(std::string header);

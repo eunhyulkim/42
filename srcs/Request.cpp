@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jujengim <jujengim@student.42.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/10/01 23:07:44 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/02 22:09:14 by jujeng          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,10 @@
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-Request::Request() {}
+Request::Request()
+{
+	m_phase = Request::READY;
+}
 
 bool
 Request::parseMethod(std::string methodString)
@@ -94,7 +97,7 @@ Request::parseUri()
 				uri = uri.substr(0, uri.find("?"));
 				m_path_info = m_uri.substr(0, uri.find("?"));
 			} else
-				m_path_info = m_uri;			
+				m_path_info = m_uri;
 			main_path = uri.substr(0, idx + it->size());
 			refer_path = uri.substr(idx + it->size());
 			break ;
@@ -125,7 +128,7 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 {
 	if (gettimeofday(&m_start_at, NULL) == -1)
 		throw std::runtime_error("gettimeofday function failed in request generator");
-	
+
 	std::vector<std::string> parsed = ft::split(start_line, ' ');
 	if (parsed.size() != 3) {
 		ft::log(ServerManager::access_fd, ServerManager::error_fd, "[StartLine]" + start_line);
@@ -265,7 +268,7 @@ const std::string		&Request::get_m_path_info() const { return (m_path_info); }
 const std::string		&Request::get_m_origin() const { return (m_origin); }
 const std::string		&Request::get_m_path_translated() const { return (m_path_translated); }
 const std::string		&Request::get_m_script_translated() const { return (m_script_translated); }
-std::string 		Request::get_m_method_to_string() const
+std::string 			Request::get_m_method_to_string() const
 {
 	if (m_method == GET) return (std::string("GET"));
 	else if (m_method == HEAD) return (std::string("HEAD"));
@@ -276,19 +279,21 @@ std::string 		Request::get_m_method_to_string() const
 	else if (m_method == OPTIONS) return (std::string("OPTIONS"));
 	return (std::string(""));
 }
+Request::Phase			Request::get_m_phase() const { return (m_phase); }
+int						Request::get_m_special_header_count() const { return (m_speical_heade_count); }
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */
 /* ************************************************************************** */
 
-void Request::add_content(std::string added_content)
+void Request::addContent(std::string added_content)
 {
 	if (m_content.size() + added_content.size() > m_server->get_m_limit_client_body_size())
 		throw (41301);
 	m_content.append(added_content);
 }
 
-void Request::add_origin(std::string added_origin)
+void Request::addOrigin(std::string added_origin)
 {
 	if (m_method != TRACE)
 		return ;
@@ -297,7 +302,7 @@ void Request::add_origin(std::string added_origin)
 	m_origin.append(added_origin);
 }
 
-void Request::add_header(std::string header)
+void Request::addHeader(std::string header)
 {
 	size_t pos = header.find(':');
 	std::string key = ft::trim(header.substr(0, pos));
@@ -322,6 +327,9 @@ void Request::add_header(std::string header)
 
 	return ;
 }
+
+void Request::set_m_phase(Phase phase) { m_phase = phase; }
+void Request::addSpecialHeaderCount() { ++m_speical_heade_count; }
 
 /* ************************************************************************** */
 /* ------------------------------- EXCEPTION -------------------------------- */

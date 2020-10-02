@@ -13,10 +13,11 @@ class Location
 		std::set<std::string> m_allow_method;
         std::set<std::string> m_index;
         std::set<std::string> m_cgi;
+        size_t m_limit_client_body_size;
         bool m_autoindex;
 		Location();
 	public:
-		Location(const std::string& location_uri, std::string location_block);
+		Location(const std::string& location_uri, std::string location_block, size_t server_limit_client_body_size);
 		Location(const Location& copy);
 		Location& operator=(const Location& obj);
 		virtual ~Location();
@@ -30,6 +31,7 @@ class Location
         const std::set<std::string>& get_m_index() const;
         const std::set<std::string>& get_m_cgi() const;
         const bool& get_m_autoindex() const;
+        size_t get_m_limit_client_body_size() const;
 };
 
 /* global operator overload */

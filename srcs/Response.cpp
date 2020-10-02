@@ -111,6 +111,8 @@ void Response::addHeader(std::string header_key, std::string header_value)
 	std::cout << header_key << "*:*" << header_value << std::endl;
 }
 
+void Response::addContent(const std::string& body) { m_content += body; }
+
 std::string Response::getString() const
 {
 	std::string message;
@@ -124,10 +126,28 @@ std::string Response::getString() const
 	else
 		message += "Connection: Keep-Alive\r\n";
 	if (m_trasfer_type == CHUNKED) {
-		message += "Transfer-Encoding: chunked\r\n";
+		message += "Transfer-Encoding: chunked\r\n\r\n";
+		int size = this->m_content.size();
+		int count;
+		std::string data = m_content;
+		while (size > 0)
+		{
+			if (size > BUFFER_SIZE)
+				count = BUFFER_SIZE;
+			else
+				count = size;
+			message += ft::itos(std::to_string(size), 10, 16) + "\r\n";
+			message += data.substr(0, count) + "\r\n";
+			data.erase(data.begin(), data.begin() + count);
+			size -= count;
+		}
+		message += "0\r\n\r\n";
 	}
-	message += "\r\n";
-	message += this->m_content;
+	else
+	{
+		message += "\r\n";
+		message += this->m_content;
+	}
 	return (message);
 }
 

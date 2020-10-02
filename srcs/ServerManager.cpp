@@ -144,6 +144,7 @@ namespace {
 	
 	bool isValidIpByte(std::string s) { return ((std::stoi(s) >= 0) && (std::stoi(s) <= 255)); }
 	bool isValidCgi(std::string data) { return (data[0] == '.'); }
+	bool isDigit(char c) { return (c >= '0' && c <= '9'); }
 }
 
 bool
@@ -270,10 +271,10 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 {
 	std::map<std::string, std::string>map_block = ft::stringVectorToMap(ft::split(location_block, '\n'), ' ');
 	std::string key[] = {"location", "root", "allow_method", "auth_basic_realm", \
-	"auth_basic_file", "index", "cgi", "autoindex"};
+	"auth_basic_file", "index", "cgi", "autoindex", "limit_client_body_size"};
 	std::set<std::string> key_set(key, key + sizeof(key) / sizeof(key[0]));
 	
-	if (map_block.size() < 2 || map_block.size() > 8)
+	if (map_block.size() < 2 || map_block.size() > 9)
 		return (false);
 	if (!ft::hasKey(map_block, "location") || !ft::hasKey(map_block, "root"))
 		return (false);
@@ -324,6 +325,12 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 	if (ft::hasKey(map_block, key[7])) {
 		std::string autoindex = map_block[key[7]];
 		if (autoindex != "on" && autoindex != "off")
+			return (false);
+	}
+
+	if (ft::hasKey(map_block, key[8])) {
+		std::string size = map_block[key[8]];
+		if (size.empty() || !std::all_of(size.begin(), size.end(), isDigit))
 			return (false);
 	}
 
@@ -467,7 +474,8 @@ ServerManager::closeOldConnection(std::vector<Server>::iterator server_it)
 	while (it != server_it->get_m_connections().end())
 	{
 		int fd = it->first;
-		if (!ft::hasKey(m_server_fdset, fd) && it->second.isOverTime() && !fdIsset(it->first, WRITE_SET)) {
+		if (!ft::hasKey(m_server_fdset, fd) && it->second.isOverTime())
+		{
 			++it;
 			server_it->closeConnection(fd);
 		} else
@@ -511,6 +519,13 @@ void
 ServerManager::exitServer(const std::string& error_msg)
 {
 	std::cout << error_msg << std::endl;
+	close(ServerManager::access_fd);
+	close(ServerManager::error_fd);
+	for (size_t i = 0; i < m_max_fd; ++i)
+	{
+		if (fdIsset(i, READ_SET))
+			close(i);
+	}
 	exit(EXIT_FAILURE);
 }
 
