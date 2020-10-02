@@ -45,9 +45,9 @@ class Connection
 		int get_m_token_size() const;
 		int get_m_readed_size() const;
 		const Response& get_m_response() const;
-		std::string& get_m_rbuf() const;
+		const std::string& get_m_rbuf() const;
 		const std::string& get_m_cgi_rbuf() const;
-		std::string& get_m_wbuf() const;
+		const std::string& get_m_wbuf() const;
 		timeval get_m_last_request_at() const;
 		std::string get_m_client_ip() const;
 		int get_m_client_port() const;

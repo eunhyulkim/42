@@ -121,7 +121,7 @@ int Connection::get_m_to_child_fd() const { return (this->m_to_child_fd); }
 const Request& Connection::get_m_request() const { return (this->m_request); }
 int Connection::get_m_token_size() const { return (this->m_token_size); }
 int Connection::get_m_readed_size() const { return (this->m_readed_size); }
-std::string& Connection::get_m_rbuf() const { return (this->m_rbuf); }
+const std::string& Connection::get_m_rbuf() const { return (this->m_rbuf); }
 const std::string& Connection::get_m_cgi_rbuf() const { return (this->m_cgi_rbuf); }
 const std::string& Connection::get_m_wbuf() const { return (this->m_wbuf); }
 const Response& Connection::get_m_response() const { return (this->m_response); }

@@ -46,7 +46,7 @@ namespace ft
     std::map<std::string, std::string> stringVectorToMap(std::vector<std::string> stringVector, char sep = ':');
     std::string containerToString(std::vector<unsigned char> container, std::string sep = "");
     int getline(int fd, char *line, int max_buffer_size);
-    int getline(std::string& data, char *line, int max_buffer_size);
+    int getline(std::string& data, char *line, size_t max_buffer_size);
 	int getline(std::string& data, std::string& line);
     bool isFile(std::string path);
     bool isDirectory(std::string path);

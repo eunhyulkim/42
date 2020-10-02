@@ -350,11 +350,11 @@ namespace ft
 		return (idx);
 	}
 
-	int getline(std::string& data, char* line, int buffer_size)
+	int getline(std::string& data, char* line, size_t buffer_size)
 	{
 		if (data.find("\n") == std::string::npos)
 		{
-			if (data.size() == buffer_size)
+			if (data.size() >= buffer_size)
 				throw (std::overflow_error("line size is greather than buffer size"));
 			else
 				return (-1);
@@ -367,11 +367,11 @@ namespace ft
 		return (data.size());
 	}
 
-	int getline(std::string& data, std::string& line, int buffer_size)
+	int getline(std::string& data, std::string& line, size_t buffer_size)
 	{
 		if (data.find("\n") == std::string::npos)
 		{
-			if (data.size() == buffer_size)
+			if (data.size() >= buffer_size)
 				throw (std::overflow_error("line size is greather than buffer size"));
 			else
 				return (-1);

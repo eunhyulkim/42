@@ -506,7 +506,7 @@ Server::parseStartLine(Connection& connection, Request& request)
 		std::string start_line = connection.get_m_rbuf().substr(0, new_line);
 		connection.decreaseRbuf(start_line.size() + 2);
 		request.addOrigin(start_line + "\r\n");
-		request = Request(connection, this, start_line);
+		request = Request(&connection, this, start_line);
 		return (true);
 	} else if (connection.get_m_rbuf().size() > REQUEST_URI_LIMIT_SIZE_MAX)
 		throw (40006);
@@ -516,7 +516,7 @@ Server::parseStartLine(Connection& connection, Request& request)
 bool
 Server::parseHeader(Connection& connection, Request& request)
 {
-	std::string& rbuf = connection.get_m_rbuf();
+	std::string& rbuf = const_cast<std::string&>(connection.get_m_rbuf());
 	char buff[REQUEST_HEADER_LIMIT_SIZE_MAX + 1];
 
 	while (ft::getline(rbuf, buff, REQUEST_HEADER_LIMIT_SIZE_MAX) >= 0)
@@ -542,14 +542,14 @@ Server::parseBody(Connection& connection, Request& request)
 	if (!isMethodHasBody(request.get_m_method()))
 		return (true);
 
-	std::string& buf = connection.get_m_rbuf();
+	std::string& buf = const_cast<std::string&>(connection.get_m_rbuf());
 
 	if (request.get_m_transfer_type() == Request::GENERAL)
 	{
 		if (!ft::hasKey(request.get_m_headers(), "Content-Length"))
 			throw (41101);
 		connection.set_m_token_size(std::stoi(request.get_m_headers().find("Content-Length")->second));
-		if (connection.get_m_readed_size() + buf.size() <= connection.get_m_token_size())
+		if (connection.get_m_readed_size() + static_cast<int>(buf.size()) <= connection.get_m_token_size())
 		{
 			request.addContent(buf);
 			request.addOrigin(buf);
@@ -584,7 +584,7 @@ Server::parseBody(Connection& connection, Request& request)
 			}
 			throw (40018);
 		}
-		if (buf.size() < content_length + 2)
+		if (static_cast<int>(buf.size()) < content_length + 2)
 		{
 			buf.insert(0, len + "\r\n");
 			return (false);
@@ -595,7 +595,9 @@ Server::parseBody(Connection& connection, Request& request)
 		request.addOrigin(len + "\r\n");
 		request.addOrigin(buf.substr(0, content_length + 2));
 		connection.decreaseRbuf(content_length + 2);
+		return (true);
 	}
+	return (false);
 }
 
 void
@@ -607,7 +609,7 @@ Server::recvRequest(Connection& connection, const Request& const_request)
 	Request::Phase phase = request.get_m_phase();
 	connection.set_m_status(Connection::ON_RECV);
 	if (hasRequest(connection) && (count = recv(connection.get_m_client_fd(), buf, count, 0)) != -1)
-		connection.get_m_rbuf().append(buf, count);
+		connection.addRbuf(buf, count);
 
 	// if (request.get_m_method() == Request::TRACE)
 	// 	request.addOrigin(origin_message);
@@ -711,7 +713,6 @@ Server::run()
 	{
 		std::map<int, Connection>::iterator it2 = it++;
 		int fd = it2->first;
-		Request::Method method = Request::DEFAULT;
 
 		if (m_fd == fd)
 			continue ;
@@ -1127,7 +1128,6 @@ Server::executeCGI(Connection& connection, const Request& request)
 	char **env;
 	Request::Method method = request.get_m_method();
 	std::string body;
-	int status = 0;
 
 	if ((env = createCGIEnv(request)) == NULL)
 		return (createResponse(connection, 50005));
@@ -1275,7 +1275,7 @@ Server::createResponse(Connection& connection, int status, headers_t headers, st
 	if (connection.get_m_request().get_m_method() == Request::HEAD)
 		body = "";
 	Response& response = const_cast<Response&>(connection.get_m_response());
-	response = Response(connection, status, body);
+	response = Response(&connection, status, body);
 	headers_t::iterator it = headers.begin();
 	for (; it != headers.end(); ++it) {
 		std::string key = ft::rtrim((*it).substr(0, (*it).find(":")), " ");

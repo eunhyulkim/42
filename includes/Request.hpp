@@ -27,7 +27,7 @@ public:
 	enum TransferType { GENERAL, CHUNKED };
 	enum Phase { READY, ON_HEADER, ON_BODY, COMPLETE };
 private:
-	Connection& m_connection;
+	Connection* m_connection;
 	Server *m_server;
 	Location *m_location;
 	timeval m_start_at;
@@ -52,7 +52,7 @@ private:
 	std::string parseUri();
 public:
 	Request();
-	Request(Connection& conneciton, Server *server, std::string start_line);
+	Request(Connection* conneciton, Server *server, std::string start_line);
 	Request(const Request &x);
 	Request &operator=(const Request &x);
 	virtual ~Request();

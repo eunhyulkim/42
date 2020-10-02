@@ -521,7 +521,7 @@ ServerManager::exitServer(const std::string& error_msg)
 	std::cout << error_msg << std::endl;
 	close(ServerManager::access_fd);
 	close(ServerManager::error_fd);
-	for (size_t i = 0; i < m_max_fd; ++i)
+	for (int i = 0; i < m_max_fd; ++i)
 	{
 		if (fdIsset(i, READ_SET))
 			close(i);
