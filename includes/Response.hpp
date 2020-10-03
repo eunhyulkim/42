@@ -38,6 +38,7 @@ class Response
 		/* setter */
 		void addHeader(std::string header_key, std::string header_value);
 		void addContent(const std::string& body);
+		void clear();
 
 		/* member function */	
 		std::string getString() const;

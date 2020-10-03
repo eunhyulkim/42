@@ -69,6 +69,7 @@ class Connection
 		void clearRbuf();
 		void clearCgiRbuf();
 		void clearWbuf();
+		void clear();
 
 		/* member function */
 		bool isOverTime() const;

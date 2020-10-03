@@ -92,6 +92,14 @@ std::string Response::get_m_content() const { return (this->m_content); }
 /* --------------------------------- SETTER --------------------------------- */
 /* ************************************************************************** */
 
+void Response::clear()
+{
+	m_status_code = -1;
+	m_status_description.clear();
+	m_headers.clear();
+	m_trasfer_type = GENERAL;
+	m_content.clear();
+}
 /* ************************************************************************** */
 /* ------------------------------- EXCEPTION -------------------------------- */
 /* ************************************************************************** */
@@ -108,7 +116,6 @@ void Response::addHeader(std::string header_key, std::string header_value)
 		this->m_connection_type = CLOSE;
 	else
 		this->m_headers[header_key] = header_value;
-	std::cout << header_key << "*:*" << header_value << std::endl;
 }
 
 void Response::addContent(const std::string& body) { m_content += body; }

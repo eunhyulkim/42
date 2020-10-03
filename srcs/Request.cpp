@@ -24,6 +24,16 @@
 Request::Request()
 {
 	m_phase = Request::READY;
+	m_connection = NULL;
+	m_server = NULL;
+	m_location = NULL;
+	m_start_at.tv_sec = 0;
+	m_start_at.tv_usec = 0;
+	m_phase = READY;
+	m_method = DEFAULT;
+	m_uri_type = FILE;
+	m_speical_header_count = 0;
+	m_transfer_type = GENERAL;
 }
 
 bool
@@ -103,12 +113,8 @@ Request::parseUri()
 			break ;
 		}
 	}
-	std::cout << "main_path: " << main_path << std::endl;
-	std::cout << "refer_path: " << refer_path << std::endl;
 	m_script_translated = getTranslatedPath(m_location->get_m_root_path(), main_path);
 	m_path_translated = getTranslatedPath(m_location->get_m_root_path(), refer_path);
-	std::cout << "m_script_translated: " << m_script_translated << std::endl;
-	std::cout << "m_path_translated: " << m_path_translated << std::endl;
 	if (m_uri_type == CGI_PROGRAM && !ft::isFile(m_script_translated))
 	{
 		if (!m_location->get_m_index().empty())
@@ -147,7 +153,6 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 	std::string translated_path = parseUri();
 	if (translated_path.empty())
 		throw (40002);
-	std::cout << "result: " << translated_path << std::endl;
 	if (ft::isFile(translated_path) && m_uri_type != CGI_PROGRAM)
 		m_uri_type = FILE;
 	else if (ft::isDirectory(translated_path))
@@ -280,7 +285,7 @@ std::string 			Request::get_m_method_to_string() const
 	return (std::string(""));
 }
 Request::Phase			Request::get_m_phase() const { return (m_phase); }
-int						Request::get_m_special_header_count() const { return (m_speical_heade_count); }
+int						Request::get_m_special_header_count() const { return (m_speical_header_count); }
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */
@@ -329,8 +334,25 @@ void Request::addHeader(std::string header)
 }
 
 void Request::set_m_phase(Phase phase) { m_phase = phase; }
-void Request::addSpecialHeaderCount() { ++m_speical_heade_count; }
+void Request::addSpecialHeaderCount() { ++m_speical_header_count; }
 
+void Request::clear()
+{
+	m_phase = READY;
+	m_method = DEFAULT;
+	m_uri.clear();
+	m_uri_type = FILE;
+	m_protocol.clear();
+	m_headers.clear();
+	m_speical_header_count = 0;
+	m_transfer_type = GENERAL;
+	m_content.clear();
+	m_query.clear();
+	m_script_translated.clear();
+	m_path_translated.clear();
+	m_path_info.clear();
+	m_origin.clear();
+}
 /* ************************************************************************** */
 /* ------------------------------- EXCEPTION -------------------------------- */
 /* ************************************************************************** */

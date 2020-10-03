@@ -157,6 +157,19 @@ void Connection::clearWbuf() { m_wbuf.clear(); }
 void Connection::set_m_child_pid(int pid) { m_child_pid = pid; }
 void Connection::set_m_from_child_fd(int fd) { m_from_child_fd = fd; }
 void Connection::set_m_to_child_fd(int fd) { m_to_child_fd = fd; }
+void Connection::clear()
+{
+	m_status = ON_WAIT;
+	m_child_pid = -1;
+	m_from_child_fd = -1;
+	m_to_child_fd = -1;
+	m_request.clear();
+	m_token_size = -1;
+	m_readed_size = 0;
+	m_response.clear();
+	m_cgi_rbuf.clear();
+	m_wbuf.clear();
+}
 
 /* ************************************************************************** */
 /* ------------------------------- EXCEPTION -------------------------------- */

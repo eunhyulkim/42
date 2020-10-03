@@ -279,9 +279,10 @@ Server::runSend(Connection& connection)
 	{
 		connection.set_m_status(Connection::ON_WAIT);
 		m_manager->fdClear(fd, ServerManager::WRITE_SET);
-		if (connection.get_m_response().get_m_status_code() % 100 != 2)
+		if (connection.get_m_response().get_m_status_code() / 100 != 2)
 			closeConnection(connection.get_m_client_fd());
 		writeSendResponseLog(connection.get_m_response());
+		connection.clear();
 	}
 	return (ret);
 }
@@ -476,8 +477,6 @@ namespace {
 		{
 			if (len[0] != '0')
 				throw (40017);
-			else if (!(len[1] == '\0' || (len[1] == '\r' && len[2] == '\0')))
-				throw (40017);
 		}
 		return (content_length);
 	}
@@ -522,7 +521,6 @@ Server::parseHeader(Connection& connection, Request& request)
 	while (ft::getline(rbuf, buff, REQUEST_HEADER_LIMIT_SIZE_MAX) >= 0)
 	{
 		std::string line = buff;
-		connection.decreaseRbuf(line.size() + 2);
 		if (line == "")
 		{
 			if (!ft::hasKey(request.get_m_headers(), "Host"))
@@ -574,7 +572,7 @@ Server::parseBody(Connection& connection, Request& request)
 		{
 			if (buf.find("\r\n") == std::string::npos)
 			{
-				buf.insert(0, len + "\r\n");
+				buf.insert(0, ft::itos(len, 10, 16) + "\r\n");
 				return (false);
 			}
 			if (buf.size() >= 2 && buf[0] == '\r' && buf[1] == '\n')
@@ -586,13 +584,13 @@ Server::parseBody(Connection& connection, Request& request)
 		}
 		if (static_cast<int>(buf.size()) < content_length + 2)
 		{
-			buf.insert(0, len + "\r\n");
+			buf.insert(0, ft::itos(len, 10, 16) + "\r\n");
 			return (false);
 		}
 		if (buf.substr(content_length, 2) != "\r\n")
 			throw (40021);
 		request.addContent(buf.substr(0, content_length));
-		request.addOrigin(len + "\r\n");
+		request.addOrigin(ft::itos(len, 10, 16) + "\r\n");
 		request.addOrigin(buf.substr(0, content_length + 2));
 		connection.decreaseRbuf(content_length + 2);
 		return (true);
@@ -610,13 +608,6 @@ Server::recvRequest(Connection& connection, const Request& const_request)
 	connection.set_m_status(Connection::ON_RECV);
 	if (hasRequest(connection) && (count = recv(connection.get_m_client_fd(), buf, count, 0)) != -1)
 		connection.addRbuf(buf, count);
-
-	// if (request.get_m_method() == Request::TRACE)
-	// 	request.addOrigin(origin_message);
-	//
-	// ft::log(ServerManager::access_fd, -1, "[Detected][Request][Message][↓]\n\n" + origin_message.substr(0, 300) + "\n");
-	// return (request);
-
 	if (phase == Request::READY && parseStartLine(connection, request))
 		phase = Request::ON_HEADER;
 	if (phase == Request::ON_HEADER && parseHeader(connection, request))
@@ -631,7 +622,6 @@ Server::recvRequest(Connection& connection, const Request& const_request)
 bool
 Server::runRecvAndSolve(Connection& connection)
 {
-	writeDetectNewRequestLog(connection);
 	try {
 		recvRequest(connection, connection.get_m_request());
 	} catch (int status_code) {
@@ -1003,7 +993,6 @@ namespace {
 		if (key.empty())
 			return (0);
 		item = ft::strsjoin(key, std::string("="), val);
-		std::cout << item << std::endl;
 		env[idx] = item;
 		return (1);
 	}
@@ -1102,13 +1091,6 @@ Server::createCGIEnv(const Request& request)
 	return (env);
 }
 
-
-// void Server::redirectStdInOut(int* parent_write_fd, int* child_write_fd) {
-// 	if (dup2(parent_write_fd[0], 0) == -1 || dup2(child_write_fd[1], 1) == -1)
-// 		ft::log(ServerManager::access_fd, ServerManager::error_fd, \
-// 		"[Failed][function] dup2 function failed in redirectStdInOut method.");
-// }
-
 void Server::revertStdInOut()
 {
 	if (close(0) == -1 || close(1) == -1)
@@ -1199,7 +1181,6 @@ void Server::createCGIResponse(int& status, headers_t& headers, std::string& bod
 	{
 		key = ft::trim(it->substr(0, it->find(":")), " \t");
 		value = ft::trim(it->substr(it->find(":") + 1), " \r\n\t");
-		std::cout << key << "::" << value << std::endl;
 		if (key == "Status" || key == "status")
 			status = std::stoi(value);
 		else if (!key.empty() && !value.empty())
@@ -1219,7 +1200,6 @@ void Server::createCGIResponse(int& status, headers_t& headers, std::string& bod
 	int size = body.size();
 	std::string new_body;
 	headers.push_back("Transfer-Encoding:chunked");
-	ft::log(ServerManager::access_fd, -1, "response size is origin: " + std::to_string(size) + "\n");
 	while (size > 0)
 	{
 		if (size > CHUNKED_TRANSFER_BUFFER_SIZE)

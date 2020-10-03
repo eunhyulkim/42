@@ -352,35 +352,21 @@ namespace ft
 
 	int getline(std::string& data, char* line, size_t buffer_size)
 	{
-		if (data.find("\n") == std::string::npos)
+		if (data.find("\r\n") == std::string::npos)
 		{
 			if (data.size() >= buffer_size)
 				throw (std::overflow_error("line size is greather than buffer size"));
 			else
 				return (-1);
 		}
-
-		int pos = data.find("\n");
-		std::string str = rtrim(data.substr(0, pos), "\r");
-		data.erase(0, pos + 1);
+		int pos = data.find("\r\n");
+		std::string str = data.substr(0, pos);
+		data.erase(0, pos + 2);
+		if (str.size() < buffer_size)
+			buffer_size = str.size();
 		std::strncpy(line, str.c_str(), buffer_size);
-		return (data.size());
-	}
-
-	int getline(std::string& data, std::string& line, size_t buffer_size)
-	{
-		if (data.find("\n") == std::string::npos)
-		{
-			if (data.size() >= buffer_size)
-				throw (std::overflow_error("line size is greather than buffer size"));
-			else
-				return (-1);
-		}
-
-		int pos = data.find("\n");
-		line = rtrim(data.substr(0, pos), "\r");
-		data.erase(0, pos + 1);
-		return (data.size());
+		line[buffer_size] = '\0';
+		return (buffer_size);
 	}
 
 	int getline(std::string& data, std::string& line)
