@@ -23,7 +23,7 @@
 
 Request::Request()
 {
-	m_phase = Request::READY;
+	m_phase = READY;
 	m_connection = NULL;
 	m_server = NULL;
 	m_location = NULL;
@@ -132,6 +132,7 @@ Request::parseUri()
 Request::Request(Connection *connection, Server *server, std::string start_line)
 : m_connection(connection), m_server(server), m_transfer_type(GENERAL)
 {
+	m_phase = ON_HEADER;
 	if (gettimeofday(&m_start_at, NULL) == -1)
 		throw std::runtime_error("gettimeofday function failed in request generator");
 
@@ -173,6 +174,7 @@ Request::Request(const Request &x)
 	m_start_at = x.m_start_at;
 
 	m_method = x.m_method;
+	m_phase = x.m_phase;
 	m_uri = x.m_uri;
 	m_uri_type = x.m_uri_type;
 	m_protocol = x.m_protocol;
@@ -195,6 +197,7 @@ Request::~Request()
 	m_connection = NULL;
 	m_server = NULL;
 	m_location = NULL;
+	m_phase = READY;
 	m_start_at.tv_sec = 0;
 	m_start_at.tv_usec = 0;
 
@@ -222,7 +225,7 @@ Request &Request::operator=(const Request &x)
 	m_server = x.m_server;
 	m_location = x.m_location;
 	m_start_at = x.m_start_at;
-
+	m_phase = x.m_phase;
 	m_method = x.m_method;
 	m_uri = x.m_uri;
 	m_uri_type = x.m_uri_type;

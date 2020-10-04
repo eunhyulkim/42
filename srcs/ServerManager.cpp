@@ -422,6 +422,24 @@ ServerManager::fdCopy(SetType fdset)
 	}
 }
 
+void
+ServerManager::resetMaxFd(int new_max_fd)
+{
+	if (new_max_fd != -1)
+		set_m_max_fd(new_max_fd);
+	else
+	{
+		for (int i = get_m_max_fd(); i >= 0; --i)
+		{
+			if (fdIsset(i, READ_SET) || fdIsset(i, WRITE_SET))
+			{
+				m_max_fd = i;
+				break ;
+			}
+		}
+	}
+}
+
 /* ************************************************************************** */
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
 /* ************************************************************************** */
@@ -555,6 +573,7 @@ ServerManager::writeServerHealthLog(bool ignore_interval)
 {
 	if (ignore_interval == false && !ft::isRightTime(SERVER_HEALTH_LOG_SECOND))
 		return ;
+	(void)ignore_interval;
 	int fd = ServerManager::access_fd;
 	std::string text = "[HealthCheck][Server][Max_fd:" + std::to_string(m_max_fd) \
 	+ "][Connection:" + ft::getSetFdString(m_max_fd, &m_read_set) + "][Response:" + ft::getSetFdString(m_max_fd, &m_write_set) + "]\n";

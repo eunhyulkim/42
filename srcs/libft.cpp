@@ -178,11 +178,11 @@ namespace ft
 	itos(std::string number, size_t from, size_t to)
 	{
 		std::string base = "0123456789abcdefghijklmnopqrstuvwxyz";
-		std::string ret;
+		std::string ret = "";
 		bool sign = false;
 		size_t data = std::stoi(number, 0, from);
 
-		if (number.empty())
+		if (number.empty() || data == 0)
 			return ("0");
 		if (data < 0)
 		{
@@ -347,36 +347,35 @@ namespace ft
 			return (len * -1);
 		read(fd, line, idx + 1);
 		line[idx] = '\0';
+		if (idx > 0 && line[idx - 1] == '\r')
+			line[--idx] = '\0';
 		return (idx);
 	}
 
-	int getline(std::string& data, char* line, size_t buffer_size)
+	int getline(std::string& data, std::string& line, size_t buffer_size)
 	{
-		if (data.find("\r\n") == std::string::npos)
+		if (data.find("\n") == std::string::npos || data.find("\n") > buffer_size)
 		{
 			if (data.size() >= buffer_size)
 				throw (std::overflow_error("line size is greather than buffer size"));
 			else
 				return (-1);
 		}
-		int pos = data.find("\r\n");
-		std::string str = data.substr(0, pos);
-		data.erase(0, pos + 2);
-		if (str.size() < buffer_size)
-			buffer_size = str.size();
-		std::strncpy(line, str.c_str(), buffer_size);
-		line[buffer_size] = '\0';
-		return (buffer_size);
+		int pos = data.find("\n");
+		line = data.substr(0, pos);
+		line = rtrim(line, "\r");
+		data.erase(0, pos + 1);
+		return (line.size());
 	}
 
 	int getline(std::string& data, std::string& line)
 	{
-		if (data.find("\r\n") == std::string::npos)
+		if (data.find("\n") == std::string::npos)
 			return (0);
-
-		int pos = data.find("\r\n");
+		int pos = data.find("\n");
 		line = data.substr(0, pos);
-		data.erase(0, pos + 2);
+		line = rtrim(line, "\r");
+		data.erase(0, pos + 1);
 		return (1);
 	}
 

@@ -143,7 +143,7 @@ std::string Response::getString() const
 				count = BUFFER_SIZE;
 			else
 				count = size;
-			message += ft::itos(std::to_string(size), 10, 16) + "\r\n";
+			message += ft::itos(std::to_string(count), 10, 16) + "\r\n";
 			message += data.substr(0, count) + "\r\n";
 			data.erase(data.begin(), data.begin() + count);
 			size -= count;

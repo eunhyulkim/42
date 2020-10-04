@@ -59,10 +59,8 @@ Connection::~Connection()
 	this->m_child_pid = -1;
 	this->m_from_child_fd = -1;
 	this->m_to_child_fd = -1;
-	this->m_request.~Request();
 	this->m_token_size = -1;
 	this->m_readed_size = 0;
-	this->m_response.~Response();
 	this->m_rbuf.clear();
 	this->m_cgi_rbuf.clear();
 	this->m_wbuf.clear();
