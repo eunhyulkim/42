@@ -59,6 +59,7 @@ namespace ft
     /* Log util function */
     bool isRightTime(int second);
     void log(int access_fd, int error_fd, std::string text);
+    std::string	getTimestamp(void);
 
     /* Fdset operator */
 	void fdZero(fd_set *x);

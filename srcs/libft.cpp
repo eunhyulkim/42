@@ -544,4 +544,18 @@ namespace ft
 			return (true);
 		return (false);
 	}
+
+	std::string	getTimestamp(void)
+	{
+		std::time_t	t = std::time(0);
+		std::tm* now = std::localtime(&t);
+		std::string ret;
+		ret.append("[" + std::to_string(now->tm_year + 1900));
+		ret.append(std::to_string(now->tm_mon + 1));
+		ret.append(std::to_string(now->tm_mday) + "_");
+		ret.append(std::to_string(now->tm_hour) + "_");
+		ret.append(std::to_string(now->tm_min) + "_");
+		ret.append(std::to_string(now->tm_sec) + "]");
+		return (ret);
+	}
 }

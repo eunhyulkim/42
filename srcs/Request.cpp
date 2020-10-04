@@ -88,14 +88,33 @@ namespace {
 	}
 }
 
+namespace {
+	std::string getIndexPath(const std::set<std::string>& index_set, std::string base_path)
+	{
+		std::set<std::string>::const_iterator it = index_set.begin();
+		struct stat buf;
+		std::string path;
+		for (; it != index_set.end(); ++it)
+		{
+			path = getTranslatedPath(base_path, *it);
+			stat(path.c_str(), &buf);
+			if (S_ISREG(buf.st_mode))
+				return (*it);
+		}
+		return ("");
+	}
+}
+
 std::string
 Request::parseUri()
 {
 	std::string root = m_location->get_m_uri();
-	std::string uri = (root == "/") ? "/" : m_uri.substr(m_uri.find(root) + root.size());
+	std::string uri = (root == "/") ? m_uri : m_uri.substr(m_uri.find(root) + root.size());
 	std::string main_path = uri;
 	std::string refer_path = uri;
 
+	if (ft::isDirectory(getTranslatedPath(m_location->get_m_root_path(), uri)) && !m_location->get_m_autoindex())
+		uri = m_uri = getIndexPath(get_m_location()->get_m_index(), getTranslatedPath(m_location->get_m_root_path(), uri));
 	for (std::set<std::string>::const_iterator it = m_location->get_m_cgi().begin() ; it != m_location->get_m_cgi().end() ; ++it)
 	{
 		if (uri.find(*it) != std::string::npos)
@@ -147,8 +166,6 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		throw (41401);
 
 	m_uri = parsed[1];
-	if (m_uri.find("post_body") != std::string::npos)
-		m_uri = "/post_body/youpi.bla";
 	if (!(assignLocationMatchingUri(m_uri)))
 		throw (40401);
 	std::string translated_path = parseUri();
@@ -296,7 +313,7 @@ int						Request::get_m_special_header_count() const { return (m_speical_header_
 
 void Request::addContent(std::string added_content)
 {
-	if (m_content.size() + added_content.size() > m_server->get_m_limit_client_body_size())
+	if (m_content.size() + added_content.size() > m_location->get_m_limit_client_body_size())
 		throw (41301);
 	m_content.append(added_content);
 }
@@ -332,7 +349,8 @@ void Request::addHeader(std::string header)
 		if (content_length < 0)
 			throw (40004);
 	}
-
+	if (key[0] == 'X')
+		++m_speical_header_count;
 	return ;
 }
 

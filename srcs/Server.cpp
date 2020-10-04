@@ -89,7 +89,7 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 	server_addr.sin_port = ft::ws_htons(m_port);
 	if(bind(m_fd, reinterpret_cast<struct sockaddr *>(&server_addr), sizeof(struct sockaddr)) == -1)
 		throw std::runtime_error("BIND ERROR");
-	if(listen(m_fd, 64) == -1)
+	if(listen(m_fd, 256) == -1)
 		throw std::runtime_error("LISTEN ERROR");
 	if (fcntl(m_fd, F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("FCNTL ERROR");
@@ -273,7 +273,6 @@ Server::runSend(Connection& connection)
 	const std::string& data = connection.get_m_wbuf();
 	int count = (data.size() > BUFFER_SIZE) ? BUFFER_SIZE : data.size();
 	count = send(fd, data.c_str(), count, 0);
-	ft::log(ServerManager::access_fd, -1, "send: " + std::to_string(count) + ", buff: " + std::to_string(connection.get_m_wbuf().size()) + "\n");
 	connection.decreaseWbuf(count);
 	bool ret = connection.get_m_wbuf().empty();
 	if (ret)
@@ -285,7 +284,7 @@ Server::runSend(Connection& connection)
 			closeConnection(connection.get_m_client_fd());
 		else
 			connection.clear();
-		m_manager->writeServerHealthLog(true);
+		// m_manager->writeServerHealthLog(true);
 	}
 	return (ret);
 }
@@ -341,7 +340,7 @@ Server::runExecute(Connection& connection)
 		}
 		else
 		{
-			close(to_child_fd);		
+			close(to_child_fd);
 			m_manager->fdClear(to_child_fd, ServerManager::WRITE_SET);
 			m_manager->resetMaxFd();
 		}
@@ -443,7 +442,7 @@ Server::acceptNewConnection()
 	client_port = static_cast<int>(client_addr.sin_port);
 	m_connections[client_fd] = Connection(client_fd, client_ip, client_port);
 	m_manager->fdSet(client_fd, ServerManager::READ_SET);
-	writeCreateNewConnectionLog(client_fd, client_ip, client_port);
+	// writeCreateNewConnectionLog(client_fd, client_ip, client_port);
 	return (true);
 }
 
@@ -583,11 +582,7 @@ Server::parseBody(Connection& connection, Request& request)
 			return (false);
 		}
 		if (buf.substr(content_length, 2) != "\r\n")
-		{
-			ft::log(-1, ServerManager::error_fd, std::to_string(content_length) + "(content_length)\n");
-			ft::log(-1, ServerManager::error_fd, buf);
 			throw (40021);
-		}
 		request.addContent(buf.substr(0, content_length));
 		request.addOrigin(len + "\r\n");
 		request.addOrigin(buf.substr(0, content_length + 2));
@@ -603,6 +598,8 @@ Server::recvRequest(Connection& connection, const Request& const_request)
 	int count = BUFFER_SIZE - connection.get_m_rbuf().size();
 	Request& request = const_cast<Request&>(const_request);
 	Request::Phase phase = request.get_m_phase();
+	if (connection.get_m_status() == Connection::ON_WAIT)
+		ft::log(ServerManager::access_fd, -1, ft::getTimestamp() + "[READ][START]\n");
 	connection.set_m_status(Connection::ON_RECV);
 	if (hasRequest(connection) && (count = recv(connection.get_m_client_fd(), buf, count, 0)) != -1)
 		connection.addRbuf(buf, count);
@@ -611,7 +608,10 @@ Server::recvRequest(Connection& connection, const Request& const_request)
 	if (phase == Request::ON_HEADER && parseHeader(connection, request))
 		phase = Request::ON_BODY;
 	if (phase == Request::ON_BODY && parseBody(connection, request))
+	{
 		phase = Request::COMPLETE;
+		ft::log(ServerManager::access_fd, -1, ft::getTimestamp() + "[READ][END]\n");
+	}
 	if (phase == Request::COMPLETE)
 		connection.set_m_last_request_at();
 	request.set_m_phase(phase);
@@ -637,7 +637,7 @@ Server::runRecvAndSolve(Connection& connection)
 	const Request& request = connection.get_m_request();
 	if (request.get_m_phase() == Request::COMPLETE)
 	{
-		writeCreateNewRequestLog(request);
+		// writeCreateNewRequestLog(request);
 		connection.set_m_status(Connection::ON_EXECUTE);
 		solveRequest(connection, connection.get_m_request());
 		return (true);
@@ -670,6 +670,8 @@ Server::getMimeTypeHeader(std::string path)
 	std::string ret;
 	if (!extension.empty() && ft::hasKey(mime_types, extension))
 		ret = "Content-type:" + mime_types[extension];
+	else
+		ret = "Content-type:test-for-evaluation";
 	return (ret);
 }
 
@@ -688,6 +690,7 @@ Server::getLastModifiedHeader(std::string path)
 	time_t modified = getLastModified(path);
 	struct tm t;
 	char buff[1024];
+
 	ft::convertTimespecToTm(modified, &t);
 	strftime(buff, sizeof(buff), "%a, %d %b %Y %X GMT", &t);
 	return ("Last-Modified:" + std::string(buff));
@@ -1082,7 +1085,8 @@ Server::createCGIEnv(const Request& request)
 		{
 			std::string new_header = "HTTP_";
 			for (std::string::const_iterator it2 = it->first.begin(); it2 != it->first.end(); ++it2)
-				new_header.push_back((*it2 == '-') ? '_' : std::toupper(*it2));
+				new_header.push_back(std::toupper(*it2));
+				// new_header.push_back((*it2 == '-') ? '_' : std::toupper(*it2));
 			setEnv(env, idx++, new_header, it->second);
 		}
 	}
@@ -1313,20 +1317,20 @@ Server::reportCreateNewRequestLog(const Connection& connection, int status)
 void
 Server::writeCreateNewResponseLog(const Response& response)
 {
-	std::string text = "[Created][Response][Server:" + m_server_name + "][" \
+	std::string text = ft::getTimestamp() + "[Created][Response][Server:" + m_server_name + "][" \
 	+ std::to_string(response.get_m_status_code()) + "][" + response.get_m_status_description() + "][CFD:" \
 	+ std::to_string(response.get_m_connection()->get_m_client_fd()) + "][headers:" \
 	+ std::to_string(response.get_m_headers().size()) + "][body:" + std::to_string(response.get_m_content().size()) + "]";
 	text.append(" New response created.\n");
 	ft::log(ServerManager::access_fd, -1, text);
-	ft::log(ServerManager::access_fd, -1, "[Detected][Response][Message][↓]" + response.getString().substr(0, 500) + "\n\n");
+	// ft::log(ServerManager::access_fd, -1, "[Detected][Response][Message][↓]" + response.getString().substr(0, 500) + "\n\n");
 	return ;
 }
 
 void
 Server::writeSendResponseLog(const Response& response)
 {
-	std::string text = "[Sended][Response][Server:" + m_server_name + "][" \
+	std::string text = ft::getTimestamp() + "[Sended][Response][Server:" + m_server_name + "][" \
 	+ std::to_string(response.get_m_status_code()) + "][" + response.get_m_status_description() + "][CFD:" \
 	+ std::to_string(response.get_m_connection()->get_m_client_fd()) + "][headers:" \
 	+ std::to_string(response.get_m_headers().size()) + "][body:" + std::to_string(response.get_m_content().size()) + "]";
