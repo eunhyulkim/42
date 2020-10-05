@@ -519,6 +519,7 @@ ServerManager::runServer()
 		if ((cnt = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, \
 		&this->m_error_copy_set, &timeout)) == -1)
 		{
+			perror("why?");
 			ft::log(ServerManager::access_fd, ServerManager::error_fd, "[Failed][Function]Select function failed(return -1)");
 			throw std::runtime_error("select error");
 		}

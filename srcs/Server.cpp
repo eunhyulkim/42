@@ -358,24 +358,30 @@ Server::runExecute(Connection& connection)
 	bool select_to = false;
 	char buff[BUFFER_SIZE];
 	int count;
+	const Request& request = connection.get_m_request();
 
+	ft::log(ServerManager::access_fd, -1, "[MAIN][0]\n");
 	if (to_child_fd != -1 && m_manager->fdIsset(to_child_fd, ServerManager::WRITE_COPY_SET))
 	{
-		if (connection.get_m_request().get_m_transfer_type() == Request::CHUNKED)
+		
+		ft::log(ServerManager::access_fd, -1, "[MAIN][1-1]\n");
+		if (request.get_m_method() == Request::POST && request.get_m_transfer_type() == Request::CHUNKED)
 		{
 			ft::log(ServerManager::access_fd, -1, ft::getTimestamp() + ft::getSpeed(g_start) + "[OPERATION][WRITE][START]\n");
 			std::string& buf = const_cast<std::string&>(connection.get_m_rbuf());
 			if (m_manager->fdIsset(client_fd, ServerManager::READ_COPY_SET))
 			{
+				ft::log(ServerManager::access_fd, -1, "[MAIN][1-1-1]\n");
 				ft::log(ServerManager::access_fd, -1, "RBUF SIZE: " + std::to_string(buf.size()) + "\n");
-				if ((count = recv(client_fd, buff, sizeof(buff), 0) > 0))
+				if ((count = recv(client_fd, buff, sizeof(buff), 0)) > 0)
 					connection.addRbuf(buff, count);
 				ft::log(ServerManager::access_fd, -1, "READ FROM COUNT: " + std::to_string(count) + "\n");
 				if (count > 0)
-					ft::log(ServerManager::access_fd, -1, "READ FROM COUNT: " + std::string(buff, count) + "\n");
+					ft::log(ServerManager::access_fd, -1, "READ CONTENT: " + std::string(buff, count) + " with " + std::to_string((int)buff[0]) + "\n");
 			}
 			std::string len;
 			int content_length = getChunkedSize(buf, len);
+			ft::log(ServerManager::access_fd, -1, "Content-Length: " + std::to_string(content_length));
 			if (content_length == -1)
 				;
 			else if (content_length == 0)
@@ -398,12 +404,13 @@ Server::runExecute(Connection& connection)
 			else
 			{
 				count = write(to_child_fd, buf.c_str(), count);
+				ft::log(ServerManager::access_fd, -1, std::to_string(count) + " writed.\n");
 				connection.decreaseRbuf(content_length + 2);
 			}
 		}
 		else
 		{
-			ft::log(ServerManager::access_fd, -1, "NOT ELSE FOUND EXPECTED\n");
+			ft::log(ServerManager::access_fd, -1, "[MAIN][1-2]\n");
 			const std::string& data = connection.get_m_wbuf();
 			if (!data.empty())
 			{
@@ -428,6 +435,7 @@ Server::runExecute(Connection& connection)
 
 	if (from_child_fd != -1 && m_manager->fdIsset(from_child_fd, ServerManager::READ_COPY_SET))
 	{
+		ft::log(ServerManager::access_fd, -1, "[MAIN][2-1]\n");
 		ft::log(ServerManager::access_fd, -1, ft::getTimestamp() + ft::getSpeed(g_start) + "[OPERATION][READ][START]\n");
 		count = read(from_child_fd, buff, sizeof(buff));
 		if (count == 0)
@@ -440,6 +448,7 @@ Server::runExecute(Connection& connection)
 	waitpid(connection.get_m_child_pid(), &stat, WNOHANG);
 	if (WIFEXITED(stat) && !select_from && !select_to)
 	{
+		ft::log(ServerManager::access_fd, -1, "[MAIN][3-1]\n");
 		if (from_child_fd != -1)
 		{
 			close(from_child_fd);
@@ -589,7 +598,6 @@ Server::parseBody(Connection& connection, Request& request)
 		return (true);
 	if (request.get_m_method() == Request::POST && request.get_m_transfer_type() == Request::CHUNKED)
 		return (true);
-	ft::log(ServerManager::access_fd, -1, "NOT FOUN EXPECTED\n");
 	std::string& buf = const_cast<std::string&>(connection.get_m_rbuf());
 
 	if (request.get_m_transfer_type() == Request::GENERAL)
@@ -656,7 +664,6 @@ namespace {
 		int i = 0;
 		if ((count = recv(connection.get_m_client_fd(), buf, buf_size, MSG_PEEK)) > 0)
 		{
-			// std::cout << "inspect count: " << count << std::endl;
 			while (i < count)
 			{
 				if (buf[i] == '\r' && i + 3 < count && buf[i + 1] == '\n' && buf[i + 2] == '\r' && buf[i + 3] == '\n')
@@ -664,27 +671,33 @@ namespace {
 				++i;
 			}
 			if (i == count)
-			{
-				const Request& request = connection.get_m_request();
-				if (request.get_m_method() == Request::POST && request.get_m_transfer_type() == Request::CHUNKED)
-					return (0);
-				recv(connection.get_m_client_fd(), buf, count, 0);
-				ft::log(ServerManager::access_fd, -1, "read(1) : " + std::to_string(count) + "\n");
-				if (count == 152)
-				ft::log(ServerManager::access_fd, -1, "read(1) : " + std::string(buf, count) + "\n");
-
-				return (count);
-				// std::cout << "read(1) : " << count << std::endl;
-				// std::cout << std::string(buf, count) << std::endl;
-			}
+				return (0);
 			else
 			{
 				recv(connection.get_m_client_fd(), buf, i + 4, 0);
 				ft::log(ServerManager::access_fd, -1, connection.get_m_request().get_m_method_to_string()
-				+ "read(2) : " + std::to_string(i) + " : " + std::to_string(i + 4)
+				+ "read(1) : " + std::to_string(i) + " : " + std::to_string(i + 4)
 				+ std::string(buf, i + 4) + "\n");
 				return (i + 4);
 			}
+		}
+		else
+			return (-1);
+	}
+	int recvBody(const Connection& connection, char*buf, int buf_size)
+	{
+		int count;
+		const Request& request = connection.get_m_request();
+
+		if (request.get_m_method() == Request::POST && request.get_m_transfer_type() == Request::CHUNKED)
+			return (0);
+		if (!isMethodHasBody(request.get_m_method()))
+			return (0);
+	
+		if ((count = recv(connection.get_m_client_fd(), buf, buf_size, MSG_PEEK)) > 0)
+		{
+			recv(connection.get_m_client_fd(), buf, count, 0);
+			return (count);
 		}
 		else
 			return (-1);
@@ -704,12 +717,18 @@ Server::recvRequest(Connection& connection, const Request& const_request)
 		ft::log(ServerManager::access_fd, -1, ft::getTimestamp() + ft::getSpeed(g_start) + "[REQUEST HEADER READ][START]\n");
 	}
 	connection.set_m_status(Connection::ON_RECV);
-	if (hasRequest(connection) && (count = recvWithoutBody(connection, buf, sizeof(buf))) > 0)
+	if (phase == Request::READY && hasRequest(connection) && (count = recvWithoutBody(connection, buf, sizeof(buf))) > 0)
 		connection.addRbuf(buf, count);
 	if (phase == Request::READY && parseStartLine(connection, request))
 		phase = Request::ON_HEADER;
 	if (phase == Request::ON_HEADER && parseHeader(connection, request))
-		phase = Request::ON_BODY;
+	{
+		request.set_m_phase(phase = Request::ON_BODY);
+		if (isMethodHasBody(request.get_m_method()))
+			return ;
+	}
+	if (phase == Request::ON_BODY && (count = recvBody(connection, buf, sizeof(buf))) > 0)
+		connection.addRbuf(buf, count);
 	if (phase == Request::ON_BODY && parseBody(connection, request))
 	{
 		phase = Request::COMPLETE;
