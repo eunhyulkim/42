@@ -18,6 +18,7 @@ content returned:
 content returned: 404: File not found
 11) Test GET Expected 404 on http://localhost:8080/directory/Yeah
 content returned: 404: File not found
+
 12) Test GET http://localhost:8080/directory/Yeah/not_happy.bad_extension
 content returned:
 

@@ -558,4 +558,11 @@ namespace ft
 		ret.append(std::to_string(now->tm_sec) + "]");
 		return (ret);
 	}
+
+	std::string getSpeed(timeval from)
+	{
+		timeval t;
+		gettimeofday(&t, NULL);
+		return (std::to_string((from.tv_sec - t.tv_sec) * 1000000 + (from.tv_usec - t.tv_usec)));
+	}
 }

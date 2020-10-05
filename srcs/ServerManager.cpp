@@ -141,7 +141,7 @@ namespace {
 		lines = remain;
 		return (ret);
 	}
-	
+
 	bool isValidIpByte(std::string s) { return ((std::stoi(s) >= 0) && (std::stoi(s) <= 255)); }
 	bool isValidCgi(std::string data) { return (data[0] == '.'); }
 	bool isDigit(char c) { return (c >= '0' && c <= '9'); }
@@ -218,13 +218,13 @@ ServerManager::isValidServerBlock(std::string& server_block)
 	std::map<std::string, std::string>map_block = ft::stringVectorToMap(ft::split(server_block, '\n'), ' ');
 	std::string key[6] = {"host", "port", "REQUEST_URI_LIMIT_SIZE", "REQUEST_HEADER_LIMIT_SIZE", \
 	"DEFAULT_ERROR_PAGE", "LIMIT_CLIENT_BODY_SIZE"};
-	
+
 	if (map_block.size() < 6 || map_block.size() > 7)
 		return (false);
 	for (int i = 0; i < 6; ++i) {
 		if (!ft::hasKey(map_block, key[i]))
 			return (false);
-	}	
+	}
 	if (map_block.size() == 7 && !ft::hasKey(map_block, "server_name"))
 		return (false);
 
@@ -235,20 +235,20 @@ ServerManager::isValidServerBlock(std::string& server_block)
 	int port = std::atoi(map_block.find(key[1])->second.c_str());
 	if (port != 80 && port != 443 && (port < 1024 || port > 49151))
 		return (false);
-	
+
 	int uri_limit = std::atoi(map_block.find(key[2])->second.c_str());
 	if (uri_limit < REQUEST_URI_LIMIT_SIZE_MIN || uri_limit > REQUEST_URI_LIMIT_SIZE_MAX)
 		return (false);
-	
+
 	int header_limit = std::atoi(map_block.find(key[3])->second.c_str());
 	if (header_limit < REQUEST_HEADER_LIMIT_SIZE_MIN || header_limit > REQUEST_HEADER_LIMIT_SIZE_MAX)
 		return (false);
-	
+
 	int fd;
 	if ((fd = open(map_block.find(key[4])->second.c_str(), O_RDONLY)) == -1)
 		return (false);
 	close(fd);
-	
+
 	int body_limit = std::atoi(map_block.find(key[5])->second.c_str());
 	if (body_limit < 0 || body_limit > LIMIT_CLIENT_BODY_SIZE_MAX)
 		return (false);
@@ -273,7 +273,7 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 	std::string key[] = {"location", "root", "allow_method", "auth_basic_realm", \
 	"auth_basic_file", "index", "cgi", "autoindex", "limit_client_body_size"};
 	std::set<std::string> key_set(key, key + sizeof(key) / sizeof(key[0]));
-	
+
 	if (map_block.size() < 2 || map_block.size() > 9)
 		return (false);
 	if (!ft::hasKey(map_block, "location") || !ft::hasKey(map_block, "root"))
@@ -281,18 +281,18 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 	for (std::map<std::string, std::string>::iterator it = map_block.begin(); it != map_block.end(); ++it) {
 		if (!ft::hasKey(key_set, it->first) || it->second.empty())
 			return (false);
-	} 
+	}
 
 	std::vector<std::string> location = ft::split(ft::rtrim(map_block[key[0]], " \t{"), ' ');
 	if (location.size() != 1 || location[0].empty() || location[0][0] != '/')
 		return (false);
-	
+
 	struct stat buf;
 	std::string root = map_block[key[1]];
 	stat(root.c_str(), &buf);
 	if (!S_ISDIR(buf.st_mode) || root.empty() || (root != "/" && root.size() > 1 && root[root.size() - 1] == '/'))
 		return (false);
-	
+
 	if ((ft::hasKey(map_block, key[3]) && !ft::hasKey(map_block, key[4]))
 	|| (!ft::hasKey(map_block, key[3]) && ft::hasKey(map_block, key[4])))
 		return (false);
@@ -313,7 +313,7 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 		for (std::set<std::string>::iterator it = data_set.begin(); it != data_set.end(); ++it) {
 			if ((*it).empty() || !ft::hasKey(method_set, *it))
 				return (false);
-		} 
+		}
 	}
 
 	if (ft::hasKey(map_block, key[6])) {
@@ -321,7 +321,7 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 		if (cgi_set.empty() || !std::all_of(cgi_set.begin(), cgi_set.end(), isValidCgi))
 			return (false);
 	}
-	
+
 	if (ft::hasKey(map_block, key[7])) {
 		std::string autoindex = map_block[key[7]];
 		if (autoindex != "on" && autoindex != "off")
@@ -415,7 +415,7 @@ ServerManager::fdCopy(SetType fdset)
 	if (fdset == READ_SET || fdset == ALL_SET) {
 		ft::fdZero(&this->m_read_copy_set);
 		this->m_read_copy_set = this->m_read_set;
-	} 
+	}
 	if (fdset == ERROR_SET || fdset == ALL_SET) {
 		ft::fdZero(&this->m_error_copy_set);
 		this->m_error_copy_set = this->m_read_set;

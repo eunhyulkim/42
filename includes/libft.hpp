@@ -60,6 +60,7 @@ namespace ft
     bool isRightTime(int second);
     void log(int access_fd, int error_fd, std::string text);
     std::string	getTimestamp(void);
+    std::string getSpeed(timeval from);
 
     /* Fdset operator */
 	void fdZero(fd_set *x);
