@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jujengim <jujengim@student.42.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:05 by yopark            #+#    #+#             */
-/*   Updated: 2020/09/29 16:16:29 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/02 22:09:14 by jujeng          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,20 @@
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-Request::Request() {}
+Request::Request()
+{
+	m_phase = READY;
+	m_connection = NULL;
+	m_server = NULL;
+	m_location = NULL;
+	m_start_at.tv_sec = 0;
+	m_start_at.tv_usec = 0;
+	m_phase = READY;
+	m_method = DEFAULT;
+	m_uri_type = FILE;
+	m_speical_header_count = 0;
+	m_transfer_type = GENERAL;
+}
 
 bool
 Request::parseMethod(std::string methodString)
@@ -65,24 +78,43 @@ Request::assignLocationMatchingUri(std::string uri)
 namespace {
 	std::string getTranslatedPath(std::string root, std::string uri)
 	{
-		if (root.empty() || uri.empty())
-			return ("");
+		if (uri.empty())
+			return (root);
 		if (root[root.size() - 1] == '/' && uri[0] == '/')
 			uri.erase(uri.begin());
 		else if (root[root.size() - 1] != '/' && uri[0] != '/')
 			uri.insert(0, 1, '/');
-		char buff[1024];
-		ft::bzero(buff, sizeof(buff));
-		getcwd(buff, sizeof(buff));
-		return (std::string(buff) + "/cgi-bin" + uri);
+		return (root + uri);
+	}
+}
+
+namespace {
+	std::string getIndexPath(const std::set<std::string>& index_set, std::string base_path)
+	{
+		std::set<std::string>::const_iterator it = index_set.begin();
+		struct stat buf;
+		std::string path;
+		for (; it != index_set.end(); ++it)
+		{
+			path = getTranslatedPath(base_path, *it);
+			stat(path.c_str(), &buf);
+			if (S_ISREG(buf.st_mode))
+				return (*it);
+		}
+		return ("");
 	}
 }
 
 std::string
 Request::parseUri()
 {
-	std::string uri = m_uri;
+	std::string root = m_location->get_m_uri();
+	std::string uri = (root == "/") ? m_uri : m_uri.substr(m_uri.find(root) + root.size());
+	std::string main_path = uri;
+	std::string refer_path = uri;
 
+	if (ft::isDirectory(getTranslatedPath(m_location->get_m_root_path(), uri)) && !m_location->get_m_autoindex())
+		uri = m_uri = getIndexPath(get_m_location()->get_m_index(), getTranslatedPath(m_location->get_m_root_path(), uri));
 	for (std::set<std::string>::const_iterator it = m_location->get_m_cgi().begin() ; it != m_location->get_m_cgi().end() ; ++it)
 	{
 		if (uri.find(*it) != std::string::npos)
@@ -92,25 +124,37 @@ Request::parseUri()
 			if ((m_method == GET || m_method == HEAD) && uri.find("?") != std::string::npos) {
 				m_query = uri.substr(uri.find("?") + 1);
 				uri = uri.substr(0, uri.find("?"));
-			}
-			m_path_info = uri;
-			if (uri.size() > idx + it->size() + 1)
-				uri = uri.substr(0, idx + it->size());
+				m_path_info = m_uri.substr(0, uri.find("?"));
+			} else
+				m_path_info = m_uri;
+			main_path = uri.substr(0, idx + it->size());
+			refer_path = uri.substr(idx + it->size());
 			break ;
 		}
 	}
-	m_path_translated = getTranslatedPath(m_location->get_m_root_path(), uri);
-	if (m_uri_type == CGI_PROGRAM && !ft::isFile(m_path_translated))
-		throw (40404);
-	return (m_path_translated);
+	m_script_translated = getTranslatedPath(m_location->get_m_root_path(), main_path);
+	m_path_translated = getTranslatedPath(m_location->get_m_root_path(), refer_path);
+	if (m_uri_type == CGI_PROGRAM && !ft::isFile(m_script_translated))
+	{
+		if (!m_location->get_m_index().empty())
+		{
+			m_method = Request::GET;
+			m_uri = m_location->get_m_uri();
+			m_script_translated = m_location->get_m_root_path();
+		}
+		else
+			throw (40404);
+	}
+	return (m_script_translated);
 }
 
 Request::Request(Connection *connection, Server *server, std::string start_line)
 : m_connection(connection), m_server(server), m_transfer_type(GENERAL)
 {
+	m_phase = ON_HEADER;
 	if (gettimeofday(&m_start_at, NULL) == -1)
 		throw std::runtime_error("gettimeofday function failed in request generator");
-	
+
 	std::vector<std::string> parsed = ft::split(start_line, ' ');
 	if (parsed.size() != 3) {
 		ft::log(ServerManager::access_fd, ServerManager::error_fd, "[StartLine]" + start_line);
@@ -127,9 +171,9 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 	std::string translated_path = parseUri();
 	if (translated_path.empty())
 		throw (40002);
-	if (ft::isFile(m_path_translated) && m_uri_type != CGI_PROGRAM)
+	if (ft::isFile(translated_path) && m_uri_type != CGI_PROGRAM)
 		m_uri_type = FILE;
-	else if (ft::isDirectory(m_path_translated))
+	else if (ft::isDirectory(translated_path))
 		m_uri_type = DIRECTORY;
 	else if (m_method == PUT || m_method == TRACE)
 		m_uri_type = FILE_TO_CREATE;
@@ -147,6 +191,7 @@ Request::Request(const Request &x)
 	m_start_at = x.m_start_at;
 
 	m_method = x.m_method;
+	m_phase = x.m_phase;
 	m_uri = x.m_uri;
 	m_uri_type = x.m_uri_type;
 	m_protocol = x.m_protocol;
@@ -155,6 +200,7 @@ Request::Request(const Request &x)
 	m_content = x.m_content;
 	m_query = x.m_query;
 	m_path_translated = x.m_path_translated;
+	m_script_translated = x.m_script_translated;
 	m_path_info = x.m_path_info;
 	m_origin = x.m_origin;
 }
@@ -168,6 +214,7 @@ Request::~Request()
 	m_connection = NULL;
 	m_server = NULL;
 	m_location = NULL;
+	m_phase = READY;
 	m_start_at.tv_sec = 0;
 	m_start_at.tv_usec = 0;
 
@@ -177,6 +224,7 @@ Request::~Request()
 	m_content.clear();
 	m_query.clear();
 	m_path_translated.clear();
+	m_script_translated.clear();
 	m_path_info.clear();
 	m_origin.clear();
 }
@@ -194,7 +242,7 @@ Request &Request::operator=(const Request &x)
 	m_server = x.m_server;
 	m_location = x.m_location;
 	m_start_at = x.m_start_at;
-
+	m_phase = x.m_phase;
 	m_method = x.m_method;
 	m_uri = x.m_uri;
 	m_uri_type = x.m_uri_type;
@@ -204,6 +252,7 @@ Request &Request::operator=(const Request &x)
 	m_content = x.m_content;
 	m_query = x.m_query;
 	m_path_translated = x.m_path_translated;
+	m_script_translated = x.m_script_translated;
 	m_path_info = x.m_path_info;
 	m_origin = x.m_origin;
 
@@ -243,7 +292,8 @@ const std::string		&Request::get_m_query() const { return (m_query); }
 const std::string		&Request::get_m_path_info() const { return (m_path_info); }
 const std::string		&Request::get_m_origin() const { return (m_origin); }
 const std::string		&Request::get_m_path_translated() const { return (m_path_translated); }
-std::string 		Request::get_m_method_to_string() const
+const std::string		&Request::get_m_script_translated() const { return (m_script_translated); }
+std::string 			Request::get_m_method_to_string() const
 {
 	if (m_method == GET) return (std::string("GET"));
 	else if (m_method == HEAD) return (std::string("HEAD"));
@@ -254,19 +304,21 @@ std::string 		Request::get_m_method_to_string() const
 	else if (m_method == OPTIONS) return (std::string("OPTIONS"));
 	return (std::string(""));
 }
+Request::Phase			Request::get_m_phase() const { return (m_phase); }
+int						Request::get_m_special_header_count() const { return (m_speical_header_count); }
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */
 /* ************************************************************************** */
 
-void Request::add_content(std::string added_content)
+void Request::addContent(std::string added_content)
 {
-	if (m_content.size() + added_content.size() > m_server->get_m_limit_client_body_size())
+	if (m_content.size() + added_content.size() > m_location->get_m_limit_client_body_size())
 		throw (41301);
 	m_content.append(added_content);
 }
 
-void Request::add_origin(std::string added_origin)
+void Request::addOrigin(std::string added_origin)
 {
 	if (m_method != TRACE)
 		return ;
@@ -275,7 +327,7 @@ void Request::add_origin(std::string added_origin)
 	m_origin.append(added_origin);
 }
 
-void Request::add_header(std::string header)
+void Request::addHeader(std::string header)
 {
 	size_t pos = header.find(':');
 	std::string key = ft::trim(header.substr(0, pos));
@@ -297,10 +349,31 @@ void Request::add_header(std::string header)
 		if (content_length < 0)
 			throw (40004);
 	}
-
+	if (key[0] == 'X')
+		++m_speical_header_count;
 	return ;
 }
 
+void Request::set_m_phase(Phase phase) { m_phase = phase; }
+void Request::addSpecialHeaderCount() { ++m_speical_header_count; }
+
+void Request::clear()
+{
+	m_phase = READY;
+	m_method = DEFAULT;
+	m_uri.clear();
+	m_uri_type = FILE;
+	m_protocol.clear();
+	m_headers.clear();
+	m_speical_header_count = 0;
+	m_transfer_type = GENERAL;
+	m_content.clear();
+	m_query.clear();
+	m_script_translated.clear();
+	m_path_translated.clear();
+	m_path_info.clear();
+	m_origin.clear();
+}
 /* ************************************************************************** */
 /* ------------------------------- EXCEPTION -------------------------------- */
 /* ************************************************************************** */
@@ -313,7 +386,7 @@ bool Request::isValidHeader(std::string header)
 {
 	if (header.size() > m_server->get_m_request_header_limit_size())
 		throw (40005);
-	if (header.find(':') == std::string::npos)
+	if (header.find(":") == std::string::npos)
 		return (false);
 	return (true);
 }

@@ -17,6 +17,10 @@ int main(int ac, char *av[], char **env)
             manager.exitServer(e.what());
         }
     }
-    manager.runServer();
+    try {
+        manager.runServer();
+    } catch (std::exception& e) {
+        manager.exitServer(e.what());
+    }
     exit(EXIT_SUCCESS);
 }

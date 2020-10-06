@@ -174,6 +174,28 @@ namespace ft
 		return (ret);
 	}
 
+	std::string
+	itos(std::string number, size_t from, size_t to)
+	{
+		std::string base = "0123456789abcdefghijklmnopqrstuvwxyz";
+		std::string ret = "";
+		bool sign = false;
+		size_t data = std::stoi(number, 0, from);
+
+		if (number.empty() || data == 0)
+			return ("0");
+		if (data < 0)
+		{
+			data *= -1;
+			sign = true;
+		}
+		while (data > 0)
+		{
+			ret.insert(ret.begin(), base[data % to]);
+			data /= to;
+		}
+		return (ret);
+	}
 /* ************************************************************************** */
 /* -------------------------------- C++ LIBFT ------------------------------- */
 /* ************************************************************************** */
@@ -299,7 +321,7 @@ namespace ft
 		}
 		return (ret);
 	}
-	
+
 	std::string containerToString(std::vector<unsigned char> container, std::string sep)
 	{
         std::string ret;
@@ -321,11 +343,40 @@ namespace ft
 			return (-1);
 		while (idx < len && line[idx] != '\n')
 			++idx;
-		if (idx == len)
+		if (line[idx] != '\n')
 			return (len * -1);
 		read(fd, line, idx + 1);
 		line[idx] = '\0';
+		if (idx > 0 && line[idx - 1] == '\r')
+			line[--idx] = '\0';
 		return (idx);
+	}
+
+	int getline(std::string& data, std::string& line, size_t buffer_size)
+	{
+		if (data.find("\n") == std::string::npos || data.find("\n") > buffer_size)
+		{
+			if (data.size() >= buffer_size)
+				throw (std::overflow_error("line size is greather than buffer size"));
+			else
+				return (-1);
+		}
+		int pos = data.find("\n");
+		line = data.substr(0, pos);
+		line = rtrim(line, "\r");
+		data.erase(0, pos + 1);
+		return (line.size());
+	}
+
+	int getline(std::string& data, std::string& line)
+	{
+		if (data.find("\n") == std::string::npos)
+			return (0);
+		int pos = data.find("\n");
+		line = data.substr(0, pos);
+		line = rtrim(line, "\r");
+		data.erase(0, pos + 1);
+		return (1);
 	}
 
 	bool isFile(std::string path)
@@ -339,7 +390,7 @@ namespace ft
 	{
 		struct stat buf;
 		stat(path.c_str(), &buf);
-		return (S_ISDIR(buf.st_mode));	
+		return (S_ISDIR(buf.st_mode));
 	}
 /* ************************************************************************** */
 /* ------------------------------ TCP FUNCTION ------------------------------ */
@@ -377,7 +428,7 @@ namespace ft
 		ft::addDevideResult(t->tm_hour, data, 3600);
 		ft::addDevideResult(t->tm_min, data, 60);
 		t->tm_sec = data;
-	
+
 		while (t->tm_yday > 365) {
 			if (t->tm_year % 4 == 0 && (t->tm_year % 100 != 0 || t->tm_year % 400 == 0)) {
 				if (t->tm_yday == 366)
@@ -485,12 +536,33 @@ namespace ft
 		if (error_fd != -1)
 			write(error_fd, text.c_str(), text.size());
 	}
-	
+
 	bool isRightTime(int second) {
 		timeval t;
 		gettimeofday(&t, NULL);
 		if (t.tv_sec % second == 0 && t.tv_usec == 0)
 			return (true);
 		return (false);
+	}
+
+	std::string	getTimestamp(void)
+	{
+		std::time_t	t = std::time(0);
+		std::tm* now = std::localtime(&t);
+		std::string ret;
+		ret.append("[" + std::to_string(now->tm_year + 1900));
+		ret.append(std::to_string(now->tm_mon + 1));
+		ret.append(std::to_string(now->tm_mday) + "_");
+		ret.append(std::to_string(now->tm_hour) + "_");
+		ret.append(std::to_string(now->tm_min) + "_");
+		ret.append(std::to_string(now->tm_sec) + "]");
+		return (ret);
+	}
+
+	std::string getSpeed(timeval from)
+	{
+		timeval t;
+		gettimeofday(&t, NULL);
+		return (std::to_string((t.tv_sec - from.tv_sec) * 1000000 + (t.tv_usec - from.tv_usec)));
 	}
 }

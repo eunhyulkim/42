@@ -33,29 +33,35 @@ class Server
 		/* util */
 		void basic_decode(std::string data, std::string& key, std::string& value);
 		std::string inet_ntoa(unsigned int address);
-		
+
 		/* send operation */
-		bool isSendable(int client_fd);
-		void sendResponse(Response response);
-		bool runSend();
+		bool hasSendWork(Connection& connection);
+		bool runSend(Connection& connection);
+		bool hasExecuteWork(Connection& connection);
+		bool runExecute(Connection& connection);
 
 		/* connection management */
-		bool hasException(int client_fd);
+		// bool hasException(int client_fd);
 		int getUnuseConnectionFd();
 		bool hasNewConnection();
 		bool acceptNewConnection();
 
 		/* read operation */
-		// void redirectStdInOut(int in_fd, int out_fd);
+		bool hasRequest(Connection& connection);
+
 		void revertStdInOut();
 		void createCGIResponse(int& status, headers_t& headers, std::string& body);
-		bool hasRequest(int client_fd, Request::Method& method);
-		std::string getStartLine(int client_fd);
+		bool parseStartLine(Connection& connection, Request& request);
+		bool parseHeader(Connection& connection, Request& request);
+
+		bool parseBody(Connection& connection, Request& request);
+
+
 		int getHeaderLine(int client_fd, std::string& line);
 		void headerParsing(Request &request, std::string& origin_message, int client_fd);
 		std::string readBodyMessage(Request &request, std::string& origin_message, int client_fd);
-		Request recvRequest(int client_fd, Connection* connection);
-		bool runRecvAndSolve(std::map<int, Connection>::iterator it, Request::Method method);
+		void recvRequest(Connection& connection, const Request& request);
+		bool runRecvAndSolve(Connection& connection);
 
 		/* cgi */
 		char** createCGIEnv(const Request& request);
@@ -92,18 +98,18 @@ class Server
 
 		void closeConnection(int client_fd);
 
-		void solveRequest(const Request& request);
-		void executeAutoindex(const Request& request);
-		void executeGet(const Request& request);
-		void executeHead(const Request& request);
-		void executePost(const Request& request);
-		void executePut(const Request& request);
-		void executeDelete(const Request& request);
-		void executeOptions(const Request& request);
-		void executeTrace(const Request& request);
-		void executeCGI(const Request& request);
+		void solveRequest(Connection& connection, const Request& request);
+		void executeAutoindex(Connection& connection, const Request& request);
+		void executeGet(Connection& connection, const Request& request);
+		void executeHead(Connection& connection, const Request& request);
+		void executePost(Connection& connection, const Request& request);
+		void executePut(Connection& connection, const Request& request);
+		void executeDelete(Connection& connection, const Request& request);
+		void executeOptions(Connection& connection, const Request& request);
+		void executeTrace(Connection& connection, const Request& request);
+		void executeCGI(Connection& connection, const Request& request);
 
-		void createResponse(Connection* connection, int status, headers_t headers = headers_t(), std::string body = "", Request::Method method = Request::DEFAULT);
+		void createResponse(Connection& connection, int status, headers_t headers = headers_t(), std::string body = "");
 
 		/* log function */
 		void writeDetectNewConnectionLog();
@@ -111,7 +117,7 @@ class Server
 		void reportCreateNewConnectionLog();
 		void writeDetectNewRequestLog(const Connection& connection);
 		void writeCreateNewRequestLog(const Request& request);
-		void reportCreateNewRequestLog(Connection* connection, int status);
+		void reportCreateNewRequestLog(const Connection& connection, int status);
 		void writeCreateNewResponseLog(const Response& response);
 		void writeSendResponseLog(const Response& response);
 		void writeCloseConnectionLog(int client_fd);

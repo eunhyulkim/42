@@ -9,9 +9,9 @@
 /* ************************************************************************** */
 
 Location::Location() {}
-Location::Location(const std::string& location_uri, std::string location_block)
+Location::Location(const std::string& location_uri, std::string location_block, size_t server_limit_client_body_size)
 : m_uri(location_uri)
-{
+{	
 	std::map<std::string, std::string> map_block = ft::stringVectorToMap(ft::split(location_block, '\n'), ' ');
 	this->m_root_path = map_block.find("root")->second;
 	if (ft::hasKey(map_block, "auth_basic_realm"))
@@ -38,6 +38,10 @@ Location::Location(const std::string& location_uri, std::string location_block)
 	if (ft::hasKey(map_block, "cgi"))
 		this->m_cgi = ft::stringVectorToSet(ft::split(map_block.find("cgi")->second, ' '));
 	this->m_autoindex = ft::hasKey(map_block, "autoindex") && map_block.find("autoindex")->second == "on";
+	if (ft::hasKey(map_block, "limit_client_body_size"))
+		this->m_limit_client_body_size = std::stoi(map_block["limit_client_body_size"]);
+	else
+		this->m_limit_client_body_size = server_limit_client_body_size;
 }
 
 Location::Location(const Location& copy) 
@@ -50,6 +54,7 @@ Location::Location(const Location& copy)
 	this->m_index = copy.get_m_index();
 	this->m_cgi = copy.get_m_cgi();
 	this->m_autoindex = copy.get_m_autoindex();
+	this->m_limit_client_body_size = copy.get_m_limit_client_body_size();
 }
 
 /* ************************************************************************** */
@@ -66,6 +71,7 @@ Location::~Location()
 	this->m_index.clear();
 	this->m_cgi.clear();
 	this->m_autoindex = false;
+	this->m_limit_client_body_size = 0;
 }
 
 /* ************************************************************************** */
@@ -84,6 +90,7 @@ Location& Location::operator=(const Location& obj)
 	this->m_index = obj.get_m_index();
 	this->m_cgi = obj.get_m_cgi();
 	this->m_autoindex = obj.get_m_autoindex();
+	this->m_limit_client_body_size = obj.get_m_limit_client_body_size();
 	return (*this);
 }
 
@@ -112,6 +119,7 @@ std::set<std::string> Location::get_m_allow_method() const { return (this->m_all
 const std::set<std::string>& Location::get_m_index() const { return (this->m_index); }
 const std::set<std::string>& Location::get_m_cgi() const { return (this->m_cgi); }
 const bool& Location::get_m_autoindex() const { return (this->m_autoindex); }
+size_t Location::get_m_limit_client_body_size() const { return (this->m_limit_client_body_size); }
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */

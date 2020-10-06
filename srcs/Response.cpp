@@ -1,5 +1,13 @@
 #include "Response.hpp"
+// #include "ServerManager.hpp"
 
+// timeval g_start2;
+
+// namespace {
+// 	void timeflag(std::string location) {
+// 		ft::log(ServerManager::access_fd, -1, location + ": " + ft::getSpeed(g_start2) + "\n");
+// 	}
+// }
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
 /* ************************************************************************** */
@@ -12,7 +20,7 @@ std::map<int, std::string> Response::status = make_status();
 
 Response::Response() {}
 
-Response::Response(Connection *connection, int status_code, std::string body)
+Response::Response(Connection* connection, int status_code, std::string body)
 {
 	this->m_connection = connection;
 	this->m_connection_type = KEEP_ALIVE;
@@ -92,6 +100,14 @@ std::string Response::get_m_content() const { return (this->m_content); }
 /* --------------------------------- SETTER --------------------------------- */
 /* ************************************************************************** */
 
+void Response::clear()
+{
+	m_status_code = -1;
+	m_status_description.clear();
+	m_headers.clear();
+	m_trasfer_type = GENERAL;
+	m_content.clear();
+}
 /* ************************************************************************** */
 /* ------------------------------- EXCEPTION -------------------------------- */
 /* ************************************************************************** */
@@ -110,8 +126,12 @@ void Response::addHeader(std::string header_key, std::string header_value)
 		this->m_headers[header_key] = header_value;
 }
 
+void Response::addContent(const std::string& body) { m_content += body; }
+
 std::string Response::getString() const
 {
+	// gettimeofday(&g_start2, NULL);
+	
 	std::string message;
 	std::map<std::string, std::string>::const_iterator it = this->m_headers.begin();
 
@@ -123,10 +143,31 @@ std::string Response::getString() const
 	else
 		message += "Connection: Keep-Alive\r\n";
 	if (m_trasfer_type == CHUNKED) {
-		message += "Transfer-Encoding: chunked\r\n";
+		message += "Transfer-Encoding: chunked\r\n\r\n";
+		int size = this->m_content.size();
+		int count;
+		std::string data = m_content;
+		int added = 0;
+		while (size > 0)
+		{
+			if (size > BUFFER_SIZE)
+				count = BUFFER_SIZE;
+			else
+				count = size;
+			message += ft::itos(std::to_string(count), 10, 16) + "\r\n";
+			message += data.substr(added, count) + "\r\n";
+			// data.erase(data.begin(), data.begin() + count);
+			size -= count;
+			added += count;
+		}
+		data.clear();
+		message += "0\r\n\r\n";
 	}
-	message += "\r\n";
-	message += this->m_content;
+	else
+	{
+		message += "\r\n";
+		message += this->m_content;
+	}
 	return (message);
 }
 
@@ -211,6 +252,7 @@ make_status ()
 	status_map[41304] = "Payload Too Large: File size is too large in GET method";
 	status_map[41305] = "Payload Too Large: File size is too large in HEAD method";
 	status_map[41306] = "Payload Too Large: CGI output size is too large";
+	status_map[41307] = "Payload Too Large: LOCATION SIZE OVER";
 	status_map[41401] = "Bad Request: uri size is greater than request uri limit size";
 	status_map[41501] = "Unsupported Media Type: in GET method";
 	status_map[41502] = "Unsupported Media Type: in HEAD method";

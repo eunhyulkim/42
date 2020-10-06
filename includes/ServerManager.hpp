@@ -53,6 +53,7 @@ class ServerManager
 		void fdClear(int fd, SetType fdset);
 		bool fdIsset(int fd, SetType fdset);
 		void fdCopy(SetType fdset);
+		void resetMaxFd(int new_max_fd = -1);
 
 		/* member function */
 		void createServer(const std::string& configuration_file_path, char **env);

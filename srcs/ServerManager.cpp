@@ -141,9 +141,10 @@ namespace {
 		lines = remain;
 		return (ret);
 	}
-	
+
 	bool isValidIpByte(std::string s) { return ((std::stoi(s) >= 0) && (std::stoi(s) <= 255)); }
 	bool isValidCgi(std::string data) { return (data[0] == '.'); }
+	bool isDigit(char c) { return (c >= '0' && c <= '9'); }
 }
 
 bool
@@ -217,13 +218,13 @@ ServerManager::isValidServerBlock(std::string& server_block)
 	std::map<std::string, std::string>map_block = ft::stringVectorToMap(ft::split(server_block, '\n'), ' ');
 	std::string key[6] = {"host", "port", "REQUEST_URI_LIMIT_SIZE", "REQUEST_HEADER_LIMIT_SIZE", \
 	"DEFAULT_ERROR_PAGE", "LIMIT_CLIENT_BODY_SIZE"};
-	
+
 	if (map_block.size() < 6 || map_block.size() > 7)
 		return (false);
 	for (int i = 0; i < 6; ++i) {
 		if (!ft::hasKey(map_block, key[i]))
 			return (false);
-	}	
+	}
 	if (map_block.size() == 7 && !ft::hasKey(map_block, "server_name"))
 		return (false);
 
@@ -234,20 +235,20 @@ ServerManager::isValidServerBlock(std::string& server_block)
 	int port = std::atoi(map_block.find(key[1])->second.c_str());
 	if (port != 80 && port != 443 && (port < 1024 || port > 49151))
 		return (false);
-	
+
 	int uri_limit = std::atoi(map_block.find(key[2])->second.c_str());
 	if (uri_limit < REQUEST_URI_LIMIT_SIZE_MIN || uri_limit > REQUEST_URI_LIMIT_SIZE_MAX)
 		return (false);
-	
+
 	int header_limit = std::atoi(map_block.find(key[3])->second.c_str());
 	if (header_limit < REQUEST_HEADER_LIMIT_SIZE_MIN || header_limit > REQUEST_HEADER_LIMIT_SIZE_MAX)
 		return (false);
-	
+
 	int fd;
 	if ((fd = open(map_block.find(key[4])->second.c_str(), O_RDONLY)) == -1)
 		return (false);
 	close(fd);
-	
+
 	int body_limit = std::atoi(map_block.find(key[5])->second.c_str());
 	if (body_limit < 0 || body_limit > LIMIT_CLIENT_BODY_SIZE_MAX)
 		return (false);
@@ -270,28 +271,28 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 {
 	std::map<std::string, std::string>map_block = ft::stringVectorToMap(ft::split(location_block, '\n'), ' ');
 	std::string key[] = {"location", "root", "allow_method", "auth_basic_realm", \
-	"auth_basic_file", "index", "cgi", "autoindex"};
+	"auth_basic_file", "index", "cgi", "autoindex", "limit_client_body_size"};
 	std::set<std::string> key_set(key, key + sizeof(key) / sizeof(key[0]));
-	
-	if (map_block.size() < 2 || map_block.size() > 8)
+
+	if (map_block.size() < 2 || map_block.size() > 9)
 		return (false);
 	if (!ft::hasKey(map_block, "location") || !ft::hasKey(map_block, "root"))
 		return (false);
 	for (std::map<std::string, std::string>::iterator it = map_block.begin(); it != map_block.end(); ++it) {
 		if (!ft::hasKey(key_set, it->first) || it->second.empty())
 			return (false);
-	} 
+	}
 
 	std::vector<std::string> location = ft::split(ft::rtrim(map_block[key[0]], " \t{"), ' ');
 	if (location.size() != 1 || location[0].empty() || location[0][0] != '/')
 		return (false);
-	
+
 	struct stat buf;
 	std::string root = map_block[key[1]];
 	stat(root.c_str(), &buf);
 	if (!S_ISDIR(buf.st_mode) || root.empty() || (root != "/" && root.size() > 1 && root[root.size() - 1] == '/'))
 		return (false);
-	
+
 	if ((ft::hasKey(map_block, key[3]) && !ft::hasKey(map_block, key[4]))
 	|| (!ft::hasKey(map_block, key[3]) && ft::hasKey(map_block, key[4])))
 		return (false);
@@ -312,7 +313,7 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 		for (std::set<std::string>::iterator it = data_set.begin(); it != data_set.end(); ++it) {
 			if ((*it).empty() || !ft::hasKey(method_set, *it))
 				return (false);
-		} 
+		}
 	}
 
 	if (ft::hasKey(map_block, key[6])) {
@@ -320,10 +321,16 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 		if (cgi_set.empty() || !std::all_of(cgi_set.begin(), cgi_set.end(), isValidCgi))
 			return (false);
 	}
-	
+
 	if (ft::hasKey(map_block, key[7])) {
 		std::string autoindex = map_block[key[7]];
 		if (autoindex != "on" && autoindex != "off")
+			return (false);
+	}
+
+	if (ft::hasKey(map_block, key[8])) {
+		std::string size = map_block[key[8]];
+		if (size.empty() || !std::all_of(size.begin(), size.end(), isDigit))
 			return (false);
 	}
 
@@ -408,10 +415,28 @@ ServerManager::fdCopy(SetType fdset)
 	if (fdset == READ_SET || fdset == ALL_SET) {
 		ft::fdZero(&this->m_read_copy_set);
 		this->m_read_copy_set = this->m_read_set;
-	} 
+	}
 	if (fdset == ERROR_SET || fdset == ALL_SET) {
 		ft::fdZero(&this->m_error_copy_set);
 		this->m_error_copy_set = this->m_read_set;
+	}
+}
+
+void
+ServerManager::resetMaxFd(int new_max_fd)
+{
+	if (new_max_fd != -1)
+		set_m_max_fd(new_max_fd);
+	else
+	{
+		for (int i = get_m_max_fd(); i >= 0; --i)
+		{
+			if (fdIsset(i, READ_SET) || fdIsset(i, WRITE_SET))
+			{
+				m_max_fd = i;
+				break ;
+			}
+		}
 	}
 }
 
@@ -455,6 +480,7 @@ bool g_live;
 void
 changeSignal(int sig)
 {
+	ft::log(ServerManager::access_fd, -1, "signal execute");
 	(void)sig;
 	g_live = false;
 }
@@ -466,8 +492,10 @@ ServerManager::closeOldConnection(std::vector<Server>::iterator server_it)
 	while (it != server_it->get_m_connections().end())
 	{
 		int fd = it->first;
-		if (!ft::hasKey(m_server_fdset, fd) && it->second.isOverTime() && !fdIsset(it->first, WRITE_SET)) {
+		if (!ft::hasKey(m_server_fdset, fd) && it->second.isOverTime())
+		{
 			++it;
+			std::cout << "close connection because connection old" << std::endl;
 			server_it->closeConnection(fd);
 		} else
 			++it;
@@ -492,6 +520,7 @@ ServerManager::runServer()
 		if ((cnt = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, \
 		&this->m_error_copy_set, &timeout)) == -1)
 		{
+			perror("why?");
 			ft::log(ServerManager::access_fd, ServerManager::error_fd, "[Failed][Function]Select function failed(return -1)");
 			throw std::runtime_error("select error");
 		}
@@ -504,12 +533,20 @@ ServerManager::runServer()
 			closeOldConnection(it);
 		}
 	}
+	exitServer("server exited.\n");
 }
 
 void
 ServerManager::exitServer(const std::string& error_msg)
 {
 	std::cout << error_msg << std::endl;
+	close(ServerManager::access_fd);
+	close(ServerManager::error_fd);
+	for (int i = 0; i < m_max_fd; ++i)
+	{
+		if (fdIsset(i, READ_SET))
+			close(i);
+	}
 	exit(EXIT_FAILURE);
 }
 
@@ -539,6 +576,7 @@ ServerManager::writeServerHealthLog(bool ignore_interval)
 {
 	if (ignore_interval == false && !ft::isRightTime(SERVER_HEALTH_LOG_SECOND))
 		return ;
+	(void)ignore_interval;
 	int fd = ServerManager::access_fd;
 	std::string text = "[HealthCheck][Server][Max_fd:" + std::to_string(m_max_fd) \
 	+ "][Connection:" + ft::getSetFdString(m_max_fd, &m_read_set) + "][Response:" + ft::getSetFdString(m_max_fd, &m_write_set) + "]\n";
