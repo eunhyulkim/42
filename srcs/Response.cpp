@@ -1,5 +1,13 @@
 #include "Response.hpp"
+// #include "ServerManager.hpp"
 
+// timeval g_start2;
+
+// namespace {
+// 	void timeflag(std::string location) {
+// 		ft::log(ServerManager::access_fd, -1, location + ": " + ft::getSpeed(g_start2) + "\n");
+// 	}
+// }
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
 /* ************************************************************************** */
@@ -122,6 +130,8 @@ void Response::addContent(const std::string& body) { m_content += body; }
 
 std::string Response::getString() const
 {
+	// gettimeofday(&g_start2, NULL);
+	
 	std::string message;
 	std::map<std::string, std::string>::const_iterator it = this->m_headers.begin();
 
@@ -137,6 +147,7 @@ std::string Response::getString() const
 		int size = this->m_content.size();
 		int count;
 		std::string data = m_content;
+		int added = 0;
 		while (size > 0)
 		{
 			if (size > BUFFER_SIZE)
@@ -144,10 +155,12 @@ std::string Response::getString() const
 			else
 				count = size;
 			message += ft::itos(std::to_string(count), 10, 16) + "\r\n";
-			message += data.substr(0, count) + "\r\n";
-			data.erase(data.begin(), data.begin() + count);
+			message += data.substr(added, count) + "\r\n";
+			// data.erase(data.begin(), data.begin() + count);
 			size -= count;
+			added += count;
 		}
+		data.clear();
 		message += "0\r\n\r\n";
 	}
 	else

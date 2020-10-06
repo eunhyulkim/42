@@ -563,6 +563,6 @@ namespace ft
 	{
 		timeval t;
 		gettimeofday(&t, NULL);
-		return (std::to_string((from.tv_sec - t.tv_sec) * 1000000 + (from.tv_usec - t.tv_usec)));
+		return (std::to_string((t.tv_sec - from.tv_sec) * 1000000 + (t.tv_usec - from.tv_usec)));
 	}
 }

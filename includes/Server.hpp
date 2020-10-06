@@ -41,7 +41,7 @@ class Server
 		bool runExecute(Connection& connection);
 
 		/* connection management */
-		bool hasException(int client_fd);
+		// bool hasException(int client_fd);
 		int getUnuseConnectionFd();
 		bool hasNewConnection();
 		bool acceptNewConnection();

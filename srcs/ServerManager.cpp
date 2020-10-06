@@ -495,6 +495,7 @@ ServerManager::closeOldConnection(std::vector<Server>::iterator server_it)
 		if (!ft::hasKey(m_server_fdset, fd) && it->second.isOverTime())
 		{
 			++it;
+			std::cout << "close connection because connection old" << std::endl;
 			server_it->closeConnection(fd);
 		} else
 			++it;
@@ -532,6 +533,7 @@ ServerManager::runServer()
 			closeOldConnection(it);
 		}
 	}
+	exitServer("server exited.\n");
 }
 
 void

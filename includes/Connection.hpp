@@ -25,6 +25,8 @@ class Connection
 		std::string m_rbuf;
 		std::string m_cgi_rbuf;
 		std::string m_wbuf;
+		int m_wbuf_data_size;
+		int m_send_data_size;
 		timeval m_last_request_at;
 		std::string m_client_ip;
 		int m_client_port;
@@ -73,6 +75,8 @@ class Connection
 
 		/* member function */
 		bool isOverTime() const;
+		void responseSend();
+		bool isSendCompleted();
 };
 
 /* global operator overload */
