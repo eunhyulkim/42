@@ -1,0 +1,992 @@
+#include "Server.hpp"
+#include "ServerManager.hpp"
+
+/* ************************************************************************** */
+/* ---------------------------- STATIC VARIABLE ----------------------------- */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/* ------------------------------ CONSTRUCTOR ------------------------------- */
+/* ************************************************************************** */
+
+Server::Server() {}
+
+Server::Server(ServerManager* server_manager, const std::string& server_block, std::vector<std::string>& location_blocks, Config* config)
+{
+	std::map<std::string, std::string> server_map = ft::stringVectorToMap(ft::split(server_block, '\n'), ' ');
+	struct sockaddr_in server_addr;
+	std::string uri;
+	std::string block;
+	std::string error_page;
+	std::string line;
+
+	m_manager = server_manager;
+	m_config = config;
+	if (ft::hasKey(server_map, "server_name"))
+		m_server_name = server_map["server_name"];
+	else
+		m_server_name = "noname";
+	m_host = server_map["host"];
+	m_port = ft::stoi(server_map["port"]);
+	m_request_uri_limit_size = ft::stoi(server_map["REQUEST_URI_LIMIT_SIZE"]);
+	m_request_header_limit_size = ft::stoi(server_map["REQUEST_HEADER_LIMIT_SIZE"]);
+	m_limit_client_body_size = ft::stoi(server_map["LIMIT_CLIENT_BODY_SIZE"]);
+	m_default_error_page = ft::getStringFromFile(server_map["DEFAULT_ERROR_PAGE"]);
+
+	if((m_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
+		throw std::runtime_error("SOCKET ERROR");
+	int value = true;
+	if (setsockopt(m_fd, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(int)) == -1)
+		throw std::runtime_error("SOCKET_OPTION ERROR");
+	ft::bzero(&server_addr, sizeof(struct sockaddr_in));
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_addr.s_addr = inet_addr(m_host.c_str());
+	server_addr.sin_port = ft::ws_htons(m_port);
+	if(bind(m_fd, reinterpret_cast<struct sockaddr *>(&server_addr), sizeof(struct sockaddr)) == -1)
+		throw std::runtime_error("BIND ERROR");
+	if(listen(m_fd, 256) == -1)
+		throw std::runtime_error("LISTEN ERROR");
+	if (fcntl(m_fd, F_SETFL, O_NONBLOCK) == -1)
+		throw std::runtime_error("FCNTL ERROR");
+	m_manager->fdSet(m_fd, ServerManager::READ_SET);
+	if (m_manager->get_m_max_fd() < m_fd)
+		m_manager->set_m_max_fd(m_fd);
+	for (std::vector<std::string>::iterator it = location_blocks.begin(); it != location_blocks.end(); ++it)
+	{
+		uri = ft::split(ft::split(*it).front(), ' ')[1];
+		block = *it;
+		block = block.substr(block.find('\n') + 1);
+		m_locations.push_back(Location(uri, block, m_limit_client_body_size));
+	}
+}
+
+Server::Server(const Server& copy)
+{
+	m_manager = copy.m_manager;
+	m_server_name = copy.m_server_name;
+	m_host = copy.m_host;
+	m_port = copy.m_port;
+	m_fd = copy.m_fd;
+	m_request_uri_limit_size = copy.m_request_uri_limit_size;
+	m_request_header_limit_size = copy.m_request_header_limit_size;
+	m_limit_client_body_size = copy.m_limit_client_body_size;
+	m_default_error_page = copy.m_default_error_page;
+	m_config = copy.m_config;
+	m_locations = copy.m_locations;
+	m_connections = copy.m_connections;
+	m_responses = copy.m_responses;
+}
+
+/* ************************************************************************** */
+/* ------------------------------- DESTRUCTOR ------------------------------- */
+/* ************************************************************************** */
+
+Server::~Server(){}
+
+/* ************************************************************************** */
+/* -------------------------------- OVERLOAD -------------------------------- */
+/* ************************************************************************** */
+
+Server& Server::operator=(const Server& obj)
+{
+	if (this == &obj)
+		return (*this);
+	m_manager = obj.m_manager;
+	m_server_name = obj.m_server_name;
+	m_host = obj.m_host;
+	m_port = obj.m_port;
+	m_fd = obj.m_fd;
+	m_request_uri_limit_size = obj.m_request_uri_limit_size;
+	m_request_header_limit_size = obj.m_request_header_limit_size;
+	m_limit_client_body_size = obj.m_limit_client_body_size;
+	m_default_error_page = obj.m_default_error_page;
+	m_config = obj.m_config;
+	m_locations = obj.m_locations;
+	m_connections = obj.m_connections;
+	m_responses = obj.m_responses;
+	/* overload= code */
+	return (*this);
+}
+
+std::ostream&
+operator<<(std::ostream& out, const Server& server)
+{
+
+	out << "server_name: " << server.get_m_server_name() << std::endl;
+	out << "host: " << server.get_m_host() << std::endl;
+	out << "port: " << server.get_m_port() << std::endl;
+	out << "server_fd: " << server.get_m_fd() << std::endl;
+	out << "request_uri_limit_size: " << server.get_m_request_uri_limit_size() << std::endl;
+	out << "request_header_limit_size: " << server.get_m_request_header_limit_size() << std::endl;
+	out << "limit_client_body_size: " << server.get_m_limit_client_body_size() << std::endl;
+	out << "default_error_page: " << server.get_m_default_error_page() << std::endl;
+	out << "--------CONFIG----------" << std::endl;
+	out << *(server.get_m_config()) << std::endl;
+	out << "--------LOCATIONS----------" << std::endl;
+	for (std::vector<Location>::const_iterator it = server.get_m_locations().begin(); it != server.get_m_locations().end(); ++it) {
+		out << *it << std::endl;
+	}
+	std::cout << "--------CONNECTIONS----------" << std::endl;
+	for (std::map<int, Connection>::const_iterator it = server.get_m_connections().begin(); it != server.get_m_connections().end(); ++it) {
+		out << it->second << std::endl;
+	}
+	std::cout << "--------NEXT RESPONSE----------" << std::endl;
+	if (server.get_m_responses().size() > 0)
+		out << server.get_m_responses().front() << std::endl;
+	else
+		out << "Response is not exist." << std::endl;
+	return (out);
+}
+
+/* ************************************************************************** */
+/* --------------------------------- GETTER --------------------------------- */
+/* ************************************************************************** */
+
+const std::string& Server::get_m_server_name() const { return (this->m_server_name); }
+const std::string& Server::get_m_host() const { return (this->m_host); }
+int Server::get_m_port() const { return (this->m_port); }
+int Server::get_m_fd() const { return (this->m_fd); }
+size_t Server::get_m_request_uri_limit_size() const { return (this->m_request_uri_limit_size); }
+size_t Server::get_m_request_header_limit_size() const { return (this->m_request_header_limit_size); }
+size_t Server::get_m_limit_client_body_size() const { return (this->m_limit_client_body_size); }
+const std::string& Server::get_m_default_error_page() const { return (this->m_default_error_page); }
+Config* Server::get_m_config() const { return (this->m_config); }
+const std::vector<Location>& Server::get_m_locations() const { return (this->m_locations); }
+const std::map<int, Connection>& Server::get_m_connections() const { return (this->m_connections); }
+const std::queue<Response>& Server::get_m_responses() const { return (this->m_responses); }
+
+/* ************************************************************************** */
+/* --------------------------------- SETTER --------------------------------- */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/* ------------------------------- EXCEPTION -------------------------------- */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/* ---------------------------------- UTIL ---------------------------------- */
+/* ************************************************************************** */
+
+/*
+** function: solveRequest
+** 1. check request method is allowed
+** 2. Check authentication is required
+** 3. If uri is directory, executeAutoindex
+** 4. If uri is file, executeMethod
+*/
+
+void basic_decode(std::string data, std::string& key, std::string& value)
+{
+	std::string decodedData = ft::containerToString(ft::base64_decode(data), "");
+	if (decodedData.find(":") == std::string::npos || decodedData.find(":") == decodedData.size() - 1)
+		return ;
+	int idx = decodedData.find(":");
+	key = decodedData.substr(0, idx);
+    std::vector<unsigned char> value_base(decodedData.begin() + idx + 1, decodedData.end());
+    value = ft::base64_encode(&value_base[0], value_base.size());
+}
+
+std::string
+Server::inet_ntoa(unsigned int address)
+{
+	std::string ret;
+
+	ret = ft::to_string(address & 0xFF) + ".";
+	ret.append(ft::to_string((address >> 8) & 0xFF) + ".");
+	ret.append(ft::to_string((address >> 16) & 0xFF) + ".");
+	ret.append(ft::to_string((address >> 24) & 0xFF));
+	return (ret);
+}
+
+/* ************************************************************************** */
+/* ----------------------------- SEND OPERATION ----------------------------- */
+/* ************************************************************************** */
+
+bool
+Server::hasSendWork(Connection& connection)
+{
+	Connection::Status status = connection.get_m_status();
+	int fd = connection.get_m_client_fd();
+	if (status != Connection::TO_SEND && status != Connection::ON_SEND)
+		return (false);
+	return (m_manager->fdIsset(fd, ServerManager::WRITE_COPY_SET));
+}
+
+bool
+Server::runSend(Connection& connection)
+{
+	Connection::Status status = connection.get_m_status();
+	if (status == Connection::TO_SEND)
+	{
+		connection.set_m_wbuf_for_send();
+		connection.set_m_status(Connection::ON_SEND);
+	}
+
+	connection.responseSend();
+
+	bool ret = connection.isSendCompleted();
+	if (ret)
+	{
+		connection.set_m_status(Connection::ON_WAIT);
+		m_manager->fdClear(connection.get_m_client_fd(), ServerManager::WRITE_SET);
+		writeSendResponseLog(connection.get_m_response());
+		if (connection.get_m_response().get_m_status_code() / 100 != 2)
+		{
+			// std::cout << "close connection because error response" << std::endl;
+			closeConnection(connection.get_m_client_fd());
+		}
+		else
+			connection.clear();
+	}
+	return (ret);
+}
+
+/* ************************************************************************** */
+/* ---------------------------- EXECUTE OPERATION --------------------------- */
+/* ************************************************************************** */
+
+namespace {	
+	int
+	getChunkedSize(std::string& buf, std::string& len)
+	{
+		int content_length;
+		if (!ft::getline(buf, len))
+			return (-1);
+		try {
+			content_length = ft::stoi(len, 16);
+		} catch (std::exception& e) {
+			throw (40017);
+		}
+		if (content_length < 0)
+			throw (40016);
+		if (content_length == 0)
+		{
+			if (len[0] != '0')
+				throw (40017);
+		}
+		return (content_length);
+	}
+}
+
+bool
+Server::hasExecuteWork(Connection& connection)
+{
+	Connection::Status status = connection.get_m_status();
+	int from_child_fd = connection.get_m_from_child_fd();
+	int to_child_fd = connection.get_m_to_child_fd();
+
+	if (status != Connection::ON_EXECUTE)
+		return (false);
+	if (from_child_fd == -1 && to_child_fd == -1)
+		return (false);
+	if (from_child_fd != -1 && m_manager->fdIsset(from_child_fd, ServerManager::READ_COPY_SET))
+		return (true);
+	if (to_child_fd != -1 && m_manager->fdIsset(to_child_fd, ServerManager::WRITE_COPY_SET))
+		return (true);
+
+	return (false);
+}
+
+namespace
+{
+	void
+	writeChunkedBodyToCGIScript(ServerManager* manager, Connection& connection, int connection_count)
+	{
+		std::string& rbuf = const_cast<std::string&>(connection.get_m_rbuf());
+		int client_fd = connection.get_m_client_fd();
+		int to_child_fd = connection.get_m_to_child_fd();
+		char buff[BUFFER_SIZE];
+		int count;
+
+		if (manager->fdIsset(client_fd, ServerManager::READ_COPY_SET))
+		{
+			if ((count = recv(client_fd, buff, sizeof(buff), 0)) > 0)
+				connection.addRbuf(buff, count);
+		}
+		while (true)
+		{
+			std::string len;
+			int content_length = getChunkedSize(rbuf, len);
+			if (content_length == -1)
+				break ;
+			else if (content_length == 0)
+			{
+				if (rbuf.find("\r\n") == std::string::npos)
+					rbuf.insert(0, len + "\r\n");
+				else if (rbuf.size() >= 2 && rbuf[0] == '\r' && rbuf[1] == '\n')
+				{
+					connection.decreaseRbuf(2);
+					close(to_child_fd);
+					manager->fdClear(to_child_fd, ServerManager::WRITE_SET);
+					manager->fdClear(to_child_fd, ServerManager::WRITE_COPY_SET);
+					manager->resetMaxFd();
+				}
+				break ;
+			}
+			else if (static_cast<int>(rbuf.size()) < content_length + 2)
+			{
+				rbuf.insert(0, len + "\r\n");
+				break ;
+			}
+			else
+			{
+				count = write(to_child_fd, rbuf.c_str(), content_length);
+				if (connection_count < 15)
+					usleep(1200);
+				else
+					usleep(60);
+				connection.decreaseRbuf(content_length + 2);
+			}
+		}
+	}
+
+	void
+	writeSavedBodyToCGIScript(ServerManager* manager, Connection& connection)
+	{
+		int to_child_fd = connection.get_m_to_child_fd();
+		const std::string& data = connection.get_m_wbuf();
+
+		if (!data.empty())
+		{
+			int count = (data.size() > BUFFER_SIZE) ? BUFFER_SIZE : data.size();
+			count = write(to_child_fd, data.c_str(), count);
+			connection.decreaseWbuf(count);
+		}
+		else
+		{
+			close(to_child_fd);
+			manager->fdClear(to_child_fd, ServerManager::WRITE_SET);
+			manager->resetMaxFd();
+		}
+	}
+}
+
+bool
+Server::runExecute(Connection& connection)
+{
+	int from_child_fd = connection.get_m_from_child_fd();
+	int to_child_fd = connection.get_m_to_child_fd();
+	int stat;
+	bool read_end = false;
+
+	const Request& request = connection.get_m_request();
+
+	if (from_child_fd != -1 && m_manager->fdIsset(from_child_fd, ServerManager::READ_COPY_SET))
+	{
+		char buff[BUFFER_SIZE];
+		int count = read(from_child_fd, buff, sizeof(buff));
+		if (count == 0)
+			read_end = true;
+		else if (count > 0)
+			connection.addCgiRbuf(buff, count);
+	}
+
+	if (to_child_fd != -1 && m_manager->fdIsset(to_child_fd, ServerManager::WRITE_COPY_SET))
+	{
+		if (request.get_m_method() == Request::POST && request.get_m_transfer_type() == Request::CHUNKED)
+			writeChunkedBodyToCGIScript(m_manager, connection, m_connections.size());
+		else
+			writeSavedBodyToCGIScript(m_manager, connection);
+	}
+
+	waitpid(connection.get_m_child_pid(), &stat, WNOHANG);
+	if (WIFEXITED(stat) && !m_manager->fdIsset(to_child_fd, ServerManager::WRITE_SET)
+	&& read_end == true)
+	{
+		if (from_child_fd != -1)
+		{
+			close(from_child_fd);
+			m_manager->fdClear(from_child_fd, ServerManager::READ_SET);
+		}
+		std::string body = connection.get_m_cgi_rbuf();
+		connection.clearCgiRbuf();
+		connection.clearWbuf();
+		if (connection.get_m_request().get_m_uri_type() == Request::CGI_PROGRAM)
+		{
+			if (body.size() - body.find("\r\n\r\n") - 4 > request.get_m_location()->get_m_limit_client_body_size())
+				createResponse(connection, 41301);
+			else
+				createResponse(connection, CGI_SUCCESS_CODE, headers_t(), body);
+		}
+		else
+			createResponse(connection, 200, headers_t(), body);
+		connection.set_m_status(Connection::TO_SEND);
+		m_manager->resetMaxFd();
+		return (true);
+	}
+	return (false);
+}
+
+/* ************************************************************************** */
+/* -------------------------- CONNECTION MANAGEMENT ------------------------- */
+/* ************************************************************************** */
+
+// bool
+// Server::hasException(int client_fd) {
+// 	return (m_manager->fdIsset(client_fd, ServerManager::ERROR_COPY_SET));
+// }
+
+void
+Server::closeConnection(int client_fd)
+{
+	writeCloseConnectionLog(client_fd);
+	if (close(client_fd) == -1)
+		ft::log(ServerManager::access_fd, ServerManager::error_fd, \
+		"[Failed][Function] close function failed in closeConnection method");
+	m_manager->fdClear(client_fd, ServerManager::READ_SET);
+	m_connections.erase(client_fd);
+	if (m_manager->get_m_max_fd() == client_fd)
+		m_manager->resetMaxFd();
+}
+
+int
+Server::getUnuseConnectionFd()
+{
+	std::map<int, Connection>::iterator it = m_connections.begin();
+	for (; it != m_connections.end(); ++it) {
+		if (it->second.get_m_status() == Connection::ON_WAIT)
+			return (it->first);
+	}
+	return (-1);
+}
+
+bool
+Server::hasNewConnection()
+{
+	return (m_manager->fdIsset(m_fd, ServerManager::READ_COPY_SET));
+}
+
+bool
+Server::acceptNewConnection()
+{
+	struct sockaddr_in	client_addr;
+	socklen_t			client_addr_size = sizeof(struct sockaddr);
+	int 				client_fd;
+	std::string			client_ip;
+	int					client_port;
+
+	ft::bzero(&client_addr, client_addr_size);
+
+	if ((client_fd = accept(m_fd, (struct sockaddr *)&client_addr, &client_addr_size)) == -1) {
+		ft::log(ServerManager::access_fd, ServerManager::error_fd, \
+		"[Failed][Function]failed to cerate client_fd by accept function");
+		return (false);
+	}
+	if (m_manager->get_m_max_fd() < client_fd)
+		m_manager->set_m_max_fd(client_fd);
+	if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1)
+		return (false);
+	client_ip = inet_ntoa(client_addr.sin_addr.s_addr);
+	client_port = static_cast<int>(client_addr.sin_port);
+	m_connections[client_fd] = Connection(client_fd, client_ip, client_port);
+	m_manager->fdSet(client_fd, ServerManager::READ_SET);
+	return (true);
+}
+
+/* ************************************************************************** */
+/* ----------------------------- READ OPERATION ----------------------------- */
+/* ************************************************************************** */
+
+bool Server::hasRequest(Connection& connection)
+{
+	Connection::Status status = connection.get_m_status();
+
+	int fd = connection.get_m_client_fd();
+
+	if (status != Connection::ON_WAIT && status != Connection::ON_RECV)
+		return (false);
+	if (!m_manager->fdIsset(fd, ServerManager::READ_COPY_SET))
+		return (false);
+	return (true);
+}
+
+bool
+Server::parseStartLine(Connection& connection, Request& request)
+{
+	size_t new_line;
+
+	if ((new_line = connection.get_m_rbuf().find("\r\n")) != std::string::npos)
+	{
+		std::string start_line = connection.get_m_rbuf().substr(0, new_line);
+		connection.decreaseRbuf(start_line.size() + 2);
+		request.addOrigin(start_line + "\r\n");
+		request = Request(&connection, this, start_line);
+		return (true);
+	} else if (connection.get_m_rbuf().size() > REQUEST_URI_LIMIT_SIZE_MAX)
+		throw (40006);
+	return (false);
+}
+
+bool
+Server::parseHeader(Connection& connection, Request& request)
+{
+	std::string& rbuf = const_cast<std::string&>(connection.get_m_rbuf());
+	std::string line;
+
+	while (ft::getline(rbuf, line, REQUEST_HEADER_LIMIT_SIZE_MAX) >= 0)
+	{
+		if (line == "")
+		{
+			if (!ft::hasKey(request.get_m_headers(), "Host"))
+				throw (40011);
+			return (true);
+		}
+		if (!request.isValidHeader(line))
+			throw (40010);
+		request.addHeader(line);
+	}
+	return (false);
+}
+
+namespace {
+	bool
+	isMethodHasBody(const Request::Method& method) {
+		return (method == Request::POST || method == Request::PUT || method == Request::TRACE);
+	}
+
+	int
+	recvWithoutBody(const Connection& connection, char*buf, int buf_size)
+	{
+		int count;
+		int i = 0;
+		if ((count = recv(connection.get_m_client_fd(), buf, buf_size, MSG_PEEK)) > 0)
+		{
+			while (i < count)
+			{
+				if (buf[i] == '\r' && i + 3 < count && buf[i + 1] == '\n' && buf[i + 2] == '\r' && buf[i + 3] == '\n')
+					break ;
+				++i;
+			}
+			if (i == count)
+				return (0);
+			else
+			{
+				recv(connection.get_m_client_fd(), buf, i + 4, 0);
+				return (i + 4);
+			}
+		}
+		else
+			return (-1);
+	}
+	
+	int
+	recvBody(const Connection& connection, char*buf, int buf_size)
+	{
+		int count;
+		const Request& request = connection.get_m_request();
+
+		if (request.get_m_method() == Request::POST && request.get_m_transfer_type() == Request::CHUNKED)
+			return (0);
+		if (!isMethodHasBody(request.get_m_method()))
+			return (0);
+	
+		if ((count = recv(connection.get_m_client_fd(), buf, buf_size, MSG_PEEK)) > 0)
+		{
+			recv(connection.get_m_client_fd(), buf, count, 0);
+			return (count);
+		}
+		else
+			return (-1);
+	}
+	
+	bool
+	readGeneralBody(Connection& connection, Request& request)
+	{
+		std::string& buf = const_cast<std::string&>(connection.get_m_rbuf());
+
+		if (!ft::hasKey(request.get_m_headers(), "Content-Length"))
+			throw (41101);
+		connection.set_m_token_size(ft::stoi(request.get_m_headers().find("Content-Length")->second));
+
+		if (connection.get_m_readed_size() + static_cast<int>(buf.size()) <= connection.get_m_token_size())
+		{
+			request.addContent(buf);
+			request.addOrigin(buf);
+			connection.set_m_readed_size(connection.get_m_readed_size() + buf.size());
+			connection.decreaseRbuf(buf.size());
+		}
+		else
+		{
+			std::string part = buf.substr(0, connection.get_m_token_size() - connection.get_m_readed_size());
+			request.addContent(part);
+			request.addOrigin(part);
+			connection.decreaseRbuf(part.size());
+			connection.set_m_readed_size(connection.get_m_token_size());
+		}
+		return (connection.get_m_readed_size() == connection.get_m_token_size());
+	}
+
+	bool
+	readChunkedBody(Connection& connection, Request& request)
+	{
+		std::string& buf = const_cast<std::string&>(connection.get_m_rbuf());
+
+		while (true)
+		{
+			std::string len;
+			int content_length = getChunkedSize(buf, len);
+			if (content_length == -1)
+				return (false);
+			if (content_length == 0)
+			{
+				if (buf.find("\r\n") == std::string::npos)
+				{
+					buf.insert(0, len + "\r\n");
+					return (false);
+				}
+				if (buf.size() >= 2 && buf[0] == '\r' && buf[1] == '\n')
+				{
+					connection.decreaseRbuf(2);
+					return (true);
+				}
+				throw (40018);
+			}
+			if (static_cast<int>(buf.size()) < content_length + 2)
+			{
+				buf.insert(0, len + "\r\n");
+				return (false);
+			}
+			if (buf.substr(content_length, 2) != "\r\n")
+				throw (40021);
+			request.addContent(buf.substr(0, content_length));
+			request.addOrigin(len + "\r\n");
+			request.addOrigin(buf.substr(0, content_length + 2));
+			connection.decreaseRbuf(content_length + 2);
+		}
+	}
+
+}
+
+bool
+Server::parseBody(Connection& connection, Request& request)
+{
+	if (!isMethodHasBody(request.get_m_method()))
+		return (true);
+	if (request.get_m_method() == Request::POST && request.get_m_transfer_type() == Request::CHUNKED)
+		return (true);
+	if (request.get_m_transfer_type() == Request::GENERAL)
+		return (readGeneralBody(connection, request));
+	if (request.get_m_transfer_type() == Request::CHUNKED)
+		return (readChunkedBody(connection, request));
+	return (false);
+}
+
+void
+Server::recvRequest(Connection& connection, const Request& const_request)
+{
+	char buf[BUFFER_SIZE];
+	int count = BUFFER_SIZE - connection.get_m_rbuf().size();
+	Request& request = const_cast<Request&>(const_request);
+	Request::Phase phase = request.get_m_phase();
+	connection.set_m_status(Connection::ON_RECV);
+	if (phase == Request::READY && hasRequest(connection) && (count = recvWithoutBody(connection, buf, sizeof(buf))) > 0)
+		connection.addRbuf(buf, count);
+	if (phase == Request::READY && parseStartLine(connection, request))
+		phase = Request::ON_HEADER;
+	if (phase == Request::ON_HEADER && parseHeader(connection, request))
+	{
+		request.set_m_phase(phase = Request::ON_BODY);
+		if (isMethodHasBody(request.get_m_method()))
+			return ;
+	}
+	if (phase == Request::ON_BODY && (count = recvBody(connection, buf, sizeof(buf))) > 0)
+		connection.addRbuf(buf, count);
+	if (phase == Request::ON_BODY && parseBody(connection, request))
+		phase = Request::COMPLETE;
+	if (phase == Request::COMPLETE)
+		connection.set_m_last_request_at();
+	request.set_m_phase(phase);
+}
+
+bool
+Server::runRecvAndSolve(Connection& connection)
+{
+	try {
+		recvRequest(connection, connection.get_m_request());
+	} catch (int status_code) {
+		createResponse(connection, status_code);
+		return (true);
+	} catch (std::exception& e) {
+		ft::log(ServerManager::access_fd, ServerManager::error_fd, std::string("[Failed][Request] Failed to create request because ") + e.what());
+		createResponse(connection, 50001);
+		return (true);
+	}
+	const Request& request = connection.get_m_request();
+	if (request.get_m_phase() == Request::COMPLETE)
+	{
+		connection.set_m_status(Connection::ON_EXECUTE);
+		solveRequest(connection, connection.get_m_request());
+		return (true);
+	}
+	return (false);
+}
+
+/* ************************************************************************** */
+/* ---------------------------- MEMBER FUNCTION ----------------------------- */
+/* ************************************************************************** */
+
+std::string
+Server::getExtension(std::string path)
+{
+	std::string ret;
+
+	if (path.find(".") != std::string::npos)
+	{
+		size_t idx = path.rfind(".");
+		if (idx != path.size() - 1)
+			ret = path.substr(idx + 1);
+	}
+	return (ret);
+}
+
+std::string
+Server::getMimeTypeHeader(std::string path)
+{
+	std::string extension = getExtension(path);
+	std::string ret;
+	if (!extension.empty() && ft::hasKey(mime_types, extension))
+		ret = "Content-type:" + mime_types[extension];
+	else
+		ret = "Content-type:test-for-evaluation";
+	return (ret);
+}
+
+time_t
+Server::getLastModified(std::string path)
+{
+	struct stat buf;
+	ft::bzero(&buf, sizeof(struct stat));
+	stat(path.c_str(), &buf);
+	return (buf.st_mtimespec.tv_sec);
+}
+
+std::string
+Server::getLastModifiedHeader(std::string path)
+{
+	time_t modified = getLastModified(path);
+	struct tm t;
+	char buff[1024];
+
+	ft::convertTimespecToTm(modified, &t);
+	strftime(buff, sizeof(buff), "%a, %d %b %Y %X GMT", &t);
+	return ("Last-Modified:" + std::string(buff));
+}
+
+void
+ProxyBase::run()
+{
+	std::map<int, Connection>::iterator it = m_connections.begin();
+	while (it != m_connections.end())
+	{
+		std::map<int, Connection>::iterator it2 = it++;
+		int fd = it2->first;
+
+		if (m_fd == fd)
+			continue ;
+		if (hasSendToClientWork(it2->second) && !runSendToClient(it2->second))
+			continue ;
+		if (hasRecvFromServerWork(it2->second) && !runRecvFromServer(it2->second))
+			continue ;
+		if (hasSendToServerWork(it2->second) && !runSendToServer(it2->second))
+			continue ;
+		if (hasRecvFromClientWork(it2->second) || !it2->second.get_m_rbuf_from_client())
+		{
+			if (runRecvFromClient())
+				runProxyAction();
+		}
+	}
+	if (hasNewConnection())
+	{
+		writeDetectNewConnectionLog();
+		if (m_connections.size() >= 512)
+		{
+			int fd = getUnuseConnectionFd();
+			if (fd == -1)
+				return ;
+			closeConnection(fd);
+		}
+		if (!acceptNewConnection())
+			reportCreateNewConnectionLog();
+	}
+}
+
+namespace {
+	bool isAuthorizationRequired(Location* location) { return (!location->get_m_auth_basic_realm().empty()); }
+	bool hasCredential(const Request& request) { return (ft::hasKey(request.get_m_headers(), "Authorization")); }
+	bool isValidCredentialForm(std::vector<std::string> credential) {
+		return (credential.size() == 2 && credential[0] != "basic");
+	}
+	bool isValidCredentialContent(Location* location, std::vector<std::string>& credential)
+	{
+		std::string key, value;
+		basic_decode(credential[1], key, value);
+		return (key.empty() || value.empty() || !ft::hasKey(location->get_m_auth_basic_file(), key)
+		|| location->get_m_auth_basic_file().find(key)->second != value);
+	}
+	void makeResponse401(Server* server, const Request& request, Connection& connection) {
+		std::string header = "WWW-Authenticate:Basic realm=\"";
+		header.append(request.get_m_location()->get_m_auth_basic_realm());
+		header.append("\", charset=\"UTF-8\"");
+		return (server->createResponse(connection, 40101, headers_t(1, header)));
+	}
+}
+
+namespace {
+	std::string getDateHeader()
+	{
+		char buff[1024];
+		struct tm t;
+		timeval now;
+
+		gettimeofday(&now, NULL);
+		ft::convertTimespecToTm(now.tv_sec, &t);
+		strftime(buff, sizeof(buff), "%a, %d %b %Y %X GMT", &t);
+		return ("Last-Modified:" + std::string(buff));
+	}
+	std::string getServerHeader(Server* server) {
+		return ("Server:" + server->get_m_server_name());
+	}
+}
+
+void
+Server::createResponse(Connection& connection, int status, headers_t headers, std::string body)
+{
+	if (status >= 40000) {
+		reportCreateNewRequestLog(connection, status);
+		status /= 100;
+	}
+
+	headers.push_back(getDateHeader());
+	headers.push_back(getServerHeader(this));
+
+	if (status == CGI_SUCCESS_CODE)
+		createCGIResponse(status, headers, body);
+	if (status >= 400 && status <= 599) {
+		body = m_default_error_page;
+		body.replace(body.find("#ERROR_CODE"), 11, ft::to_string(status));
+		body.replace(body.find("#ERROR_CODE"), 11, ft::to_string(status));
+		body.replace(body.find("#ERROR_DESCRIPTION"), 18, Response::status[status]);
+		body.replace(body.find("#ERROR_DESCRIPTION"), 18, Response::status[status]);
+	}
+	if (!ft::hasKey(ft::stringVectorToMap(headers), "Transfer-Encoding"))
+		headers.push_back("Content-Length:" + ft::to_string(body.size()));
+	if (!body.empty())
+		headers.push_back("Content-Language:ko-KR");
+	if (status / 100 != 2)
+		headers.push_back("Connection:close");
+	if (status / 100 == 3)
+		headers.push_back("Location:/");
+	if (status == 504)
+		headers.push_back("Retry-After:3600");
+	if (connection.get_m_request().get_m_method() == Request::HEAD)
+		body = "";
+
+	Response& response = const_cast<Response&>(connection.get_m_response());
+	response = Response(&connection, status, body);
+	headers_t::iterator it = headers.begin();
+	for (; it != headers.end(); ++it) {
+		std::string key = ft::rtrim((*it).substr(0, (*it).find(":")), " ");
+		std::string value = ft::ltrim((*it).substr((*it).find(":") + 1), " ");
+		response.addHeader(key, value);
+	}
+	writeCreateNewResponseLog(response);
+	const_cast<Request&>(connection.get_m_request()).set_m_phase(Request::COMPLETE);
+	connection.set_m_status(Connection::TO_SEND);
+	m_manager->fdSet(response.get_m_connection()->get_m_client_fd(), ServerManager::WRITE_SET);
+}
+
+/* ************************************************************************** */
+/* ------------------------------- LOG FUNCTION ----------------------------- */
+/* ************************************************************************** */
+
+void
+Server::writeDetectNewConnectionLog()
+{
+	std::string text = "[Detected][Connection][Server:" + m_server_name + "][Host:" + m_host \
+	+ "] New connection detected.\n";
+	ft::log(ServerManager::access_fd, -1, text);
+	return ;
+}
+
+void
+Server::writeCreateNewConnectionLog(int client_fd, std::string client_ip, int client_port)
+{
+	std::string text = "[Created][Connection][Server:" + m_server_name + "][CFD:" \
+	+ ft::to_string(client_fd) + "][IP:" + client_ip + "][Port:" + ft::to_string(client_port) + "]\n";
+	ft::log(ServerManager::access_fd, -1, text);
+	return ;
+}
+
+void
+Server::reportCreateNewConnectionLog()
+{
+	std::string text = "[Failed][Connection][Server:" + m_server_name + "][Host:" + m_host \
+	+ "] Failed to create new connection.\n";
+	ft::log(ServerManager::access_fd, ServerManager::error_fd, text);
+	return ;
+}
+
+void
+Server::writeDetectNewRequestLog(const Connection& connection)
+{
+	std::string text = "[Detected][Request][Server:" + m_server_name + "][CIP:"
+	+ connection.get_m_client_ip() + "][CFD:" + ft::to_string(connection.get_m_client_fd()) + "]"
+	+ " New request detected.\n";
+	ft::log(ServerManager::access_fd, -1, text);
+	return ;
+}
+
+void
+Server::writeCreateNewRequestLog(const Request& request)
+{
+	std::string text = "[Created][Request][Server:" + m_server_name + "][Method:" \
+	+ request.get_m_method_to_string() + "][URI:" + request.get_m_uri() + "][Path:" + request.get_m_script_translated() + "]";
+	if (request.get_m_method() == Request::GET)
+		text.append("[Query:" + request.get_m_query() + "]");
+	text.append(" New request created.\n");
+	ft::log(ServerManager::access_fd, -1, text);
+	return ;
+}
+
+void
+Server::reportCreateNewRequestLog(const Connection& connection, int status)
+{
+	std::string text = "[Failed][Request][Server:" + m_server_name + "][CIP:"
+	+ connection.get_m_client_ip() + "][CFD:" + ft::to_string(connection.get_m_client_fd()) + "]["
+	+ ft::to_string(status) + "][" + Response::status[status] + "] Failed to create new Request.\n";
+	ft::log(ServerManager::access_fd, ServerManager::error_fd, text);
+	return ;
+}
+
+void
+Server::writeCreateNewResponseLog(const Response& response)
+{
+	std::string text = ft::getTimestamp() + "[Created][Response][Server:" + m_server_name + "][" \
+	+ ft::to_string(response.get_m_status_code()) + "][" + response.get_m_status_description() + "][CFD:" \
+	+ ft::to_string(response.get_m_connection()->get_m_client_fd()) + "][headers:" \
+	+ ft::to_string(response.get_m_headers().size()) + "][body:" + ft::to_string(response.get_m_content().size()) + "]";
+	text.append(" New response created.\n");
+	ft::log(ServerManager::access_fd, -1, text);
+	return ;
+}
+
+void
+Server::writeSendResponseLog(const Response& response)
+{
+	std::string text = ft::getTimestamp() + "[Sended][Response][Server:" + m_server_name + "][" \
+	+ ft::to_string(response.get_m_status_code()) + "][" + response.get_m_status_description() + "][CFD:" \
+	+ ft::to_string(response.get_m_connection()->get_m_client_fd()) + "][headers:" \
+	+ ft::to_string(response.get_m_headers().size()) + "][body:" + ft::to_string(response.get_m_content().size()) + "]";
+	text.append(" Response sended\n");
+	ft::log(ServerManager::access_fd, -1, text);
+	return ;
+}
+
+void
+Server::writeCloseConnectionLog(int client_fd)
+{
+	std::string text = "[Deleted][Connection][Server:" + m_server_name + "][CFD:" \
+	+ ft::to_string(client_fd) + "] Connection closed.\n";
+	ft::log(ServerManager::access_fd, -1, text);
+	return ;
+}
