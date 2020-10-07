@@ -22,8 +22,8 @@ class Connection
 		int m_token_size;
 		int m_readed_size;
 		Response m_response;
-		std::string m_rbuf;
-		std::string m_cgi_rbuf;
+		std::string m_rbuf_from_client;
+		std::string m_rbuf_from_server;
 		std::string m_wbuf;
 		int m_wbuf_data_size;
 		int m_send_data_size;
@@ -47,8 +47,8 @@ class Connection
 		int get_m_token_size() const;
 		int get_m_readed_size() const;
 		const Response& get_m_response() const;
-		const std::string& get_m_rbuf() const;
-		const std::string& get_m_cgi_rbuf() const;
+		const std::string& get_m_rbuf_from_client() const;
+		const std::string& get_m_rbuf_from_server() const;
 		const std::string& get_m_wbuf() const;
 		timeval get_m_last_request_at() const;
 		std::string get_m_client_ip() const;
@@ -68,8 +68,8 @@ class Connection
 		void addCgiRbuf(const char* str, int count);
 		void decreaseRbuf(int size);
 		void decreaseWbuf(int size);
-		void clearRbuf();
-		void clearCgiRbuf();
+		void clearRbufFromClient();
+		void clearRbufFromServer();
 		void clearWbuf();
 		void clear();
 

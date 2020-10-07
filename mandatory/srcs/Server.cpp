@@ -336,7 +336,7 @@ namespace
 	void
 	writeChunkedBodyToCGIScript(ServerManager* manager, Connection& connection, int connection_count)
 	{
-		std::string& rbuf = const_cast<std::string&>(connection.get_m_rbuf());
+		std::string& rbuf = const_cast<std::string&>(connection.get_m_rbuf_from_client());
 		int client_fd = connection.get_m_client_fd();
 		int to_child_fd = connection.get_m_to_child_fd();
 		char buff[BUFFER_SIZE];
@@ -442,8 +442,8 @@ Server::runExecute(Connection& connection)
 			close(from_child_fd);
 			m_manager->fdClear(from_child_fd, ServerManager::READ_SET);
 		}
-		std::string body = connection.get_m_cgi_rbuf();
-		connection.clearCgiRbuf();
+		std::string body = connection.get_m_rbuf_from_server();
+		connection.clearRbufFromServer();
 		connection.clearWbuf();
 		if (connection.get_m_request().get_m_uri_type() == Request::CGI_PROGRAM)
 		{
@@ -549,14 +549,14 @@ Server::parseStartLine(Connection& connection, Request& request)
 {
 	size_t new_line;
 
-	if ((new_line = connection.get_m_rbuf().find("\r\n")) != std::string::npos)
+	if ((new_line = connection.get_m_rbuf_from_client().find("\r\n")) != std::string::npos)
 	{
-		std::string start_line = connection.get_m_rbuf().substr(0, new_line);
+		std::string start_line = connection.get_m_rbuf_from_client().substr(0, new_line);
 		connection.decreaseRbuf(start_line.size() + 2);
 		request.addOrigin(start_line + "\r\n");
 		request = Request(&connection, this, start_line);
 		return (true);
-	} else if (connection.get_m_rbuf().size() > REQUEST_URI_LIMIT_SIZE_MAX)
+	} else if (connection.get_m_rbuf_from_client().size() > REQUEST_URI_LIMIT_SIZE_MAX)
 		throw (40006);
 	return (false);
 }
@@ -564,7 +564,7 @@ Server::parseStartLine(Connection& connection, Request& request)
 bool
 Server::parseHeader(Connection& connection, Request& request)
 {
-	std::string& rbuf = const_cast<std::string&>(connection.get_m_rbuf());
+	std::string& rbuf = const_cast<std::string&>(connection.get_m_rbuf_from_client());
 	std::string line;
 
 	while (ft::getline(rbuf, line, REQUEST_HEADER_LIMIT_SIZE_MAX) >= 0)
@@ -636,7 +636,7 @@ namespace {
 	bool
 	readGeneralBody(Connection& connection, Request& request)
 	{
-		std::string& buf = const_cast<std::string&>(connection.get_m_rbuf());
+		std::string& buf = const_cast<std::string&>(connection.get_m_rbuf_from_client());
 
 		if (!ft::hasKey(request.get_m_headers(), "Content-Length"))
 			throw (41101);
@@ -663,7 +663,7 @@ namespace {
 	bool
 	readChunkedBody(Connection& connection, Request& request)
 	{
-		std::string& buf = const_cast<std::string&>(connection.get_m_rbuf());
+		std::string& buf = const_cast<std::string&>(connection.get_m_rbuf_from_client());
 
 		while (true)
 		{
@@ -719,7 +719,7 @@ void
 Server::recvRequest(Connection& connection, const Request& const_request)
 {
 	char buf[BUFFER_SIZE];
-	int count = BUFFER_SIZE - connection.get_m_rbuf().size();
+	int count = BUFFER_SIZE - connection.get_m_rbuf_from_client().size();
 	Request& request = const_cast<Request&>(const_request);
 	Request::Phase phase = request.get_m_phase();
 	connection.set_m_status(Connection::ON_RECV);
@@ -839,7 +839,7 @@ Server::run()
 			runExecute(it2->second);
 			continue ;
 		}
-		if (hasRequest(it2->second) || !it2->second.get_m_rbuf().empty())
+		if (hasRequest(it2->second) || !it2->second.get_m_rbuf_from_client().empty())
 			runRecvAndSolve(it2->second);
 	}
 	if (hasNewConnection())
