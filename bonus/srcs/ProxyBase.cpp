@@ -229,6 +229,12 @@ ProxyBase::runRecvFromClient(Connection& connection)
 /* -------------------------- CONNECTION MANAGEMENT ------------------------- */
 /* ************************************************************************** */
 
+void
+ProxyBase::connectServer()
+{
+	
+}
+
 bool
 ProxyBase::hasNewConnection()
 {
@@ -303,6 +309,8 @@ ProxyBase::run()
 void
 ProxyBase::runProxy()
 {
+
+	connectServer();
 
 	timeval timeout;
 	timeout.tv_sec = 0;

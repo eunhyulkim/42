@@ -22,7 +22,7 @@ class ProxyBase
 		fd_set m_read_copy_set;
 		fd_set m_write_set;
 		fd_set m_write_copy_set;
-		std::multimap<std::string, int> m_servers;
+		std::map<std::string, int> m_servers;
 		std::map<int, Connection> m_connections;
 	private:
 		/* send operation */
@@ -38,6 +38,7 @@ class ProxyBase
 		bool runRecvFromClient(Connection& connection);
 
 		/* connection management */
+		void connectServer();
 		bool hasNewConnection();
 		int getUnusedConnectionFd();
 		void closeConnection(int client_fd);
