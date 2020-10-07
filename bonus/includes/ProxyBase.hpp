@@ -1,24 +1,28 @@
-#ifndef SERVER_HPP
-# define SERVER_HPP
+#ifndef PROXYBASE_HPP
+# define PROXYBASE_HPP
 
 # include "webserv.hpp"
-# include "Config.hpp"
 # include "Connection.hpp"
-# include "Location.hpp"
-# include "Request.hpp"
-# include "Response.hpp"
 
 // class Request;
 class ServerManager;
 
 class ProxyBase
 {
+	public:
+		enum ProxyType { UNDEFINED_PROXY, CACHE_PROXY, LOADBALANCE_PROXY, FILTER_PROXY };
 	protected:
 		ServerManager* m_manager;
-		std::string m_server_name;
+		ProxyType m_type;
 		std::string m_host;
 		int m_port;
 		int m_fd;
+		int m_max_fd;
+		fd_set m_read_set;
+		fd_set m_read_copy_set;
+		fd_set m_write_set;
+		fd_set m_write_copy_set;
+		std::multimap<std::string, int> m_servers;
 		std::map<int, Connection> m_connections;
 	private:
 		/* util */
@@ -59,7 +63,7 @@ class ProxyBase
 
 	public:
 		Server();
-		Server(ServerManager* server_manager, const std::string& server_block, std::vector<std::string>& location_blocks, Config* config);
+		Server(ServerManager* server_manager, const std::string& proxy_block);
 		Server(const Server& copy);
 		Server& operator=(const Server& obj);
 		virtual ~Server();

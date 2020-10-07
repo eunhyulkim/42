@@ -230,18 +230,6 @@ void basic_decode(std::string data, std::string& key, std::string& value)
     value = ft::base64_encode(&value_base[0], value_base.size());
 }
 
-std::string
-Server::inet_ntoa(unsigned int address)
-{
-	std::string ret;
-
-	ret = ft::to_string(address & 0xFF) + ".";
-	ret.append(ft::to_string((address >> 8) & 0xFF) + ".");
-	ret.append(ft::to_string((address >> 16) & 0xFF) + ".");
-	ret.append(ft::to_string((address >> 24) & 0xFF));
-	return (ret);
-}
-
 /* ************************************************************************** */
 /* ----------------------------- SEND OPERATION ----------------------------- */
 /* ************************************************************************** */
@@ -520,7 +508,7 @@ Server::acceptNewConnection()
 		m_manager->set_m_max_fd(client_fd);
 	if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1)
 		return (false);
-	client_ip = inet_ntoa(client_addr.sin_addr.s_addr);
+	client_ip = ft::inet_ntoa(client_addr.sin_addr.s_addr);
 	client_port = static_cast<int>(client_addr.sin_port);
 	m_connections[client_fd] = Connection(client_fd, client_ip, client_port);
 	m_manager->fdSet(client_fd, ServerManager::READ_SET);

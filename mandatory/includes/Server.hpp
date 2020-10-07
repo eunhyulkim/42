@@ -32,8 +32,6 @@ class Server
 	private:
 		/* util */
 		void basic_decode(std::string data, std::string& key, std::string& value);
-		std::string inet_ntoa(unsigned int address);
-
 
 		/* send operation */
 		bool hasSendWork(Connection& connection);

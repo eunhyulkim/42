@@ -523,18 +523,6 @@ namespace ft
 		return ((x & 0x00ffU) << 8 | (x & 0xff00U) >> 8);
 	}
 
-	std::string
-	inet_ntoa(unsigned int address)
-	{
-		std::string ret;
-
-		ret = ft::to_string(address & 0xFF) + ".";
-		ret.append(ft::to_string((address >> 8) & 0xFF) + ".");
-		ret.append(ft::to_string((address >> 16) & 0xFF) + ".");
-		ret.append(ft::to_string((address >> 24) & 0xFF));
-		return (ret);
-	}
-
 /* ************************************************************************** */
 /* ---------------------------- FDSET OPERATOR ------------------------------ */
 /* ************************************************************************** */
