@@ -25,77 +25,59 @@ class ProxyBase
 		std::multimap<std::string, int> m_servers;
 		std::map<int, Connection> m_connections;
 	private:
-		/* util */
-		std::string inet_ntoa(unsigned int address);
-
 		/* send operation */
-		bool hasSendWork(Connection& connection);
-		bool runSend(Connection& connection);
-		bool hasExecuteWork(Connection& connection);
-		bool runExecute(Connection& connection);
-
-		/* connection management */
-		// bool hasException(int client_fd);
-		int getUnuseConnectionFd();
-		bool hasNewConnection();
-		bool acceptNewConnection();
+		bool hasSendWorkToClient(Connection& connection);
+		bool runSendToClient(Connection& connection);
+		bool hasSendWorkToServer(Connection& connection);
+		bool runSendToServer(Connection& connection);
 
 		/* read operation */
-		bool hasRequest(Connection& connection);
+		bool hasRecvWorkFromServer(Connection& connection);
+		bool runRecvFromServer(Connection& connection );
+		bool hasRecvWorkFromClient(Connection& connection);
+		bool runRecvFromClient(Connection& connection);
 
-		void revertStdInOut();
-		bool parseStartLine(Connection& connection, Request& request);
-		bool parseHeader(Connection& connection, Request& request);
+		/* connection management */
+		bool hasNewConnection();
+		int getUnusedConnectionFd();
+		void closeConnection(int client_fd);
+		bool acceptNewConnection();
+		void closeOldConnection();
 
-		bool parseBody(Connection& connection, Request& request);
-
-		int getHeaderLine(int client_fd, std::string& line);
-		void headerParsing(Request &request, std::string& origin_message, int client_fd);
-		std::string readBodyMessage(Request &request, std::string& origin_message, int client_fd);
-		void recvRequest(Connection& connection, const Request& request);
-		bool runRecvAndSolve(Connection& connection);
-
-		/* create response */
-		std::string getExtension(std::string path);
-		std::string getMimeTypeHeader(std::string path);
-		time_t getLastModified(std::string path);
-		std::string getLastModifiedHeader(std::string path);
-
+		/* proxy action */
+		virtual void runProxyAction() = 0;
+		void run();
 	public:
-		Server();
-		Server(ServerManager* server_manager, const std::string& proxy_block);
-		Server(const Server& copy);
-		Server& operator=(const Server& obj);
-		virtual ~Server();
+		ProxyBase();
+		ProxyBase(ServerManager* server_manager, const std::string& proxy_block);
+		ProxyBase(const ProxyBase& copy);
+		ProxyBase& operator=(const ProxyBase& obj);
+		virtual ~ProxyBase();
 
 		/* getter function */
-		const std::string& get_m_server_name() const;
+		ServerManager* get_m_manager() const;
+		ProxyType get_m_type() const;
 		const std::string& get_m_host() const;
 		int get_m_port() const;
 		int get_m_fd() const;
-		size_t get_m_request_uri_limit_size() const;
-		size_t get_m_request_header_limit_size() const;
-		size_t get_m_limit_client_body_size() const;
-		const std::string& get_m_default_error_page() const;
-		Config* get_m_config() const;
-		const std::vector<Location>& get_m_locations() const;
+		int get_m_max_fd() const;
+		fd_set get_m_read_set() const;
+		fd_set get_m_read_copy_set() const;
+		fd_set get_m_write_set() const;
+		fd_set get_m_write_copy_set() const;
+		const std::multimap<std::string, int>& get_m_servers() const;
 		const std::map<int, Connection>& get_m_connections() const;
-		const std::queue<Response>& get_m_responses() const;
+
+		/* setter function */
+		void set_m_max_fd(int new_max_fd);
 
 		/* declare member function */
-		void run();
-
-		void closeConnection(int client_fd);
+		void runProxy();
 
 		/* log function */
-		void writeDetectNewConnectionLog();
 		void writeCreateNewConnectionLog(int client_fd, std::string client_ip, int client_port);
 		void reportCreateNewConnectionLog();
-		void writeDetectNewRequestLog(const Connection& connection);
-		void writeCreateNewRequestLog(const Request& request);
-		void reportCreateNewRequestLog(const Connection& connection, int status);
-		void writeCreateNewResponseLog(const Response& response);
-		void writeSendResponseLog(const Response& response);
+		void writeProxyHealthLog();
 		void writeCloseConnectionLog(int client_fd);
 };
 

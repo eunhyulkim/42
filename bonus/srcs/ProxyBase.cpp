@@ -1,4 +1,5 @@
 #include "ProxyBase.hpp"
+#include "ServerManager.hpp"
 
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
@@ -8,9 +9,9 @@
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-ProxyBase::Server() {}
+ProxyBase::ProxyBase() {}
 
-ProxyBase::Server(ServerManager* server_manager, const std::string& proxy_block)
+ProxyBase::ProxyBase(ServerManager* server_manager, const std::string& proxy_block)
 {
 	std::map<std::string, std::string> proxy_map = ft::stringVectorToMap(ft::split(proxy_block, '\n'), ' ');
 	struct sockaddr_in server_addr;
@@ -39,7 +40,7 @@ ProxyBase::Server(ServerManager* server_manager, const std::string& proxy_block)
 	for (; it != servers.end()!; ++it)
 	{
 		std::vector<std::string> server_url = ft::split(*it, ':');
-		m_servers[ft::trim(server_url[0], " ")] = ft::trim(server_url[1], " ");
+		m_servers.insert(std::pair<std::string, int>(ft::trim(server_url[0], " "), ft::stoi(ft::trim(server_url[1], " "))));
 	}
 
 	if((m_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
@@ -62,7 +63,7 @@ ProxyBase::Server(ServerManager* server_manager, const std::string& proxy_block)
 		m_manager->set_m_max_fd(m_fd);
 }
 
-ProxyBase::Server(const Server& copy)
+ProxyBase::ProxyBase(const ProxyBase& copy)
 {
 	m_manager = copy.m_manager;
 	m_type = copy.m_type;
@@ -82,7 +83,7 @@ ProxyBase::Server(const Server& copy)
 /* ------------------------------- DESTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-ProxyBase::~Server()
+ProxyBase::~ProxyBase()
 {
 	m_manager = NULL;
 	m_type = UNDEFINED_PROXY;
@@ -90,10 +91,10 @@ ProxyBase::~Server()
 	m_port = 0;
 	m_fd = -1;
 	m_max_fd = 0;
-	m_read_set = 0;
-	m_read_copy_set = 0;
-	m_write_set = 0;
-	m_write_copy_set = 0;
+	ft::fdZero(&m_read_set);
+	ft::fdZero(&m_read_copy_set);
+	ft::fdZero(&m_write_set);
+	ft::fdZero(&m_write_copy_set);
 	m_servers.clear();
 	m_connections.clear();
 }
@@ -113,9 +114,9 @@ ProxyBase& ProxyBase::operator=(const ProxyBase& obj)
 	m_fd = obj.get_m_fd();
 	m_max_fd = obj.get_m_max_fd();
 	m_read_set = obj.get_m_read_set();
-	m_read_obj_set = obj.get_m_read_copy_set();
+	m_read_copy_set = obj.get_m_read_copy_set();
 	m_write_set = obj.get_m_write_set();
-	m_write_obj_set = obj.get_m_write_copy_set();
+	m_write_copy_set = obj.get_m_write_copy_set();
 	m_servers = obj.get_m_servers();
 	m_connections = obj.get_m_connections();
 	return (*this);
@@ -131,18 +132,18 @@ operator<<(std::ostream& out, const ProxyBase& server)
 /* --------------------------------- GETTER --------------------------------- */
 /* ************************************************************************** */
 
-ServerManager* ProxyBase::get_m_manager() { return (get_m_manager); }
-ProxyType ProxyBase::get_m_type() { return (m_type); }
-std::string ProxyBase::get_m_host() { return (m_host); }
-int ProxyBase::get_m_port() { return (m_port); }
-int ProxyBase::get_m_fd() { return (m_fd); }
-int ProxyBase::get_m_max_fd() { return (m_max_fd); }
-fd_set ProxyBase::get_m_read_set() { return (m_read_set); }
-fd_set ProxyBase::get_m_read_copy_set() { return (m_read_copy_set); }
-fd_set ProxyBase::get_m_write_set() { return (m_write_set); }
-fd_set ProxyBase::get_m_write_copy_set() { return (m_write_copy_set); }
-const std::multimap<std::string, int>& ProxyBase::get_m_servers() { return (m_servers); }
-const std::map<int, Connection>& ProxyBase::get_m_connections() { return (m_connections); }
+ServerManager* ProxyBase::get_m_manager() const { return (get_m_manager); }
+ProxyBase::ProxyType ProxyBase::get_m_type() const { return (m_type); }
+const std::string& ProxyBase::get_m_host() const { return (m_host); }
+int ProxyBase::get_m_port() const { return (m_port); }
+int ProxyBase::get_m_fd() const { return (m_fd); }
+int ProxyBase::get_m_max_fd() const { return (m_max_fd); }
+fd_set ProxyBase::get_m_read_set() const { return (m_read_set); }
+fd_set ProxyBase::get_m_read_copy_set() const { return (m_read_copy_set); }
+fd_set ProxyBase::get_m_write_set() const { return (m_write_set); }
+fd_set ProxyBase::get_m_write_copy_set() const { return (m_write_copy_set); }
+const std::multimap<std::string, int>& ProxyBase::get_m_servers() const { return (m_servers); }
+const std::map<int, Connection>& ProxyBase::get_m_connections() const { return (m_connections); }
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */
@@ -159,25 +160,25 @@ void ProxyBase::set_m_max_fd(int new_max_fd) { m_max_fd = new_max_fd; }
 /* ************************************************************************** */
 
 bool
-ProxyBase::hasSendToClientWork(it2->second)
+ProxyBase::hasSendWorkToClient(Connection& connection)
 {
 
 }
 
 bool
-ProxyBase::runSendToClient(it2->second)
+ProxyBase::runSendToClient(Connection& connection)
 {
 
 }
 
 bool
-ProxyBase::hasSendToServerWork(it2->second)
+ProxyBase::hasSendWorkToServer(Connection& connection)
 {
 
 }
 
 bool
-ProxyBase::runSendToServer(it2->second)
+ProxyBase::runSendToServer(Connection& connection)
 {
 
 }
@@ -187,25 +188,25 @@ ProxyBase::runSendToServer(it2->second)
 /* ************************************************************************** */
 
 bool
-ProxyBase::hasRecvFromServerWork(it2->second)
+ProxyBase::hasRecvWorkFromServer(Connection& connection)
 {
 
 }
 
 bool
-ProxyBase::runRecvFromServer(it2->second)
+ProxyBase::runRecvFromServer(Connection& connection)
 {
 
 }
 
 bool
-ProxyBase::hasRecvFromClientWork(it2->second)
+ProxyBase::hasRecvWorkFromClient(Connection& connection)
 {
 
 }
 
 bool
-ProxyBase::runRecvFromClient()
+ProxyBase::runRecvFromClient(Connection& connection)
 {
 
 }
@@ -225,13 +226,13 @@ ProxyBase::hasNewConnection()
 }
 
 int
-ProxyBase::getUnuseConnectionFd()
+ProxyBase::getUnusedConnectionFd()
 {
 
 }
 
 void
-ProxyBase::closeConnection()
+ProxyBase::closeConnection(int client_fd)
 {
 
 }
@@ -260,26 +261,26 @@ ProxyBase::run()
 	{
 		std::map<int, Connection>::iterator it2 = it++;
 		int fd = it2->first;
+		Connection& connection = it2->second;
 
 		if (m_fd == fd)
 			continue ;
-		if (hasSendToClientWork(it2->second) && !runSendToClient(it2->second))
+		if (hasSendWorkToClient(connection) && !runSendToClient(connection))
 			continue ;
-		if (hasRecvFromServerWork(it2->second) && !runRecvFromServer(it2->second))
+		if (hasRecvWorkFromServer(connection) && !runRecvFromServer(connection))
 			continue ;
-		if (hasSendToServerWork(it2->second) && !runSendToServer(it2->second))
+		if (hasSendWorkToServer(connection) && !runSendToServer(connection))
 			continue ;
-		if (hasRecvFromClientWork(it2->second) || !it2->second.get_m_rbuf_from_client())
-		{
-			if (runRecvFromClient())
-				runProxyAction();
-		}
+		if (hasRecvWorkFromClient(connection))
+			runRecvFromClient(connection);
+		if (!(connection.get_m_rbuf_from_client().empty()))
+			runProxyAction();
 	}
 	if (hasNewConnection())
 	{
 		if (m_connections.size() >= 512)
 		{
-			int fd = getUnuseConnectionFd();
+			int fd = getUnusedConnectionFd();
 			if (fd == -1)
 				return ;
 			closeConnection(fd);
@@ -300,23 +301,29 @@ ProxyBase::runProxy()
 	while (true)
 	{
 		int cnt;
-		m_manager->fdCopy(ALL_SET);
+		m_manager->fdCopy(ServerManager::ALL_SET);
 		
 		if ((cnt = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, \
-		&this->m_error_copy_set, &timeout)) == -1)
+		NULL, &timeout)) == -1)
 			ft::log(ServerManager::access_fd, ServerManager::error_fd, "[Failed][Function]Select function failed(return -1)");
 			throw std::runtime_error("select error");
 		else if (cnt == 0)
 			continue ;
 		writeProxyHealthLog();
 		run();
-		closeOldConnection(it);
+		closeOldConnection();
 	}
 }
 
 /* ************************************************************************** */
 /* ------------------------------- LOG FUNCTION ----------------------------- */
 /* ************************************************************************** */
+
+void
+ProxyBase::writeCreateNewConnectionLog(int client_fd, std::string client_ip, int client_port)
+{
+
+}
 
 void
 ProxyBase::reportCreateNewConnectionLog()
@@ -328,4 +335,10 @@ void
 ProxyBase::writeProxyHealthLog()
 {
 
+}
+
+void
+ProxyBase::writeCloseConnectionLog(int client_fd)
+{
+	
 }
