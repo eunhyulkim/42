@@ -1,13 +1,4 @@
 #include "Connection.hpp"
-// #include "ServerManager.hpp"
-
-// timeval g_start3;
-
-// namespace {
-// 	void timeflag(std::string location) {
-// 		ft::log(ServerManager::access_fd, -1, location + ": " + ft::getSpeed(g_start3) + "\n");
-// 	}
-// }
 
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
@@ -159,12 +150,8 @@ void Connection::set_m_last_request_at()
 
 void Connection::set_m_wbuf_for_execute() { m_wbuf = m_request.get_m_content(); }
 void Connection::set_m_wbuf_for_send() {
-	// gettimeofday(&g_start3, NULL);
-	// timeflag("A-1.getString Function Call in Connection.");
 	m_wbuf = m_response.getString();
-	// timeflag("A-2.getString Function End in Connection.");
 	m_wbuf_data_size = m_wbuf.size(); 
-	// timeflag("A-3.check size wbuf in Connection.");
 }
 void Connection::set_m_status(Status status) { m_status = status; }
 void Connection::set_m_token_size(int token_size) { m_token_size = token_size; }

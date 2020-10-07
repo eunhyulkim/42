@@ -142,7 +142,7 @@ namespace {
 		return (ret);
 	}
 
-	bool isValidIpByte(std::string s) { return ((std::stoi(s) >= 0) && (std::stoi(s) <= 255)); }
+	bool isValidIpByte(std::string s) { return ((ft::stoi(s) >= 0) && (ft::stoi(s) <= 255)); }
 	bool isValidCgi(std::string data) { return (data[0] == '.'); }
 	bool isDigit(char c) { return (c >= '0' && c <= '9'); }
 }
@@ -461,13 +461,13 @@ ServerManager::createServer(const std::string& configuration_file_path, char **e
 		std::string server_block;
 		std::vector<std::string> location_blocks;
 		if (!splitServerString(server_strings[i], server_block, location_blocks))
-			throw (std::invalid_argument("Failed to split Sever string(" + std::to_string(i) + ")"));
+			throw (std::invalid_argument("Failed to split Sever string(" + ft::to_string(i) + ")"));
 		if (!isValidServerBlock(server_block))
-			throw (std::invalid_argument("Server block(" + std::to_string(i) + ") is not valid."));
+			throw (std::invalid_argument("Server block(" + ft::to_string(i) + ") is not valid."));
 		for (size_t j = 0; j < location_blocks.size(); ++j) {
 			if (!isValidLocationBlock(location_blocks[j]))
-				throw (std::invalid_argument("Location block(" + std::to_string(i) \
-				+ "-" + std::to_string(j) + ") is not valid."));
+				throw (std::invalid_argument("Location block(" + ft::to_string(i) \
+				+ "-" + ft::to_string(j) + ") is not valid."));
 		}
 		m_servers.push_back(Server(this, server_block, location_blocks, &this->m_config));
 		m_server_fdset.insert(m_servers.back().get_m_fd());
@@ -495,7 +495,7 @@ ServerManager::closeOldConnection(std::vector<Server>::iterator server_it)
 		if (!ft::hasKey(m_server_fdset, fd) && it->second.isOverTime())
 		{
 			++it;
-			std::cout << "close connection because connection old" << std::endl;
+			// std::cout << "close connection because connection old" << std::endl;
 			server_it->closeConnection(fd);
 		} else
 			++it;
@@ -566,7 +566,7 @@ ServerManager::openLog()
 void
 ServerManager::writeCreateServerLog()
 {
-	std::string text = "[Created][Servers]" + std::to_string(m_servers.size()) + " servers created successfully.\n";
+	std::string text = "[Created][Servers]" + ft::to_string(m_servers.size()) + " servers created successfully.\n";
 	ft::log(ServerManager::access_fd, -1, text);
 	return ;
 }
@@ -578,7 +578,7 @@ ServerManager::writeServerHealthLog(bool ignore_interval)
 		return ;
 	(void)ignore_interval;
 	int fd = ServerManager::access_fd;
-	std::string text = "[HealthCheck][Server][Max_fd:" + std::to_string(m_max_fd) \
+	std::string text = "[HealthCheck][Server][Max_fd:" + ft::to_string(m_max_fd) \
 	+ "][Connection:" + ft::getSetFdString(m_max_fd, &m_read_set) + "][Response:" + ft::getSetFdString(m_max_fd, &m_write_set) + "]\n";
 	ft::log(fd, -1, text);
 	return ;

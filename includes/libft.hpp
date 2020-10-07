@@ -33,6 +33,9 @@ namespace ft
     int startswith(const char *str, const char *sub);
     int lenDoubleStr(char **str);
     size_t pow(size_t root, size_t square);
+    long long int abs(long long int num);
+    std::string to_string(long long int n);
+    int stoi(std::string str, int base = 10);
     std::string itos(std::string number, size_t from, size_t to);
 
     /* C++ LIBFT */

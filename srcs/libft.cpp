@@ -52,7 +52,7 @@ namespace ft
 	free(void *ptr)
 	{
 		if (ptr)
-			free(ptr);
+			std::free(ptr);
 		return (1);
 	}
 
@@ -61,7 +61,7 @@ namespace ft
 	{
 		if (!str || !(*str))
 			return (0);
-		free(*str);
+		ft::free(*str);
 		*str = 0;
 		return (1);
 	}
@@ -174,13 +174,62 @@ namespace ft
 		return (ret);
 	}
 
+	long long int abs(long long int num)
+	{
+		if (num < 0)
+				return (num * -1);
+		return (num);
+	}
+
+	std::string
+	to_string(long long int n)
+	{
+        long long int   nb;
+        std::string		str;
+
+		if (n == 0)
+			return ("0");
+        nb = n;
+        while (nb != 0)
+        {
+            str.insert(str.begin(), static_cast<char>((ft::abs(nb % 10) + 48)));
+            nb = nb / 10;
+        }
+		if (n < 0)
+			str.insert(str.begin(), '-');
+        return (str);
+	}
+
+	int stoi(std::string str, int base)
+	{
+        int sign = 1;
+        int value = 0;
+		std::string digit = "0123456789abcdefghijklmnopqrstuvwxyz";
+
+        if (str.empty())
+            return (0);
+		if (str[0] == '-')
+			sign = -1;
+		if (str[0] == '-' || str[0] == '+')
+			str.erase(str.begin());
+        if (str.empty() || digit.find(str[0]) == std::string::npos)
+            return (0);
+        while (!str.empty() && digit.find(str[0]) != std::string::npos)
+        {
+            value *= base;
+            value += digit.find(str[0]);
+            str.erase(str.begin());
+        }
+        return (sign * value);
+	}
+
 	std::string
 	itos(std::string number, size_t from, size_t to)
 	{
 		std::string base = "0123456789abcdefghijklmnopqrstuvwxyz";
 		std::string ret = "";
 		bool sign = false;
-		size_t data = std::stoi(number, 0, from);
+		size_t data = ft::stoi(number, from);
 
 		if (number.empty() || data == 0)
 			return ("0");
@@ -520,7 +569,7 @@ namespace ft
 					ret.append(",");
 				}
 				first = false;
-				ret.append(std::to_string(i));
+				ret.append(ft::to_string(i));
 			}
 		}
 		return (ret);
@@ -550,12 +599,12 @@ namespace ft
 		std::time_t	t = std::time(0);
 		std::tm* now = std::localtime(&t);
 		std::string ret;
-		ret.append("[" + std::to_string(now->tm_year + 1900));
-		ret.append(std::to_string(now->tm_mon + 1));
-		ret.append(std::to_string(now->tm_mday) + "_");
-		ret.append(std::to_string(now->tm_hour) + "_");
-		ret.append(std::to_string(now->tm_min) + "_");
-		ret.append(std::to_string(now->tm_sec) + "]");
+		ret.append("[" + ft::to_string(now->tm_year + 1900));
+		ret.append(ft::to_string(now->tm_mon + 1));
+		ret.append(ft::to_string(now->tm_mday) + "_");
+		ret.append(ft::to_string(now->tm_hour) + "_");
+		ret.append(ft::to_string(now->tm_min) + "_");
+		ret.append(ft::to_string(now->tm_sec) + "]");
 		return (ret);
 	}
 
@@ -563,6 +612,6 @@ namespace ft
 	{
 		timeval t;
 		gettimeofday(&t, NULL);
-		return (std::to_string((t.tv_sec - from.tv_sec) * 1000000 + (t.tv_usec - from.tv_usec)));
+		return (ft::to_string((t.tv_sec - from.tv_sec) * 1000000 + (t.tv_usec - from.tv_usec)));
 	}
 }

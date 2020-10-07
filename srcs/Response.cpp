@@ -1,13 +1,5 @@
 #include "Response.hpp"
-// #include "ServerManager.hpp"
 
-// timeval g_start2;
-
-// namespace {
-// 	void timeflag(std::string location) {
-// 		ft::log(ServerManager::access_fd, -1, location + ": " + ft::getSpeed(g_start2) + "\n");
-// 	}
-// }
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
 /* ************************************************************************** */
@@ -129,13 +121,11 @@ void Response::addHeader(std::string header_key, std::string header_value)
 void Response::addContent(const std::string& body) { m_content += body; }
 
 std::string Response::getString() const
-{
-	// gettimeofday(&g_start2, NULL);
-	
+{	
 	std::string message;
 	std::map<std::string, std::string>::const_iterator it = this->m_headers.begin();
 
-	message = "HTTP/1.1 " + std::to_string(this->m_status_code) + " " + this->m_status_description + "\r\n";
+	message = "HTTP/1.1 " + ft::to_string(this->m_status_code) + " " + this->m_status_description + "\r\n";
 	for (; it != this->m_headers.end(); ++it)
 		message += it->first + ": " + it->second + "\r\n";
 	if (m_connection_type == CLOSE || m_status_code < 200 || m_status_code > 299)
@@ -154,9 +144,8 @@ std::string Response::getString() const
 				count = BUFFER_SIZE;
 			else
 				count = size;
-			message += ft::itos(std::to_string(count), 10, 16) + "\r\n";
+			message += ft::itos(ft::to_string(count), 10, 16) + "\r\n";
 			message += data.substr(added, count) + "\r\n";
-			// data.erase(data.begin(), data.begin() + count);
 			size -= count;
 			added += count;
 		}

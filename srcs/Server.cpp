@@ -71,13 +71,12 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 	else
 		m_server_name = "noname";
 	m_host = server_map["host"];
-	m_port = std::stoi(server_map["port"]);
-	m_request_uri_limit_size = std::stoi(server_map["REQUEST_URI_LIMIT_SIZE"]);
-	m_request_header_limit_size = std::stoi(server_map["REQUEST_HEADER_LIMIT_SIZE"]);
-	m_limit_client_body_size = std::stoi(server_map["LIMIT_CLIENT_BODY_SIZE"]);
+	m_port = ft::stoi(server_map["port"]);
+	m_request_uri_limit_size = ft::stoi(server_map["REQUEST_URI_LIMIT_SIZE"]);
+	m_request_header_limit_size = ft::stoi(server_map["REQUEST_HEADER_LIMIT_SIZE"]);
+	m_limit_client_body_size = ft::stoi(server_map["LIMIT_CLIENT_BODY_SIZE"]);
 	m_default_error_page = ft::getStringFromFile(server_map["DEFAULT_ERROR_PAGE"]);
 
-	//socket 생성
 	if((m_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
 		throw std::runtime_error("SOCKET ERROR");
 	int value = true;
@@ -208,8 +207,6 @@ const std::queue<Response>& Server::get_m_responses() const { return (this->m_re
 /* ------------------------------- EXCEPTION -------------------------------- */
 /* ************************************************************************** */
 
-/* exception code */
-
 /* ************************************************************************** */
 /* ---------------------------------- UTIL ---------------------------------- */
 /* ************************************************************************** */
@@ -238,10 +235,10 @@ Server::inet_ntoa(unsigned int address)
 {
 	std::string ret;
 
-	ret = std::to_string(address & 0xFF) + ".";
-	ret.append(std::to_string((address >> 8) & 0xFF) + ".");
-	ret.append(std::to_string((address >> 16) & 0xFF) + ".");
-	ret.append(std::to_string((address >> 24) & 0xFF));
+	ret = ft::to_string(address & 0xFF) + ".";
+	ret.append(ft::to_string((address >> 8) & 0xFF) + ".");
+	ret.append(ft::to_string((address >> 16) & 0xFF) + ".");
+	ret.append(ft::to_string((address >> 24) & 0xFF));
 	return (ret);
 }
 
@@ -269,12 +266,7 @@ Server::runSend(Connection& connection)
 		connection.set_m_status(Connection::ON_SEND);
 	}
 
-	// int fd = connection.get_m_client_fd();
-	// const std::string& data = connection.get_m_wbuf();
 	connection.responseSend();
-	// int count = (connection.get_m_data_size() > BUFFER_SIZE) ? BUFFER_SIZE : connection.get_m_data_size();
-	// count = send(fd, data.c_str(), count, 0);
-	// connection.decreaseWbuf(count);
 
 	bool ret = connection.isSendCompleted();
 	if (ret)
@@ -284,7 +276,7 @@ Server::runSend(Connection& connection)
 		writeSendResponseLog(connection.get_m_response());
 		if (connection.get_m_response().get_m_status_code() / 100 != 2)
 		{
-			std::cout << "close connection because error response" << std::endl;
+			// std::cout << "close connection because error response" << std::endl;
 			closeConnection(connection.get_m_client_fd());
 		}
 		else
@@ -297,18 +289,15 @@ Server::runSend(Connection& connection)
 /* ---------------------------- EXECUTE OPERATION --------------------------- */
 /* ************************************************************************** */
 
-
-namespace {
-	bool isMethodHasBody(const Request::Method& method) {
-		return (method == Request::POST || method == Request::PUT || method == Request::TRACE);
-	}
-	int getChunkedSize(std::string& buf, std::string& len)
+namespace {	
+	int
+	getChunkedSize(std::string& buf, std::string& len)
 	{
 		int content_length;
 		if (!ft::getline(buf, len))
 			return (-1);
 		try {
-			content_length = std::stoi(len, 0, 16);
+			content_length = ft::stoi(len, 16);
 		} catch (std::exception& e) {
 			throw (40017);
 		}
@@ -323,16 +312,12 @@ namespace {
 	}
 }
 
-
 bool
 Server::hasExecuteWork(Connection& connection)
 {
 	Connection::Status status = connection.get_m_status();
 	int from_child_fd = connection.get_m_from_child_fd();
 	int to_child_fd = connection.get_m_to_child_fd();
-	// int stat;
-	// bool select_from = false;
-	// bool select_to = false;
 
 	if (status != Connection::ON_EXECUTE)
 		return (false);
@@ -342,11 +327,82 @@ Server::hasExecuteWork(Connection& connection)
 		return (true);
 	if (to_child_fd != -1 && m_manager->fdIsset(to_child_fd, ServerManager::WRITE_COPY_SET))
 		return (true);
-	// select_to = !connection.get_m_wbuf().empty();
-	// waitpid(connection.get_m_child_pid(), &stat, WNOHANG);
-	// if (WIFEXITED(stat) && !select_from && !select_to)
-	// 	return (true);
+
 	return (false);
+}
+
+namespace
+{
+	void
+	writeChunkedBodyToCGIScript(ServerManager* manager, Connection& connection, int connection_count)
+	{
+		std::string& rbuf = const_cast<std::string&>(connection.get_m_rbuf());
+		int client_fd = connection.get_m_client_fd();
+		int to_child_fd = connection.get_m_to_child_fd();
+		char buff[BUFFER_SIZE];
+		int count;
+
+		if (manager->fdIsset(client_fd, ServerManager::READ_COPY_SET))
+		{
+			if ((count = recv(client_fd, buff, sizeof(buff), 0)) > 0)
+				connection.addRbuf(buff, count);
+		}
+		while (true)
+		{
+			std::string len;
+			int content_length = getChunkedSize(rbuf, len);
+			if (content_length == -1)
+				break ;
+			else if (content_length == 0)
+			{
+				if (rbuf.find("\r\n") == std::string::npos)
+					rbuf.insert(0, len + "\r\n");
+				else if (rbuf.size() >= 2 && rbuf[0] == '\r' && rbuf[1] == '\n')
+				{
+					connection.decreaseRbuf(2);
+					close(to_child_fd);
+					manager->fdClear(to_child_fd, ServerManager::WRITE_SET);
+					manager->fdClear(to_child_fd, ServerManager::WRITE_COPY_SET);
+					manager->resetMaxFd();
+				}
+				break ;
+			}
+			else if (static_cast<int>(rbuf.size()) < content_length + 2)
+			{
+				rbuf.insert(0, len + "\r\n");
+				break ;
+			}
+			else
+			{
+				count = write(to_child_fd, rbuf.c_str(), content_length);
+				if (connection_count < 15)
+					usleep(1200);
+				else
+					usleep(60);
+				connection.decreaseRbuf(content_length + 2);
+			}
+		}
+	}
+
+	void
+	writeSavedBodyToCGIScript(ServerManager* manager, Connection& connection)
+	{
+		int to_child_fd = connection.get_m_to_child_fd();
+		const std::string& data = connection.get_m_wbuf();
+
+		if (!data.empty())
+		{
+			int count = (data.size() > BUFFER_SIZE) ? BUFFER_SIZE : data.size();
+			count = write(to_child_fd, data.c_str(), count);
+			connection.decreaseWbuf(count);
+		}
+		else
+		{
+			close(to_child_fd);
+			manager->fdClear(to_child_fd, ServerManager::WRITE_SET);
+			manager->resetMaxFd();
+		}
+	}
 }
 
 bool
@@ -354,96 +410,27 @@ Server::runExecute(Connection& connection)
 {
 	int from_child_fd = connection.get_m_from_child_fd();
 	int to_child_fd = connection.get_m_to_child_fd();
-	int client_fd = connection.get_m_client_fd();
 	int stat;
-	char buff[BUFFER_SIZE];
-	int count = 0;
 	bool read_end = false;
 
 	const Request& request = connection.get_m_request();
 
 	if (from_child_fd != -1 && m_manager->fdIsset(from_child_fd, ServerManager::READ_COPY_SET))
 	{
-		count = read(from_child_fd, buff, sizeof(buff));
+		char buff[BUFFER_SIZE];
+		int count = read(from_child_fd, buff, sizeof(buff));
 		if (count == 0)
-		{
-			// ft::log(ServerManager::access_fd, -1, "READ NOT ANYTHING FORM CGI\n");
 			read_end = true;
-		}
 		else if (count > 0)
-		{
-			// ft::log(ServerManager::access_fd, -1, ft::getSpeed(g_start) + "read: " + std::to_string(count) + "\n");
 			connection.addCgiRbuf(buff, count);
-		}
 	}
 
 	if (to_child_fd != -1 && m_manager->fdIsset(to_child_fd, ServerManager::WRITE_COPY_SET))
 	{
 		if (request.get_m_method() == Request::POST && request.get_m_transfer_type() == Request::CHUNKED)
-		{
-			std::string& buf = const_cast<std::string&>(connection.get_m_rbuf());
-			if (m_manager->fdIsset(client_fd, ServerManager::READ_COPY_SET))
-			{
-				if ((count = recv(client_fd, buff, sizeof(buff), 0)) > 0)
-					connection.addRbuf(buff, count);
-			}
-			while (true)
-			{
-				std::string len;
-				int content_length = getChunkedSize(buf, len);
-				if (content_length == -1)
-					break ;
-				else if (content_length == 0)
-				{
-					if (buf.find("\r\n") == std::string::npos)
-						buf.insert(0, len + "\r\n");
-					else if (buf.size() >= 2 && buf[0] == '\r' && buf[1] == '\n')
-					{
-						connection.decreaseRbuf(2);
-						close(to_child_fd);
-						m_manager->fdClear(to_child_fd, ServerManager::WRITE_SET);
-						m_manager->fdClear(to_child_fd, ServerManager::WRITE_COPY_SET);
-						m_manager->resetMaxFd();
-					}
-					break ;
-				}
-				else if (static_cast<int>(buf.size()) < content_length + 2)
-				{
-					buf.insert(0, len + "\r\n");
-					break ;
-				}
-				else
-				{
-					count = write(to_child_fd, buf.c_str(), content_length);
-					if (m_connections.size() < 15)
-						usleep(500);
-					else
-						usleep(60);
-					// ft::log(ServerManager::access_fd, -1, ft::getSpeed(g_start) + "write: " + std::to_string(count) + "\n");
-					connection.decreaseRbuf(content_length + 2);
-				}
-			}
-		}
+			writeChunkedBodyToCGIScript(m_manager, connection, m_connections.size());
 		else
-		{
-			const std::string& data = connection.get_m_wbuf();
-			if (!data.empty())
-			{
-				// ft::log(ServerManager::access_fd, -1, ft::getTimestamp() + ft::getSpeed(g_start) + "[OPERATION][WRITE][CASE: NOT EMPTY][START]\n");
-				int count = (data.size() > BUFFER_SIZE) ? BUFFER_SIZE : data.size();
-				// ft::log(ServerManager::access_fd, -1, ft::getTimestamp() + ft::getSpeed(g_start) + "[OPERATION][WRITE][CASE: NOT EMPTY][STEP 1]\n");
-				count = write(to_child_fd, data.c_str(), count);
-				// ft::log(ServerManager::access_fd, -1, ft::getTimestamp() + ft::getSpeed(g_start) + "[OPERATION][WRITE][CASE: NOT EMPTY][STEP 2]\n");
-				connection.decreaseWbuf(count);
-				// ft::log(ServerManager::access_fd, -1, ft::getTimestamp() + ft::getSpeed(g_start) + "[OPERATION][WRITE][CASE: NOT EMPTY][END]\n");
-			}
-			else
-			{
-				close(to_child_fd);
-				m_manager->fdClear(to_child_fd, ServerManager::WRITE_SET);
-				m_manager->resetMaxFd();
-			}
-		}
+			writeSavedBodyToCGIScript(m_manager, connection);
 	}
 
 	waitpid(connection.get_m_child_pid(), &stat, WNOHANG);
@@ -487,7 +474,6 @@ void
 Server::closeConnection(int client_fd)
 {
 	writeCloseConnectionLog(client_fd);
-	// Connection& connection = m_connections[client_fd];
 	if (close(client_fd) == -1)
 		ft::log(ServerManager::access_fd, ServerManager::error_fd, \
 		"[Failed][Function] close function failed in closeConnection method");
@@ -538,7 +524,6 @@ Server::acceptNewConnection()
 	client_port = static_cast<int>(client_addr.sin_port);
 	m_connections[client_fd] = Connection(client_fd, client_ip, client_port);
 	m_manager->fdSet(client_fd, ServerManager::READ_SET);
-	// writeCreateNewConnectionLog(client_fd, client_ip, client_port);
 	return (true);
 }
 
@@ -549,7 +534,7 @@ Server::acceptNewConnection()
 bool Server::hasRequest(Connection& connection)
 {
 	Connection::Status status = connection.get_m_status();
-	// Request::Phase phase = connection.get_m_request().get_m_phase();
+
 	int fd = connection.get_m_client_fd();
 
 	if (status != Connection::ON_WAIT && status != Connection::ON_RECV)
@@ -597,74 +582,14 @@ Server::parseHeader(Connection& connection, Request& request)
 	return (false);
 }
 
-bool
-Server::parseBody(Connection& connection, Request& request)
-{
-	if (!isMethodHasBody(request.get_m_method()))
-		return (true);
-	if (request.get_m_method() == Request::POST && request.get_m_transfer_type() == Request::CHUNKED)
-		return (true);
-	std::string& buf = const_cast<std::string&>(connection.get_m_rbuf());
-
-	if (request.get_m_transfer_type() == Request::GENERAL)
-	{
-		if (!ft::hasKey(request.get_m_headers(), "Content-Length"))
-			throw (41101);
-		connection.set_m_token_size(std::stoi(request.get_m_headers().find("Content-Length")->second));
-		if (connection.get_m_readed_size() + static_cast<int>(buf.size()) <= connection.get_m_token_size())
-		{
-			request.addContent(buf);
-			request.addOrigin(buf);
-			connection.set_m_readed_size(connection.get_m_readed_size() + buf.size());
-			connection.decreaseRbuf(buf.size());
-		}
-		else
-		{
-			std::string part = buf.substr(0, connection.get_m_token_size() - connection.get_m_readed_size());
-			request.addContent(part);
-			request.addOrigin(part);
-			connection.decreaseRbuf(part.size());
-			connection.set_m_readed_size(connection.get_m_token_size());
-		}
-		return (connection.get_m_readed_size() == connection.get_m_token_size());
-	}
-	while (request.get_m_transfer_type() == Request::CHUNKED)
-	{
-		std::string len;
-		int content_length = getChunkedSize(buf, len);
-		if (content_length == -1)
-			return (false);
-		if (content_length == 0)
-		{
-			if (buf.find("\r\n") == std::string::npos)
-			{
-				buf.insert(0, len + "\r\n");
-				return (false);
-			}
-			if (buf.size() >= 2 && buf[0] == '\r' && buf[1] == '\n')
-			{
-				connection.decreaseRbuf(2);
-				return (true);
-			}
-			throw (40018);
-		}
-		if (static_cast<int>(buf.size()) < content_length + 2)
-		{
-			buf.insert(0, len + "\r\n");
-			return (false);
-		}
-		if (buf.substr(content_length, 2) != "\r\n")
-			throw (40021);
-		request.addContent(buf.substr(0, content_length));
-		request.addOrigin(len + "\r\n");
-		request.addOrigin(buf.substr(0, content_length + 2));
-		connection.decreaseRbuf(content_length + 2);
-	}
-	return (false);
-}
-
 namespace {
-	int recvWithoutBody(const Connection& connection, char*buf, int buf_size)
+	bool
+	isMethodHasBody(const Request::Method& method) {
+		return (method == Request::POST || method == Request::PUT || method == Request::TRACE);
+	}
+
+	int
+	recvWithoutBody(const Connection& connection, char*buf, int buf_size)
 	{
 		int count;
 		int i = 0;
@@ -681,16 +606,15 @@ namespace {
 			else
 			{
 				recv(connection.get_m_client_fd(), buf, i + 4, 0);
-				// ft::log(ServerManager::access_fd, -1, connection.get_m_request().get_m_method_to_string()
-				// + "read(1) : " + std::to_string(i) + " : " + std::to_string(i + 4)
-				// + std::string(buf, i + 4) + "\n");
 				return (i + 4);
 			}
 		}
 		else
 			return (-1);
 	}
-	int recvBody(const Connection& connection, char*buf, int buf_size)
+	
+	int
+	recvBody(const Connection& connection, char*buf, int buf_size)
 	{
 		int count;
 		const Request& request = connection.get_m_request();
@@ -708,6 +632,87 @@ namespace {
 		else
 			return (-1);
 	}
+	
+	bool
+	readGeneralBody(Connection& connection, Request& request)
+	{
+		std::string& buf = const_cast<std::string&>(connection.get_m_rbuf());
+
+		if (!ft::hasKey(request.get_m_headers(), "Content-Length"))
+			throw (41101);
+		connection.set_m_token_size(ft::stoi(request.get_m_headers().find("Content-Length")->second));
+
+		if (connection.get_m_readed_size() + static_cast<int>(buf.size()) <= connection.get_m_token_size())
+		{
+			request.addContent(buf);
+			request.addOrigin(buf);
+			connection.set_m_readed_size(connection.get_m_readed_size() + buf.size());
+			connection.decreaseRbuf(buf.size());
+		}
+		else
+		{
+			std::string part = buf.substr(0, connection.get_m_token_size() - connection.get_m_readed_size());
+			request.addContent(part);
+			request.addOrigin(part);
+			connection.decreaseRbuf(part.size());
+			connection.set_m_readed_size(connection.get_m_token_size());
+		}
+		return (connection.get_m_readed_size() == connection.get_m_token_size());
+	}
+
+	bool
+	readChunkedBody(Connection& connection, Request& request)
+	{
+		std::string& buf = const_cast<std::string&>(connection.get_m_rbuf());
+
+		while (true)
+		{
+			std::string len;
+			int content_length = getChunkedSize(buf, len);
+			if (content_length == -1)
+				return (false);
+			if (content_length == 0)
+			{
+				if (buf.find("\r\n") == std::string::npos)
+				{
+					buf.insert(0, len + "\r\n");
+					return (false);
+				}
+				if (buf.size() >= 2 && buf[0] == '\r' && buf[1] == '\n')
+				{
+					connection.decreaseRbuf(2);
+					return (true);
+				}
+				throw (40018);
+			}
+			if (static_cast<int>(buf.size()) < content_length + 2)
+			{
+				buf.insert(0, len + "\r\n");
+				return (false);
+			}
+			if (buf.substr(content_length, 2) != "\r\n")
+				throw (40021);
+			request.addContent(buf.substr(0, content_length));
+			request.addOrigin(len + "\r\n");
+			request.addOrigin(buf.substr(0, content_length + 2));
+			connection.decreaseRbuf(content_length + 2);
+		}
+	}
+
+}
+
+bool
+Server::parseBody(Connection& connection, Request& request)
+{
+	if (!isMethodHasBody(request.get_m_method()))
+		return (true);
+	if (request.get_m_method() == Request::POST && request.get_m_transfer_type() == Request::CHUNKED)
+		return (true);
+	if (request.get_m_transfer_type() == Request::GENERAL)
+		return (readGeneralBody(connection, request));
+	if (request.get_m_transfer_type() == Request::CHUNKED)
+		return (readChunkedBody(connection, request));
+	return (false);
 }
 
 void
@@ -750,14 +755,9 @@ Server::runRecvAndSolve(Connection& connection)
 		createResponse(connection, 50001);
 		return (true);
 	}
-	// if (m_responses.size() > STACKED_RESPONSE_COUNT) {
-	// 	createResponse(connection, 50301);
-	// 	return (true);
-	// }
 	const Request& request = connection.get_m_request();
 	if (request.get_m_phase() == Request::COMPLETE)
 	{
-		// writeCreateNewRequestLog(request);
 		connection.set_m_status(Connection::ON_EXECUTE);
 		solveRequest(connection, connection.get_m_request());
 		return (true);
@@ -850,7 +850,7 @@ Server::run()
 			int fd = getUnuseConnectionFd();
 			if (fd == -1)
 				return ;
-			std::cout << "close connection because max connection" << std::endl;
+			// std::cout << "close connection because max connection" << std::endl;
 			closeConnection(fd);
 		}
 		if (!acceptNewConnection())
@@ -957,8 +957,8 @@ namespace {
 				strftime(buff, sizeof(buff), "%d-%h-%G %H:%M", &t);
 
 				content.append(std::string(buff));
-				content.append(std::string(20 - std::to_string(de->d_reclen).size(), ' '));
-				content.append(std::to_string(de->d_reclen));
+				content.append(std::string(20 - ft::to_string(de->d_reclen).size(), ' '));
+				content.append(ft::to_string(de->d_reclen));
 				html.add_line(idx++, content);
 			}
 		}
@@ -1052,7 +1052,7 @@ Server::executeHead(Connection& connection, const Request& request)
 	if (headers[0].empty())
 		return (createResponse(connection, 41502));
 	headers.push_back(getLastModifiedHeader(path));
-	headers.push_back("content-length:" + std::to_string(body.size()));
+	headers.push_back("content-length:" + ft::to_string(body.size()));
 	return (createResponse(connection, 200, headers));
 }
 
@@ -1142,8 +1142,6 @@ namespace {
 		if (token == "CONTENT_LENGTH") {
 			if (ft::hasKey(request.get_m_headers(), "Content-Length"))
 				return (request.get_m_headers().find("Content-Length")->second);
-			// if (request.get_m_method() == Request::POST)
-				// return (std::to_string(request.get_m_content().size()));
 			return (std::string("-1"));
 		}
 		else if (token == "CONTENT_TYPE") {
@@ -1170,7 +1168,7 @@ namespace {
 		else if (token == "SERVER_NAME")
 			return (server->get_m_server_name());
 		else if (token == "SERVER_PORT")
-			return (std::to_string(server->get_m_port()));
+			return (ft::to_string(server->get_m_port()));
 		else if (token == "SERVER_PROTOCOL")
 			return ("HTTP/" + config.get_m_http_version());
 		else if (token == "SERVER_SOFTWARE")
@@ -1210,14 +1208,14 @@ Server::createCGIEnv(const Request& request)
 			std::string new_header = "HTTP_";
 			for (std::string::const_iterator it2 = it->first.begin(); it2 != it->first.end(); ++it2)
 				new_header.push_back(std::toupper(*it2));
-				// new_header.push_back((*it2 == '-') ? '_' : std::toupper(*it2));
 			setEnv(env, idx++, new_header, it->second);
 		}
 	}
 	return (env);
 }
 
-void Server::revertStdInOut()
+void
+Server::revertStdInOut()
 {
 	if (close(0) == -1 || close(1) == -1)
 		ft::log(ServerManager::access_fd, ServerManager::error_fd, \
@@ -1227,10 +1225,41 @@ void Server::revertStdInOut()
 		"[Failed][function] dup2 function failed in revertStdInOut method.");
 }
 
+namespace {
+	void closes(int fd1 = -1, int fd2 = -1, int fd3 = -1, int fd4 = -1, int fd5 = -1)
+	{
+		if (fd1 != -1)
+			close(fd1);
+		if (fd2 != -1)
+			close(fd2);
+		if (fd3 != -1)
+			close(fd3);
+		if (fd4 != -1)
+			close(fd4);
+		if (fd5 != -1)
+			close(fd5);
+	}
+	void execveCGI(const Request& request, char **env, int *parent_write_fd, int *child_write_fd)
+	{
+		closes(parent_write_fd[1], child_write_fd[0]);
+		dup2(parent_write_fd[0], 0);
+		dup2(child_write_fd[1], 1);
+		/* child process */
+		char *arg[2] = { const_cast<char *>(request.get_m_script_translated().c_str()), NULL };
+		std::string script_name = getCGIEnvValue(request, "SCRIPT_NAME");
+		std::string ext = script_name.substr(script_name.rfind(".") + 1);
+		if (ext == "php" && execve("./php-cgi", arg, env) == -1)
+			exit(EXIT_FAILURE);
+		else if (execve(arg[0], arg, env) == -1)
+			exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE);
+	}
+}
+
 void
 Server::executeCGI(Connection& connection, const Request& request)
 {
-	pid_t	pid;
+	pid_t pid;
 	int parent_write_fd[2];
 	int child_write_fd[2];
 	char **env;
@@ -1242,31 +1271,14 @@ Server::executeCGI(Connection& connection, const Request& request)
 	pipe(parent_write_fd);
 	pipe(child_write_fd);
 	pid = fork();
-	if (pid == 0) {
-		close(parent_write_fd[1]);
-		close(child_write_fd[0]);
-		dup2(parent_write_fd[0], 0);
-		dup2(child_write_fd[1], 1);
-		/* child process */
-		char *arg[2] = { const_cast<char *>(request.get_m_script_translated().c_str()), NULL };
-		std::string script_name = getCGIEnvValue(request, "SCRIPT_NAME");
-		std::string ext = script_name.substr(script_name.rfind(".") + 1);
-		if (ext == "php" && execve("./php-cgi", arg, env) == -1)
-			exit(EXIT_FAILURE);
-		else if (execve(arg[0], arg, env) == -1)
-			exit(EXIT_FAILURE);
-		// ft::log(-1, ServerManager::error_fd, "if this is found, error");
-		exit(EXIT_FAILURE);
-	} else if (pid < 0) {
-		close(parent_write_fd[0]);
-		close(parent_write_fd[1]);
-		close(child_write_fd[0]);
-		close(child_write_fd[1]);
+	if (pid == 0)
+		return (execveCGI(request, env, parent_write_fd, child_write_fd));
+	else if (pid < 0) {
+		closes(parent_write_fd[0], parent_write_fd[1], child_write_fd[0], child_write_fd[1]);
 		return (createResponse(connection, 50006, headers_t()));
 	}
 
-	close(parent_write_fd[0]);
-	close(child_write_fd[1]);
+	closes(parent_write_fd[0], child_write_fd[1]);
 	if (fcntl(parent_write_fd[1], F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("write fnctl error");
 	if (fcntl(child_write_fd[0], F_SETFL, O_NONBLOCK) == -1)
@@ -1284,7 +1296,7 @@ Server::executeCGI(Connection& connection, const Request& request)
 	connection.set_m_from_child_fd(child_write_fd[0]);
 	m_manager->fdSet(connection.get_m_from_child_fd(), ServerManager::READ_SET);
 	m_manager->resetMaxFd(std::max(parent_write_fd[1], child_write_fd[0]));
-	free(env[0]);
+	ft::freeDoublestr(&env);
 	usleep(100000);
 }
 
@@ -1315,11 +1327,10 @@ void Server::createCGIResponse(int& status, headers_t& headers, std::string& bod
 		key = ft::trim(it->substr(0, it->find(":")), " \t");
 		value = ft::trim(it->substr(it->find(":") + 1), " \r\n\t");
 		if (key == "Status" || key == "status")
-			status = std::stoi(value);
+			status = ft::stoi(value);
 		else if (!key.empty() && !value.empty())
 			headers.push_back(key + ":" + value);
 	}
-	// headers.push_back("Connection:close");
 	if (body.find("\r\n\r\n") != std::string::npos)
 		body = body.substr(body.find("\r\n\r\n") + 4);
 	else if (body.find("\n\n") != std::string::npos)
@@ -1347,13 +1358,13 @@ Server::createResponse(Connection& connection, int status, headers_t headers, st
 		createCGIResponse(status, headers, body);
 	if (status >= 400 && status <= 599) {
 		body = m_default_error_page;
-		body.replace(body.find("#ERROR_CODE"), 11, std::to_string(status));
-		body.replace(body.find("#ERROR_CODE"), 11, std::to_string(status));
+		body.replace(body.find("#ERROR_CODE"), 11, ft::to_string(status));
+		body.replace(body.find("#ERROR_CODE"), 11, ft::to_string(status));
 		body.replace(body.find("#ERROR_DESCRIPTION"), 18, Response::status[status]);
 		body.replace(body.find("#ERROR_DESCRIPTION"), 18, Response::status[status]);
 	}
 	if (!ft::hasKey(ft::stringVectorToMap(headers), "Transfer-Encoding"))
-		headers.push_back("Content-Length:" + std::to_string(body.size()));
+		headers.push_back("Content-Length:" + ft::to_string(body.size()));
 	if (!body.empty())
 		headers.push_back("Content-Language:ko-KR");
 	if (status / 100 != 2)
@@ -1396,7 +1407,7 @@ void
 Server::writeCreateNewConnectionLog(int client_fd, std::string client_ip, int client_port)
 {
 	std::string text = "[Created][Connection][Server:" + m_server_name + "][CFD:" \
-	+ std::to_string(client_fd) + "][IP:" + client_ip + "][Port:" + std::to_string(client_port) + "]\n";
+	+ ft::to_string(client_fd) + "][IP:" + client_ip + "][Port:" + ft::to_string(client_port) + "]\n";
 	ft::log(ServerManager::access_fd, -1, text);
 	return ;
 }
@@ -1414,7 +1425,7 @@ void
 Server::writeDetectNewRequestLog(const Connection& connection)
 {
 	std::string text = "[Detected][Request][Server:" + m_server_name + "][CIP:"
-	+ connection.get_m_client_ip() + "][CFD:" + std::to_string(connection.get_m_client_fd()) + "]"
+	+ connection.get_m_client_ip() + "][CFD:" + ft::to_string(connection.get_m_client_fd()) + "]"
 	+ " New request detected.\n";
 	ft::log(ServerManager::access_fd, -1, text);
 	return ;
@@ -1436,8 +1447,8 @@ void
 Server::reportCreateNewRequestLog(const Connection& connection, int status)
 {
 	std::string text = "[Failed][Request][Server:" + m_server_name + "][CIP:"
-	+ connection.get_m_client_ip() + "][CFD:" + std::to_string(connection.get_m_client_fd()) + "]["
-	+ std::to_string(status) + "][" + Response::status[status] + "] Failed to create new Request.\n";
+	+ connection.get_m_client_ip() + "][CFD:" + ft::to_string(connection.get_m_client_fd()) + "]["
+	+ ft::to_string(status) + "][" + Response::status[status] + "] Failed to create new Request.\n";
 	ft::log(ServerManager::access_fd, ServerManager::error_fd, text);
 	return ;
 }
@@ -1446,12 +1457,11 @@ void
 Server::writeCreateNewResponseLog(const Response& response)
 {
 	std::string text = ft::getTimestamp() + "[Created][Response][Server:" + m_server_name + "][" \
-	+ std::to_string(response.get_m_status_code()) + "][" + response.get_m_status_description() + "][CFD:" \
-	+ std::to_string(response.get_m_connection()->get_m_client_fd()) + "][headers:" \
-	+ std::to_string(response.get_m_headers().size()) + "][body:" + std::to_string(response.get_m_content().size()) + "]";
+	+ ft::to_string(response.get_m_status_code()) + "][" + response.get_m_status_description() + "][CFD:" \
+	+ ft::to_string(response.get_m_connection()->get_m_client_fd()) + "][headers:" \
+	+ ft::to_string(response.get_m_headers().size()) + "][body:" + ft::to_string(response.get_m_content().size()) + "]";
 	text.append(" New response created.\n");
 	ft::log(ServerManager::access_fd, -1, text);
-	// ft::log(ServerManager::access_fd, -1, "[Detected][Response][Message][↓]" + response.getString().substr(0, 500) + "\n\n");
 	return ;
 }
 
@@ -1459,9 +1469,9 @@ void
 Server::writeSendResponseLog(const Response& response)
 {
 	std::string text = ft::getTimestamp() + "[Sended][Response][Server:" + m_server_name + "][" \
-	+ std::to_string(response.get_m_status_code()) + "][" + response.get_m_status_description() + "][CFD:" \
-	+ std::to_string(response.get_m_connection()->get_m_client_fd()) + "][headers:" \
-	+ std::to_string(response.get_m_headers().size()) + "][body:" + std::to_string(response.get_m_content().size()) + "]";
+	+ ft::to_string(response.get_m_status_code()) + "][" + response.get_m_status_description() + "][CFD:" \
+	+ ft::to_string(response.get_m_connection()->get_m_client_fd()) + "][headers:" \
+	+ ft::to_string(response.get_m_headers().size()) + "][body:" + ft::to_string(response.get_m_content().size()) + "]";
 	text.append(" Response sended\n");
 	ft::log(ServerManager::access_fd, -1, text);
 	return ;
@@ -1471,7 +1481,7 @@ void
 Server::writeCloseConnectionLog(int client_fd)
 {
 	std::string text = "[Deleted][Connection][Server:" + m_server_name + "][CFD:" \
-	+ std::to_string(client_fd) + "] Connection closed.\n";
+	+ ft::to_string(client_fd) + "] Connection closed.\n";
 	ft::log(ServerManager::access_fd, -1, text);
 	return ;
 }

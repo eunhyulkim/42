@@ -39,7 +39,7 @@ Location::Location(const std::string& location_uri, std::string location_block, 
 		this->m_cgi = ft::stringVectorToSet(ft::split(map_block.find("cgi")->second, ' '));
 	this->m_autoindex = ft::hasKey(map_block, "autoindex") && map_block.find("autoindex")->second == "on";
 	if (ft::hasKey(map_block, "limit_client_body_size"))
-		this->m_limit_client_body_size = std::stoi(map_block["limit_client_body_size"]);
+		this->m_limit_client_body_size = ft::stoi(map_block["limit_client_body_size"]);
 	else
 		this->m_limit_client_body_size = server_limit_client_body_size;
 }

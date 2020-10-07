@@ -23,8 +23,11 @@ Config::Config(std::string config_block, char** env)
 }
 
 Config::Config(const Config& copy)
-: m_software_name(copy.get_m_software_name()), m_software_version(copy.get_m_software_version()), \
-m_http_version(copy.get_m_http_version()), m_cgi_version(copy.get_m_cgi_version()), m_base_env(copy.get_m_base_env()) {}
+: m_software_name(copy.get_m_software_name()),
+m_software_version(copy.get_m_software_version()),
+m_http_version(copy.get_m_http_version()),
+m_cgi_version(copy.get_m_cgi_version()),
+m_base_env(copy.get_m_base_env()) {}
 
 /* ************************************************************************** */
 /* ------------------------------- DESTRUCTOR ------------------------------- */

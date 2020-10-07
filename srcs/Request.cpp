@@ -343,7 +343,7 @@ void Request::addHeader(std::string header)
 		m_transfer_type = CHUNKED;
 	if (key == "Content-Length")
 	{
-		int content_length = std::stoi(value);
+		int content_length = ft::stoi(value);
 		if (content_length > static_cast<int>(m_server->get_m_limit_client_body_size()))
 			throw (41303);
 		if (content_length < 0)
