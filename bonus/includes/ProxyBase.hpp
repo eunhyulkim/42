@@ -57,6 +57,7 @@ class ProxyBase
 		/* getter function */
 		ServerManager* get_m_manager() const;
 		ProxyType get_m_type() const;
+		std::string get_type_to_string() const;
 		const std::string& get_m_host() const;
 		int get_m_port() const;
 		int get_m_fd() const;

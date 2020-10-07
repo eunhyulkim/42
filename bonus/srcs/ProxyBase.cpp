@@ -37,7 +37,7 @@ ProxyBase::ProxyBase(ServerManager* server_manager, const std::string& proxy_blo
 	
 	std::vector<std::string> servers = ft::split(ft::trim(proxy_map["server"], "[]"), ',');
 	std::vector<std::string>::iterator it = servers.begin();
-	for (; it != servers.end()!; ++it)
+	for (; it != servers.end(); ++it)
 	{
 		std::vector<std::string> server_url = ft::split(*it, ':');
 		m_servers.insert(std::pair<std::string, int>(ft::trim(server_url[0], " "), ft::stoi(ft::trim(server_url[1], " "))));
@@ -132,8 +132,18 @@ operator<<(std::ostream& out, const ProxyBase& server)
 /* --------------------------------- GETTER --------------------------------- */
 /* ************************************************************************** */
 
-ServerManager* ProxyBase::get_m_manager() const { return (get_m_manager); }
+ServerManager* ProxyBase::get_m_manager() const { return (m_manager); }
 ProxyBase::ProxyType ProxyBase::get_m_type() const { return (m_type); }
+std::string ProxyBase::get_type_to_string() const
+{
+	if (m_type == CACHE_PROXY)
+		return ("CACHE_PROXY");
+	else if (m_type == LOADBALANCE_PROXY)
+		return ("LOADBALANCE_PROXY");
+	else if (m_type == FILTER_PROXY)
+		return ("FILTER_PROXY");
+	return ("UNDEFINED_PROXY");
+}
 const std::string& ProxyBase::get_m_host() const { return (m_host); }
 int ProxyBase::get_m_port() const { return (m_port); }
 int ProxyBase::get_m_fd() const { return (m_fd); }
@@ -300,13 +310,16 @@ ProxyBase::runProxy()
 
 	while (true)
 	{
+		m_read_copy_set = m_read_set;
+		m_write_copy_set = m_write_set;
 		int cnt;
-		m_manager->fdCopy(ServerManager::ALL_SET);
-		
+
 		if ((cnt = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, \
 		NULL, &timeout)) == -1)
+		{
 			ft::log(ServerManager::access_fd, ServerManager::error_fd, "[Failed][Function]Select function failed(return -1)");
 			throw std::runtime_error("select error");
+		}
 		else if (cnt == 0)
 			continue ;
 		writeProxyHealthLog();
@@ -322,23 +335,42 @@ ProxyBase::runProxy()
 void
 ProxyBase::writeCreateNewConnectionLog(int client_fd, std::string client_ip, int client_port)
 {
-
+	int fd = ServerManager::proxy_fd;
+	std::string text = "[Created][Connection][Proxy:" + get_type_to_string() + "][CFD:" \
+	+ ft::to_string(client_fd) + "][IP:" + client_ip + "][Port:" + ft::to_string(client_port) + "]\n";
+	ft::log(fd, -1, text);
+	return ;
 }
 
 void
 ProxyBase::reportCreateNewConnectionLog()
 {
-
+	int fd = ServerManager::proxy_fd;
+	std::string text = "[Failed][Connection][Proxy:" + get_type_to_string() + "][Host:" + m_host \
+	+ ":" + ft::to_string(m_port) + "] Failed to create new connection.\n";
+	ft::log(fd, -1, text);
+	return ;
 }
 
 void
 ProxyBase::writeProxyHealthLog()
 {
-
+	if (!ft::isRightTime(SERVER_HEALTH_LOG_SECOND))
+		return ;
+	int fd = ServerManager::proxy_fd;
+	std::string text = "[HealthCheck][" + get_type_to_string() + "][Max_fd:" + ft::to_string(m_max_fd) \
+	+ "][Connection:" + ft::getSetFdString(m_max_fd, &m_read_set) + "]\n";
+	ft::log(fd, -1, text);
+	return ;
 }
 
 void
 ProxyBase::writeCloseConnectionLog(int client_fd)
 {
-	
+	int fd = ServerManager::proxy_fd;
+	std::string text = "[Deleted][Connection][Proxy:" + get_type_to_string() + "][CFD:" \
+	+ ft::to_string(client_fd) + "] Connection closed.\n";
+	ft::log(fd, -1, text);
+	return ;
+
 }
