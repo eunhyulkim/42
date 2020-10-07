@@ -14,7 +14,7 @@ class Connection
 		enum Status { ON_WAIT, TO_SEND, ON_SEND, ON_EXECUTE, ON_RECV };
 	private:
 		Status m_status;
-		int m_client_fd;
+		int m_fd;
 		int m_child_pid;
 		int m_from_child_fd;
 		int m_to_child_fd;
@@ -39,7 +39,7 @@ class Connection
 
 		/* getter function */
 		Status get_m_status() const;
-		int get_m_client_fd() const;
+		int get_m_fd() const;
 		int get_m_child_pid() const;
 		int get_m_from_child_fd() const;
 		int get_m_to_child_fd() const;
@@ -55,6 +55,7 @@ class Connection
 		int get_m_client_port() const;
 
 		/* setter function */
+		void set_m_fd(int fd);
 		void set_m_child_pid(int pid);
 		void set_m_from_child_fd(int fd);
 		void set_m_to_child_fd(int fd);
@@ -64,9 +65,9 @@ class Connection
 		void set_m_readed_size(int readed_size);
 		void set_m_wbuf_for_execute();
 		void set_m_wbuf_for_send();
-		void addRbuf(const char* str, int count);
-		void addCgiRbuf(const char* str, int count);
-		void decreaseRbuf(int size);
+		void addRbufFromClient(const char* str, int count);
+		void addRbufFromServer(const char* str, int count);
+		void decreaseRbufFromClient(int size);
 		void decreaseWbuf(int size);
 		void clearRbufFromClient();
 		void clearRbufFromServer();
