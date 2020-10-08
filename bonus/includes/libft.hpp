@@ -60,7 +60,6 @@ namespace ft
 	unsigned short ws_htons(unsigned short x);
     std::string inet_ntoa(unsigned int address);
 
-
     /* Log util function */
     bool isRightTime(int second);
     void log(int access_fd, int error_fd, std::string text);

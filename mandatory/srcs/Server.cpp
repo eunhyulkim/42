@@ -230,18 +230,6 @@ void basic_decode(std::string data, std::string& key, std::string& value)
     value = ft::base64_encode(&value_base[0], value_base.size());
 }
 
-std::string
-Server::inet_ntoa(unsigned int address)
-{
-	std::string ret;
-
-	ret = ft::to_string(address & 0xFF) + ".";
-	ret.append(ft::to_string((address >> 8) & 0xFF) + ".");
-	ret.append(ft::to_string((address >> 16) & 0xFF) + ".");
-	ret.append(ft::to_string((address >> 24) & 0xFF));
-	return (ret);
-}
-
 /* ************************************************************************** */
 /* ----------------------------- SEND OPERATION ----------------------------- */
 /* ************************************************************************** */
@@ -266,7 +254,7 @@ Server::runSend(Connection& connection)
 		connection.set_m_status(Connection::ON_SEND);
 	}
 
-	connection.responseSend();
+	connection.sendFromWbuf();
 
 	bool ret = connection.isSendCompleted();
 	if (ret)
@@ -316,8 +304,8 @@ bool
 Server::hasExecuteWork(Connection& connection)
 {
 	Connection::Status status = connection.get_m_status();
-	int from_child_fd = connection.get_m_from_child_fd();
-	int to_child_fd = connection.get_m_to_child_fd();
+	int from_child_fd = connection.get_m_read_from_server_fd();
+	int to_child_fd = connection.get_m_write_to_server_fd();
 
 	if (status != Connection::ON_EXECUTE)
 		return (false);
@@ -336,16 +324,16 @@ namespace
 	void
 	writeChunkedBodyToCGIScript(ServerManager* manager, Connection& connection, int connection_count)
 	{
-		std::string& rbuf = const_cast<std::string&>(connection.get_m_rbuf());
+		std::string& rbuf = const_cast<std::string&>(connection.get_m_rbuf_from_client());
 		int client_fd = connection.get_m_client_fd();
-		int to_child_fd = connection.get_m_to_child_fd();
+		int to_child_fd = connection.get_m_write_to_server_fd();
 		char buff[BUFFER_SIZE];
 		int count;
 
 		if (manager->fdIsset(client_fd, ServerManager::READ_COPY_SET))
 		{
 			if ((count = recv(client_fd, buff, sizeof(buff), 0)) > 0)
-				connection.addRbuf(buff, count);
+				connection.addRbufFromClient(buff, count);
 		}
 		while (true)
 		{
@@ -359,7 +347,7 @@ namespace
 					rbuf.insert(0, len + "\r\n");
 				else if (rbuf.size() >= 2 && rbuf[0] == '\r' && rbuf[1] == '\n')
 				{
-					connection.decreaseRbuf(2);
+					connection.decreaseRbufFromClient(2);
 					close(to_child_fd);
 					manager->fdClear(to_child_fd, ServerManager::WRITE_SET);
 					manager->fdClear(to_child_fd, ServerManager::WRITE_COPY_SET);
@@ -379,7 +367,7 @@ namespace
 					usleep(1200);
 				else
 					usleep(60);
-				connection.decreaseRbuf(content_length + 2);
+				connection.decreaseRbufFromClient(content_length + 2);
 			}
 		}
 	}
@@ -387,7 +375,7 @@ namespace
 	void
 	writeSavedBodyToCGIScript(ServerManager* manager, Connection& connection)
 	{
-		int to_child_fd = connection.get_m_to_child_fd();
+		int to_child_fd = connection.get_m_write_to_server_fd();
 		const std::string& data = connection.get_m_wbuf();
 
 		if (!data.empty())
@@ -408,8 +396,8 @@ namespace
 bool
 Server::runExecute(Connection& connection)
 {
-	int from_child_fd = connection.get_m_from_child_fd();
-	int to_child_fd = connection.get_m_to_child_fd();
+	int from_child_fd = connection.get_m_read_from_server_fd();
+	int to_child_fd = connection.get_m_write_to_server_fd();
 	int stat;
 	bool read_end = false;
 
@@ -422,7 +410,7 @@ Server::runExecute(Connection& connection)
 		if (count == 0)
 			read_end = true;
 		else if (count > 0)
-			connection.addCgiRbuf(buff, count);
+			connection.addRbufFromServer(buff, count);
 	}
 
 	if (to_child_fd != -1 && m_manager->fdIsset(to_child_fd, ServerManager::WRITE_COPY_SET))
@@ -433,7 +421,7 @@ Server::runExecute(Connection& connection)
 			writeSavedBodyToCGIScript(m_manager, connection);
 	}
 
-	waitpid(connection.get_m_child_pid(), &stat, WNOHANG);
+	waitpid(connection.get_m_server_fd(), &stat, WNOHANG);
 	if (WIFEXITED(stat) && !m_manager->fdIsset(to_child_fd, ServerManager::WRITE_SET)
 	&& read_end == true)
 	{
@@ -442,8 +430,8 @@ Server::runExecute(Connection& connection)
 			close(from_child_fd);
 			m_manager->fdClear(from_child_fd, ServerManager::READ_SET);
 		}
-		std::string body = connection.get_m_cgi_rbuf();
-		connection.clearCgiRbuf();
+		std::string body = connection.get_m_rbuf_from_server();
+		connection.clearRbufFromServer();
 		connection.clearWbuf();
 		if (connection.get_m_request().get_m_uri_type() == Request::CGI_PROGRAM)
 		{
@@ -520,7 +508,7 @@ Server::acceptNewConnection()
 		m_manager->set_m_max_fd(client_fd);
 	if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1)
 		return (false);
-	client_ip = inet_ntoa(client_addr.sin_addr.s_addr);
+	client_ip = ft::inet_ntoa(client_addr.sin_addr.s_addr);
 	client_port = static_cast<int>(client_addr.sin_port);
 	m_connections[client_fd] = Connection(client_fd, client_ip, client_port);
 	m_manager->fdSet(client_fd, ServerManager::READ_SET);
@@ -549,14 +537,14 @@ Server::parseStartLine(Connection& connection, Request& request)
 {
 	size_t new_line;
 
-	if ((new_line = connection.get_m_rbuf().find("\r\n")) != std::string::npos)
+	if ((new_line = connection.get_m_rbuf_from_client().find("\r\n")) != std::string::npos)
 	{
-		std::string start_line = connection.get_m_rbuf().substr(0, new_line);
-		connection.decreaseRbuf(start_line.size() + 2);
+		std::string start_line = connection.get_m_rbuf_from_client().substr(0, new_line);
+		connection.decreaseRbufFromClient(start_line.size() + 2);
 		request.addOrigin(start_line + "\r\n");
 		request = Request(&connection, this, start_line);
 		return (true);
-	} else if (connection.get_m_rbuf().size() > REQUEST_URI_LIMIT_SIZE_MAX)
+	} else if (connection.get_m_rbuf_from_client().size() > REQUEST_URI_LIMIT_SIZE_MAX)
 		throw (40006);
 	return (false);
 }
@@ -564,7 +552,7 @@ Server::parseStartLine(Connection& connection, Request& request)
 bool
 Server::parseHeader(Connection& connection, Request& request)
 {
-	std::string& rbuf = const_cast<std::string&>(connection.get_m_rbuf());
+	std::string& rbuf = const_cast<std::string&>(connection.get_m_rbuf_from_client());
 	std::string line;
 
 	while (ft::getline(rbuf, line, REQUEST_HEADER_LIMIT_SIZE_MAX) >= 0)
@@ -636,7 +624,7 @@ namespace {
 	bool
 	readGeneralBody(Connection& connection, Request& request)
 	{
-		std::string& buf = const_cast<std::string&>(connection.get_m_rbuf());
+		std::string& buf = const_cast<std::string&>(connection.get_m_rbuf_from_client());
 
 		if (!ft::hasKey(request.get_m_headers(), "Content-Length"))
 			throw (41101);
@@ -647,14 +635,14 @@ namespace {
 			request.addContent(buf);
 			request.addOrigin(buf);
 			connection.set_m_readed_size(connection.get_m_readed_size() + buf.size());
-			connection.decreaseRbuf(buf.size());
+			connection.decreaseRbufFromClient(buf.size());
 		}
 		else
 		{
 			std::string part = buf.substr(0, connection.get_m_token_size() - connection.get_m_readed_size());
 			request.addContent(part);
 			request.addOrigin(part);
-			connection.decreaseRbuf(part.size());
+			connection.decreaseRbufFromClient(part.size());
 			connection.set_m_readed_size(connection.get_m_token_size());
 		}
 		return (connection.get_m_readed_size() == connection.get_m_token_size());
@@ -663,7 +651,7 @@ namespace {
 	bool
 	readChunkedBody(Connection& connection, Request& request)
 	{
-		std::string& buf = const_cast<std::string&>(connection.get_m_rbuf());
+		std::string& buf = const_cast<std::string&>(connection.get_m_rbuf_from_client());
 
 		while (true)
 		{
@@ -680,7 +668,7 @@ namespace {
 				}
 				if (buf.size() >= 2 && buf[0] == '\r' && buf[1] == '\n')
 				{
-					connection.decreaseRbuf(2);
+					connection.decreaseRbufFromClient(2);
 					return (true);
 				}
 				throw (40018);
@@ -695,7 +683,7 @@ namespace {
 			request.addContent(buf.substr(0, content_length));
 			request.addOrigin(len + "\r\n");
 			request.addOrigin(buf.substr(0, content_length + 2));
-			connection.decreaseRbuf(content_length + 2);
+			connection.decreaseRbufFromClient(content_length + 2);
 		}
 	}
 
@@ -719,12 +707,12 @@ void
 Server::recvRequest(Connection& connection, const Request& const_request)
 {
 	char buf[BUFFER_SIZE];
-	int count = BUFFER_SIZE - connection.get_m_rbuf().size();
+	int count = BUFFER_SIZE - connection.get_m_rbuf_from_client().size();
 	Request& request = const_cast<Request&>(const_request);
 	Request::Phase phase = request.get_m_phase();
 	connection.set_m_status(Connection::ON_RECV);
 	if (phase == Request::READY && hasRequest(connection) && (count = recvWithoutBody(connection, buf, sizeof(buf))) > 0)
-		connection.addRbuf(buf, count);
+		connection.addRbufFromClient(buf, count);
 	if (phase == Request::READY && parseStartLine(connection, request))
 		phase = Request::ON_HEADER;
 	if (phase == Request::ON_HEADER && parseHeader(connection, request))
@@ -734,7 +722,7 @@ Server::recvRequest(Connection& connection, const Request& const_request)
 			return ;
 	}
 	if (phase == Request::ON_BODY && (count = recvBody(connection, buf, sizeof(buf))) > 0)
-		connection.addRbuf(buf, count);
+		connection.addRbufFromClient(buf, count);
 	if (phase == Request::ON_BODY && parseBody(connection, request))
 		phase = Request::COMPLETE;
 	if (phase == Request::COMPLETE)
@@ -839,7 +827,7 @@ Server::run()
 			runExecute(it2->second);
 			continue ;
 		}
-		if (hasRequest(it2->second) || !it2->second.get_m_rbuf().empty())
+		if (hasRequest(it2->second) || !it2->second.get_m_rbuf_from_client().empty())
 			runRecvAndSolve(it2->second);
 	}
 	if (hasNewConnection())
@@ -1286,15 +1274,15 @@ Server::executeCGI(Connection& connection, const Request& request)
 	connection.set_m_status(Connection::ON_EXECUTE);
 	if (method == Request::POST)
 	{
-		connection.set_m_to_child_fd(parent_write_fd[1]);
+		connection.set_m_write_to_server_fd(parent_write_fd[1]);
 		if (request.get_m_transfer_type() == Request::GENERAL)
 			connection.set_m_wbuf_for_execute();
-		m_manager->fdSet(connection.get_m_to_child_fd(), ServerManager::WRITE_SET);
+		m_manager->fdSet(connection.get_m_write_to_server_fd(), ServerManager::WRITE_SET);
 	}
 	else
 		close(parent_write_fd[1]);
-	connection.set_m_from_child_fd(child_write_fd[0]);
-	m_manager->fdSet(connection.get_m_from_child_fd(), ServerManager::READ_SET);
+	connection.set_m_read_from_server_fd(child_write_fd[0]);
+	m_manager->fdSet(connection.get_m_read_from_server_fd(), ServerManager::READ_SET);
 	m_manager->resetMaxFd(std::max(parent_write_fd[1], child_write_fd[0]));
 	ft::freeDoublestr(&env);
 	usleep(100000);

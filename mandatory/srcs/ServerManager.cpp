@@ -7,6 +7,7 @@
 
 int ServerManager::error_fd = -1;
 int ServerManager::access_fd = -1;
+int ServerManager::proxy_fd = -1;
 int ServerManager::stdin_fd = dup(0);
 int ServerManager::stdout_fd = dup(1);
 
@@ -560,6 +561,8 @@ ServerManager::openLog()
 	if ((ServerManager::access_fd = open(ACCESS_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
 		return ;
 	if ((ServerManager::error_fd = open(ERROR_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
+		return ;
+	if ((ServerManager::proxy_fd = open(PROXY_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
 		return ;
 }
 
