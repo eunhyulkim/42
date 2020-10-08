@@ -19,7 +19,8 @@ Response::Response(Connection* connection, int status_code, std::string body)
 	this->m_status_code = status_code;
 	this->m_status_description = Response::status[status_code];
 	this->m_content = body;
-	this->m_trasfer_type = GENERAL;
+	this->m_transfer_type = GENERAL;
+	this->m_phase = READY;
 }
 
 Response::Response(const Response& copy)
@@ -28,9 +29,10 @@ Response::Response(const Response& copy)
 	this->m_connection_type = copy.get_m_connection_type();
 	this->m_status_code = copy.get_m_status_code();
 	this->m_status_description = copy.get_m_status_description();
-	this->m_trasfer_type = copy.get_m_transfer_type();
+	this->m_transfer_type = copy.get_m_transfer_type();
 	this->m_content = copy.get_m_content();
 	this->m_headers = copy.get_m_headers();
+	this->m_phase = copy.get_m_phase();
 }
 
 /* ************************************************************************** */
@@ -52,9 +54,10 @@ Response::operator=(const Response& obj)
 	this->m_connection_type = obj.get_m_connection_type();
 	this->m_status_code = obj.get_m_status_code();
 	this->m_status_description = obj.get_m_status_description();
-	this->m_trasfer_type = obj.get_m_transfer_type();
+	this->m_transfer_type = obj.get_m_transfer_type();
 	this->m_content = obj.get_m_content();
 	this->m_headers = obj.get_m_headers();
+	this->m_phase = obj.get_m_phase();
 	return (*this);
 }
 
@@ -85,8 +88,9 @@ Response::ConnectionType Response::get_m_connection_type() const { return (this-
 int Response::get_m_status_code() const { return (this->m_status_code); }
 std::string Response::get_m_status_description() const { return (this->m_status_description); }
 const std::map<std::string, std::string>& Response::get_m_headers() const { return (this->m_headers); }
-Response::TransferType Response::get_m_transfer_type() const { return (this->m_trasfer_type); }
+Response::TransferType Response::get_m_transfer_type() const { return (this->m_transfer_type); }
 std::string Response::get_m_content() const { return (this->m_content); }
+Response::Phase Response::get_m_phase() const { return (m_phase); }
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */
@@ -97,9 +101,14 @@ void Response::clear()
 	m_status_code = -1;
 	m_status_description.clear();
 	m_headers.clear();
-	m_trasfer_type = GENERAL;
+	m_transfer_type = GENERAL;
 	m_content.clear();
+	m_phase = READY;
 }
+
+void Response::set_m_phase(Phase phase) { m_phase = phase; }
+void Response::set_m_transfer_type(TransferType transfer_type) { m_transfer_type = transfer_type; }
+
 /* ************************************************************************** */
 /* ------------------------------- EXCEPTION -------------------------------- */
 /* ************************************************************************** */
@@ -111,7 +120,7 @@ void Response::clear()
 void Response::addHeader(std::string header_key, std::string header_value)
 {
 	if (header_key == "Transfer-Encoding" && header_value.find("chunked") != std::string::npos)
-		this->m_trasfer_type = CHUNKED;
+		this->m_transfer_type = CHUNKED;
 	else if (header_key == "Connection" && header_value == "close")
 		this->m_connection_type = CLOSE;
 	else
@@ -134,7 +143,7 @@ std::string Response::getString() const
 		message += "Connection: close\r\n";
 	else
 		message += "Connection: Keep-Alive\r\n";
-	if (m_trasfer_type == CHUNKED) {
+	if (m_transfer_type == CHUNKED) {
 		message += "Transfer-Encoding: chunked\r\n\r\n";
 		int size = this->m_content.size();
 		int count;

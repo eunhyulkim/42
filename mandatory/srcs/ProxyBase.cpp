@@ -221,7 +221,7 @@ namespace
 	}
 
 	bool
-	parseHeader(Connection& connection, Request& request, const std::string& requestString)
+	parseRequestHeader(Connection& connection, Request& request, const std::string& requestString)
 	{
 		size_t header_end_idx;
 		size_t length_header_idx;
@@ -262,16 +262,7 @@ namespace
 	}
 
 	bool
-	hasBody(Request& request, const std::string& requestString)
-	{
-		Request::Method method = request.get_m_method();
-		if (method == Request::TRACE && !isTraceHasBody(requestString))
-			return (false);
-		return (requestString.find("\r\n\r\n") != std::string::npos);
-	}
-
-	bool
-	parseBody(Connection& connection, Request& request, const std::string& requestString)
+	parseRequestBody(Connection& connection, Request& request, const std::string& requestString)
 	{
 		Request::Method method = request.get_m_method();
 		int token_size;
@@ -298,6 +289,62 @@ namespace
 	}
 
 }
+
+void
+ProxyBase::resetConnectionServer(Connection& client_connection)
+{
+	Connection& connection = client_connection;
+	Connection::Status status = connection.get_m_status();
+	int server_fd = client_connection.get_m_server_fd();
+
+	std::string host = m_server_connections[server_fd].host;
+	int port = m_server_connections[server_fd].port;
+	m_server_connections.erase(server_fd);
+	ft::fdClr(server_fd, &m_write_set);
+	ft::fdClr(server_fd, &m_read_set);
+	connection.set_m_server_fd(connectServer(host, port));
+}
+
+bool
+	parseResponseHeader(Connection& connection, Response& response, const std::string& responseString)
+	{
+		size_t header_end_idx;
+		size_t length_header_idx;
+		size_t encoding_header_idx;
+
+		if ((header_end_idx = responseString.find("\r\n\r\n")) != std::string::npos)
+		{
+			if ((length_header_idx = responseString.find("Content-Length")) != std::string::npos)
+				connection.set_m_token_size(getContentLengthValue(responseString, length_header_idx));				
+			else if (encoding_header_idx = responseString.find("chunked") != std::string::npos)
+				response.set_m_transfer_type(Response::CHUNKED);
+			else
+				connection.set_m_token_size(0);
+			return (true);
+		}
+		return (false);
+	}
+
+	bool
+	parseResponseBody(Connection& connection, Response& response, const std::string& responseString)
+	{
+		int token_size;
+		size_t header_end_idx = responseString.find("\r\n\r\n");
+		size_t body_end_idx;
+
+		if (response.get_m_transfer_type() == Request::GENERAL)
+		{
+			if ((token_size = connection.get_m_token_size()) <= 0)
+				return (true);
+			else if (responseString.size() >= header_end_idx + 4 + token_size)
+				return (true);
+			return (false);
+		}
+		body_end_idx = responseString.find("0\r\n\r\n");
+		if (body_end_idx == std::string::npos)
+			return (false);
+		return (true);
+	}
 
 void
 ProxyBase::resetConnectionServer(Connection& client_connection)
@@ -427,12 +474,24 @@ ProxyBase::hasRecvWorkFromServer(Connection& client_connection)
 bool
 ProxyBase::runRecvFromServer(Connection& client_connection)
 {
-	
-	// if (length_header_idx != std::string::npos && length_header_idx < header_end_ldx)
-	// {
-	// 	size_t length_value = getContentLengthValue(length_header_idx);
-	// 	return (requestString.size() >= header_end_ldx + 4 + length_value);
-	// }
+	Connection& connection = client_connection;
+	Response& response = const_cast<Response&>(client_connection.get_m_request());
+	Response::Phase phase = response.get_m_phase();
+	int server_fd = connection.get_m_server_fd();
+	char buff[BUFFER_SIZE];
+	int count;
+
+	connection.set_m_status(Connection::ON_RECV);
+
+	if ((count = recv(server_fd, buff, sizeof(buff), 0)) > 0)
+		connection.addRbufFromClient(buff, count);
+	if (phase == Response::READY && parseResponseHeader(connection, response, connection.get_m_rbuf_from_server()))
+		phase = Response::ON_BODY;
+	if (phase == Response::ON_BODY && parseResponseBody(connection, response, connection.get_m_rbuf_from_server()))
+		phase = Response::COMPLETE;
+	if (phase == Response::COMPLETE)
+		connection.set_m_status(Connection::TO_EXECUTE);
+	response.set_m_phase(phase);
 }
 
 bool
@@ -460,15 +519,16 @@ ProxyBase::runRecvFromClient(Connection& client_connection)
 
 	if (hasRecvWorkFromClient(client_connection) && (count = recv(client_fd, buff, sizeof(buff), 0)) > 0)
 		connection.addRbufFromClient(buff, count);
-	if (phase == Request::READY && parseHeader(connection, request, connection.get_m_rbuf_from_client()))
+	if (phase == Request::READY && parseRequestHeader(connection, request, connection.get_m_rbuf_from_client()))
 		phase = Request::ON_BODY;
-	if (phase == Request::ON_BODY && parseBody(connection, request, connection.get_m_rbuf_from_client()))
+	if (phase == Request::ON_BODY && parseRequestBody(connection, request, connection.get_m_rbuf_from_client()))
 		phase = Request::COMPLETE;
 	if (phase == Request::COMPLETE)
 	{
 		request.addOrigin(connection.get_m_rbuf_from_client().substr(0, connection.get_m_token_size()));
 		connection.decreaseRbufFromClient(connection.get_m_token_size());
 		connection.set_m_status(Connection::TO_EXECUTE);
+        connection.set_m_token_size(-1);
 	}
 	request.set_m_phase(phase);
 }

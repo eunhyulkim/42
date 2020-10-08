@@ -5,7 +5,7 @@ INCLUDES = -Iincludes/
 CFLAGS = -Wall -Wextra -Werror -std=c++98
 
 SRCS_FILES = ServerManager base64 Request Location Response Config HtmlWriter \
-			 Connection libft main Server
+			 Connection libft main Server ProxyBase
 
 SRCS += $(addprefix srcs/, $(addsuffix .cpp, $(SRCS_FILES)))
 OBJS += $(addsuffix .o, $(SRCS_FILES))

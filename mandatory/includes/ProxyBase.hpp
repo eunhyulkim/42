@@ -60,7 +60,7 @@ class ProxyBase
 		void resetMaxFd(int new_max_fd = -1);
 
 		/* proxy action */
-		virtual void runProxyAction() = 0;
+		virtual void runProxyAction();
 		void run();
 	public:
 		ProxyBase();
