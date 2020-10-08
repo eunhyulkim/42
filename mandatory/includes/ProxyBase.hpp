@@ -4,8 +4,6 @@
 # include "webserv.hpp"
 # include "Connection.hpp"
 
-typedef ProxyBase::ServerConnectionStatus server_status_t;
-
 class ServerManager;
 
 class ProxyBase

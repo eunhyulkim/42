@@ -29,9 +29,9 @@ ProxyBase::ProxyBase(ServerManager* server_manager, const std::string& proxy_blo
 	if (type == "cache" || type == "Cache")
 		m_type = CACHE_PROXY;
 	else if (type == "LoadBalance" || type == "loadBalance")
-		m_type == LOADBALANCE_PROXY;
+		m_type = LOADBALANCE_PROXY;
 	else if (type == "filter" || type == "Filter")
-		m_type == FILTER_PROXY;
+		m_type = FILTER_PROXY;
 	else
 		throw (std::invalid_argument("filter type invalid."));
 	
@@ -125,7 +125,7 @@ ProxyBase& ProxyBase::operator=(const ProxyBase& obj)
 }
 
 std::ostream&
-operator<<(std::ostream& out, const ProxyBase& server)
+operator<<(std::ostream& out, const ProxyBase&)
 {
 	return (out);
 }
@@ -220,137 +220,120 @@ namespace
 		return (true);
 	}
 
-	bool
-	parseRequestHeader(Connection& connection, Request& request, const std::string& requestString)
-	{
-		size_t header_end_idx;
-		size_t length_header_idx;
-		size_t encoding_header_idx;
+    bool
+    parseRequestHeader(Connection& connection, Request& request, const std::string& requestString)
+    {
+        size_t header_end_idx;
+        size_t length_header_idx;
+        size_t encoding_header_idx;
 
-		if (requestString.size() > 7 && (header_end_idx = requestString.find("\r\n\r\n")) != std::string::npos)
-		{
-			std::string method = ft::split(requestString.substr(0, 7), ' ')[0];
-			if (method == "GET")
-				request.set_m_method(Request::GET);
-			if (method == "HEAD")
-				request.set_m_method(Request::HEAD);
-			if (method == "POST")
-				request.set_m_method(Request::POST);
-			if (method == "TRACE")
-				request.set_m_method(Request::TRACE);
-			if (method == "PUT")
-				request.set_m_method(Request::PUT);
-			if (method == "DELETE")
-				request.set_m_method(Request::DELETE);
-			if (method == "OPTIONS")
-				request.set_m_method(Request::OPTIONS);
-			if (!isMethodHasBody(request.get_m_method()))
-				connection.set_m_token_size(0);
-			else if (request.get_m_method() == Request::TRACE && !isTraceHasBody(requestString))
-				connection.set_m_token_size(0);
-			else if ((length_header_idx = requestString.find("Content-Length")) != std::string::npos
-			&& length_header_idx < header_end_idx)
-				connection.set_m_token_size(getContentLengthValue(requestString, length_header_idx));				
-			else if (encoding_header_idx = requestString.find("chunked") != std::string::npos
-			&& encoding_header_idx < header_end_idx)
-				request.set_m_transfer_type(Request::CHUNKED);
-			else
-				connection.set_m_token_size(0);
-			return (true);
-		}
-		return (false);
-	}
+        if (requestString.size() > 7 && (header_end_idx = requestString.find("\r\n\r\n")) != std::string::npos)
+        {
+            std::string method = ft::split(requestString.substr(0, 7), ' ')[0];
+            if (method == "GET")
+                request.set_m_method(Request::GET);
+            if (method == "HEAD")
+                request.set_m_method(Request::HEAD);
+            if (method == "POST")
+                request.set_m_method(Request::POST);
+            if (method == "TRACE")
+                request.set_m_method(Request::TRACE);
+            if (method == "PUT")
+                request.set_m_method(Request::PUT);
+            if (method == "DELETE")
+                request.set_m_method(Request::DELETE);
+            if (method == "OPTIONS")
+                request.set_m_method(Request::OPTIONS);
+            if (!isMethodHasBody(request.get_m_method()))
+                connection.set_m_token_size(0);
+            else if (request.get_m_method() == Request::TRACE && !isTraceHasBody(requestString))
+                connection.set_m_token_size(0);
+            else if ((length_header_idx = requestString.find("Content-Length")) != std::string::npos
+            && length_header_idx < header_end_idx)
+                connection.set_m_token_size(getContentLengthValue(requestString, length_header_idx));				
+            else if ((encoding_header_idx = requestString.find("chunked")) != std::string::npos
+            && encoding_header_idx < header_end_idx)
+                request.set_m_transfer_type(Request::CHUNKED);
+            else
+                connection.set_m_token_size(0);
+            return (true);
+        }
+        return (false);
+    }
 
-	bool
-	parseRequestBody(Connection& connection, Request& request, const std::string& requestString)
-	{
-		Request::Method method = request.get_m_method();
-		int token_size;
-		size_t header_end_idx = requestString.find("\r\n\r\n");
-		size_t body_end_idx;
+    bool
+    parseRequestBody(Connection& connection, Request& request, const std::string& requestString)
+    {
+        Request::Method method = request.get_m_method();
+        int token_size;
+        size_t header_end_idx = requestString.find("\r\n\r\n");
+        size_t body_end_idx;
 
-		if (!isMethodHasBody(method))
-			return (true);
-		if (request.get_m_transfer_type() == Request::GENERAL)
-		{
-			if ((token_size = connection.get_m_token_size()) <= 0)
-				connection.set_m_token_size(header_end_idx + 4);
-			else if (requestString.size() >= header_end_idx + 4 + token_size)
-				connection.set_m_token_size(header_end_idx + 4 + token_size);
-			else
-				return (false);			
-			return (true);
-		}
-		body_end_idx = requestString.find("0\r\n\r\n");
-		if (body_end_idx == std::string::npos)
-			return (false);
-		connection.set_m_token_size(body_end_idx + 5);
-		return (true);
-	}
+        if (!isMethodHasBody(method))
+            return (true);
+        if (request.get_m_transfer_type() == Request::GENERAL)
+        {
+            if ((token_size = connection.get_m_token_size()) <= 0)
+                connection.set_m_token_size(header_end_idx + 4);
+            else if (requestString.size() >= header_end_idx + 4 + token_size)
+                connection.set_m_token_size(header_end_idx + 4 + token_size);
+            else
+                return (false);			
+            return (true);
+        }
+        body_end_idx = requestString.find("0\r\n\r\n");
+        if (body_end_idx == std::string::npos)
+            return (false);
+        connection.set_m_token_size(body_end_idx + 5);
+        return (true);
+    }
 
+    bool
+    parseResponseHeader(Connection& connection, Response& response, const std::string& responseString)
+    {
+        size_t header_end_idx;
+        size_t length_header_idx;
+        size_t encoding_header_idx;
+
+        if ((header_end_idx = responseString.find("\r\n\r\n")) != std::string::npos)
+        {
+            if ((length_header_idx = responseString.find("Content-Length")) != std::string::npos)
+                connection.set_m_token_size(getContentLengthValue(responseString, length_header_idx));				
+            else if ((encoding_header_idx = responseString.find("chunked")) != std::string::npos)
+                response.set_m_transfer_type(Response::CHUNKED);
+            else
+                connection.set_m_token_size(0);
+            return (true);
+        }
+        return (false);
+    }
+
+    bool
+    parseResponseBody(Connection& connection, Response& response, const std::string& responseString)
+    {
+        int token_size;
+        size_t header_end_idx = responseString.find("\r\n\r\n");
+        size_t body_end_idx;
+
+        if (response.get_m_transfer_type() == Response::GENERAL)
+        {
+            if ((token_size = connection.get_m_token_size()) <= 0)
+                return (true);
+            else if (responseString.size() >= header_end_idx + 4 + token_size)
+                return (true);
+            return (false);
+        }
+        body_end_idx = responseString.find("0\r\n\r\n");
+        if (body_end_idx == std::string::npos)
+            return (false);
+        return (true);
+    }
 }
 
 void
 ProxyBase::resetConnectionServer(Connection& client_connection)
 {
 	Connection& connection = client_connection;
-	Connection::Status status = connection.get_m_status();
-	int server_fd = client_connection.get_m_server_fd();
-
-	std::string host = m_server_connections[server_fd].host;
-	int port = m_server_connections[server_fd].port;
-	m_server_connections.erase(server_fd);
-	ft::fdClr(server_fd, &m_write_set);
-	ft::fdClr(server_fd, &m_read_set);
-	connection.set_m_server_fd(connectServer(host, port));
-}
-
-bool
-	parseResponseHeader(Connection& connection, Response& response, const std::string& responseString)
-	{
-		size_t header_end_idx;
-		size_t length_header_idx;
-		size_t encoding_header_idx;
-
-		if ((header_end_idx = responseString.find("\r\n\r\n")) != std::string::npos)
-		{
-			if ((length_header_idx = responseString.find("Content-Length")) != std::string::npos)
-				connection.set_m_token_size(getContentLengthValue(responseString, length_header_idx));				
-			else if (encoding_header_idx = responseString.find("chunked") != std::string::npos)
-				response.set_m_transfer_type(Response::CHUNKED);
-			else
-				connection.set_m_token_size(0);
-			return (true);
-		}
-		return (false);
-	}
-
-	bool
-	parseResponseBody(Connection& connection, Response& response, const std::string& responseString)
-	{
-		int token_size;
-		size_t header_end_idx = responseString.find("\r\n\r\n");
-		size_t body_end_idx;
-
-		if (response.get_m_transfer_type() == Request::GENERAL)
-		{
-			if ((token_size = connection.get_m_token_size()) <= 0)
-				return (true);
-			else if (responseString.size() >= header_end_idx + 4 + token_size)
-				return (true);
-			return (false);
-		}
-		body_end_idx = responseString.find("0\r\n\r\n");
-		if (body_end_idx == std::string::npos)
-			return (false);
-		return (true);
-	}
-
-void
-ProxyBase::resetConnectionServer(Connection& client_connection)
-{
-	Connection& connection = client_connection;
-	Connection::Status status = connection.get_m_status();
 	int server_fd = client_connection.get_m_server_fd();
 
 	std::string host = m_server_connections[server_fd].host;
@@ -416,9 +399,8 @@ bool
 ProxyBase::hasSendWorkToServer(Connection& client_connection)
 {
 	Connection::Status client_status = client_connection.get_m_status();
-	int client_fd = client_connection.get_m_client_fd();
 	int server_fd = client_connection.get_m_server_fd();
-	server_status_t server_status = m_server_connections[server_fd].status;
+	ProxyBase::ServerConnectionStatus server_status = m_server_connections[server_fd].status;
 
 	if (client_status != Connection::TO_EXECUTE && client_status != Connection::ON_EXECUTE)
 		return (false);
@@ -475,7 +457,7 @@ bool
 ProxyBase::runRecvFromServer(Connection& client_connection)
 {
 	Connection& connection = client_connection;
-	Response& response = const_cast<Response&>(client_connection.get_m_request());
+	Response& response = const_cast<Response&>(client_connection.get_m_response());
 	Response::Phase phase = response.get_m_phase();
 	int server_fd = connection.get_m_server_fd();
 	char buff[BUFFER_SIZE];
@@ -492,6 +474,7 @@ ProxyBase::runRecvFromServer(Connection& client_connection)
 	if (phase == Response::COMPLETE)
 		connection.set_m_status(Connection::TO_EXECUTE);
 	response.set_m_phase(phase);
+    return (phase == Response::COMPLETE);
 }
 
 bool
@@ -531,11 +514,14 @@ ProxyBase::runRecvFromClient(Connection& client_connection)
         connection.set_m_token_size(-1);
 	}
 	request.set_m_phase(phase);
+    return (phase == Request::COMPLETE);
 }
 
 /* ************************************************************************** */
 /* ----------------------------- PROXY OPERATION ---------------------------- */
 /* ************************************************************************** */
+
+void ProxyBase::runProxyAction() {}
 
 /* ************************************************************************** */
 /* -------------------------- CONNECTION MANAGEMENT ------------------------- */
