@@ -120,6 +120,8 @@ void Response::addHeader(std::string header_key, std::string header_value)
 
 void Response::addContent(const std::string& body) { m_content += body; }
 
+void Response::set_m_status_code(int status_code) { m_status_code = status_code; }
+
 std::string Response::getString() const
 {	
 	std::string message;

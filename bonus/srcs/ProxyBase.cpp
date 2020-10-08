@@ -40,7 +40,9 @@ ProxyBase::ProxyBase(ServerManager* server_manager, const std::string& proxy_blo
 	for (; it != servers.end(); ++it)
 	{
 		std::vector<std::string> server_url = ft::split(*it, ':');
-		m_servers.insert(std::pair<std::string, int>(ft::trim(server_url[0], " "), ft::stoi(ft::trim(server_url[1], " "))));
+		std::string host = ft::trim(server_url[0], " ");
+		int port = ft::stoi(ft::trim(server_url[1], " "));
+		connectServer(host, port);
 	}
 
 	if((m_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
@@ -58,7 +60,7 @@ ProxyBase::ProxyBase(ServerManager* server_manager, const std::string& proxy_blo
 		throw std::runtime_error("LISTEN ERROR");
 	if (fcntl(m_fd, F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("FCNTL ERROR");
-	m_manager->fdSet(m_fd, ServerManager::READ_SET);
+	ft::fdSet(m_fd, &m_read_set);
 	if (m_manager->get_m_max_fd() < m_fd)
 		m_manager->set_m_max_fd(m_fd);
 }
@@ -75,8 +77,8 @@ ProxyBase::ProxyBase(const ProxyBase& copy)
 	m_read_copy_set = copy.m_read_copy_set;
 	m_write_set = copy.m_write_set;
 	m_write_copy_set = copy.m_write_copy_set;
-	m_servers = copy.m_servers;
-	m_connections = copy.m_connections;
+	m_server_connections = copy.m_server_connections;
+	m_client_connections = copy.m_client_connections;
 }
 
 /* ************************************************************************** */
@@ -95,8 +97,8 @@ ProxyBase::~ProxyBase()
 	ft::fdZero(&m_read_copy_set);
 	ft::fdZero(&m_write_set);
 	ft::fdZero(&m_write_copy_set);
-	m_servers.clear();
-	m_connections.clear();
+	m_server_connections.clear();
+	m_client_connections.clear();
 }
 
 /* ************************************************************************** */
@@ -117,8 +119,8 @@ ProxyBase& ProxyBase::operator=(const ProxyBase& obj)
 	m_read_copy_set = obj.get_m_read_copy_set();
 	m_write_set = obj.get_m_write_set();
 	m_write_copy_set = obj.get_m_write_copy_set();
-	m_servers = obj.get_m_servers();
-	m_connections = obj.get_m_connections();
+	m_server_connections = obj.get_m_server_connections();
+	m_client_connections = obj.get_m_client_connections();
 	return (*this);
 }
 
@@ -152,8 +154,8 @@ fd_set ProxyBase::get_m_read_set() const { return (m_read_set); }
 fd_set ProxyBase::get_m_read_copy_set() const { return (m_read_copy_set); }
 fd_set ProxyBase::get_m_write_set() const { return (m_write_set); }
 fd_set ProxyBase::get_m_write_copy_set() const { return (m_write_copy_set); }
-const std::multimap<std::string, int>& ProxyBase::get_m_servers() const { return (m_servers); }
-const std::map<int, Connection>& ProxyBase::get_m_connections() const { return (m_connections); }
+const std::map<int, ProxyBase::ServerConnection>& ProxyBase::get_m_server_connections() const { return (m_server_connections); }
+const std::map<int, Connection>& ProxyBase::get_m_client_connections() const { return (m_client_connections); }
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */
@@ -166,31 +168,245 @@ void ProxyBase::set_m_max_fd(int new_max_fd) { m_max_fd = new_max_fd; }
 /* ************************************************************************** */
 
 /* ************************************************************************** */
+/* ---------------------------------- UTIL ---------------------------------- */
+/* ************************************************************************** */
+
+namespace 
+{
+	int
+	parseStatusCode(const std::string& responseString)
+	{
+		if (responseString.size() < 10)
+			return (400);
+		int status_code = ft::stoi(responseString.substr(9, 3));
+		if (status_code < 200 || status_code > 599)
+			return (500);
+		return (status_code);
+	}
+
+	bool
+	isMethodHasBody(const Request::Method& method) {
+		return (method == Request::POST || method == Request::PUT || method == Request::TRACE);
+	}
+
+	bool
+	getContentLengthValue(const std::string& requestString, size_t length_header_idx)
+	{
+		while (requestString[length_header_idx] != ':')
+			++length_header_idx;
+		int from_at = ++length_header_idx;
+		while (requestString[length_header_idx] != '\n')
+			++length_header_idx;
+		int to_at = length_header_idx;
+		return (ft::stoi(ft::trim(requestString.substr(from_at, to_at - from_at + 1), "\r\n ")));
+	}
+
+	bool
+	isTraceHasBody(const std::string& requestString)
+	{
+		size_t length_header_idx = requestString.find("Content-Length");
+		size_t encoding_header_idx = requestString.find("chunked");
+		size_t header_end_ldx = requestString.find("\r\n\r\n");
+
+		if (length_header_idx > header_end_ldx)
+			length_header_idx = std::string::npos;
+		if (encoding_header_idx > header_end_ldx)
+			encoding_header_idx = std::string::npos;
+
+		if (length_header_idx == std::string::npos && encoding_header_idx == std::string::npos)
+			return (false);
+		if (length_header_idx != std::string::npos)
+			return (getContentLengthValue(requestString, length_header_idx) > 0);
+		return (true);
+	}
+
+	bool
+	parseHeader(Connection& connection, Request& request, const std::string& requestString)
+	{
+		size_t header_end_idx;
+		size_t length_header_idx;
+		size_t encoding_header_idx;
+
+		if (requestString.size() > 7 && (header_end_idx = requestString.find("\r\n\r\n")) != std::string::npos)
+		{
+			std::string method = ft::split(requestString.substr(0, 7), ' ')[0];
+			if (method == "GET")
+				request.set_m_method(Request::GET);
+			if (method == "HEAD")
+				request.set_m_method(Request::HEAD);
+			if (method == "POST")
+				request.set_m_method(Request::POST);
+			if (method == "TRACE")
+				request.set_m_method(Request::TRACE);
+			if (method == "PUT")
+				request.set_m_method(Request::PUT);
+			if (method == "DELETE")
+				request.set_m_method(Request::DELETE);
+			if (method == "OPTIONS")
+				request.set_m_method(Request::OPTIONS);
+			if (!isMethodHasBody(request.get_m_method()))
+				connection.set_m_token_size(0);
+			else if (request.get_m_method() == Request::TRACE && !isTraceHasBody(requestString))
+				connection.set_m_token_size(0);
+			else if ((length_header_idx = requestString.find("Content-Length")) != std::string::npos
+			&& length_header_idx < header_end_idx)
+				connection.set_m_token_size(getContentLengthValue(requestString, length_header_idx));				
+			else if (encoding_header_idx = requestString.find("chunked") != std::string::npos
+			&& encoding_header_idx < header_end_idx)
+				request.set_m_transfer_type(Request::CHUNKED);
+			else
+				connection.set_m_token_size(0);
+			return (true);
+		}
+		return (false);
+	}
+
+	bool
+	hasBody(Request& request, const std::string& requestString)
+	{
+		Request::Method method = request.get_m_method();
+		if (method == Request::TRACE && !isTraceHasBody(requestString))
+			return (false);
+		return (requestString.find("\r\n\r\n") != std::string::npos);
+	}
+
+	bool
+	parseBody(Connection& connection, Request& request, const std::string& requestString)
+	{
+		Request::Method method = request.get_m_method();
+		int token_size;
+		size_t header_end_idx = requestString.find("\r\n\r\n");
+		size_t body_end_idx;
+
+		if (!isMethodHasBody(method))
+			return (true);
+		if (request.get_m_transfer_type() == Request::GENERAL)
+		{
+			if ((token_size = connection.get_m_token_size()) <= 0)
+				connection.set_m_token_size(header_end_idx + 4);
+			else if (requestString.size() >= header_end_idx + 4 + token_size)
+				connection.set_m_token_size(header_end_idx + 4 + token_size);
+			else
+				return (false);			
+			return (true);
+		}
+		body_end_idx = requestString.find("0\r\n\r\n");
+		if (body_end_idx == std::string::npos)
+			return (false);
+		connection.set_m_token_size(body_end_idx + 5);
+		return (true);
+	}
+
+}
+
+void
+ProxyBase::resetConnectionServer(Connection& client_connection)
+{
+	Connection& connection = client_connection;
+	Connection::Status status = connection.get_m_status();
+	int server_fd = client_connection.get_m_server_fd();
+
+	std::string host = m_server_connections[server_fd].host;
+	int port = m_server_connections[server_fd].port;
+	m_server_connections.erase(server_fd);
+	ft::fdClr(server_fd, &m_write_set);
+	ft::fdClr(server_fd, &m_read_set);
+	connection.set_m_server_fd(connectServer(host, port));
+}
+
+/* ************************************************************************** */
 /* ----------------------------- SEND OPERATION ----------------------------- */
 /* ************************************************************************** */
 
 bool
-ProxyBase::hasSendWorkToClient(Connection& connection)
+ProxyBase::hasSendWorkToClient(Connection& client_connection)
 {
+	Connection::Status client_status = client_connection.get_m_status();
+	int client_fd = client_connection.get_m_client_fd();
 
+	if (client_status != Connection::TO_SEND && client_status != Connection::ON_SEND)
+		return (false);
+	return (ft::fdIsset(client_fd, &m_write_copy_set));
 }
 
 bool
-ProxyBase::runSendToClient(Connection& connection)
+ProxyBase::runSendToClient(Connection& client_connection)
 {
+	Connection& connection = client_connection;
+	Connection::Status status = connection.get_m_status();
+	int client_fd = client_connection.get_m_client_fd();
 
+	if (status == Connection::TO_SEND)
+	{
+		Response& response = const_cast<Response&>(connection.get_m_response());
+		response.set_m_status_code(parseStatusCode(connection.get_m_rbuf_from_server()));
+		connection.set_m_wbuf_for_send(connection.get_m_rbuf_from_server());
+		connection.clearRbufFromServer();
+		connection.set_m_status(Connection::ON_SEND);
+	}
+
+	if (!ft::fdIsset(client_fd, &m_write_set) || !connection.sendFromWbuf())
+	{
+		closeConnection(client_fd);
+		return (false);
+	}
+
+	bool ret = connection.isSendCompleted();
+	if (ret)
+	{
+		connection.set_m_status(Connection::ON_WAIT);
+		ft::fdClr(client_fd, &m_write_set);
+		writeSendResponseLog(connection);
+		if (connection.get_m_response().get_m_status_code() / 100 != 2)
+			closeConnection(client_fd);
+		else
+			connection.clear();
+	}
+	return (ret);
 }
 
 bool
-ProxyBase::hasSendWorkToServer(Connection& connection)
+ProxyBase::hasSendWorkToServer(Connection& client_connection)
 {
+	Connection::Status client_status = client_connection.get_m_status();
+	int client_fd = client_connection.get_m_client_fd();
+	int server_fd = client_connection.get_m_server_fd();
+	server_status_t server_status = m_server_connections[server_fd].status;
 
+	if (client_status != Connection::TO_EXECUTE && client_status != Connection::ON_EXECUTE)
+		return (false);
+	if (client_status == Connection::TO_EXECUTE && server_status == RUN)
+		return (false);
+	return (ft::fdIsset(server_fd, &m_write_copy_set));
 }
 
 bool
-ProxyBase::runSendToServer(Connection& connection)
+ProxyBase::runSendToServer(Connection& client_connection)
 {
+	Connection& connection = client_connection;
+	Connection::Status status = connection.get_m_status();
+	int server_fd = client_connection.get_m_server_fd();
+	bool disconnect = false;
 
+	if (status == Connection::TO_EXECUTE || (disconnect = !connection.sendFromWbuf()))
+	{
+		connection.set_m_wbuf_for_send(connection.get_m_request().get_m_origin());
+		connection.set_m_status(Connection::ON_EXECUTE);
+	}
+	if (disconnect)
+	{
+		resetConnectionServer(client_connection);
+		ft::fdSet(client_connection.get_m_server_fd(), &m_write_set);
+		return (false);
+	}
+
+	bool ret = connection.isSendCompleted();
+	if (ret)
+	{
+		ft::fdClr(server_fd, &m_write_set);
+		writeSendResponseLog(connection);
+	}
+	return (ret);
 }
 
 /* ************************************************************************** */
@@ -198,27 +414,63 @@ ProxyBase::runSendToServer(Connection& connection)
 /* ************************************************************************** */
 
 bool
-ProxyBase::hasRecvWorkFromServer(Connection& connection)
+ProxyBase::hasRecvWorkFromServer(Connection& client_connection)
 {
+	Connection::Status client_status = client_connection.get_m_status();
+	int server_fd = client_connection.get_m_server_fd();
 
+	if (client_status != Connection::ON_EXECUTE || server_fd == -1)
+		return (false);
+	return (ft::fdIsset(server_fd, &m_read_copy_set));
 }
 
 bool
-ProxyBase::runRecvFromServer(Connection& connection)
+ProxyBase::runRecvFromServer(Connection& client_connection)
 {
-
+	
+	// if (length_header_idx != std::string::npos && length_header_idx < header_end_ldx)
+	// {
+	// 	size_t length_value = getContentLengthValue(length_header_idx);
+	// 	return (requestString.size() >= header_end_ldx + 4 + length_value);
+	// }
 }
 
 bool
-ProxyBase::hasRecvWorkFromClient(Connection& connection)
+ProxyBase::hasRecvWorkFromClient(Connection& client_connection)
 {
+	Connection::Status client_status = client_connection.get_m_status();
+	int client_fd = client_connection.get_m_client_fd();
 
+	if (client_status != Connection::ON_WAIT && client_status != Connection::ON_RECV)
+		return (false);
+	return (ft::fdIsset(client_fd, &m_read_copy_set));
 }
 
 bool
-ProxyBase::runRecvFromClient(Connection& connection)
+ProxyBase::runRecvFromClient(Connection& client_connection)
 {
+	Connection& connection = client_connection;
+	Request& request = const_cast<Request&>(client_connection.get_m_request());
+	Request::Phase phase = request.get_m_phase();
+	int client_fd = connection.get_m_client_fd();
+	char buff[BUFFER_SIZE];
+	int count;
 
+	connection.set_m_status(Connection::ON_RECV);
+
+	if (hasRecvWorkFromClient(client_connection) && (count = recv(client_fd, buff, sizeof(buff), 0)) > 0)
+		connection.addRbufFromClient(buff, count);
+	if (phase == Request::READY && parseHeader(connection, request, connection.get_m_rbuf_from_client()))
+		phase = Request::ON_BODY;
+	if (phase == Request::ON_BODY && parseBody(connection, request, connection.get_m_rbuf_from_client()))
+		phase = Request::COMPLETE;
+	if (phase == Request::COMPLETE)
+	{
+		request.addOrigin(connection.get_m_rbuf_from_client().substr(0, connection.get_m_token_size()));
+		connection.decreaseRbufFromClient(connection.get_m_token_size());
+		connection.set_m_status(Connection::TO_EXECUTE);
+	}
+	request.set_m_phase(phase);
 }
 
 /* ************************************************************************** */
@@ -229,41 +481,130 @@ ProxyBase::runRecvFromClient(Connection& connection)
 /* -------------------------- CONNECTION MANAGEMENT ------------------------- */
 /* ************************************************************************** */
 
-void
-ProxyBase::connectServer()
+int
+ProxyBase::connectServer(std::string host, int port)
 {
-	
+	struct sockaddr_in server_addr;
+	std::string key = host + ":" + ft::to_string(port);
+	int fd;
+
+	if((fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
+		throw std::runtime_error("SOCKET ERROR");
+	int value = true;
+	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(int)) == -1)
+		throw std::runtime_error("SOCKET_OPTION ERROR");
+
+	ft::bzero(&server_addr, sizeof(server_addr));
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_addr.s_addr = inet_addr(host.c_str());
+	server_addr.sin_port = ft::ws_htons(port);
+
+	if (connect(fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) == -1) {
+        close(fd);
+		reportConnectServerLog(host, port);
+        exit(EXIT_FAILURE);
+    }
+	ServerConnection server_connection;
+	server_connection.socket_fd = fd;
+	server_connection.key = key;
+	server_connection.host = host;
+	server_connection.port = port;
+	server_connection.status = ProxyBase::WAIT;
+	m_server_connections.insert(std::pair<int, ServerConnection>(fd, server_connection));
+	writeConnectServerLog(host, port);
+	return (fd);
 }
 
 bool
 ProxyBase::hasNewConnection()
 {
-
+	return (ft::fdIsset(m_fd, &m_read_copy_set));
 }
 
 int
 ProxyBase::getUnusedConnectionFd()
 {
-
+	std::map<int, Connection>::iterator it = m_client_connections.begin();
+	for (; it != m_client_connections.end(); ++it) {
+		if (it->second.get_m_status() == Connection::ON_WAIT)
+			return (it->first);
+	}
+	return (-1);
 }
 
 void
-ProxyBase::closeConnection(int client_fd)
+ProxyBase::closeConnection(int fd)
 {
-
+	writeCloseConnectionLog(fd);
+	if (close(fd) == -1)
+		ft::log(ServerManager::proxy_fd, -1,
+		"[Failed][Function] close function failed in closeConnection method");
+	ft::fdClr(fd, &m_read_set);
+	ft::fdClr(fd, &m_write_set);
+	m_client_connections.erase(fd);
+	if (m_max_fd == fd)
+		resetMaxFd();
 }
 
 bool
 ProxyBase::acceptNewConnection()
 {
+	struct sockaddr_in	client_addr;
+	socklen_t			client_addr_size = sizeof(struct sockaddr);
+	int 				client_fd;
+	std::string			client_ip;
+	int					client_port;
 
+	ft::bzero(&client_addr, client_addr_size);
+
+	if ((client_fd = accept(m_fd, (struct sockaddr *)&client_addr, &client_addr_size)) == -1) {
+		ft::log(ServerManager::proxy_fd, -1, "[Failed][Function]failed to cerate client_fd by accept function");
+		return (false);
+	}
+	if (m_max_fd < client_fd)
+		m_max_fd = client_fd;
+	if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1)
+		return (false);
+	client_ip = ft::inet_ntoa(client_addr.sin_addr.s_addr);
+	client_port = static_cast<int>(client_addr.sin_port);
+	m_client_connections[client_fd] = Connection(client_fd, client_ip, client_port);
+	ft::fdSet(client_fd, &m_read_set);
+	return (true);
 }
 
 void
 ProxyBase::closeOldConnection()
 {
-
+	std::map<int, Connection>::const_iterator it = m_client_connections.begin();
+	while (it != m_client_connections.end())
+	{
+		int fd = it->first;
+		if (!ft::hasKey(m_client_connections, fd) && it->second.isOverTime())
+		{
+			++it;
+			closeConnection(fd);
+		} else
+			++it;
+	}
 }	
+
+void
+ProxyBase::resetMaxFd(int new_max_fd)
+{
+	if (new_max_fd != -1)
+		set_m_max_fd(new_max_fd);
+	else
+	{
+		for (int i = m_max_fd; i >= 0; --i)
+		{
+			if (ft::fdIsset(i, &m_read_set) || ft::fdIsset(i, &m_read_set))
+			{
+				m_max_fd = i;
+				break ;
+			}
+		}
+	}
+}
 
 /* ************************************************************************** */
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
@@ -272,8 +613,8 @@ ProxyBase::closeOldConnection()
 void
 ProxyBase::run()
 {
-	std::map<int, Connection>::iterator it = m_connections.begin();
-	while (it != m_connections.end())
+	std::map<int, Connection>::iterator it = m_client_connections.begin();
+	while (it != m_client_connections.end())
 	{
 		std::map<int, Connection>::iterator it2 = it++;
 		int fd = it2->first;
@@ -287,14 +628,15 @@ ProxyBase::run()
 			continue ;
 		if (hasSendWorkToServer(connection) && !runSendToServer(connection))
 			continue ;
-		if (hasRecvWorkFromClient(connection))
-			runRecvFromClient(connection);
-		if (!(connection.get_m_rbuf_from_client().empty()))
-			runProxyAction();
+		if (hasRecvWorkFromClient(connection) || !(connection.get_m_rbuf_from_client().empty()))
+		{
+			if (runRecvFromClient(connection))
+				runProxyAction();
+		}			
 	}
 	if (hasNewConnection())
 	{
-		if (m_connections.size() >= 512)
+		if (m_client_connections.size() >= 512)
 		{
 			int fd = getUnusedConnectionFd();
 			if (fd == -1)
@@ -309,9 +651,6 @@ ProxyBase::run()
 void
 ProxyBase::runProxy()
 {
-
-	connectServer();
-
 	timeval timeout;
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;
@@ -345,7 +684,8 @@ ProxyBase::writeCreateNewConnectionLog(int client_fd, std::string client_ip, int
 {
 	int fd = ServerManager::proxy_fd;
 	std::string text = "[Created][Connection][Proxy:" + get_type_to_string() + "][CFD:" \
-	+ ft::to_string(client_fd) + "][IP:" + client_ip + "][Port:" + ft::to_string(client_port) + "]\n";
+	+ ft::to_string(client_fd) + "][IP:" + client_ip + "][Port:" + ft::to_string(client_port)
+	+ "] Connection Created.\n\n";
 	ft::log(fd, -1, text);
 	return ;
 }
@@ -381,4 +721,31 @@ ProxyBase::writeCloseConnectionLog(int client_fd)
 	ft::log(fd, -1, text);
 	return ;
 
+}
+
+void 
+ProxyBase::writeConnectServerLog(std::string host, int port)
+{
+	int fd = ServerManager::proxy_fd;
+	std::string text = "[Created][ServerConnection][Proxy:" + get_type_to_string() + "][ServerInfo:" \
+	+ host + ":" + ft::to_string(port) + "] Connection Created.\n";
+	ft::log(fd, -1, text);	
+}
+
+void 
+ProxyBase::reportConnectServerLog(std::string host, int port)
+{
+	int fd = ServerManager::proxy_fd;
+	std::string text = "[Failed][ServerConnection][Proxy:" + get_type_to_string() + "][ServerInfo:" \
+	+ host + ":" + ft::to_string(port) + "] Connect Failed.\n";
+	ft::log(fd, -1, text);	
+}
+
+void
+ProxyBase::writeSendResponseLog(const Connection& connection)
+{
+	std::string text = ft::getTimestamp() + "[Sended][Response][Proxy:" + get_type_to_string() + "][CFD:" \
+	+ ft::to_string(connection.get_m_client_fd()) + "] Response sended\n";
+	ft::log(ServerManager::proxy_fd, -1, text);
+	return ;
 }

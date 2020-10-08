@@ -81,7 +81,9 @@ public:
 	void addContent(std::string added_content);
 	void addOrigin(std::string added_origin);
 	void addHeader(std::string header);
+	void set_m_method(Method method);
 	void set_m_phase(Phase phase);
+	void set_m_transfer_type(TransferType transfer_type);
 	void addSpecialHeaderCount();
 	void clear();
 

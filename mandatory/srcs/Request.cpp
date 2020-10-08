@@ -355,6 +355,8 @@ void Request::addHeader(std::string header)
 }
 
 void Request::set_m_phase(Phase phase) { m_phase = phase; }
+void Request::set_m_method(Method method) { m_method = method; }
+void Request::set_m_transfer_type(TransferType transfer_type) { m_transfer_type = transfer_type; }
 void Request::addSpecialHeaderCount() { ++m_speical_header_count; }
 
 void Request::clear()

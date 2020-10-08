@@ -11,13 +11,13 @@ class Response;
 class Connection
 {
 	public:
-		enum Status { ON_WAIT, TO_SEND, ON_SEND, ON_EXECUTE, ON_RECV };
+		enum Status { ON_WAIT, TO_SEND, ON_SEND, TO_EXECUTE, ON_EXECUTE, ON_RECV };
 	private:
 		Status m_status;
-		int m_fd;
-		int m_child_pid;
-		int m_from_child_fd;
-		int m_to_child_fd;
+		int m_client_fd;
+		int m_server_fd;
+		int m_read_from_server_fd;
+		int m_write_to_server_fd;
 		Request m_request;
 		int m_token_size;
 		int m_readed_size;
@@ -39,10 +39,10 @@ class Connection
 
 		/* getter function */
 		Status get_m_status() const;
-		int get_m_fd() const;
-		int get_m_child_pid() const;
-		int get_m_from_child_fd() const;
-		int get_m_to_child_fd() const;
+		int get_m_client_fd() const;
+		int get_m_server_fd() const;
+		int get_m_read_from_server_fd() const;
+		int get_m_write_to_server_fd() const;
 		const Request& get_m_request() const;
 		int get_m_token_size() const;
 		int get_m_readed_size() const;
@@ -55,16 +55,16 @@ class Connection
 		int get_m_client_port() const;
 
 		/* setter function */
-		void set_m_fd(int fd);
-		void set_m_child_pid(int pid);
-		void set_m_from_child_fd(int fd);
-		void set_m_to_child_fd(int fd);
+		void set_m_client_fd(int fd);
+		void set_m_server_fd(int fd);
+		void set_m_read_from_server_fd(int fd);
+		void set_m_write_to_server_fd(int fd);
 		void set_m_last_request_at();
 		void set_m_status(Status status);
 		void set_m_token_size(int token_size);
 		void set_m_readed_size(int readed_size);
 		void set_m_wbuf_for_execute();
-		void set_m_wbuf_for_send();
+		void set_m_wbuf_for_send(std::string wbuf_string = "");
 		void addRbufFromClient(const char* str, int count);
 		void addRbufFromServer(const char* str, int count);
 		void decreaseRbufFromClient(int size);
@@ -76,7 +76,7 @@ class Connection
 
 		/* member function */
 		bool isOverTime() const;
-		void responseSend();
+		bool sendFromWbuf();
 		bool isSendCompleted();
 };
 
