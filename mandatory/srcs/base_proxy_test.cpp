@@ -7,10 +7,13 @@ int main(void)
     std::string token;
 
     token = "host 127.0.0.1\n";
-    token += "port 8081\n";
+    token += "port 8080\n";
     token += "type filter\n";
-    token += "server [127.0.0.1:8080]";
-    ProxyBase proxy(&manager, token);
-    proxy.runProxy();
-    return (0);
+    token += "server [127.0.0.1:8081]";
+    try {
+        ProxyBase proxy(&manager, token);
+        proxy.runProxy();
+    } catch (std::exception& e) {
+        std::cout << "error:" << e.what() << std::endl;
+    }
 }

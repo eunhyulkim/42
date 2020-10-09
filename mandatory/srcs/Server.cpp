@@ -363,11 +363,12 @@ namespace
 			else
 			{
 				count = write(to_child_fd, rbuf.c_str(), content_length);
+				if (count != -1)
+					connection.decreaseRbufFromClient(content_length + 2);
 				if (connection_count < 15)
 					usleep(1200);
 				else
 					usleep(60);
-				connection.decreaseRbufFromClient(content_length + 2);
 			}
 		}
 	}

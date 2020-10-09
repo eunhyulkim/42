@@ -534,29 +534,39 @@ ProxyBase::connectServer(std::string host, int port)
 	std::string key = host + ":" + ft::to_string(port);
 	int fd;
 
+	std::cout << "flag 1" << std::endl;
 	if((fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
 		throw std::runtime_error("SOCKET ERROR");
-	int value = true;
-	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(int)) == -1)
-		throw std::runtime_error("SOCKET_OPTION ERROR");
-
+	// int value = true;
+	std::cout << "created fd: " << fd << std::endl;
+	// if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(int)) == -1)
+	// 	throw std::runtime_error("SOCKET_OPTION ERROR");
+	std::cout << "flag 3" << std::endl;
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
+		throw std::runtime_error("SERVER_CONNECT ERROR");
+	std::cout << "flag 4" << std::endl;
 	ft::bzero(&server_addr, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
+	std::cout << host << " and " << std::to_string(port) << std::endl;
 	server_addr.sin_addr.s_addr = inet_addr(host.c_str());
 	server_addr.sin_port = ft::ws_htons(port);
-
+	std::cout << "flag 5" << std::endl;
 	if (connect(fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) == -1) {
+		perror("connect error:");
         close(fd);
 		reportConnectServerLog(host, port);
         exit(EXIT_FAILURE);
     }
+	std::cout << "flag 6" << std::endl;
 	ServerConnection server_connection;
 	server_connection.socket_fd = fd;
 	server_connection.key = key;
 	server_connection.host = host;
 	server_connection.port = port;
 	server_connection.status = ProxyBase::WAIT;
+	std::cout << "flag 7" << std::endl;
 	m_server_connections.insert(std::pair<int, ServerConnection>(fd, server_connection));
+	std::cout << "flag 8" << std::endl;
 	writeConnectServerLog(host, port);
 	return (fd);
 }

@@ -1,12 +1,2 @@
 [Created][Servers]1 servers created successfully.
-[Detected][Connection][Server:default][Host:127.0.0.1] New connection detected.
-[Detected][Connection][Server:default][Host:127.0.0.1] New connection detected.
-[Detected][Connection][Server:default][Host:127.0.0.1] New connection detected.
-[2020108_22_7_18][Created][Response][Server:default][200][OK][CFD:10][headers:4][body:906] New response created.
-[2020108_22_7_18][Sended][Response][Server:default][200][OK][CFD:10][headers:4][body:906] Response sended
-[Failed][Request][Server:default][CIP:127.0.0.1][CFD:10][40402][Not Found: Requested uri is not in server] Failed to create new Request.
-[2020108_22_7_18][Created][Response][Server:default][404][Not Found][CFD:10][headers:4][body:621] New response created.
-[2020108_22_7_18][Sended][Response][Server:default][404][Not Found][CFD:10][headers:4][body:621] Response sended
-[Deleted][Connection][Server:default][CFD:10] Connection closed.
-[HealthCheck][Server][Max_fd:11][Connection:8,9,11][Response:]
 signal execute
