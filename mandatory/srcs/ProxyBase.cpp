@@ -205,6 +205,8 @@ namespace
 	isTraceHasBody(const std::string& requestString)
 	{
 		size_t length_header_idx = requestString.find("Content-Length");
+		if (length_header_idx == std::string::npos)
+			length_header_idx = requestString.find("content-length");
 		size_t encoding_header_idx = requestString.find("chunked");
 		size_t header_end_ldx = requestString.find("\r\n\r\n");
 
@@ -249,8 +251,8 @@ namespace
                 connection.set_m_token_size(0);
             else if (request.get_m_method() == Request::TRACE && !isTraceHasBody(requestString))
                 connection.set_m_token_size(0);
-            else if ((length_header_idx = requestString.find("Content-Length")) != std::string::npos
-            && length_header_idx < header_end_idx)
+            else if ((((length_header_idx = requestString.find("Content-Length")) != std::string::npos)
+            || (length_header_idx = requestString.find("content-length")) != std::string::npos) && length_header_idx < header_end_idx)
                 connection.set_m_token_size(getContentLengthValue(requestString, length_header_idx));				
             else if ((encoding_header_idx = requestString.find("chunked")) != std::string::npos
             && encoding_header_idx < header_end_idx)
@@ -302,7 +304,12 @@ namespace
         if ((header_end_idx = responseString.find("\r\n\r\n")) != std::string::npos)
         {
             if ((length_header_idx = responseString.find("Content-Length")) != std::string::npos)
-                connection.set_m_token_size(getContentLengthValue(responseString, length_header_idx));				
+			{
+				if (connection.get_m_request().get_m_method() != Request::HEAD)
+                	connection.set_m_token_size(getContentLengthValue(responseString, length_header_idx));				
+				else
+					connection.set_m_token_size(0);
+			}
             else if ((encoding_header_idx = responseString.find("chunked")) != std::string::npos)
                 response.set_m_transfer_type(Response::CHUNKED);
             else
@@ -321,8 +328,8 @@ namespace
 
         if (response.get_m_transfer_type() == Response::GENERAL)
         {
-            if ((token_size = connection.get_m_token_size()) <= 0)
-                return (true);
+            if ((token_size = connection.get_m_token_size()) <= 0)                
+				return (true);
             else if (responseString.size() >= header_end_idx + 4 + token_size)
                 return (true);
             return (false);
@@ -342,9 +349,9 @@ ProxyBase::resetConnectionServer(Connection& client_connection)
 
 	std::string host = m_server_connections[server_fd].host;
 	int port = m_server_connections[server_fd].port;
-	m_server_connections.erase(server_fd);
 	ft::fdClr(server_fd, &m_write_set);
 	ft::fdClr(server_fd, &m_read_set);
+	close(server_fd);
 	connection.set_m_server_fd(connectServer(host, port));
 }
 
@@ -391,9 +398,11 @@ ProxyBase::runSendToClient(Connection& client_connection)
 		connection.set_m_status(Connection::ON_WAIT);
 		ft::fdClr(client_fd, &m_write_set);
 		writeSendResponseLog(connection);
-		std::cout << "response code" << connection.get_m_response().get_m_status_code() << std::endl;
 		if (connection.get_m_response().get_m_status_code() / 100 != 2)
+		{
+			resetConnectionServer(connection);
 			closeConnection(client_fd);
+		}
 		else
 		{
 			ft::fdSet(client_fd, &m_read_set);
@@ -430,12 +439,12 @@ ProxyBase::runSendToServer(Connection& client_connection)
 	if (status == Connection::TO_EXECUTE || (disconnect = !connection.sendFromWbuf(server_fd)))
 	{
 		connection.set_m_wbuf_for_send(connection.get_m_request().get_m_origin());
+		std::cout << connection.get_m_wbuf() << std::endl;
 		connection.set_m_status(Connection::ON_EXECUTE);
 		m_server_connections[server_fd].status = RUN;
 	}
 	if (disconnect)
 	{
-		std::cout << "disconnect connected!" << std::endl;
 		resetConnectionServer(client_connection);
 		ft::fdSet(client_connection.get_m_server_fd(), &m_write_set);
 		return (false);
@@ -530,7 +539,6 @@ ProxyBase::runRecvFromClient(Connection& client_connection)
 		connection.set_m_status(Connection::TO_EXECUTE);
         connection.set_m_token_size(-1);
 		connection.set_m_server_fd(m_server_connections.begin()->first);
-		std::cout << "read data:\n" << request.get_m_origin() << std::endl;
 		ft::fdSet(connection.get_m_server_fd(), &m_write_set);
 		ft::fdClr(client_fd, &m_read_set);
 	}
@@ -580,6 +588,10 @@ ProxyBase::connectServer(std::string host, int port)
 	server_connection.status = ProxyBase::WAIT;
 	m_server_connections.insert(std::pair<int, ProxyBase::ServerConnection>(fd, server_connection));
 	writeConnectServerLog(host, port);
+	if (fd > m_max_fd)
+		resetMaxFd(fd);
+	else
+		resetMaxFd();
 	return (fd);
 }
 
@@ -826,4 +838,5 @@ ProxyBase::writeSendResponseLog(const Connection& connection)
 	+ ft::to_string(connection.get_m_client_fd()) + "] Response sended\n";
 	ft::log(ServerManager::proxy_fd, -1, text);
 	return ;
+
 }

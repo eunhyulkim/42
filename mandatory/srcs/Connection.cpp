@@ -215,7 +215,7 @@ Connection::sendFromWbuf(int fd)
 	if (count > BUFFER_SIZE)
 		count = BUFFER_SIZE;
 	count = send(fd, m_wbuf.c_str() + m_send_data_size, count, 0);
-	if (count == -1 && errno == EPIPE)
+	if (count == -1)
 		return (false);
 	m_send_data_size += count;
 	return (true);
