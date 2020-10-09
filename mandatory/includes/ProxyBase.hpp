@@ -95,6 +95,7 @@ class ProxyBase
 		void writeCloseConnectionLog(int client_fd);
 		void writeConnectServerLog(std::string host, int port);
 		void reportConnectServerLog(std::string host, int port);
+		void writeSendRequestLog(const Connection& connection);
 		void writeSendResponseLog(const Connection& connection);
 
 

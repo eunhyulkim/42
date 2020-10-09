@@ -471,6 +471,8 @@ ServerManager::createServer(const std::string& configuration_file_path, char **e
 				+ "-" + ft::to_string(j) + ") is not valid."));
 		}
 		m_servers.push_back(Server(this, server_block, location_blocks, &this->m_config));
+		// for (int i = 0; i < getPortCount(sever_block); ++i)
+		// 	m_servers.push_back(Server(this, convert(server_block, i), location_blocks, &this->m_config));
 		m_server_fdset.insert(m_servers.back().get_m_fd());
 	}
 	writeCreateServerLog();

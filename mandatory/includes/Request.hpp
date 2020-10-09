@@ -79,7 +79,7 @@ public:
 
 	/* setter */
 	void addContent(std::string added_content);
-	void addOrigin(std::string added_origin);
+	void addOrigin(std::string added_origin, bool limit_ignore = false);
 	void addHeader(std::string header);
 	void set_m_method(Method method);
 	void set_m_phase(Phase phase);

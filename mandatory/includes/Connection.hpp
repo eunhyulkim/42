@@ -76,7 +76,7 @@ class Connection
 
 		/* member function */
 		bool isOverTime() const;
-		bool sendFromWbuf();
+		bool sendFromWbuf(int fd);
 		bool isSendCompleted();
 };
 

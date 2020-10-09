@@ -209,12 +209,12 @@ bool Connection::isOverTime() const
 }
 
 bool
-Connection::sendFromWbuf()
+Connection::sendFromWbuf(int fd)
 {
 	int count = m_wbuf_data_size - m_send_data_size;
 	if (count > BUFFER_SIZE)
 		count = BUFFER_SIZE;
-	count = send(m_client_fd, m_wbuf.c_str() + m_send_data_size, count, 0);
+	count = send(fd, m_wbuf.c_str() + m_send_data_size, count, 0);
 	if (count == -1 && errno == EPIPE)
 		return (false);
 	m_send_data_size += count;

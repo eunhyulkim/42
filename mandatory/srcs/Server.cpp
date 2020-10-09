@@ -254,7 +254,7 @@ Server::runSend(Connection& connection)
 		connection.set_m_status(Connection::ON_SEND);
 	}
 
-	connection.sendFromWbuf();
+	connection.sendFromWbuf(connection.get_m_client_fd());
 
 	bool ret = connection.isSendCompleted();
 	if (ret)
@@ -747,6 +747,7 @@ Server::runRecvAndSolve(Connection& connection)
 	const Request& request = connection.get_m_request();
 	if (request.get_m_phase() == Request::COMPLETE)
 	{
+		writeCreateNewRequestLog(request);
 		connection.set_m_status(Connection::ON_EXECUTE);
 		solveRequest(connection, connection.get_m_request());
 		return (true);

@@ -1,0 +1,10 @@
+[Created][ServerConnection][Proxy:FILTER_PROXY][ServerInfo:127.0.0.1:8081] Connection Created.
+[Created][Connection][Proxy:FILTER_PROXY][CFD:9][IP:127.0.0.1][Port:59593] Connection Created.
+
+[2020109_18_28_51][Sended][Request][Proxy:FILTER_PROXY][CFD:9] Request sended
+[2020109_18_28_51][Sended][Response][Proxy:FILTER_PROXY][CFD:9] Response sended
+[2020109_18_28_51][Sended][Request][Proxy:FILTER_PROXY][CFD:9] Request sended
+[2020109_18_28_51][Sended][Response][Proxy:FILTER_PROXY][CFD:9] Response sended
+[Deleted][Connection][Proxy:FILTER_PROXY][CFD:9] Connection closed.
+[Created][Connection][Proxy:FILTER_PROXY][CFD:9][IP:127.0.0.1][Port:60105] Connection Created.
+

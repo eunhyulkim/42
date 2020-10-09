@@ -10,7 +10,12 @@ std::map<int, std::string> Response::status = make_status();
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-Response::Response() {}
+Response::Response()
+{
+	this->m_connection_type = KEEP_ALIVE;
+	this->m_transfer_type = GENERAL;
+	this->m_phase = READY;
+}
 
 Response::Response(Connection* connection, int status_code, std::string body)
 {
@@ -90,7 +95,7 @@ std::string Response::get_m_status_description() const { return (this->m_status_
 const std::map<std::string, std::string>& Response::get_m_headers() const { return (this->m_headers); }
 Response::TransferType Response::get_m_transfer_type() const { return (this->m_transfer_type); }
 std::string Response::get_m_content() const { return (this->m_content); }
-Response::Phase Response::get_m_phase() const { return (m_phase); }
+Response::Phase Response::get_m_phase() const { return (this->m_phase); }
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */

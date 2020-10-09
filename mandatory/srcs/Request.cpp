@@ -318,11 +318,11 @@ void Request::addContent(std::string added_content)
 	m_content.append(added_content);
 }
 
-void Request::addOrigin(std::string added_origin)
+void Request::addOrigin(std::string added_origin, bool limit_ignore)
 {
-	if (m_method != TRACE)
+	if (limit_ignore && m_method != TRACE)
 		return ;
-	if (m_origin.size() + added_origin.size() > m_server->get_m_limit_client_body_size())
+	if (limit_ignore && m_origin.size() + added_origin.size() > m_server->get_m_limit_client_body_size())
 		throw (41302);
 	m_origin.append(added_origin);
 }

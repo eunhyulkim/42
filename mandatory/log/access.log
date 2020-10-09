@@ -1,2 +1,11 @@
 [Created][Servers]1 servers created successfully.
+[Detected][Connection][Server:default][Host:127.0.0.1] New connection detected.
+[Created][Request][Server:default][Method:GET][URI:/][Path:/Users/eunhkim/webserv/mandatory/YoupiBanane/][Query:] New request created.
+[2020109_18_28_51][Created][Response][Server:default][200][OK][CFD:10][headers:4][body:1033] New response created.
+[2020109_18_28_51][Sended][Response][Server:default][200][OK][CFD:10][headers:4][body:1033] Response sended
+[Created][Request][Server:default][Method:POST][URI:/][Path:/Users/eunhkim/webserv/mandatory/YoupiBanane/] New request created.
+[Failed][Request][Server:default][CIP:127.0.0.1][CFD:10][40501][Method Not Allowed] Failed to create new Request.
+[2020109_18_28_51][Created][Response][Server:default][405][Method Not Allowed][CFD:10][headers:5][body:639] New response created.
+[2020109_18_28_51][Sended][Response][Server:default][405][Method Not Allowed][CFD:10][headers:5][body:639] Response sended
+[Deleted][Connection][Server:default][CFD:10] Connection closed.
 signal execute
