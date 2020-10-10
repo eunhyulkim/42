@@ -12,6 +12,7 @@
 # include <dirent.h>
 # include <fcntl.h>
 # include <unistd.h>
+# include <pthread.h> 
 
 # include <cstdlib>
 # include <cstring>
@@ -52,6 +53,11 @@
 # define GENERAL_TRANSFER_BUFFER_SIZE 65536
 
 # define SERVER_HEALTH_LOG_SECOND 5
+
+/// BONUS
+
+# define WORKER_COUNT 5
+
 
 typedef std::vector<std::string> headers_t;
 
