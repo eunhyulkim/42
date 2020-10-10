@@ -1,9 +1,61 @@
 [Created][Servers]1 servers created successfully.
 [Detected][Connection][Server:default][Host:127.0.0.1] New connection detected.
+[Created][Request][Server:default][Method:GET][URI:/][Path:/Users/gim-eunhyul/42seoul/subject/webserv/mandatory/YoupiBanane/][Query:] New request created.
+[20201011_1_29_17][Created][Response][Server:default][200][OK][CFD:9][headers:4][body:1033] New response created.
+[20201011_1_29_17][Sended][Response][Server:default][200][OK][CFD:9][headers:4][body:1033] Response sended
+[Created][Request][Server:default][Method:POST][URI:/][Path:/Users/gim-eunhyul/42seoul/subject/webserv/mandatory/YoupiBanane/] New request created.
+[Failed][Request][Server:default][CIP:127.0.0.1][CFD:9][40501][Method Not Allowed] Failed to create new Request.
+[20201011_1_29_17][Created][Response][Server:default][405][Method Not Allowed][CFD:9][headers:5][body:639] New response created.
+[20201011_1_29_17][Sended][Response][Server:default][405][Method Not Allowed][CFD:9][headers:5][body:639] Response sended
+[Deleted][Connection][Server:default][CFD:9] Connection closed.
 [Detected][Connection][Server:default][Host:127.0.0.1] New connection detected.
-[Created][Request][Server:default][Method:GET][URI:/][Path:/Users/eunhkim/webserv/mandatory/YoupiBanane/][Query:] New request created.
-[2020109_21_40_58][Created][Response][Server:default][200][OK][CFD:18][headers:4][body:1033] New response created.
-[2020109_21_40_58][Sended][Response][Server:default][200][OK][CFD:18][headers:4][body:1033] Response sended
-[HealthCheck][Server][Max_fd:18][Connection:9,10,18][Response:]
-[HealthCheck][Server][Max_fd:18][Connection:9,10,18][Response:]
+[Created][Request][Server:default][Method:HEAD][URI:/][Path:/Users/gim-eunhyul/42seoul/subject/webserv/mandatory/YoupiBanane/] New request created.
+[Failed][Request][Server:default][CIP:127.0.0.1][CFD:9][40501][Method Not Allowed] Failed to create new Request.
+[20201011_1_29_17][Created][Response][Server:default][405][Method Not Allowed][CFD:9][headers:5][body:0] New response created.
+[20201011_1_29_17][Sended][Response][Server:default][405][Method Not Allowed][CFD:9][headers:5][body:0] Response sended
+[Deleted][Connection][Server:default][CFD:9] Connection closed.
+[Detected][Connection][Server:default][Host:127.0.0.1] New connection detected.
+[Created][Request][Server:default][Method:GET][URI:youpi.bad_extension][Path:/Users/gim-eunhyul/42seoul/subject/webserv/mandatory/YoupiBanane][Query:] New request created.
+[20201011_1_29_17][Created][Response][Server:default][200][OK][CFD:9][headers:4][body:13] New response created.
+[20201011_1_29_17][Sended][Response][Server:default][200][OK][CFD:9][headers:4][body:13] Response sended
+[Created][Request][Server:default][Method:GET][URI:/directory/youpi.bad_extension][Path:/Users/gim-eunhyul/42seoul/subject/webserv/mandatory/YoupiBanane/youpi.bad_extension][Query:] New request created.
+[20201011_1_29_17][Created][Response][Server:default][200][OK][CFD:9][headers:5][body:13] New response created.
+[20201011_1_29_17][Sended][Response][Server:default][200][OK][CFD:9][headers:5][body:13] Response sended
+[Created][Request][Server:default][Method:GET][URI:/directory/youpi.bla][Path:/Users/gim-eunhyul/42seoul/subject/webserv/mandatory/YoupiBanane/youpi.bla][Query:] New request created.
+[20201011_1_29_18][Created][Response][Server:default][200][OK][CFD:9][headers:4][body:0] New response created.
+[20201011_1_29_18][Sended][Response][Server:default][200][OK][CFD:9][headers:4][body:0] Response sended
+[Failed][Request][Server:default][CIP:127.0.0.1][CFD:9][40402][Not Found: Requested uri is not in server] Failed to create new Request.
+[20201011_1_29_18][Created][Response][Server:default][404][Not Found][CFD:9][headers:4][body:621] New response created.
+[20201011_1_29_18][Sended][Response][Server:default][404][Not Found][CFD:9][headers:4][body:621] Response sended
+[Deleted][Connection][Server:default][CFD:9] Connection closed.
+[Detected][Connection][Server:default][Host:127.0.0.1] New connection detected.
+[Created][Request][Server:default][Method:GET][URI:youpi.bad_extension][Path:/Users/gim-eunhyul/42seoul/subject/webserv/mandatory/YoupiBanane/nop][Query:] New request created.
+[20201011_1_29_18][Created][Response][Server:default][200][OK][CFD:9][headers:4][body:20] New response created.
+[20201011_1_29_18][Sended][Response][Server:default][200][OK][CFD:9][headers:4][body:20] Response sended
+[Created][Request][Server:default][Method:GET][URI:youpi.bad_extension][Path:/Users/gim-eunhyul/42seoul/subject/webserv/mandatory/YoupiBanane/nop/][Query:] New request created.
+[20201011_1_29_18][Created][Response][Server:default][200][OK][CFD:9][headers:4][body:20] New response created.
+[20201011_1_29_18][Sended][Response][Server:default][200][OK][CFD:9][headers:4][body:20] Response sended
+[Created][Request][Server:default][Method:GET][URI:/directory/nop/other.pouic][Path:/Users/gim-eunhyul/42seoul/subject/webserv/mandatory/YoupiBanane/nop/other.pouic][Query:] New request created.
+[20201011_1_29_18][Created][Response][Server:default][200][OK][CFD:9][headers:4][body:0] New response created.
+[20201011_1_29_18][Sended][Response][Server:default][200][OK][CFD:9][headers:4][body:0] Response sended
+[Failed][Request][Server:default][CIP:127.0.0.1][CFD:9][40402][Not Found: Requested uri is not in server] Failed to create new Request.
+[20201011_1_29_18][Created][Response][Server:default][404][Not Found][CFD:9][headers:4][body:621] New response created.
+[20201011_1_29_18][Sended][Response][Server:default][404][Not Found][CFD:9][headers:4][body:621] Response sended
+[Deleted][Connection][Server:default][CFD:9] Connection closed.
+[Detected][Connection][Server:default][Host:127.0.0.1] New connection detected.
+[Created][Request][Server:default][Method:GET][URI:][Path:/Users/gim-eunhyul/42seoul/subject/webserv/mandatory/YoupiBanane/Yeah][Query:] New request created.
+[Failed][Request][Server:default][CIP:127.0.0.1][CFD:9][40403][Not Found: Autoindex off, index file is not found] Failed to create new Request.
+[20201011_1_29_18][Created][Response][Server:default][404][Not Found][CFD:9][headers:4][body:621] New response created.
+[20201011_1_29_18][Sended][Response][Server:default][404][Not Found][CFD:9][headers:4][body:621] Response sended
+[Deleted][Connection][Server:default][CFD:9] Connection closed.
+[Detected][Connection][Server:default][Host:127.0.0.1] New connection detected.
+[Created][Request][Server:default][Method:GET][URI:/directory/Yeah/not_happy.bad_extension][Path:/Users/gim-eunhyul/42seoul/subject/webserv/mandatory/YoupiBanane/Yeah/not_happy.bad_extension][Query:] New request created.
+[20201011_1_29_18][Created][Response][Server:default][200][OK][CFD:9][headers:4][body:0] New response created.
+[20201011_1_29_18][Sended][Response][Server:default][200][OK][CFD:9][headers:4][body:0] Response sended
+[Created][Request][Server:default][Method:PUT][URI:/put_test/file_should_exist_after][Path:/Users/gim-eunhyul/42seoul/subject/webserv/mandatory/YoupiBanane/file_should_exist_after] New request created.
+[20201011_1_29_18][Created][Response][Server:default][204][No Content][CFD:9][headers:3][body:0] New response created.
+[20201011_1_29_18][Sended][Response][Server:default][204][No Content][CFD:9][headers:3][body:0] Response sended
+[Created][Request][Server:default][Method:PUT][URI:/put_test/file_should_exist_after][Path:/Users/gim-eunhyul/42seoul/subject/webserv/mandatory/YoupiBanane/file_should_exist_after] New request created.
+[20201011_1_29_29][Created][Response][Server:default][204][No Content][CFD:9][headers:3][body:0] New response created.
+[20201011_1_29_29][Sended][Response][Server:default][204][No Content][CFD:9][headers:3][body:0] Response sended
 signal execute

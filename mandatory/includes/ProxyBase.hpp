@@ -35,6 +35,8 @@ class ProxyBase
 	private:
 		/* util function */
 		void resetConnectionServer(Connection& client_connection);
+		void resetConnectionsFd(int from_fd, int to_fd);
+
 
 		/* send operation */
 		bool hasSendWorkToClient(Connection& client_connection);
@@ -52,10 +54,10 @@ class ProxyBase
 		int connectServer(std::string host, int port);
 		bool hasNewConnection();
 		int getUnusedConnectionFd();
-		void closeConnection(int client_fd);
+		void closeClientConnection(int client_fd);
 		bool acceptNewConnection();
 		void closeOldConnection();
-		void resetMaxFd(int new_max_fd = -1);
+		void resetMaxFd();
 
 		/* proxy action */
 		virtual void runProxyAction();

@@ -1,6 +1,13 @@
 #include "ProxyBase.hpp"
 #include "ServerManager.hpp"
 
+timeval g_now;
+
+namespace {
+	void timeflag(std::string flag) {
+		ft::log(ServerManager::proxy_fd, -1, flag + ": " + ft::getSpeed(g_now) + "\n");
+	}
+}
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
 /* ************************************************************************** */
@@ -61,8 +68,6 @@ ProxyBase::ProxyBase(ServerManager* server_manager, const std::string& proxy_blo
 	if (fcntl(m_fd, F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("FCNTL ERROR");
 	ft::fdSet(m_fd, &m_read_set);
-	if (m_max_fd < m_fd)
-		m_max_fd = m_fd;
 }
 
 ProxyBase::ProxyBase(const ProxyBase& copy)
@@ -189,7 +194,7 @@ namespace
 		return (method == Request::POST || method == Request::PUT || method == Request::TRACE);
 	}
 
-	bool
+	int
 	getContentLengthValue(const std::string& requestString, size_t length_header_idx)
 	{
 		while (requestString[length_header_idx] != ':')
@@ -204,14 +209,17 @@ namespace
 	bool
 	isTraceHasBody(const std::string& requestString)
 	{
+		size_t header_end_ldx = requestString.find("\r\n\r\n");
+
 		size_t length_header_idx = requestString.find("Content-Length");
 		if (length_header_idx == std::string::npos)
 			length_header_idx = requestString.find("content-length");
-		size_t encoding_header_idx = requestString.find("chunked");
-		size_t header_end_ldx = requestString.find("\r\n\r\n");
-
 		if (length_header_idx > header_end_ldx)
 			length_header_idx = std::string::npos;
+
+		size_t encoding_header_idx = requestString.find("Chunked");
+		if (encoding_header_idx == std::string::npos)
+			encoding_header_idx = requestString.find("chunked");
 		if (encoding_header_idx > header_end_ldx)
 			encoding_header_idx = std::string::npos;
 
@@ -246,17 +254,22 @@ namespace
                 request.set_m_method(Request::DELETE);
             if (method == "OPTIONS")
                 request.set_m_method(Request::OPTIONS);
-            
 			if (!isMethodHasBody(request.get_m_method()))
                 connection.set_m_token_size(0);
             else if (request.get_m_method() == Request::TRACE && !isTraceHasBody(requestString))
                 connection.set_m_token_size(0);
             else if ((((length_header_idx = requestString.find("Content-Length")) != std::string::npos)
-            || (length_header_idx = requestString.find("content-length")) != std::string::npos) && length_header_idx < header_end_idx)
+            || (length_header_idx = requestString.find("content-length")) != std::string::npos)
+			&& length_header_idx < header_end_idx)
+			{
                 connection.set_m_token_size(getContentLengthValue(requestString, length_header_idx));				
-            else if ((encoding_header_idx = requestString.find("chunked")) != std::string::npos
-            && encoding_header_idx < header_end_idx)
+			}
+            else if (((encoding_header_idx = requestString.find("Chunked")) != std::string::npos ||
+			(encoding_header_idx = requestString.find("chunked")) != std::string::npos)
+			&& encoding_header_idx < header_end_idx)
+			{
                 request.set_m_transfer_type(Request::CHUNKED);
+			}
             else
                 connection.set_m_token_size(0);
             return (true);
@@ -274,7 +287,7 @@ namespace
 
         if (!isMethodHasBody(method))
 		{
-			connection.set_m_token_size(connection.get_m_rbuf_from_client().size());
+			connection.set_m_token_size(requestString.size());
             return (true);
 		}
         if (request.get_m_transfer_type() == Request::GENERAL)
@@ -284,13 +297,20 @@ namespace
             else if (requestString.size() >= header_end_idx + 4 + token_size)
                 connection.set_m_token_size(header_end_idx + 4 + token_size);
             else
-                return (false);			
+                return (false);	
             return (true);
         }
         body_end_idx = requestString.find("0\r\n\r\n");
         if (body_end_idx == std::string::npos)
+		{
+			int count = requestString.size() - 5;
+			count = (count <= 0) ? 0 : count;
+			request.addOrigin(requestString.substr(0, count));
+			connection.decreaseRbufFromClient(count);
             return (false);
-        connection.set_m_token_size(body_end_idx + 5);
+		}
+		request.addOrigin(requestString.substr(0, body_end_idx + 5));
+		connection.decreaseRbufFromClient(body_end_idx + 5);
         return (true);
     }
 
@@ -303,14 +323,16 @@ namespace
 
         if ((header_end_idx = responseString.find("\r\n\r\n")) != std::string::npos)
         {
-            if ((length_header_idx = responseString.find("Content-Length")) != std::string::npos)
+            if ((length_header_idx = responseString.find("Content-Length")) != std::string::npos
+			|| (length_header_idx = responseString.find("content-length")) != std::string::npos)
 			{
 				if (connection.get_m_request().get_m_method() != Request::HEAD)
                 	connection.set_m_token_size(getContentLengthValue(responseString, length_header_idx));				
 				else
 					connection.set_m_token_size(0);
 			}
-            else if ((encoding_header_idx = responseString.find("chunked")) != std::string::npos)
+            else if ((encoding_header_idx = responseString.find("Chunked")) != std::string::npos
+			|| (encoding_header_idx = responseString.find("chunked")) != std::string::npos)
                 response.set_m_transfer_type(Response::CHUNKED);
             else
                 connection.set_m_token_size(0);
@@ -342,6 +364,18 @@ namespace
 }
 
 void
+ProxyBase::resetConnectionsFd(int from_fd, int to_fd)
+{
+	std::map<int, Connection>::iterator it = m_client_connections.begin();
+	for (; it != m_client_connections.end(); ++it)
+	{
+		if (it->second.get_m_server_fd() == from_fd)
+			it->second.set_m_server_fd(to_fd);
+	}
+	return ;
+}
+
+void
 ProxyBase::resetConnectionServer(Connection& client_connection)
 {
 	Connection& connection = client_connection;
@@ -352,7 +386,9 @@ ProxyBase::resetConnectionServer(Connection& client_connection)
 	ft::fdClr(server_fd, &m_write_set);
 	ft::fdClr(server_fd, &m_read_set);
 	close(server_fd);
+	m_server_connections.erase(server_fd);
 	connection.set_m_server_fd(connectServer(host, port));
+	resetConnectionsFd(server_fd, connection.get_m_server_fd());
 }
 
 /* ************************************************************************** */
@@ -379,6 +415,7 @@ ProxyBase::runSendToClient(Connection& client_connection)
 
 	if (status == Connection::TO_SEND)
 	{
+		timeflag("5. Start Send To Client");
 		Response& response = const_cast<Response&>(connection.get_m_response());
 		response.set_m_status_code(parseStatusCode(connection.get_m_rbuf_from_server()));
 		connection.set_m_wbuf_for_send(connection.get_m_rbuf_from_server());
@@ -388,7 +425,7 @@ ProxyBase::runSendToClient(Connection& client_connection)
 
 	if (!ft::fdIsset(client_fd, &m_write_set) || !connection.sendFromWbuf(client_fd))
 	{
-		closeConnection(client_fd);
+		closeClientConnection(client_fd);
 		return (false);
 	}
 
@@ -401,13 +438,14 @@ ProxyBase::runSendToClient(Connection& client_connection)
 		if (connection.get_m_response().get_m_status_code() / 100 != 2)
 		{
 			resetConnectionServer(connection);
-			closeConnection(client_fd);
+			closeClientConnection(client_fd);
 		}
 		else
 		{
 			ft::fdSet(client_fd, &m_read_set);
 			connection.clear();
 		}
+		timeflag("6. End Send To Client");
 	}
 	return (ret);
 }
@@ -438,15 +476,15 @@ ProxyBase::runSendToServer(Connection& client_connection)
 
 	if (status == Connection::TO_EXECUTE || (disconnect = !connection.sendFromWbuf(server_fd)))
 	{
+		timeflag("2. Start Send To Server");
 		connection.set_m_wbuf_for_send(connection.get_m_request().get_m_origin());
-		std::cout << connection.get_m_wbuf() << std::endl;
 		connection.set_m_status(Connection::ON_EXECUTE);
 		m_server_connections[server_fd].status = RUN;
 	}
 	if (disconnect)
 	{
-		resetConnectionServer(client_connection);
-		ft::fdSet(client_connection.get_m_server_fd(), &m_write_set);
+		resetConnectionServer(connection);
+		ft::fdSet(connection.get_m_server_fd(), &m_write_set);
 		return (false);
 	}
 
@@ -456,6 +494,7 @@ ProxyBase::runSendToServer(Connection& client_connection)
 		ft::fdClr(server_fd, &m_write_set);
 		ft::fdSet(server_fd, &m_read_set);
 		writeSendRequestLog(connection);
+		timeflag("3. End Send To Server");
 	}
 	return (ret);
 }
@@ -469,8 +508,6 @@ ProxyBase::hasRecvWorkFromServer(Connection& client_connection)
 {
 	Connection::Status client_status = client_connection.get_m_status();
 	int server_fd = client_connection.get_m_server_fd();
-	if (server_fd == -1)
-		return (false);
 
 	if (client_status != Connection::ON_EXECUTE || server_fd == -1)
 		return (false);
@@ -499,6 +536,7 @@ ProxyBase::runRecvFromServer(Connection& client_connection)
 		m_server_connections[server_fd].status = WAIT;
 		ft::fdClr(server_fd, &m_read_set);
 		ft::fdSet(client_connection.get_m_client_fd(), &m_write_set);
+		timeflag("4. End Recv From Server");
 	}
 	response.set_m_phase(phase);
     return (phase == Response::COMPLETE);
@@ -525,6 +563,11 @@ ProxyBase::runRecvFromClient(Connection& client_connection)
 	char buff[BUFFER_SIZE];
 	int count;
 
+	if (connection.get_m_status() == Connection::ON_WAIT)
+	{
+		gettimeofday(&g_now, NULL);
+		timeflag("1. Start Recv From Client");
+	}
 	connection.set_m_status(Connection::ON_RECV);
 	if (hasRecvWorkFromClient(client_connection) && (count = recv(client_fd, buff, sizeof(buff), 0)) > 0)
 		connection.addRbufFromClient(buff, count);
@@ -534,8 +577,11 @@ ProxyBase::runRecvFromClient(Connection& client_connection)
 		phase = Request::COMPLETE;
 	if (phase == Request::COMPLETE)
 	{
-		request.addOrigin(connection.get_m_rbuf_from_client().substr(0, connection.get_m_token_size()));
-		connection.decreaseRbufFromClient(connection.get_m_token_size());
+		if (!isMethodHasBody(request.get_m_method()) || request.get_m_transfer_type() == Request::GENERAL)
+		{
+			request.addOrigin(connection.get_m_rbuf_from_client().substr(0, connection.get_m_token_size()));
+			connection.decreaseRbufFromClient(request.get_m_origin().size());
+		}
 		connection.set_m_status(Connection::TO_EXECUTE);
         connection.set_m_token_size(-1);
 		connection.set_m_server_fd(m_server_connections.begin()->first);
@@ -588,16 +634,11 @@ ProxyBase::connectServer(std::string host, int port)
 	server_connection.status = ProxyBase::WAIT;
 	m_server_connections.insert(std::pair<int, ProxyBase::ServerConnection>(fd, server_connection));
 	writeConnectServerLog(host, port);
-	if (fd > m_max_fd)
-		resetMaxFd(fd);
-	else
-		resetMaxFd();
 	return (fd);
 }
 
 bool
-ProxyBase::hasNewConnection()
-{
+ProxyBase::hasNewConnection() {
 	return (ft::fdIsset(m_fd, &m_read_copy_set));
 }
 
@@ -613,7 +654,7 @@ ProxyBase::getUnusedConnectionFd()
 }
 
 void
-ProxyBase::closeConnection(int fd)
+ProxyBase::closeClientConnection(int fd)
 {
 	writeCloseConnectionLog(fd);
 	if (close(fd) == -1)
@@ -622,8 +663,6 @@ ProxyBase::closeConnection(int fd)
 	ft::fdClr(fd, &m_read_set);
 	ft::fdClr(fd, &m_write_set);
 	m_client_connections.erase(fd);
-	if (m_max_fd == fd)
-		resetMaxFd();
 }
 
 bool
@@ -641,8 +680,6 @@ ProxyBase::acceptNewConnection()
 		ft::log(ServerManager::proxy_fd, -1, "[Failed][Function]failed to cerate client_fd by accept function");
 		return (false);
 	}
-	if (m_max_fd < client_fd)
-		m_max_fd = client_fd;
 	if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1)
 		return (false);
 	client_ip = ft::inet_ntoa(client_addr.sin_addr.s_addr);
@@ -654,35 +691,14 @@ ProxyBase::acceptNewConnection()
 }
 
 void
-ProxyBase::closeOldConnection()
+ProxyBase::resetMaxFd()
 {
-	std::map<int, Connection>::const_iterator it = m_client_connections.begin();
-	while (it != m_client_connections.end())
+	for (int fd = 1024; fd >= 0; --fd)
 	{
-		int fd = it->first;
-		if (!ft::hasKey(m_client_connections, fd) && it->second.isOverTime())
+		if (ft::fdIsset(fd, &m_read_set) || ft::fdIsset(fd, &m_write_set))
 		{
-			++it;
-			closeConnection(fd);
-		} else
-			++it;
-	}
-}	
-
-void
-ProxyBase::resetMaxFd(int new_max_fd)
-{
-	if (new_max_fd != -1)
-		set_m_max_fd(new_max_fd);
-	else
-	{
-		for (int i = m_max_fd; i >= 0; --i)
-		{
-			if (ft::fdIsset(i, &m_read_set) || ft::fdIsset(i, &m_read_set))
-			{
-				m_max_fd = i;
-				break ;
-			}
+			m_max_fd = fd;
+			break ;
 		}
 	}
 }
@@ -722,7 +738,7 @@ ProxyBase::run()
 			int fd = getUnusedConnectionFd();
 			if (fd == -1)
 				return ;
-			closeConnection(fd);
+			closeClientConnection(fd);
 		}
 		if (!acceptNewConnection())
 			reportCreateNewConnectionLog();
@@ -742,6 +758,7 @@ ProxyBase::runProxy()
 		m_write_copy_set = m_write_set;
 		int cnt;
 
+		resetMaxFd();
 		if ((cnt = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, \
 		NULL, &timeout)) == -1)
 		{
@@ -752,7 +769,6 @@ ProxyBase::runProxy()
 			continue ;
 		writeProxyHealthLog();
 		run();
-		closeOldConnection();
 	}
 }
 

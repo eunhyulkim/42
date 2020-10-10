@@ -577,6 +577,20 @@ namespace {
 		return (method == Request::POST || method == Request::PUT || method == Request::TRACE);
 	}
 
+	bool
+	isRequestHasBody(Request &request)
+	{
+		if (isMethodHasBody(request.get_m_method()))
+		{
+			if (request.get_m_transfer_type() == Request::CHUNKED)
+				return (true);
+			if (ft::hasKey(request.get_m_headers(), "Content-Length")
+				&& ft::stoi(request.get_m_headers().find("Content-Length")->second) > 0)
+					return (true);
+		}
+		return (false);
+	}
+
 	int
 	recvWithoutBody(const Connection& connection, char*buf, int buf_size)
 	{
@@ -719,7 +733,7 @@ Server::recvRequest(Connection& connection, const Request& const_request)
 	if (phase == Request::ON_HEADER && parseHeader(connection, request))
 	{
 		request.set_m_phase(phase = Request::ON_BODY);
-		if (isMethodHasBody(request.get_m_method()))
+		if (isRequestHasBody(request))
 			return ;
 	}
 	if (phase == Request::ON_BODY && (count = recvBody(connection, buf, sizeof(buf))) > 0)
@@ -1287,7 +1301,7 @@ Server::executeCGI(Connection& connection, const Request& request)
 	m_manager->fdSet(connection.get_m_read_from_server_fd(), ServerManager::READ_SET);
 	m_manager->resetMaxFd(std::max(parent_write_fd[1], child_write_fd[0]));
 	ft::freeDoublestr(&env);
-	usleep(100000);
+	usleep(200000);
 }
 
 namespace {
