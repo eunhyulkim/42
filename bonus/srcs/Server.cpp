@@ -302,7 +302,7 @@ Server::runSend(Connection& connection, Worker *worker, bool& connect)
 /* ---------------------------- EXECUTE OPERATION --------------------------- */
 /* ************************************************************************** */
 
-namespace {	
+namespace {
 	int
 	getChunkedSize(std::string& buf, std::string& len)
 	{
@@ -520,7 +520,7 @@ Server::acceptNewConnection()
 	int 				client_fd;
 	std::string			client_ip;
 	Job 				ret;
-	
+
 	ret.client_fd = -1;
 	ft::bzero(&client_addr, client_addr_size);
 
@@ -534,6 +534,7 @@ Server::acceptNewConnection()
 	ret.client_fd = client_fd;
 	ret.ip = ft::inet_ntoa(client_addr.sin_addr.s_addr);
 	ret.port = static_cast<int>(client_addr.sin_port);
+	// m_connections[client_fd] = Connection(client_fd, ret.ip, ret.port);
 	return (ret);
 }
 
@@ -636,7 +637,7 @@ namespace {
 		else
 			return (-1);
 	}
-	
+
 	int
 	recvBody(const Connection& connection, char*buf, int buf_size)
 	{
@@ -647,7 +648,7 @@ namespace {
 			return (0);
 		if (!isMethodHasBody(request.get_m_method()))
 			return (0);
-	
+
 		if ((count = recv(connection.get_m_client_fd(), buf, buf_size, MSG_PEEK)) > 0)
 		{
 			recv(connection.get_m_client_fd(), buf, count, 0);
@@ -656,7 +657,7 @@ namespace {
 		else
 			return (-1);
 	}
-	
+
 	bool
 	readGeneralBody(Connection& connection, Request& request)
 	{
@@ -882,7 +883,9 @@ Server::run()
 		if ((new_job = acceptNewConnection()).client_fd == -1)
 			reportCreateNewConnectionLog();
 		else
+		{
 			m_job_queue.push(new_job);
+		}
 	}
 }
 
@@ -904,14 +907,14 @@ Server::work(int client_fd, Worker *worker)
 	(void)client_fd;
 	Connection& connection = const_cast<Connection&>(worker->get_m_connection());
 	bool connect = true;
-	
+
 	if (hasSendWork(connection, worker) && !runSend(connection, worker, connect))
 		return (connect);
 	if (hasExecuteWork(connection, worker))
 	{
 		if (runExecute(connection, worker, connect))
 			return (connect);
-	} 
+	}
 	if (hasRequest(connection, worker) || !connection.get_m_rbuf_from_client().empty())
 		runRecvAndSolve(connection, worker);
 	return (connect);

@@ -12,7 +12,7 @@
 # include <dirent.h>
 # include <fcntl.h>
 # include <unistd.h>
-# include <pthread.h> 
+# include <pthread.h>
 
 # include <cstdlib>
 # include <cstring>
@@ -56,7 +56,7 @@
 
 /// BONUS
 
-# define WORKER_COUNT 3
+# define WORKER_COUNT 1
 
 
 typedef std::vector<std::string> headers_t;

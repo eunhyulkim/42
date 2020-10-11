@@ -246,8 +246,11 @@ Request &Request::operator=(const Request &x)
 	m_method = x.m_method;
 	m_uri = x.m_uri;
 	m_uri_type = x.m_uri_type;
+	std::cout << "1111" << std::endl;
 	m_protocol = x.m_protocol;
+	std::cout << "222" << std::endl;
 	m_headers = x.m_headers;
+	std::cout << "333" << std::endl;
 	m_transfer_type = x.m_transfer_type;
 	m_content = x.m_content;
 	m_query = x.m_query;

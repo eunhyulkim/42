@@ -70,7 +70,7 @@ class Worker
 		void run();
 		void exit();
 		bool runServer();
-		void createConnection();
+		void createConnection(Job& job);
 		void clearConnection();
 };
 

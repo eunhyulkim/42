@@ -168,7 +168,7 @@ void *worker_routine(void *parameter)
 		job_queue.pop();
 		pthread_mutex_unlock(job_mutex);
 		worker->set_m_client_fd(param->job.client_fd);
-		worker->createConnection();
+		worker->createConnection(param->job);
 		workWithConnection(param);
 	}
 	exit(EXIT_SUCCESS);
@@ -191,8 +191,8 @@ void Worker::exit() {
 	pthread_join(m_phtread, NULL);
 }
 
-void Worker::createConnection() {
-	m_connection = Connection(m_param.job.client_fd, m_param.job.ip, m_param.job.port);
+void Worker::createConnection(Job& job) {
+	m_connection = Connection(job.client_fd, job.ip, job.port);
 }
 
 void Worker::clearConnection() {
