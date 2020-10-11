@@ -27,9 +27,19 @@ Worker::Worker(ServerManager* server_manager, Server* server, pthread_mutex_t* j
 	m_client_fd = -1;
 }
 
-Worker::Worker(const Worker&)
+Worker::Worker(const Worker& copy)
 {
-	/* copy-constructor code */
+	m_param.manager = copy.m_param.manager;
+	m_server = m_param.server = copy.m_param.server;
+	m_worker = m_param.worker = copy.m_param.worker;
+	m_job_mutex = m_param.job_mutex = copy.m_param.job_mutex;
+	m_uri_mutex = m_param.uri_mutex = copy.m_param.uri_mutex;
+	m_work_status = copy.m_work_status;
+	m_fdset.read_set = copy.m_fdset.read_set;
+	m_fdset.read_copy_set = copy.m_fdset.read_copy_set;
+	m_fdset.write_set = copy.m_fdset.write_set;
+	m_fdset.write_copy_set = copy.m_fdset.write_copy_set;
+	m_client_fd = copy.m_client_fd;
 }
 
 /* ************************************************************************** */
@@ -49,7 +59,17 @@ Worker& Worker::operator=(const Worker& obj)
 {
 	if (this == &obj)
 		return (*this);
-	/* overload= code */
+	m_param.manager = obj.m_param.manager;
+	m_server = m_param.server = obj.m_param.server;
+	m_worker = m_param.worker = obj.m_param.worker;
+	m_job_mutex = m_param.job_mutex = obj.m_param.job_mutex;
+	m_uri_mutex = m_param.uri_mutex = obj.m_param.uri_mutex;
+	m_work_status = obj.m_work_status;
+	m_fdset.read_set = obj.m_fdset.read_set;
+	m_fdset.read_copy_set = obj.m_fdset.read_copy_set;
+	m_fdset.write_set = obj.m_fdset.write_set;
+	m_fdset.write_copy_set = obj.m_fdset.write_copy_set;
+	m_client_fd = obj.m_client_fd;
 	return (*this);
 }
 
@@ -135,6 +155,7 @@ void *worker_routine(void *parameter)
 	pthread_mutex_t* job_mutex = param->job_mutex;
 	std::queue<Job>& job_queue = const_cast<std::queue<Job>& >(server->get_m_job_queue());
 
+	printf("job mutex: %p\n", job_mutex);
 	while (server->get_m_server_live())
 	{
 		pthread_mutex_lock(job_mutex);

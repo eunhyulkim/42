@@ -104,11 +104,13 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 		block = block.substr(block.find('\n') + 1);
 		m_locations.push_back(Location(uri, block, m_limit_client_body_size));
 	}
+	m_server_live = true;
 	pthread_mutex_init(&m_job_mutex, NULL);
 }
 
 Server::Server(const Server& copy)
 {
+	std::cout << "COPY" << std::endl;
 	m_manager = copy.m_manager;
 	m_server_name = copy.m_server_name;
 	m_host = copy.m_host;
@@ -122,6 +124,11 @@ Server::Server(const Server& copy)
 	m_locations = copy.m_locations;
 	m_connections = copy.m_connections;
 	m_responses = copy.m_responses;
+	m_server_live = copy.m_server_live;
+	m_job_queue = copy.m_job_queue;
+	m_job_mutex = copy.m_job_mutex;
+	m_uri_mutex = copy.m_uri_mutex;
+	m_workers = copy.m_workers;
 }
 
 /* ************************************************************************** */
@@ -151,7 +158,12 @@ Server& Server::operator=(const Server& obj)
 	m_locations = obj.m_locations;
 	m_connections = obj.m_connections;
 	m_responses = obj.m_responses;
-	/* overload= code */
+	m_server_live = obj.m_server_live;
+	m_job_queue = obj.m_job_queue;
+	m_job_mutex = obj.m_job_mutex;
+	m_uri_mutex = obj.m_uri_mutex;
+	m_workers = obj.m_workers;
+
 	return (*this);
 }
 
@@ -832,8 +844,9 @@ Server::getLastModifiedHeader(std::string path)
 void
 Server::createWorkers(int worker_count)
 {
+	m_workers.reserve(worker_count);
 	for (int i = 0; i < worker_count; ++i)
-		m_workers.push_back(Worker(m_manager, this, &m_job_mutex, &m_uri_mutex));
+		m_workers.__emplace_back(Worker(m_manager, this, &m_job_mutex, &m_uri_mutex));
 }
 
 void
