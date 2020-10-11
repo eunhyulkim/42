@@ -1,9 +1,6 @@
 [Created][Servers]1 servers created successfully.
 [Detected][Connection][Server:default][Host:127.0.0.1] New connection detected.
-[Detected][Connection][Server:default][Host:127.0.0.1] New connection detected.
 [Created][Request][Server:default][Method:GET][URI:/][Path:/Users/eunhkim/webserv/mandatory/YoupiBanane/][Query:] New request created.
-[2020109_21_40_58][Created][Response][Server:default][200][OK][CFD:18][headers:4][body:1033] New response created.
-[2020109_21_40_58][Sended][Response][Server:default][200][OK][CFD:18][headers:4][body:1033] Response sended
-[HealthCheck][Server][Max_fd:18][Connection:9,10,18][Response:]
-[HealthCheck][Server][Max_fd:18][Connection:9,10,18][Response:]
+[20201011_15_17_24][Created][Response][Server:default][200][OK][CFD:10][headers:4][body:1033] New response created.
+[20201011_15_17_24][Sended][Response][Server:default][200][OK][CFD:10][headers:4][body:1033] Response sended
 signal execute

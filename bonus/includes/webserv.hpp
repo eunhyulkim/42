@@ -12,6 +12,7 @@
 # include <dirent.h>
 # include <fcntl.h>
 # include <unistd.h>
+# include <pthread.h> 
 
 # include <cstdlib>
 # include <cstring>
@@ -53,6 +54,18 @@
 
 # define SERVER_HEALTH_LOG_SECOND 5
 
+/// BONUS
+
+# define WORKER_COUNT 3
+
+
 typedef std::vector<std::string> headers_t;
+
+struct Job
+{
+    int client_fd;
+    std::string ip;
+    int port;
+};
 
 #endif
