@@ -181,6 +181,7 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		throw (40402);
 	if ((m_protocol = parsed[2]) != "HTTP/1.1")
 		throw (50501);
+	m_special_header_count = 0;
 }
 
 Request::Request(const Request &x)

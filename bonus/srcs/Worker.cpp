@@ -845,7 +845,7 @@ Worker::executeAutoindex()
 	{
 		HtmlWriter html;
 		makeAutoindexForm(html, request);
-		if (!makeAutoindexContent(html, request.get_m_location()->get_m_root_path()))
+		if (!makeAutoindexContent(html, request.get_m_script_translated()))
 			return (createResponse(connection, 50002));
 		return (createResponse(connection, 200, headers_t(), html.get_m_body()));
 	}
