@@ -23,7 +23,6 @@
 
 Request::Request()
 {
-	m_phase = READY;
 	m_connection = NULL;
 	m_server = NULL;
 	m_location = NULL;
@@ -31,9 +30,18 @@ Request::Request()
 	m_start_at.tv_usec = 0;
 	m_phase = READY;
 	m_method = DEFAULT;
+	m_uri.clear();
 	m_uri_type = FILE;
-	m_speical_header_count = 0;
+	m_protocol.clear();
+	m_headers.clear();
+	m_special_header_count = 0;
 	m_transfer_type = GENERAL;
+	m_content.clear();
+	m_query.clear();
+	m_script_translated.clear();
+	m_path_translated.clear();
+	m_path_info.clear();
+	m_origin.clear();
 }
 
 bool
@@ -181,6 +189,7 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		throw (40402);
 	if ((m_protocol = parsed[2]) != "HTTP/1.1")
 		throw (50501);
+	m_special_header_count = 0;
 }
 
 Request::Request(const Request &x)
@@ -189,18 +198,18 @@ Request::Request(const Request &x)
 	m_server = x.m_server;
 	m_location = x.m_location;
 	m_start_at = x.m_start_at;
-
-	m_method = x.m_method;
 	m_phase = x.m_phase;
+	m_method = x.m_method;
 	m_uri = x.m_uri;
 	m_uri_type = x.m_uri_type;
 	m_protocol = x.m_protocol;
 	m_headers = x.m_headers;
+	m_special_header_count = x.m_special_header_count;
 	m_transfer_type = x.m_transfer_type;
 	m_content = x.m_content;
 	m_query = x.m_query;
-	m_path_translated = x.m_path_translated;
 	m_script_translated = x.m_script_translated;
+	m_path_translated = x.m_path_translated;
 	m_path_info = x.m_path_info;
 	m_origin = x.m_origin;
 }
@@ -214,20 +223,24 @@ Request::~Request()
 	m_connection = NULL;
 	m_server = NULL;
 	m_location = NULL;
-	m_phase = READY;
 	m_start_at.tv_sec = 0;
 	m_start_at.tv_usec = 0;
-
+	m_phase = READY;
+	m_method = DEFAULT;
 	m_uri.clear();
+	m_uri_type = FILE;
 	m_protocol.clear();
 	m_headers.clear();
+	m_special_header_count = 0;
+	m_transfer_type = GENERAL;
 	m_content.clear();
 	m_query.clear();
-	m_path_translated.clear();
 	m_script_translated.clear();
+	m_path_translated.clear();
 	m_path_info.clear();
 	m_origin.clear();
 }
+
 
 /* ************************************************************************** */
 /* -------------------------------- OVERLOAD -------------------------------- */
@@ -246,16 +259,14 @@ Request &Request::operator=(const Request &x)
 	m_method = x.m_method;
 	m_uri = x.m_uri;
 	m_uri_type = x.m_uri_type;
-	std::cout << "1111" << std::endl;
 	m_protocol = x.m_protocol;
-	std::cout << "222" << std::endl;
 	m_headers = x.m_headers;
-	std::cout << "333" << std::endl;
+	m_special_header_count = x.m_special_header_count;
 	m_transfer_type = x.m_transfer_type;
 	m_content = x.m_content;
 	m_query = x.m_query;
-	m_path_translated = x.m_path_translated;
 	m_script_translated = x.m_script_translated;
+	m_path_translated = x.m_path_translated;
 	m_path_info = x.m_path_info;
 	m_origin = x.m_origin;
 
@@ -308,7 +319,7 @@ std::string 			Request::get_m_method_to_string() const
 	return (std::string(""));
 }
 Request::Phase			Request::get_m_phase() const { return (m_phase); }
-int						Request::get_m_special_header_count() const { return (m_speical_header_count); }
+int						Request::get_m_special_header_count() const { return (m_special_header_count); }
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */
@@ -353,14 +364,14 @@ void Request::addHeader(std::string header)
 			throw (40004);
 	}
 	if (key[0] == 'X')
-		++m_speical_header_count;
+		++m_special_header_count;
 	return ;
 }
 
 void Request::set_m_phase(Phase phase) { m_phase = phase; }
 void Request::set_m_method(Method method) { m_method = method; }
 void Request::set_m_transfer_type(TransferType transfer_type) { m_transfer_type = transfer_type; }
-void Request::addSpecialHeaderCount() { ++m_speical_header_count; }
+void Request::addSpecialHeaderCount() { ++m_special_header_count; }
 
 void Request::clear()
 {
@@ -370,7 +381,7 @@ void Request::clear()
 	m_uri_type = FILE;
 	m_protocol.clear();
 	m_headers.clear();
-	m_speical_header_count = 0;
+	m_special_header_count = 0;
 	m_transfer_type = GENERAL;
 	m_content.clear();
 	m_query.clear();
@@ -379,6 +390,7 @@ void Request::clear()
 	m_path_info.clear();
 	m_origin.clear();
 }
+
 /* ************************************************************************** */
 /* ------------------------------- EXCEPTION -------------------------------- */
 /* ************************************************************************** */

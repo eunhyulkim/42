@@ -38,6 +38,7 @@ class ServerManager
 		virtual ~ServerManager();
 
 		/* getter & setter */
+		Config* configClone();
 		const std::vector<Server>& get_m_servers() const;
 		const std::set<int>& get_m_server_fdset() const;
 		Config get_m_config() const;

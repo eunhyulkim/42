@@ -1,6 +1,8 @@
 #include "ServerManager.hpp"
 #include <errno.h>
 
+bool g_live;
+
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
 /* ************************************************************************** */
@@ -85,6 +87,7 @@ const std::vector<Server>& ServerManager::get_m_servers() const { return (this->
 const std::set<int>& ServerManager::get_m_server_fdset() const { return (this->m_server_fdset); }
 Config ServerManager::get_m_config() const { return (this->m_config); }
 int ServerManager::get_m_max_fd() const { return (this->m_max_fd); }
+Config* ServerManager::configClone() { return (m_config.clone()); }
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */
@@ -430,7 +433,7 @@ ServerManager::resetMaxFd(int new_max_fd)
 		set_m_max_fd(new_max_fd);
 	else
 	{
-		for (int i = get_m_max_fd(); i >= 0; --i)
+		for (int i = 1024; i >= 0; --i)
 		{
 			if (fdIsset(i, READ_SET) || fdIsset(i, WRITE_SET))
 			{
@@ -487,14 +490,12 @@ ServerManager::createWorkers(int worker_count)
 		it->createWorkers(worker_count);
 }
 
-bool g_live;
-
 void
 changeSignal(int sig)
 {
 	ft::log(ServerManager::access_fd, -1, "signal execute");
-	(void)sig;
 	g_live = false;
+	(void)sig;
 }
 
 // void
@@ -517,6 +518,7 @@ changeSignal(int sig)
 void
 ServerManager::runServer()
 {
+	g_live = true;
 	signal(SIGINT, changeSignal);
 	runWorkers();
 
@@ -524,11 +526,11 @@ ServerManager::runServer()
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;
 
-	g_live = true;
 	while (g_live)
 	{
 		int cnt;
 		fdCopy(ALL_SET);
+		resetMaxFd();
 
 		if ((cnt = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, \
 		&this->m_error_copy_set, &timeout)) == -1)
@@ -560,9 +562,10 @@ ServerManager::runWorkers()
 void
 ServerManager::exitServer(const std::string& error_msg)
 {
-	std::cout << error_msg << std::endl;
 	close(ServerManager::access_fd);
 	close(ServerManager::error_fd);
+	(void)error_msg;
+	// std::cout << error_msg << std::endl;
 	std::vector<Server>::iterator it = m_servers.begin();
 	for (; it != m_servers.end(); ++it)
 		it->exit();

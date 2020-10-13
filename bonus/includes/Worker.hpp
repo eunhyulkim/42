@@ -4,6 +4,9 @@
 # include <string>
 # include <iostream>
 # include "webserv.hpp"
+# include "Request.hpp"
+# include "Response.hpp"
+# include "Connection.hpp"
 
 class ServerManager;
 class Server;
@@ -21,26 +24,32 @@ class Worker
 			ServerManager *manager;
 			Server *server;
 			Worker *worker;
+			Connection m_connection;
 			pthread_mutex_t *job_mutex;
+			pthread_mutex_t *live_mutex;
 			std::map<std::string, pthread_mutex_t> *uri_mutex;
 			Job job;
 		};
 	private:
-		pthread_t m_phtread;
-		bool m_work_status;
-		Fdset m_fdset;
-
+		static std::map<std::string, std::string> mime_types;
 		threadParam m_param;
 		ServerManager *m_manager;
+		Config *m_config;
 		Server *m_server;
 		Worker *m_worker;
 		Connection m_connection;
 		pthread_mutex_t *m_job_mutex;
+		pthread_mutex_t *m_live_mutex;
 		std::map<std::string, pthread_mutex_t> *m_uri_mutex;
+
+		pthread_t m_pthread;
+		bool m_work_status;
+		Fdset m_fdset;
+		int m_child_pid;
 		int m_client_fd;
 		Worker();
 	public:
-		Worker(ServerManager* server_manager, Server* server, pthread_mutex_t* mutex, std::map<std::string, pthread_mutex_t> *uri_mutex);
+		Worker(ServerManager* server_manager, Server* server, pthread_mutex_t* job_mutex, pthread_mutex_t* live_mutex,std::map<std::string, pthread_mutex_t> *uri_mutex);
 		Worker(const Worker& copy);
 		Worker& operator=(const Worker& obj);
 		virtual ~Worker();
@@ -55,7 +64,6 @@ class Worker
 		bool fdIsset(int fd, SetType fdset);
 		void fdCopy(SetType fdset);
 		int workerSelect();
-		void resetMaxFd(int new_max_fd = -1);
 
 		/* getter */
 		int get_max_fd();
@@ -65,13 +73,46 @@ class Worker
 		void set_m_work_status(bool status);
 		void set_m_client_fd(int fd);
 
+		std::string getExtension(std::string path);
+		std::string getMimeTypeHeader(std::string path);
+		time_t getLastModified(std::string path);
+		std::string getLastModifiedHeader(std::string path);
+
 		/* declare member function */
-		bool isFree() const;
 		void run();
-		void exit();
-		bool runServer();
-		void createConnection(Job& job);
+		void createConnection(Job job);
+		bool runWork();
+		bool hasRequest();
+		bool parseStartLine();
+		bool parseHeader();
+		bool parseBody();
+		void recvRequest();
+		void executeAutoindex();
+		void executeGet();
+		void executeHead();
+		void executeTrace();
+		void executePost();
+		void executeOptions();
+		void executePut();
+		void executeDelete();
+		char** createCGIEnv(const Request& request);
+		void executeCGI();
+		void solveRequest();
+		bool runRecvAndSolve();
+		bool hasSendWork();
+		bool hasExecuteWork();
+		bool runSend(bool& connect);
+		bool runExecute(bool& connect);
+		void createResponse(Connection& connection, int status, headers_t headers = headers_t(), std::string body = "");
+		void createCGIResponse(int& status, headers_t& headers, std::string& body);
+
+
+
+
 		void clearConnection();
+		
+		bool isFree() const;
+		void exit();
 };
 
 /* global operator overload */

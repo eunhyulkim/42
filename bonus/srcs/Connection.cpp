@@ -187,6 +187,7 @@ void Connection::clear()
 	m_wbuf_data_size = 0;
 	m_send_data_size = 0;
 }
+
 void Connection::set_m_worker(Worker *worker) { m_worker = worker; }
 
 /* ************************************************************************** */

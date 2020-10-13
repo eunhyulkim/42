@@ -24,6 +24,8 @@ class Config
 		std::string get_m_http_version() const;
 		std::string get_m_cgi_version() const;
 		char **get_m_base_env() const;
+
+		Config* clone();
 };
 
 /* global operator overload */

@@ -38,7 +38,7 @@ private:
 	URIType m_uri_type;
 	std::string m_protocol;
 	std::map<std::string, std::string> m_headers;
-	int m_speical_header_count;
+	int m_special_header_count;
 	TransferType m_transfer_type;
 	std::string m_content;
 	std::string m_query;

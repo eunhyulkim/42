@@ -83,7 +83,7 @@ std::string Config::get_m_software_version() const { return (this->m_software_ve
 std::string Config::get_m_http_version() const { return (this->m_http_version); }
 std::string Config::get_m_cgi_version() const { return (this->m_cgi_version); }
 char **Config::get_m_base_env() const { return (this->m_base_env); }
-
+Config *Config::clone() { return (new Config(*this)); }
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */
 /* ************************************************************************** */

@@ -31,52 +31,18 @@ class Server
 		std::map<int, Connection> m_connections;
 		std::queue<Response> m_responses;
 		
-		bool m_server_live;
-		std::queue<Job> m_job_queue;
+		bool* m_server_live;
+		std::queue<Job>* m_job_queue;
 		pthread_mutex_t m_job_mutex;
+		pthread_mutex_t m_live_mutex;
 		std::map<std::string, pthread_mutex_t> m_uri_mutex;
-		std::vector<Worker> m_workers;
+		std::vector<Worker *> m_workers;
 	private:
-		/* util */
-		void basic_decode(std::string data, std::string& key, std::string& value);
-
-		/* send operation */
-		bool hasSendWork(Connection& connection, Worker *worker);
-		bool runSend(Connection& connection, Worker *worker, bool& connect);
-		bool hasExecuteWork(Connection& connection, Worker *worker);
-		bool runExecute(Connection& connection, Worker *worker, bool& connect);
-
 		/* connection management */
 		// bool hasException(int client_fd);
-		int getUnuseConnectionFd();
+		// int getUnuseConnectionFd();
 		bool hasNewConnection();
 		Job acceptNewConnection();
-
-		/* read operation */
-		bool hasRequest(Connection& connection, Worker *worker);
-
-		void revertStdInOut();
-		void createCGIResponse(int& status, headers_t& headers, std::string& body);
-		bool parseStartLine(Connection& connection, Request& request);
-		bool parseHeader(Connection& connection, Request& request);
-
-		bool parseBody(Connection& connection, Request& request);
-
-		int getHeaderLine(int client_fd, std::string& line);
-		void headerParsing(Request &request, std::string& origin_message, int client_fd);
-		std::string readBodyMessage(Request &request, std::string& origin_message, int client_fd);
-		void recvRequest(Connection& connection, const Request& request, Worker* worker);
-		bool runRecvAndSolve(Connection& connection, Worker* worker);
-
-		/* cgi */
-		char** createCGIEnv(const Request& request);
-
-		/* create response */
-		std::string getExtension(std::string path);
-		std::string getMimeTypeHeader(std::string path);
-		time_t getLastModified(std::string path);
-		std::string getLastModifiedHeader(std::string path);
-
 	public:
 		Server();
 		Server(ServerManager* server_manager, const std::string& server_block, std::vector<std::string>& location_blocks, Config* config);
@@ -98,9 +64,9 @@ class Server
 		const std::map<int, Connection>& get_m_connections() const;
 		const std::queue<Response>& get_m_responses() const;
 		int getFreeWorkerCount() const;
-		
 		bool get_m_server_live() const;
-		const std::queue<Job>& get_m_job_queue() const;
+		std::queue<Job>* get_m_job_queue() const;
+		Server *clone();
 
 		/* declare member function */
 		void createWorkers(int worker_count);
@@ -109,21 +75,6 @@ class Server
 		void run();
 		bool work(int client_fd, Worker *worker);
 		void exit();
-
-		void closeConnection(int client_fd, Worker *worker);
-
-		void solveRequest(Connection& connection, const Request& request, Worker* worker);
-		void executeAutoindex(Connection& connection, const Request& request);
-		void executeGet(Connection& connection, const Request& request);
-		void executeHead(Connection& connection, const Request& request);
-		void executePost(Connection& connection, const Request& request);
-		void executePut(Connection& connection, const Request& request);
-		void executeDelete(Connection& connection, const Request& request);
-		void executeOptions(Connection& connection, const Request& request);
-		void executeTrace(Connection& connection, const Request& request);
-		void executeCGI(Connection& connection, const Request& request, Worker *worker);
-
-		void createResponse(Connection& connection, int status, headers_t headers = headers_t(), std::string body = "");
 
 		/* log function */
 		void writeDetectNewConnectionLog();
