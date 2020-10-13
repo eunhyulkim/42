@@ -32,7 +32,7 @@ Request::Request()
 	m_phase = READY;
 	m_method = DEFAULT;
 	m_uri_type = FILE;
-	m_speical_header_count = 0;
+	m_special_header_count = 0;
 	m_transfer_type = GENERAL;
 }
 
@@ -305,7 +305,7 @@ std::string 			Request::get_m_method_to_string() const
 	return (std::string(""));
 }
 Request::Phase			Request::get_m_phase() const { return (m_phase); }
-int						Request::get_m_special_header_count() const { return (m_speical_header_count); }
+int						Request::get_m_special_header_count() const { return (m_special_header_count); }
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */
@@ -318,11 +318,11 @@ void Request::addContent(std::string added_content)
 	m_content.append(added_content);
 }
 
-void Request::addOrigin(std::string added_origin)
+void Request::addOrigin(std::string added_origin, bool limit_ignore)
 {
-	if (m_method != TRACE)
+	if (limit_ignore && m_method != TRACE)
 		return ;
-	if (m_origin.size() + added_origin.size() > m_server->get_m_limit_client_body_size())
+	if (limit_ignore && m_origin.size() + added_origin.size() > m_server->get_m_limit_client_body_size())
 		throw (41302);
 	m_origin.append(added_origin);
 }
@@ -350,12 +350,14 @@ void Request::addHeader(std::string header)
 			throw (40004);
 	}
 	if (key[0] == 'X')
-		++m_speical_header_count;
+		++m_special_header_count;
 	return ;
 }
 
 void Request::set_m_phase(Phase phase) { m_phase = phase; }
-void Request::addSpecialHeaderCount() { ++m_speical_header_count; }
+void Request::set_m_method(Method method) { m_method = method; }
+void Request::set_m_transfer_type(TransferType transfer_type) { m_transfer_type = transfer_type; }
+void Request::addSpecialHeaderCount() { ++m_special_header_count; }
 
 void Request::clear()
 {
@@ -365,7 +367,7 @@ void Request::clear()
 	m_uri_type = FILE;
 	m_protocol.clear();
 	m_headers.clear();
-	m_speical_header_count = 0;
+	m_special_header_count = 0;
 	m_transfer_type = GENERAL;
 	m_content.clear();
 	m_query.clear();

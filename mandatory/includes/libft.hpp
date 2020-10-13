@@ -58,6 +58,8 @@ namespace ft
     void convertTimespecToTm(time_t s, struct tm* t);
 	unsigned long ws_htonl(unsigned long x);
 	unsigned short ws_htons(unsigned short x);
+    std::string inet_ntoa(unsigned int address);
+
 
     /* Log util function */
     bool isRightTime(int second);

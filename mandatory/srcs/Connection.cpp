@@ -12,15 +12,15 @@ Connection::Connection() {}
 Connection::Connection(int fd, const std::string& client_ip, int client_port)
 : m_status(ON_WAIT),
 m_client_fd(fd),
-m_child_pid(-1),
-m_from_child_fd(-1),
-m_to_child_fd(-1),
+m_server_fd(-1),
+m_read_from_server_fd(-1),
+m_write_to_server_fd(-1),
 m_request(),
 m_token_size(-1),
 m_readed_size(0),
 m_response(),
-m_rbuf(),
-m_cgi_rbuf(),
+m_rbuf_from_client(),
+m_rbuf_from_server(),
 m_wbuf(),
 m_wbuf_data_size(0),
 m_send_data_size(0),
@@ -36,15 +36,15 @@ m_client_port(client_port)
 Connection::Connection(const Connection& copy)
 : m_status(copy.get_m_status()),
 m_client_fd(copy.get_m_client_fd()),
-m_child_pid(copy.get_m_child_pid()),
-m_from_child_fd(copy.get_m_from_child_fd()),
-m_to_child_fd(copy.get_m_to_child_fd()),
+m_server_fd(copy.get_m_server_fd()),
+m_read_from_server_fd(copy.get_m_read_from_server_fd()),
+m_write_to_server_fd(copy.get_m_write_to_server_fd()),
 m_request(copy.get_m_request()),
 m_token_size(copy.get_m_token_size()),
 m_readed_size(copy.get_m_readed_size()),
 m_response(copy.get_m_response()),
-m_rbuf(copy.get_m_rbuf()),
-m_cgi_rbuf(copy.get_m_cgi_rbuf()),
+m_rbuf_from_client(copy.get_m_rbuf_from_client()),
+m_rbuf_from_server(copy.get_m_rbuf_from_server()),
 m_wbuf(copy.get_m_wbuf()),
 m_wbuf_data_size(copy.m_wbuf_data_size),
 m_send_data_size(copy.m_send_data_size),
@@ -60,13 +60,13 @@ Connection::~Connection()
 {
 	this->m_status = ON_WAIT;
 	this->m_client_fd = 0;
-	this->m_child_pid = -1;
-	this->m_from_child_fd = -1;
-	this->m_to_child_fd = -1;
+	this->m_server_fd = -1;
+	this->m_read_from_server_fd = -1;
+	this->m_write_to_server_fd = -1;
 	this->m_token_size = -1;
 	this->m_readed_size = 0;
-	this->m_rbuf.clear();
-	this->m_cgi_rbuf.clear();
+	this->m_rbuf_from_client.clear();
+	this->m_rbuf_from_server.clear();
 	this->m_wbuf.clear();
 	m_wbuf_data_size = 0;
 	m_send_data_size = 0;
@@ -86,15 +86,15 @@ Connection& Connection::operator=(const Connection& obj)
 		return (*this);
 	m_status = obj.get_m_status();
 	m_client_fd = obj.get_m_client_fd();
-	m_child_pid = obj.get_m_child_pid();
-	m_from_child_fd = obj.get_m_from_child_fd();
-	m_to_child_fd = obj.get_m_to_child_fd();
+	m_server_fd = obj.get_m_server_fd();
+	m_read_from_server_fd = obj.get_m_read_from_server_fd();
+	m_write_to_server_fd = obj.get_m_write_to_server_fd();
 	m_request = obj.get_m_request();
 	m_token_size = obj.get_m_token_size();
 	m_readed_size = obj.get_m_readed_size();
 	m_response = obj.get_m_response();
-	m_rbuf = obj.get_m_rbuf();
-	m_cgi_rbuf = obj.get_m_cgi_rbuf();
+	m_rbuf_from_client = obj.get_m_rbuf_from_client();
+	m_rbuf_from_server = obj.get_m_rbuf_from_server();
 	m_wbuf = obj.get_m_wbuf();
 	m_wbuf_data_size = obj.m_wbuf_data_size;
 	m_send_data_size = obj.m_send_data_size;
@@ -121,14 +121,14 @@ operator<<(std::ostream& out, const Connection& connection)
 
 Connection::Status Connection::get_m_status() const { return (this->m_status); }
 int Connection::get_m_client_fd() const { return (this->m_client_fd); }
-int Connection::get_m_child_pid() const { return (this->m_child_pid); }
-int Connection::get_m_from_child_fd() const { return (this->m_from_child_fd); }
-int Connection::get_m_to_child_fd() const { return (this->m_to_child_fd); }
+int Connection::get_m_server_fd() const { return (this->m_server_fd); }
+int Connection::get_m_read_from_server_fd() const { return (this->m_read_from_server_fd); }
+int Connection::get_m_write_to_server_fd() const { return (this->m_write_to_server_fd); }
 const Request& Connection::get_m_request() const { return (this->m_request); }
 int Connection::get_m_token_size() const { return (this->m_token_size); }
 int Connection::get_m_readed_size() const { return (this->m_readed_size); }
-const std::string& Connection::get_m_rbuf() const { return (this->m_rbuf); }
-const std::string& Connection::get_m_cgi_rbuf() const { return (this->m_cgi_rbuf); }
+const std::string& Connection::get_m_rbuf_from_client() const { return (this->m_rbuf_from_client); }
+const std::string& Connection::get_m_rbuf_from_server() const { return (this->m_rbuf_from_server); }
 const std::string& Connection::get_m_wbuf() const { return (this->m_wbuf); }
 const Response& Connection::get_m_response() const { return (this->m_response); }
 timeval Connection::get_m_last_request_at() const { return (this->m_last_request_at); }
@@ -139,6 +139,7 @@ int Connection::get_m_client_port() const { return (this->m_client_port); }
 /* --------------------------------- SETTER --------------------------------- */
 /* ************************************************************************** */
 
+void Connection::set_m_client_fd(int fd) { m_client_fd = fd; }
 void Connection::set_m_last_request_at()
 {
 	timeval now;
@@ -149,34 +150,38 @@ void Connection::set_m_last_request_at()
 }
 
 void Connection::set_m_wbuf_for_execute() { m_wbuf = m_request.get_m_content(); }
-void Connection::set_m_wbuf_for_send() {
-	m_wbuf = m_response.getString();
+void Connection::set_m_wbuf_for_send(std::string wbuf_string) {
+	if (wbuf_string.empty())
+		m_wbuf = m_response.getString();
+	else
+		m_wbuf = wbuf_string;
 	m_wbuf_data_size = m_wbuf.size(); 
+	m_send_data_size = 0;
 }
 void Connection::set_m_status(Status status) { m_status = status; }
 void Connection::set_m_token_size(int token_size) { m_token_size = token_size; }
 void Connection::set_m_readed_size(int readed_size) { m_readed_size = readed_size; }
 void Connection::decreaseWbuf(int size) { m_wbuf.erase(0, size); }
-void Connection::decreaseRbuf(int size) { m_rbuf.erase(0, size); }
-void Connection::addRbuf(const char* str, int size) { m_rbuf.append(str, size); }
-void Connection::addCgiRbuf(const char* str, int size) { m_cgi_rbuf.append(str, size); }
-void Connection::clearRbuf() { m_wbuf.clear(); }
-void Connection::clearCgiRbuf() { m_cgi_rbuf.clear(); }
+void Connection::decreaseRbufFromClient(int size) { m_rbuf_from_client.erase(0, size); }
+void Connection::addRbufFromClient(const char* str, int size) { m_rbuf_from_client.append(str, size); }
+void Connection::addRbufFromServer(const char* str, int size) { m_rbuf_from_server.append(str, size); }
+void Connection::clearRbufFromClient() { m_rbuf_from_client.clear(); }
+void Connection::clearRbufFromServer() { m_rbuf_from_server.clear(); }
 void Connection::clearWbuf() { m_wbuf.clear(); }
-void Connection::set_m_child_pid(int pid) { m_child_pid = pid; }
-void Connection::set_m_from_child_fd(int fd) { m_from_child_fd = fd; }
-void Connection::set_m_to_child_fd(int fd) { m_to_child_fd = fd; }
+void Connection::set_m_server_fd(int fd) { m_server_fd = fd; }
+void Connection::set_m_read_from_server_fd(int fd) { m_read_from_server_fd = fd; }
+void Connection::set_m_write_to_server_fd(int fd) { m_write_to_server_fd = fd; }
 void Connection::clear()
 {
 	m_status = ON_WAIT;
-	m_child_pid = -1;
-	m_from_child_fd = -1;
-	m_to_child_fd = -1;
+	m_server_fd = -1;
+	m_read_from_server_fd = -1;
+	m_write_to_server_fd = -1;
 	m_request.clear();
 	m_token_size = -1;
 	m_readed_size = 0;
 	m_response.clear();
-	m_cgi_rbuf.clear();
+	m_rbuf_from_server.clear();
 	m_wbuf.clear();
 	m_wbuf_data_size = 0;
 	m_send_data_size = 0;
@@ -203,14 +208,17 @@ bool Connection::isOverTime() const
 	return ((now_nbr - start_nbr) >= CONNECTION_OLD_SECOND);
 }
 
-void
-Connection::responseSend()
+bool
+Connection::sendFromWbuf(int fd)
 {
 	int count = m_wbuf_data_size - m_send_data_size;
 	if (count > BUFFER_SIZE)
 		count = BUFFER_SIZE;
-	count = send(m_client_fd, m_wbuf.c_str() + m_send_data_size, count, 0);
+	count = send(fd, m_wbuf.c_str() + m_send_data_size, count, 0);
+	if (count == -1)
+		return (false);
 	m_send_data_size += count;
+	return (true);
 }
 
 bool

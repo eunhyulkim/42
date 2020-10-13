@@ -10,6 +10,7 @@ class ServerManager
 	public:
 		static int error_fd;
 		static int access_fd;
+		static int proxy_fd;
 		static int stdin_fd;
 		static int stdout_fd;
 	private:

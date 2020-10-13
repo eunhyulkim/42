@@ -1,0 +1,122 @@
+#201006(1)
+1. Request Recv Start: 4
+2. Request Header Parsing End.: 318
+3. Soving Request Start: 326
+4. Soving Request End: 101744
+5. Read and Write Operation End With CGI.: 1778229
+6. Create Response Start.: 1878520
+7. Create Response End.: 2182202
+8. Response Send Operation Start.: 2195893
+    A-1.getString Function Call in Connection.: 4
+        B-1. getString Function Start.: 2
+        B-2. Start Line Start.: 7
+        B-3. Header Line Start.: 13
+        B-4. Header Line End.: 23
+        B-5. Chunked Case Start.: 29
+        B-6. Chunked Main Process Start.: 16121
+        B-7. Chunked Main Process End.: 7385733
+        B-8. getString Function End.: 7398081
+    A-2.getString Function End in Connection.: 7466720
+    A-3.check size wbuf in Connection.: 7466748
+9. Response Send Operation End(Start): 10040181
+10. Response Send Operation End(End): 10061882
+
+#201006(2)
+1. Request Recv Start: 0
+2. Request Header Parsing End.: 128
+3. Soving Request Start: 136
+4. Soving Request End: 107613
+5. Read and Write Operation End With CGI.: 1742079
+6. Create Response Start.: 1843760
+7. Create Response End.: 2128101
+8. Response Send Operation Start.: 2139216
+    A-1.getString Function Call in Connection.: 5
+        B-1. getString Function Start.: 1
+        B-2. Start Line Start.: 6
+        B-3. Header Line Start.: 12
+        B-4. Header Line End.: 22
+        B-5. Chunked Case Start.: 27
+        B-6. Chunked Main Process Start.: 17040
+        B-7. Chunked Main Process End.: 7452584
+        B-8. getString Function End.: 7464823
+    A-2.getString Function End in Connection.: 7513805
+    A-3.check size wbuf in Connection.: 7513835
+9. Response Send Operation End(Start): 10041875
+10. Response Send Operation End(End): 10066059
+
+1. Request Recv Start: 11
+2. Request Header Parsing End.: 388
+3. Soving Request Start: 427
+4. Soving Request End: 104278
+5. Read and Write Operation End With CGI.: 1789402
+6. Create Response Start.: 1903250
+7. Create Response End.: 2227844
+8. Response Send Operation Start.: 2241359
+    A-1.getString Function Call in Connection.: 4
+        B-1. getString Function Start.: 1
+        B-2. Start Line Start.: 6
+        B-3. Header Line Start.: 12
+        B-4. Header Line End.: 22
+        B-5. Chunked Case Start.: 27
+        B-6. Chunked Main Process Start.: 18115
+        B-7. Chunkd Main Process End Before Clear.: 170806
+        B-8. Chunked Main Process End After Clear.: 170811
+        B-8. getString Function End.: 180071
+    A-2.getString Function End in Connection.: 230728
+    A-3.check size wbuf in Connection.: 230756
+9. Response Send Operation End(Start): 2784173
+10. Response Send Operation End(End): 2808115
+
+1. Request Recv Start: 1
+2. Request Header Parsing End.: 151
+3. Soving Request Start: 161
+4. Soving Request End: 106310
+5. Read and Write Operation End With CGI.: 107763
+6. Create Response Start.: 107930
+7. Create Response End.: 122488
+8. Response Send Operation Start.: 122587
+    A-1.getString Function Call in Connection.: 3
+        B-1. getString Function Start.: 1
+        B-2. Start Line Start.: 6
+        B-3. Header Line Start.: 12
+        B-4. Header Line End.: 22
+        B-5. Chunked Case Start.: 26
+        B-6. Chunked Main Process Start.: 37
+        B-7. Chunkd Main Process End Before Clear.: 204
+        B-8. Chunked Main Process End After Clear.: 209
+        B-8. getString Function End.: 214
+    A-2.getString Function End in Connection.: 336
+    A-3.check size wbuf in Connection.: 343
+9. Response Send Operation End(Start): 122995
+10. Response Send Operation End(End): 123039
+
+
+1. Request Recv Start: 4
+2. Request Header Parsing End.: 236
+3. Soving Request Start: 246
+4. Soving Request End: 100741
+5. Read and Write Operation End With CGI.: 1765835
+6. Create Response Start.: 1865404
+    6-1. PING: 1865433
+    6-2. PING: 1865456
+    6-3. PING: 1947726
+    6-4. PING: 1947753
+    6-5. PING: 1947789
+    6-6. PING: 2159127
+    6-7. PING: 2185072
+7. Create Response End.: 2185079
+8. Response Send Operation Start.: 2198262
+A-1.getString Function Call in Connection.: 5
+B-1. getString Function Start.: 2
+B-2. Start Line Start.: 7
+B-3. Header Line Start.: 12
+B-4. Header Line End.: 22
+B-5. Chunked Case Start.: 27
+B-6. Chunked Main Process Start.: 18250
+B-7. Chunkd Main Process End Before Clear.: 165393
+B-8. Chunked Main Process End After Clear.: 165399
+B-8. getString Function End.: 177366
+A-2.getString Function End in Connection.: 243516
+A-3.check size wbuf in Connection.: 243545
+9. Response Send Operation End(Start): 2819706
+10. Response Send Operation End(End): 2843061

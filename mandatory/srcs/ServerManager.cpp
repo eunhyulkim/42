@@ -7,6 +7,7 @@
 
 int ServerManager::error_fd = -1;
 int ServerManager::access_fd = -1;
+int ServerManager::proxy_fd = -1;
 int ServerManager::stdin_fd = dup(0);
 int ServerManager::stdout_fd = dup(1);
 
@@ -470,6 +471,8 @@ ServerManager::createServer(const std::string& configuration_file_path, char **e
 				+ "-" + ft::to_string(j) + ") is not valid."));
 		}
 		m_servers.push_back(Server(this, server_block, location_blocks, &this->m_config));
+		// for (int i = 0; i < getPortCount(sever_block); ++i)
+		// 	m_servers.push_back(Server(this, convert(server_block, i), location_blocks, &this->m_config));
 		m_server_fdset.insert(m_servers.back().get_m_fd());
 	}
 	writeCreateServerLog();
@@ -560,6 +563,8 @@ ServerManager::openLog()
 	if ((ServerManager::access_fd = open(ACCESS_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
 		return ;
 	if ((ServerManager::error_fd = open(ERROR_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
+		return ;
+	if ((ServerManager::proxy_fd = open(PROXY_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
 		return ;
 }
 
