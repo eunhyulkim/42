@@ -1,0 +1,683 @@
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+[Created][Connection][Proxy][CFD:8][IP:127.0.0.1][Port:2759] Connection Created.
+
+[Created][Connection][Proxy][CFD:9][IP:127.0.0.1][Port:3015] Connection Created.
+
+1. Start Recv From Client: 4
+
+REQUEST MESSAGE FROM CLIENT:
+GET / HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+If-Modified-Since: Sat, 14 Oct 2020 20:19:28 GMT
+
+2. Start Send To Server: 110
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+
+SEND MESSAGE TO SERVER:
+GET / HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+If-Modified-Since: Sat, 14 Oct 2020 20:19:28 GMT
+
+[20201014_20_29_1][Sended][Request][Proxy][CFD:8] Request sended
+3. End Send To Server: 1007
+4. End Recv From Server: 1598
+5. Start Send To Client: 1638
+[20201014_20_29_1][Sended][Response][Proxy][CFD:8] Response sended
+6. End Send To Client: 1697
+1. Start Recv From Client: 57
+
+REQUEST MESSAGE FROM CLIENT:
+GET /db/tt.html HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+If-Modified-Since: Sat, 14 Oct 2020 20:17:32 GMT
+
+2. Start Send To Server: 143
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+
+SEND MESSAGE TO SERVER:
+GET /db/tt.html HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+If-Modified-Since: Sat, 14 Oct 2020 20:17:32 GMT
+
+[20201014_20_29_5][Sended][Request][Proxy][CFD:8] Request sended
+3. End Send To Server: 411
+4. End Recv From Server: 816
+5. Start Send To Client: 850
+[20201014_20_29_5][Sended][Response][Proxy][CFD:8] Response sended
+6. End Send To Client: 932
+1. Start Recv From Client: 19
+
+REQUEST MESSAGE FROM CLIENT:
+GET /db/tt.html HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Cache-Control: max-age=0
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+If-Modified-Since: Sat, 14 Oct 2020 20:29:05 GMT
+
+5. Start Send To Client: 204
+[20201014_20_29_8][Sended][Response][Proxy][CFD:8] Response sended
+6. End Send To Client: 249
+1. Start Recv From Client: 51
+
+REQUEST MESSAGE FROM CLIENT:
+GET /db/tt.htm HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+2. Start Send To Server: 160
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+
+SEND MESSAGE TO SERVER:
+GET /db/tt.htm HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+[20201014_20_29_10][Sended][Request][Proxy][CFD:8] Request sended
+3. End Send To Server: 423
+4. End Recv From Server: 717
+5. Start Send To Client: 747
+[20201014_20_29_10][Sended][Response][Proxy][CFD:8] Response sended
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+[Deleted][Connection][Proxy][CFD:8] Connection closed.
+6. End Send To Client: 964
+[Created][Connection][Proxy][CFD:8][IP:127.0.0.1][Port:5063] Connection Created.
+
+1. Start Recv From Client: 21
+
+REQUEST MESSAGE FROM CLIENT:
+GET /db/tt.h HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+2. Start Send To Server: 134
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+
+SEND MESSAGE TO SERVER:
+GET /db/tt.h HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+[20201014_20_29_26][Sended][Request][Proxy][CFD:9] Request sended
+3. End Send To Server: 406
+4. End Recv From Server: 598
+5. Start Send To Client: 646
+[20201014_20_29_26][Sended][Response][Proxy][CFD:9] Response sended
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+[Deleted][Connection][Proxy][CFD:9] Connection closed.
+6. End Send To Client: 908
+[Created][Connection][Proxy][CFD:9][IP:127.0.0.1][Port:6087] Connection Created.
+
+1. Start Recv From Client: 4
+
+REQUEST MESSAGE FROM CLIENT:
+GET /?key1=val1 HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+2. Start Send To Server: 117
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+
+SEND MESSAGE TO SERVER:
+GET /?key1=val1 HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+[20201014_20_29_41][Sended][Request][Proxy][CFD:8] Request sended
+3. End Send To Server: 388
+4. End Recv From Server: 617
+5. Start Send To Client: 647
+[20201014_20_29_41][Sended][Response][Proxy][CFD:8] Response sended
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+[Deleted][Connection][Proxy][CFD:8] Connection closed.
+6. End Send To Client: 895
+[Created][Connection][Proxy][CFD:8][IP:127.0.0.1][Port:7111] Connection Created.
+
+1. Start Recv From Client: 20
+
+REQUEST MESSAGE FROM CLIENT:
+GET /?key1=val2 HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+2. Start Send To Server: 137
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+
+SEND MESSAGE TO SERVER:
+GET /?key1=val2 HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+[20201014_20_29_49][Sended][Request][Proxy][CFD:9] Request sended
+3. End Send To Server: 397
+4. End Recv From Server: 608
+5. Start Send To Client: 636
+[20201014_20_29_49][Sended][Response][Proxy][CFD:9] Response sended
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+[Deleted][Connection][Proxy][CFD:9] Connection closed.
+6. End Send To Client: 860
+[Created][Connection][Proxy][CFD:9][IP:127.0.0.1][Port:8135] Connection Created.
+
+1. Start Recv From Client: 3
+
+REQUEST MESSAGE FROM CLIENT:
+GET /?key1=val2 HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Cache-Control: max-age=0
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+5. Start Send To Client: 211
+[20201014_20_29_56][Sended][Response][Proxy][CFD:8] Response sended
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+[Deleted][Connection][Proxy][CFD:8] Connection closed.
+6. End Send To Client: 477
+[Created][Connection][Proxy][CFD:8][IP:127.0.0.1][Port:8903] Connection Created.
+
+1. Start Recv From Client: 4
+
+REQUEST MESSAGE FROM CLIENT:
+GET /?key1=val3 HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+2. Start Send To Server: 106
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+
+SEND MESSAGE TO SERVER:
+GET /?key1=val3 HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+[20201014_20_30_2][Sended][Request][Proxy][CFD:9] Request sended
+3. End Send To Server: 418
+4. End Recv From Server: 598
+5. Start Send To Client: 628
+[20201014_20_30_2][Sended][Response][Proxy][CFD:9] Response sended
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+[Deleted][Connection][Proxy][CFD:9] Connection closed.
+6. End Send To Client: 838
+[Created][Connection][Proxy][CFD:9][IP:127.0.0.1][Port:9671] Connection Created.
+
+1. Start Recv From Client: 4
+
+REQUEST MESSAGE FROM CLIENT:
+GET /?key1=val4 HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+2. Start Send To Server: 127
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+
+SEND MESSAGE TO SERVER:
+GET /?key1=val4 HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+[20201014_20_30_10][Sended][Request][Proxy][CFD:8] Request sended
+3. End Send To Server: 372
+4. End Recv From Server: 597
+5. Start Send To Client: 629
+[20201014_20_30_10][Sended][Response][Proxy][CFD:8] Response sended
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+[Deleted][Connection][Proxy][CFD:8] Connection closed.
+6. End Send To Client: 860
+[Created][Connection][Proxy][CFD:8][IP:127.0.0.1][Port:10439] Connection Created.
+
+1. Start Recv From Client: 4
+
+REQUEST MESSAGE FROM CLIENT:
+GET /?key1=val5 HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+2. Start Send To Server: 101
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+
+SEND MESSAGE TO SERVER:
+GET /?key1=val5 HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+[20201014_20_30_13][Sended][Request][Proxy][CFD:9] Request sended
+3. End Send To Server: 379
+4. End Recv From Server: 590
+5. Start Send To Client: 629
+[20201014_20_30_13][Sended][Response][Proxy][CFD:9] Response sended
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+[Deleted][Connection][Proxy][CFD:9] Connection closed.
+6. End Send To Client: 841
+[Created][Connection][Proxy][CFD:9][IP:127.0.0.1][Port:11463] Connection Created.
+
+1. Start Recv From Client: 4
+
+REQUEST MESSAGE FROM CLIENT:
+GET /?key1=val5 HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Cache-Control: max-age=0
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+5. Start Send To Client: 127
+[20201014_20_30_19][Sended][Response][Proxy][CFD:8] Response sended
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+[Deleted][Connection][Proxy][CFD:8] Connection closed.
+6. End Send To Client: 447
+[Created][Connection][Proxy][CFD:8][IP:127.0.0.1][Port:11975] Connection Created.
+
+1. Start Recv From Client: 4
+
+REQUEST MESSAGE FROM CLIENT:
+GET / HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+If-Modified-Since: Sat, 14 Oct 2020 20:29:01 GMT
+
+5. Start Send To Client: 125
+[20201014_20_30_23][Sended][Response][Proxy][CFD:9] Response sended
+6. End Send To Client: 173
+1. Start Recv From Client: 4
+
+REQUEST MESSAGE FROM CLIENT:
+GET /db/tt.html HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+If-Modified-Since: Sat, 14 Oct 2020 20:29:05 GMT
+
+5. Start Send To Client: 194
+[20201014_20_30_26][Sended][Response][Proxy][CFD:9] Response sended
+6. End Send To Client: 248
+[HealthCheck][Proxy][Max_fd:9][Connection:7,8,9]
+1. Start Recv From Client: 5
+
+REQUEST MESSAGE FROM CLIENT:
+GET /db/tt.html HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Cache-Control: max-age=0
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+If-Modified-Since: Sat, 14 Oct 2020 20:29:05 GMT
+
+5. Start Send To Client: 141
+[20201014_20_31_4][Sended][Response][Proxy][CFD:9] Response sended
+6. End Send To Client: 229
+1. Start Recv From Client: 5
+
+REQUEST MESSAGE FROM CLIENT:
+GET /a HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+2. Start Send To Server: 106
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+
+SEND MESSAGE TO SERVER:
+GET /a HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+[20201014_20_31_8][Sended][Request][Proxy][CFD:9] Request sended
+3. End Send To Server: 381
+4. End Recv From Server: 547
+5. Start Send To Client: 575
+[20201014_20_31_8][Sended][Response][Proxy][CFD:9] Response sended
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+[Deleted][Connection][Proxy][CFD:9] Connection closed.
+6. End Send To Client: 804
+[Created][Connection][Proxy][CFD:9][IP:127.0.0.1][Port:15303] Connection Created.
+
+1. Start Recv From Client: 14
+
+REQUEST MESSAGE FROM CLIENT:
+GET / HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+If-Modified-Since: Sat, 14 Oct 2020 20:29:01 GMT
+
+5. Start Send To Client: 163
+[20201014_20_31_13][Sended][Response][Proxy][CFD:8] Response sended
+6. End Send To Client: 213
+1. Start Recv From Client: 4
+
+REQUEST MESSAGE FROM CLIENT:
+GET / HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Cache-Control: max-age=0
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+If-Modified-Since: Sat, 14 Oct 2020 20:29:01 GMT
+
+5. Start Send To Client: 118
+[20201014_20_31_14][Sended][Response][Proxy][CFD:8] Response sended
+6. End Send To Client: 167
+1. Start Recv From Client: 3
+
+REQUEST MESSAGE FROM CLIENT:
+GET /directory/ HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+2. Start Send To Server: 169
+[Created][ServerConnection][Proxy][ServerInfo:127.0.0.1:8081] Connection Created.
+
+SEND MESSAGE TO SERVER:
+GET /directory/ HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+[20201014_20_31_22][Sended][Request][Proxy][CFD:8] Request sended
+3. End Send To Server: 499
+4. End Recv From Server: 921
+5. Start Send To Client: 947
+[20201014_20_31_22][Sended][Response][Proxy][CFD:8] Response sended
+6. End Send To Client: 997
+1. Start Recv From Client: 4
+
+REQUEST MESSAGE FROM CLIENT:
+GET /db/tt.html HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Purpose: prefetch
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+If-Modified-Since: Sat, 14 Oct 2020 20:29:05 GMT
+
+5. Start Send To Client: 170
+[20201014_20_31_26][Sended][Response][Proxy][CFD:8] Response sended
+6. End Send To Client: 254
+1. Start Recv From Client: 4
+
+REQUEST MESSAGE FROM CLIENT:
+GET / HTTP/1.1
+Host: 127.0.0.1:8084
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+If-Modified-Since: Sat, 14 Oct 2020 20:29:01 GMT
+
+5. Start Send To Client: 171
+[20201014_20_31_48][Sended][Response][Proxy][CFD:8] Response sended
+6. End Send To Client: 248

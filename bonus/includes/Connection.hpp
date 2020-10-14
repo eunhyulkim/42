@@ -32,6 +32,8 @@ class Connection
 		std::string m_client_ip;
 		int m_client_port;
 		Worker *m_worker;
+		bool m_is_cached;
+		bool m_is_filtered;
 	public:
 		Connection();
 		Connection(int fd, const std::string& client_ip, int client_port);
@@ -56,6 +58,8 @@ class Connection
 		std::string get_m_client_ip() const;
 		int get_m_client_port() const;
 		Worker *get_m_worker() const;
+		bool get_m_is_cached() const;
+		bool get_m_is_filtered() const;
 
 		/* setter function */
 		void set_m_client_fd(int fd);
@@ -69,6 +73,9 @@ class Connection
 		void set_m_wbuf_for_execute();
 		void set_m_wbuf_for_send(std::string wbuf_string = "");
 		void set_m_worker(Worker *worker);
+		void set_m_is_cached(bool is_cached);
+		void set_m_is_filtered(bool is_filtered);
+		void set_m_rbuf_from_server(std::string rbuf_from_server);
 		void addRbufFromClient(const char* str, int count);
 		void addRbufFromServer(const char* str, int count);
 		void decreaseRbufFromClient(int size);

@@ -371,6 +371,8 @@ void Request::addHeader(std::string header)
 void Request::set_m_phase(Phase phase) { m_phase = phase; }
 void Request::set_m_method(Method method) { m_method = method; }
 void Request::set_m_transfer_type(TransferType transfer_type) { m_transfer_type = transfer_type; }
+void Request::set_m_uri(std::string uri) { m_uri = uri; }
+void Request::set_m_query(std::string query) { m_query = query; }
 void Request::addSpecialHeaderCount() { ++m_special_header_count; }
 
 void Request::clear()
@@ -390,6 +392,8 @@ void Request::clear()
 	m_path_info.clear();
 	m_origin.clear();
 }
+
+void Request::set_m_origin(std::string origin) { m_origin = origin; }
 
 /* ************************************************************************** */
 /* ------------------------------- EXCEPTION -------------------------------- */

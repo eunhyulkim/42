@@ -26,7 +26,9 @@ m_wbuf_data_size(0),
 m_send_data_size(0),
 m_last_request_at(),
 m_client_ip(client_ip),
-m_client_port(client_port)
+m_client_port(client_port),
+m_is_cached(false),
+m_is_filtered(false)
 {
 	this->m_last_request_at.tv_sec = 0;
 	this->m_last_request_at.tv_usec = 0;
@@ -50,7 +52,9 @@ m_wbuf_data_size(copy.m_wbuf_data_size),
 m_send_data_size(copy.m_send_data_size),
 m_last_request_at(copy.get_m_last_request_at()),
 m_client_ip(copy.get_m_client_ip()),
-m_client_port(copy.get_m_client_port()) {}
+m_client_port(copy.get_m_client_port()),
+m_is_cached(copy.m_is_cached),
+m_is_filtered(copy.m_is_filtered) {}
 
 /* ************************************************************************** */
 /* ------------------------------- DESTRUCTOR ------------------------------- */
@@ -101,6 +105,8 @@ Connection& Connection::operator=(const Connection& obj)
 	m_last_request_at = obj.get_m_last_request_at();
 	m_client_ip = obj.get_m_client_ip();
 	m_client_port = obj.get_m_client_port();
+	m_is_cached = obj.m_is_cached;
+	m_is_filtered = obj.m_is_filtered;
 	return (*this);
 }
 
@@ -135,6 +141,8 @@ timeval Connection::get_m_last_request_at() const { return (this->m_last_request
 std::string Connection::get_m_client_ip() const { return (this->m_client_ip); }
 int Connection::get_m_client_port() const { return (this->m_client_port); }
 Worker* Connection::get_m_worker() const { return (this->m_worker); }
+bool Connection::get_m_is_cached() const { return (m_is_cached); }
+bool Connection::get_m_is_filtered() const { return (m_is_filtered); }
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */
@@ -162,6 +170,9 @@ void Connection::set_m_wbuf_for_send(std::string wbuf_string) {
 void Connection::set_m_status(Status status) { m_status = status; }
 void Connection::set_m_token_size(int token_size) { m_token_size = token_size; }
 void Connection::set_m_readed_size(int readed_size) { m_readed_size = readed_size; }
+void Connection::set_m_is_cached(bool is_cached) { m_is_cached = is_cached; }
+void Connection::set_m_is_filtered(bool is_filtered) { m_is_filtered = is_filtered; }
+void Connection::set_m_rbuf_from_server(std::string rbuf_from_server) { m_rbuf_from_server = rbuf_from_server; }
 void Connection::decreaseWbuf(int size) { m_wbuf.erase(0, size); }
 void Connection::decreaseRbufFromClient(int size) { m_rbuf_from_client.erase(0, size); }
 void Connection::addRbufFromClient(const char* str, int size) { m_rbuf_from_client.append(str, size); }
@@ -186,6 +197,8 @@ void Connection::clear()
 	m_wbuf.clear();
 	m_wbuf_data_size = 0;
 	m_send_data_size = 0;
+	m_is_filtered = false;
+	m_is_cached = false;
 }
 
 void Connection::set_m_worker(Worker *worker) { m_worker = worker; }

@@ -7,7 +7,7 @@ CFLAGS = -Wall -Wextra -Werror -std=c++98
 
 SRCS_FILES = ServerManager base64 Request Location Response Config HtmlWriter \
 			 Connection libft Server Worker
-PROXY_FILES = ProxyBase base_proxy_test
+PROXY_FILES = Proxy base_proxy_test
 
 SRCS = $(addprefix srcs/, $(addsuffix .cpp, $(SRCS_FILES)))
 MSRCS = srcs/main.cpp

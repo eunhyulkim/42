@@ -84,6 +84,9 @@ public:
 	void set_m_method(Method method);
 	void set_m_phase(Phase phase);
 	void set_m_transfer_type(TransferType transfer_type);
+	void set_m_uri(std::string uri);
+	void set_m_query(std::string query);
+	void set_m_origin(std::string origin);
 	void addSpecialHeaderCount();
 	void clear();
 

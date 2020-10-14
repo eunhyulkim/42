@@ -56,7 +56,7 @@
 
 /// BONUS
 
-# define WORKER_COUNT 10
+# define WORKER_COUNT 2
 
 
 typedef std::vector<std::string> headers_t;

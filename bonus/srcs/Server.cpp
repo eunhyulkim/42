@@ -296,13 +296,14 @@ Server::run()
 
 	if (hasNewConnection())
 	{
-		writeDetectNewConnectionLog();
 		while (!isExistFreeWorker())
 			usleep(100); // change to macro EVERAGE_WORK_USECOND
 		if ((new_job = acceptNewConnection()).client_fd == -1)
 			reportCreateNewConnectionLog();
-		else
+		else {
 			m_job_queue->push(new_job);
+			writeCreateNewConnectionLog(new_job.client_fd, new_job.ip, new_job.port);
+		}
 	}
 }
 
