@@ -32,15 +32,6 @@ Proxy::Proxy(ServerManager* server_manager, const std::string& proxy_block)
 	m_manager = server_manager;
 	m_host = proxy_map["host"];
 	m_port = ft::stoi(proxy_map["port"]);
-	// std::string type = proxy_map["type"];
-	// if (type == "cache" || type == "Cache")
-	// 	m_type = CACHE_PROXY;
-	// else if (type == "LoadBalance" || type == "loadBalance")
-	// 	m_type = LOADBALANCE_PROXY;
-	// else if (type == "filter" || type == "Filter")
-	// 	m_type = FILTER_PROXY;
-	// else
-	// 	throw (std::invalid_argument("filter type invalid."));
 
 	/* parse for filter proxy */
 	std::string rawFilter = proxy_map["filter"].substr(1, proxy_map["filter"].length() - 2);
@@ -158,17 +149,6 @@ operator<<(std::ostream& out, const Proxy&)
 /* ************************************************************************** */
 
 ServerManager* Proxy::get_m_manager() const { return (m_manager); }
-// Proxy::ProxyType Proxy::get_m_type() const { return (m_type); }
-// std::string Proxy::get_type_to_string() const
-// {
-// 	if (m_type == CACHE_PROXY)
-// 		return ("CACHE_PROXY");
-// 	else if (m_type == LOADBALANCE_PROXY)
-// 		return ("LOADBALANCE_PROXY");
-// 	else if (m_type == FILTER_PROXY)
-// 		return ("FILTER_PROXY");
-// 	return ("UNDEFINED_PROXY");
-// }
 const std::multimap<std::string, std::string>& Proxy::get_m_filter() const { return (m_filter); }
 const std::string& Proxy::get_m_host() const { return (m_host); }
 int Proxy::get_m_port() const { return (m_port); }
@@ -676,7 +656,6 @@ void Proxy::runProxyAction(Connection& client_connection)
 	runFiltering(client_connection);
 	if (client_connection.get_m_request().get_m_method() == Request::GET || client_connection.get_m_request().get_m_method() == Request::HEAD)
 		runCaching(client_connection);
-	runLoadBalancing(client_connection);
 }
 
 
@@ -716,29 +695,6 @@ void Proxy::runCaching(Connection& client_connection)
 			client_connection.set_m_status(Connection::TO_SEND);
 		}
 	}
-}
-
-void Proxy::runLoadBalancing(Connection& client_connection)
-{
-	(void)client_connection;
-
-	// int newFd;
-	// int max = 0;
-
-	// for (std::map<int, ServerConnection>::iterator it = m_server_connections.begin() ; it != m_server_connections.end() ; ++it)
-	// {
-	// 	for (std::vector<Server>::iterator it2 = m_manager->get_m_servers().begin() ; it2 != m_manager->get_m_servers.end() ; ++it2)
-	// 	{
-	// 		if (it2->get_m_host() == it->second.host
-	// 			&& it2->get_m_port() == it->second.port
-	// 			&& it2->getFreeWorkerCount() > max)
-	// 		{
-	// 			max = it2->getFreeWorkerCount();
-	// 			newFd = it->first;
-	// 		}
-	// 	}
-	// }
-	// client_connection.set_m_server_fd(newFd);
 }
 
 /* ************************************************************************** */

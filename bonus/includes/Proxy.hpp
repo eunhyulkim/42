@@ -21,7 +21,6 @@ class Proxy
 		};
 	protected:
 		ServerManager* m_manager;
-		// ProxyType m_type;
 		std::multimap<std::string, std::string> m_filter;
 		std::map<std::string, std::string> m_cache;
 		std::string m_host;
