@@ -34,7 +34,7 @@ ${MOBJS}: ${MSRCS}
 ${NAME}: ${OBJS} ${MOBJS}
 	@echo "$(GREEN)$(NAME) START$(RESET)"
 	@echo "$(RESET)Compiling ${NAME} to root."
-	@${CC} ${CFLAGS} ${INCLUDES} ${OBJS} ${MOBJS} -o ${NAME}
+	@${CC} ${CFLAGS} ${INCLUDES} ${OBJS} ${MOBJS} -o ${NAME} -framework Python
 	@echo "$(GREEN)DONE$(RESET)"
 
 

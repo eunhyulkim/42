@@ -498,7 +498,7 @@ namespace {
 	isMethodHasBody(const Request::Method& method) {
 		return (method == Request::POST || method == Request::PUT || method == Request::TRACE);
 	}
-	
+
 	bool
 	isRequestHasBody(Request &request)
 	{
@@ -578,7 +578,7 @@ namespace {
 			connection.decreaseRbufFromClient(content_length + 2);
 		}
 	}
-	
+
 	int
 	recvWithoutBody(const Connection& connection, char*buf, int buf_size)
 	{
@@ -949,7 +949,7 @@ Worker::executePut()
 	close(fd);
 	if (S_ISREG(buf.st_mode))
 		return (createResponse(connection, 204));
-	
+
 	headers.push_back("Location:" + m_server->get_m_host() + "/" + request.get_m_uri());
 	return (createResponse(connection, 201, headers, request.get_m_content()));
 }
@@ -1086,6 +1086,27 @@ namespace {
 		if (fd5 != -1)
 			close(fd5);
 	}
+
+	int pythonCGI()
+	{
+		Py_Initialize();
+		PyRun_SimpleString ("import sys; sys.path.insert(0, '/Users/juhyeon/webserv/bonus')");
+		PyObject * pModule = NULL;
+		PyObject * pFunc   = NULL;
+
+		pModule = PyImport_ImportModule("cgi");
+		pFunc   = PyObject_GetAttrString(pModule, "cgi_test");
+		if(pFunc != NULL) {
+			PyEval_CallObject(pFunc, NULL);
+			Py_Finalize();
+		}
+		else {
+			printf("pFunc returned NULL\n");
+		}
+
+		return (0);
+	}
+
 	void execveCGI(const Request& request, char **env, int *parent_write_fd, int *child_write_fd)
 	{
 		closes(parent_write_fd[1], child_write_fd[0]);
@@ -1097,6 +1118,8 @@ namespace {
 		std::string ext = script_name.substr(script_name.rfind(".") + 1);
 		if (ext == "php" && execve("./php-cgi", arg, env) == -1)
 			exit(EXIT_FAILURE);
+		else if (ext == "py" && pythonCGI())
+			exit(EXIT_SUCCESS);
 		else if (execve(arg[0], arg, env) == -1)
 			exit(EXIT_FAILURE);
 		exit(EXIT_FAILURE);
@@ -1114,6 +1137,7 @@ Worker::executeCGI()
 	Request& request = const_cast<Request&>(connection.get_m_request());
 	Request::Method method = request.get_m_method();
 	std::string body;
+	std::cout << "CGI\n";
 
 	if ((env = createCGIEnv(request)) == NULL)
 		return (createResponse(connection, 50005));

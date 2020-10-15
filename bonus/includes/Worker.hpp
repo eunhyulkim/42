@@ -3,6 +3,7 @@
 
 # include <string>
 # include <iostream>
+# include <Python/Python.h>
 # include "webserv.hpp"
 # include "Request.hpp"
 # include "Response.hpp"
@@ -110,7 +111,7 @@ class Worker
 
 
 		void clearConnection();
-		
+
 		bool isFree() const;
 		void exit();
 };
