@@ -1089,6 +1089,7 @@ namespace {
 
 	int pythonCGI()
 	{
+		std::cout << "PYTHON CGI\n";
 		Py_Initialize();
 		PyRun_SimpleString ("import sys; sys.path.insert(0, '/Users/juhyeon/webserv/bonus')");
 		PyObject * pModule = NULL;
@@ -1101,10 +1102,9 @@ namespace {
 			Py_Finalize();
 		}
 		else {
-			printf("pFunc returned NULL\n");
+			exit(EXIT_FAILURE);
 		}
-
-		return (0);
+		return (1);
 	}
 
 	void execveCGI(const Request& request, char **env, int *parent_write_fd, int *child_write_fd)
@@ -1137,8 +1137,8 @@ Worker::executeCGI()
 	Request& request = const_cast<Request&>(connection.get_m_request());
 	Request::Method method = request.get_m_method();
 	std::string body;
-	std::cout << "CGI\n";
 
+	std::cout << "CGI\n";
 	if ((env = createCGIEnv(request)) == NULL)
 		return (createResponse(connection, 50005));
 	pipe(parent_write_fd);
