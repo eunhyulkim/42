@@ -47,7 +47,7 @@ ${PROXY_NAME}: ${OBJS} ${POBJS}
 
 clean:
 	@echo "$(RESET)Cleaning your .o files$(RESET)"
-	@${RM} $(OBJS) $(MOBJS) $(BOBJS)
+	@${RM} $(OBJS) $(MOBJS) $(BOBJS) $(SOBJS) $(POBJS)
 	@echo "$(RED)clean DONE$(RESET)"
 
 fclean: clean

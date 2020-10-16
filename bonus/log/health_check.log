@@ -1,23 +1,35 @@
-[20201016_14_47_34][Created][Server][127.0.0.1:8081] server created successfully.
-[20201016_14_47_35][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_35][Detected][Connection][Server:default][127.0.0.1:8081] new connection detected.
-[20201016_14_47_35][Created][Connection][Server:default][127.0.0.1:8081][Client:127.0.0.1:58565] new connection(client fd:5) created and added to job queue.
-[20201016_14_47_35][Started][Server:127.0.0.1:8081][Worker:1/1][Client:5] new work started.
-[20201016_14_47_37][Closed][Connection][Server:127.0.0.1:8081][Worker:1/1][Client:5] client connection closed.
-[20201016_14_47_38][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_39][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_40][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_41][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_42][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_43][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_44][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_45][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_46][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_47][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_48][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_49][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_50][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_51][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_52][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_53][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_53][Detected] Exit Signal detected.
+MSG_PEEK:
+GET /index.html HTTP/1.1
+Host: 127.0.0.1:8081
+Connection: keep-alive
+Cache-Control: max-age=0
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36
+Sec-Fetch-User: ?1
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7
+Cookie: _ga=GA1.1.80640463.1602829996; _gid=GA1.1.1460120654.1602829996
+If-Modified-Since: Mon, 16 Oct 2020 18:22:45 GMT
+
+
+MSG_PEEK:
+GET /phpinfo.php HTTP/1.1
+Host: 127.0.0.1:8081
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36
+Sec-Fetch-User: ?1
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Purpose: prefetch
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7
+Cookie: _ga=GA1.1.80640463.1602829996; _gid=GA1.1.1460120654.1602829996
+If-Modified-Since: Mon, 16 Oct 2020 17:15:55 GMT
+
+
+[20201016_18_23_35][Detected] Exit Signal detected.

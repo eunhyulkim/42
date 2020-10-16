@@ -69,6 +69,19 @@ Request::parseMethod(std::string methodString)
 bool
 Request::assignLocationMatchingUri(std::string uri)
 {
+	for (std::vector<Location>::const_iterator it = m_server->get_m_locations().begin() ; it != m_server->get_m_locations().end() ; ++it)
+	{
+		if (it->get_m_uri().c_str()[0] == '^')
+		{
+			std::regex regexp(it->get_m_uri().substr(1));
+			if (std::regex_match(uri, regexp))
+			{
+				m_location = const_cast<Location *>(&(*it));
+				return (true);
+			}
+		}
+	}
+
 	size_t max_uri_match = 0;
 	for (std::vector<Location>::const_iterator it = m_server->get_m_locations().begin() ; it != m_server->get_m_locations().end() ; ++it)
 	{
@@ -117,12 +130,23 @@ std::string
 Request::parseUri()
 {
 	std::string root = m_location->get_m_uri();
+
+	// yopark - 이렇게 했을 때 문제는?
+	if (m_location->get_m_uri().c_str()[0] == '^')
+		root = m_uri;
+
 	std::string uri = (root == "/") ? m_uri : m_uri.substr(m_uri.find(root) + root.size());
+
+	// yopark - 이렇게 했을 때 문제는?
+	if (m_location->get_m_uri().c_str()[0] == '^')
+		uri = m_uri;
+
 	std::string main_path = uri;
 	std::string refer_path = uri;
 
 	if (ft::isDirectory(getTranslatedPath(m_location->get_m_root_path(), uri)) && !m_location->get_m_autoindex())
 		uri = m_uri = getIndexPath(get_m_location()->get_m_index(), getTranslatedPath(m_location->get_m_root_path(), uri));
+
 	for (std::set<std::string>::const_iterator it = m_location->get_m_cgi().begin() ; it != m_location->get_m_cgi().end() ; ++it)
 	{
 		if (uri.find(*it) != std::string::npos)
@@ -176,7 +200,9 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		throw (40401);
 	if (!m_location->get_m_echo_msg().empty())
 		return ;
+
 	std::string translated_path = parseUri();
+
 	if (translated_path.empty())
 		throw (40002);
 	if (ft::isFile(translated_path) && m_uri_type != CGI_PROGRAM)

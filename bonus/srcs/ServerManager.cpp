@@ -260,7 +260,7 @@ ServerManager::isValidServerBlock(std::string& server_block, Config& config)
 	int worker_count = ft::stoi(map_block["WORKER"]);
 	if (worker_count < 1 || worker_count > 10)
 		return (false);
-		
+
 	return (true);
 }
 
@@ -305,7 +305,7 @@ ServerManager::isValidLocationBlock(std::string& location_block, Config& config)
 	}
 
 	std::vector<std::string> location = ft::split(ft::rtrim(map_block[key[0]], " \t{"), ' ');
-	if (location.size() != 1 || location[0].empty() || location[0][0] != '/')
+	if (location.size() != 1 || location[0].empty() || !(location[0][0] != '/' || location[0][0] != '^'))
 		return (false);
 
 	struct stat buf;
@@ -477,7 +477,7 @@ ServerManager::resetMaxFd(int new_max_fd)
 namespace {
 	std::vector<std::string> getPorts(std::string& server_block)
 	{
-		
+
 		std::string port_tokens = ft::stringVectorToMap(ft::split(server_block, '\n'), ' ').find("port")->second;
 
 		std::vector<std::string> ports = ft::split(ft::trim(port_tokens, "[]"), ',');
@@ -485,7 +485,7 @@ namespace {
 			ports[i] = ft::trim(ports[i], " ");
 		return (ports);
 	}
-	
+
 	std::string convertServerBlock(std::string server_block, std::string port)
 	{
 		int start_idx = server_block.find("port") + 5;

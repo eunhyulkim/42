@@ -11,7 +11,7 @@
 Location::Location() {}
 Location::Location(const std::string& location_uri, std::string location_block, size_t server_limit_client_body_size)
 : m_uri(location_uri)
-{	
+{
 	std::map<std::string, std::string> map_block = ft::stringVectorToMap(ft::split(location_block, '\n'), ' ');
 	if (ft::hasKey(map_block, "root"))
 		this->m_root_path = map_block.find("root")->second;
@@ -49,7 +49,7 @@ Location::Location(const std::string& location_uri, std::string location_block, 
 		this->m_limit_client_body_size = server_limit_client_body_size;
 }
 
-Location::Location(const Location& copy) 
+Location::Location(const Location& copy)
 {
 	this->m_uri = copy.get_m_uri();
 	this->m_root_path = copy.get_m_root_path();
