@@ -1087,23 +1087,36 @@ namespace {
 			close(fd5);
 	}
 
-	int pythonCGI()
+	int pythonCGI(char **env)
 	{
-		PyObject * pModule = NULL;
-		PyObject * pFunc   = NULL;
+		PyObject *pModule = NULL;
+		PyObject *pFunc = NULL;
+		PyObject *pArg = NULL;
 		std::string pwd = "import sys; sys.path.insert(0, '";
+		std::string env_str;
 		char wd[BUFSIZ];
+
 		getcwd(wd, BUFSIZ);
 		pwd += wd;
 		pwd += "')";
+		for (int i = 0; env[i]; ++i)
+		{
+			env_str += env[i];
+			env_str += " ";
+		}
 
 		Py_Initialize();
 		// PyRun_SimpleString ("import sys; sys.path.insert(0, '/Users/jujeong/webserv/bonus')");
 		PyRun_SimpleString (pwd.c_str());
 		pModule = PyImport_ImportModule("cgi");
 		pFunc   = PyObject_GetAttrString(pModule, "cgi_test");
+		(void)env;
+		// pArg = Py_BuildValue("i", 42);
+		// pArg = Py_BuildValue("s", env_str.c_str());
+		pArg = Py_BuildValue("(s)", env_str.c_str());
+		// pArg = Py_BuildValue("(s)", "SERVER_NAMEdefault POSTASF");
 		if(pFunc != NULL) {
-			PyEval_CallObject(pFunc, NULL);
+			PyEval_CallObject(pFunc, pArg);
 			Py_Finalize();
 		}
 		else {
@@ -1123,7 +1136,7 @@ namespace {
 		std::string ext = script_name.substr(script_name.rfind(".") + 1);
 		if (ext == "php" && execve("./php-cgi", arg, env) == -1)
 			exit(EXIT_FAILURE);
-		else if (ext == "py" && pythonCGI())
+		else if (ext == "py" && pythonCGI(env))
 			exit(EXIT_SUCCESS);
 		else if (execve(arg[0], arg, env) == -1)
 			exit(EXIT_FAILURE);

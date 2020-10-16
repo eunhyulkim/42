@@ -1,7 +1,11 @@
-def cgi_test():
-	a = input()
+def cgi_test(a):
+	# a = input()
 	print('Content-Type: text/plain')
 	print('')
-	print(a)
 	print('This is my test!')
-	print('Art')
+	print('TEST')
+	print('TEST')
+	print('TEST')
+	print('TEST')
+	print('TEST')
+	print('TEST')
