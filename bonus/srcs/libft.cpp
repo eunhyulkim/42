@@ -334,6 +334,7 @@ namespace ft
 		}
 		if (s.length() != 0)
 			ret.push_back(s);
+		
 		return (ret);
 	}
 
@@ -357,6 +358,8 @@ namespace ft
 			return ret;
 		for (size_t i = 0; i < stringVector.size(); ++i)
 		{
+			if (stringVector[i].empty())
+				continue ;
 			if (stringVector[i].find(sep) == std::string::npos)
 				throw (std::invalid_argument("Not found sep in string"));
 			if (stringVector[i].find(sep) == 0)
@@ -591,11 +594,9 @@ namespace ft
 /* --------------------------- LOG UTIL FUNCTION ---------------------------- */
 /* ************************************************************************** */
 
-	void log(int access_fd, int error_fd, std::string text) {
-		if (access_fd != -1)
-			write(access_fd, text.c_str(), text.size());
-		if (error_fd != -1)
-			write(error_fd, text.c_str(), text.size());
+	void log(int log_fd, std::string text) {
+		if (log_fd != -1)
+			write(log_fd, text.c_str(), text.size());
 	}
 
 	bool isRightTime(int second) {

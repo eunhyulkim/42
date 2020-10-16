@@ -42,6 +42,7 @@ class Worker
 		pthread_mutex_t *m_live_mutex;
 		std::map<std::string, pthread_mutex_t> *m_uri_mutex;
 
+		int m_idx;
 		pthread_t m_pthread;
 		bool m_work_status;
 		Fdset m_fdset;
@@ -49,7 +50,7 @@ class Worker
 		int m_client_fd;
 		Worker();
 	public:
-		Worker(ServerManager* server_manager, Server* server, pthread_mutex_t* job_mutex, pthread_mutex_t* live_mutex,std::map<std::string, pthread_mutex_t> *uri_mutex);
+		Worker(ServerManager* server_manager, Server* server, pthread_mutex_t* job_mutex, pthread_mutex_t* live_mutex,std::map<std::string, pthread_mutex_t> *uri_mutex, int idx);
 		Worker(const Worker& copy);
 		Worker& operator=(const Worker& obj);
 		virtual ~Worker();
@@ -66,8 +67,10 @@ class Worker
 		int workerSelect();
 
 		/* getter */
+		int get_m_idx() const;
 		int get_max_fd();
 		const Connection& get_m_connection() const;
+		Config* get_m_config() const;
 
 		/* setter */
 		void set_m_work_status(bool status);
@@ -88,6 +91,7 @@ class Worker
 		bool parseBody();
 		void recvRequest();
 		void executeAutoindex();
+		void executeEcho();
 		void executeGet();
 		void executeHead();
 		void executeTrace();
@@ -106,13 +110,17 @@ class Worker
 		void createResponse(Connection& connection, int status, headers_t headers = headers_t(), std::string body = "");
 		void createCGIResponse(int& status, headers_t& headers, std::string& body);
 
-
-
-
-		void clearConnection();
-		
+		void clearConnection();		
 		bool isFree() const;
 		void exit();
+
+		/* log functions */
+		void writeWorkerHealthLog(std::string msg);
+		void writeWorkStartLog();
+		void writeCreateNewRequestLog(const Request& request);
+		void reportCreateNewRequestLog(int status);
+		void writeCreateNewResponseLog(const Response& response);
+		void writeSendResponseLog(const Response& response);
 };
 
 /* global operator overload */
