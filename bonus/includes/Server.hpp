@@ -37,6 +37,8 @@ class Server
 		pthread_mutex_t m_live_mutex;
 		std::map<std::string, pthread_mutex_t> m_uri_mutex;
 		std::vector<Worker *> m_workers;
+		int m_worker_count;
+		int m_health_check_interval;
 	private:
 		/* connection management */
 		// bool hasException(int client_fd);
@@ -66,10 +68,13 @@ class Server
 		int getFreeWorkerCount() const;
 		bool get_m_server_live() const;
 		std::queue<Job>* get_m_job_queue() const;
+		int get_m_worker_count() const;
+		int get_m_health_check_interval() const;
+
 		Server *clone();
 
 		/* declare member function */
-		void createWorkers(int worker_count);
+		void createWorkers();
 		void runWorkers();
 		bool isExistFreeWorker();
 		void run();
@@ -77,15 +82,10 @@ class Server
 		void exit();
 
 		/* log function */
+		void writeCreateServerLog(std::string, int port);
 		void writeDetectNewConnectionLog();
 		void writeCreateNewConnectionLog(int client_fd, std::string client_ip, int client_port);
 		void reportCreateNewConnectionLog();
-		void writeDetectNewRequestLog(const Connection& connection);
-		void writeCreateNewRequestLog(const Request& request);
-		void reportCreateNewRequestLog(const Connection& connection, int status);
-		void writeCreateNewResponseLog(const Response& response);
-		void writeSendResponseLog(const Response& response);
-		void writeCloseConnectionLog(int client_fd);
 };
 
 /* global operator overload */

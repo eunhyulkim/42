@@ -1,17 +1,13 @@
 #include "ServerManager.hpp"
 #include <errno.h>
 
-bool g_live;
+bool g_server_live;
 
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
 /* ************************************************************************** */
 
-int ServerManager::error_fd = -1;
-int ServerManager::access_fd = -1;
-int ServerManager::proxy_fd = -1;
-int ServerManager::stdin_fd = dup(0);
-int ServerManager::stdout_fd = dup(1);
+int ServerManager::log_fd = -1;
 
 /* ************************************************************************** */
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
@@ -189,7 +185,7 @@ ServerManager::isValidConfigBlock(std::string& config_block)
 {
 	std::map<std::string, std::string>map_block = ft::stringVectorToMap(ft::split(config_block, '\n'), ' ');
 	std::string key[4] = {"SOFTWARE_NAME", "SOFTWARE_VERSION", "HTTP_VERSION", "CGI_VERSION"};
-	if (map_block.size() != 4)
+	if (map_block.size() < 4)
 		return (false);
 	for (int i = 0; i < 4; ++i) {
 		if (!ft::hasKey(map_block, key[i]))
@@ -217,28 +213,32 @@ ServerManager::isValidConfigBlock(std::string& config_block)
 */
 
 bool
-ServerManager::isValidServerBlock(std::string& server_block)
+ServerManager::isValidServerBlock(std::string& server_block, Config& config)
 {
 	std::map<std::string, std::string>map_block = ft::stringVectorToMap(ft::split(server_block, '\n'), ' ');
-	std::string key[6] = {"host", "port", "REQUEST_URI_LIMIT_SIZE", "REQUEST_HEADER_LIMIT_SIZE", \
-	"DEFAULT_ERROR_PAGE", "LIMIT_CLIENT_BODY_SIZE"};
+	std::string key[] = {"host", "port", "REQUEST_URI_LIMIT_SIZE", "REQUEST_HEADER_LIMIT_SIZE", \
+	"DEFAULT_ERROR_PAGE", "LIMIT_CLIENT_BODY_SIZE", "WORKER"};
 
-	if (map_block.size() < 6 || map_block.size() > 7)
+	if (map_block.size() < 6 || map_block.size() > 9)
 		return (false);
-	for (int i = 0; i < 6; ++i) {
+	for (int i = 0; i < 7; ++i) {
 		if (!ft::hasKey(map_block, key[i]))
 			return (false);
 	}
-	if (map_block.size() == 7 && !ft::hasKey(map_block, "server_name"))
-		return (false);
 
 	std::vector<std::string> ip_tokens = ft::split(map_block.find(key[0])->second, '.');
 	if (ip_tokens.size() != 4 || !std::all_of(ip_tokens.begin(), ip_tokens.end(), isValidIpByte))
 		return (false);
 
-	int port = std::atoi(map_block.find(key[1])->second.c_str());
-	if (port != 80 && port != 443 && (port < 1024 || port > 49151))
+	std::vector<std::string> ports = ft::split(ft::trim(map_block["port"], "[]"), ',');
+	if (ports.size() > 1 && !config.is_on_plugin_array_var())
 		return (false);
+	for (size_t i = 0; i < ports.size(); ++i)
+	{
+		int port = std::atoi(ft::trim(ports[i], " ").c_str());
+		if (port != 80 && port != 443 && (port < 1024 || port > 49151))
+			return (false);
+	}
 
 	int uri_limit = std::atoi(map_block.find(key[2])->second.c_str());
 	if (uri_limit < REQUEST_URI_LIMIT_SIZE_MIN || uri_limit > REQUEST_URI_LIMIT_SIZE_MAX)
@@ -257,6 +257,10 @@ ServerManager::isValidServerBlock(std::string& server_block)
 	if (body_limit < 0 || body_limit > LIMIT_CLIENT_BODY_SIZE_MAX)
 		return (false);
 
+	int worker_count = ft::stoi(map_block["WORKER"]);
+	if (worker_count < 1 || worker_count > 10)
+		return (false);
+		
 	return (true);
 }
 
@@ -271,19 +275,32 @@ ServerManager::isValidServerBlock(std::string& server_block)
 */
 
 bool
-ServerManager::isValidLocationBlock(std::string& location_block)
+ServerManager::isValidLocationBlock(std::string& location_block, Config& config)
 {
 	std::map<std::string, std::string>map_block = ft::stringVectorToMap(ft::split(location_block, '\n'), ' ');
 	std::string key[] = {"location", "root", "allow_method", "auth_basic_realm", \
-	"auth_basic_file", "index", "cgi", "autoindex", "limit_client_body_size"};
+	"auth_basic_file", "index", "cgi", "autoindex", "limit_client_body_size", "echo"};
 	std::set<std::string> key_set(key, key + sizeof(key) / sizeof(key[0]));
+	bool has_root = true;
 
-	if (map_block.size() < 2 || map_block.size() > 9)
+	if (map_block.size() < 2)
 		return (false);
-	if (!ft::hasKey(map_block, "location") || !ft::hasKey(map_block, "root"))
+	if (!ft::hasKey(map_block, "location"))
 		return (false);
+	if (!ft::hasKey(map_block, "root"))
+	{
+		has_root = false;
+		if (!config.is_on_plugin_echo())
+		 	return (false);
+		if (!ft::hasKey(map_block, "echo") || map_block["echo"].empty())
+			return (false);
+	}
 	for (std::map<std::string, std::string>::iterator it = map_block.begin(); it != map_block.end(); ++it) {
 		if (!ft::hasKey(key_set, it->first) || it->second.empty())
+			return (false);
+		if (!config.is_on_plugin_echo() && (it->first == "echo"))
+			return (false);
+		if (!config.is_on_plugin_basic_auth() && (it->first).find("auth") != std::string::npos)
 			return (false);
 	}
 
@@ -292,10 +309,13 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 		return (false);
 
 	struct stat buf;
-	std::string root = map_block[key[1]];
-	stat(root.c_str(), &buf);
-	if (!S_ISDIR(buf.st_mode) || root.empty() || (root != "/" && root.size() > 1 && root[root.size() - 1] == '/'))
-		return (false);
+	if (has_root)
+	{
+		std::string root = map_block[key[1]];
+		stat(root.c_str(), &buf);
+		if (!S_ISDIR(buf.st_mode) || root.empty() || (root != "/" && root.size() > 1 && root[root.size() - 1] == '/'))
+			return (false);
+	}
 
 	if ((ft::hasKey(map_block, key[3]) && !ft::hasKey(map_block, key[4]))
 	|| (!ft::hasKey(map_block, key[3]) && ft::hasKey(map_block, key[4])))
@@ -335,6 +355,12 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 	if (ft::hasKey(map_block, key[8])) {
 		std::string size = map_block[key[8]];
 		if (size.empty() || !std::all_of(size.begin(), size.end(), isDigit))
+			return (false);
+	}
+
+	if (ft::hasKey(map_block, key[9])) {
+		std::string echo_msg = map_block[key[9]];
+		if (echo_msg.empty() || echo_msg.front() != '\"' || echo_msg.back() != '\"')
 			return (false);
 	}
 
@@ -448,6 +474,29 @@ ServerManager::resetMaxFd(int new_max_fd)
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
 /* ************************************************************************** */
 
+namespace {
+	std::vector<std::string> getPorts(std::string& server_block)
+	{
+		
+		std::string port_tokens = ft::stringVectorToMap(ft::split(server_block, '\n'), ' ').find("port")->second;
+
+		std::vector<std::string> ports = ft::split(ft::trim(port_tokens, "[]"), ',');
+		for (size_t i = 0; i < ports.size(); ++i)
+			ports[i] = ft::trim(ports[i], " ");
+		return (ports);
+	}
+	
+	std::string convertServerBlock(std::string server_block, std::string port)
+	{
+		int start_idx = server_block.find("port") + 5;
+		int end_idx = start_idx;
+		while (server_block[end_idx] != '\r' && server_block[end_idx] != '\n')
+			++end_idx;
+		server_block.replace(start_idx, end_idx - start_idx, port);
+		return (server_block);
+	}
+}
+
 void
 ServerManager::createServer(const std::string& configuration_file_path, char **env)
 {
@@ -457,6 +506,8 @@ ServerManager::createServer(const std::string& configuration_file_path, char **e
 
 	if (!splitConfigString(config_string, config_block, server_strings))
 		throw (std::invalid_argument("Failed to split configuration string"));
+	if (config_block.find("proxy {") != std::string::npos)
+		config_block = config_block.substr(0, config_block.find("proxy {"));
 	if (!isValidConfigBlock(config_block))
 		throw (std::invalid_argument("Config block is not valid."));
 	m_config = Config(config_block, env);
@@ -466,35 +517,36 @@ ServerManager::createServer(const std::string& configuration_file_path, char **e
 		std::vector<std::string> location_blocks;
 		if (!splitServerString(server_strings[i], server_block, location_blocks))
 			throw (std::invalid_argument("Failed to split Sever string(" + ft::to_string(i) + ")"));
-		if (!isValidServerBlock(server_block))
+		if (!isValidServerBlock(server_block, m_config))
 			throw (std::invalid_argument("Server block(" + ft::to_string(i) + ") is not valid."));
 		for (size_t j = 0; j < location_blocks.size(); ++j) {
-			if (!isValidLocationBlock(location_blocks[j]))
+			if (!isValidLocationBlock(location_blocks[j], m_config))
 				throw (std::invalid_argument("Location block(" + ft::to_string(i) \
 				+ "-" + ft::to_string(j) + ") is not valid."));
 		}
-		m_servers.push_back(Server(this, server_block, location_blocks, &this->m_config));
-		// for (int i = 0; i < getPortCount(sever_block); ++i)
-		// 	m_servers.push_back(Server(this, convert(server_block, i), location_blocks, &this->m_config));
-		m_server_fdset.insert(m_servers.back().get_m_fd());
+		std::vector<std::string> ports = getPorts(server_block);
+		for (size_t i = 0; i < ports.size(); ++i)
+		{
+			m_servers.push_back(Server(this, convertServerBlock(server_block, ports[i]), location_blocks, &this->m_config));
+			m_server_fdset.insert(m_servers.back().get_m_fd());
+		}
 	}
-	writeCreateServerLog();
-	createWorkers(WORKER_COUNT); // to config variable
+	createWorkers(); // to config variable
 }
 
 void
-ServerManager::createWorkers(int worker_count)
+ServerManager::createWorkers()
 {
 	std::vector<Server>::iterator it = m_servers.begin();
 	for (; it != m_servers.end(); ++it)
-		it->createWorkers(worker_count);
+		it->createWorkers();
 }
 
 void
 changeSignal(int sig)
 {
-	ft::log(ServerManager::access_fd, -1, "signal execute");
-	g_live = false;
+	ft::log(ServerManager::log_fd, ft::getTimestamp() + "[Detected] Exit Signal detected.\n");
+	g_server_live = false;
 	(void)sig;
 }
 
@@ -518,7 +570,7 @@ changeSignal(int sig)
 void
 ServerManager::runServer()
 {
-	g_live = true;
+	g_server_live = true;
 	signal(SIGINT, changeSignal);
 	runWorkers();
 
@@ -526,27 +578,23 @@ ServerManager::runServer()
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;
 
-	while (g_live)
+	while (g_server_live)
 	{
 		int cnt;
 		fdCopy(ALL_SET);
 		resetMaxFd();
 
 		if ((cnt = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, \
-		&this->m_error_copy_set, &timeout)) == -1)
+		NULL, &timeout)) == -1)
 		{
 			perror("why?");
-			ft::log(ServerManager::access_fd, ServerManager::error_fd, "[Failed][Function]Select function failed(return -1)");
+			ft::log(ServerManager::log_fd, "[Failed][Function]Select function failed(return -1)");
 			throw std::runtime_error("select error");
 		}
 		else if (cnt == 0)
 			continue ;
-		writeServerHealthLog();
 		for (std::vector<Server>::iterator it = m_servers.begin() ; it != m_servers.end() ; ++it)
-		{
 			it->run();
-			// closeOldConnection(it);
-		}
 	}
 	exitServer("server exited.\n");
 }
@@ -562,8 +610,7 @@ ServerManager::runWorkers()
 void
 ServerManager::exitServer(const std::string& error_msg)
 {
-	close(ServerManager::access_fd);
-	close(ServerManager::error_fd);
+	close(ServerManager::log_fd);
 	(void)error_msg;
 	// std::cout << error_msg << std::endl;
 	std::vector<Server>::iterator it = m_servers.begin();
@@ -577,33 +624,6 @@ ServerManager::exitServer(const std::string& error_msg)
 /* ************************************************************************** */
 
 void
-ServerManager::openLog()
-{
-	if ((ServerManager::access_fd = open(ACCESS_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
-		return ;
-	if ((ServerManager::error_fd = open(ERROR_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
-		return ;
-	if ((ServerManager::proxy_fd = open(PROXY_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
-		return ;
-}
-
-void
-ServerManager::writeCreateServerLog()
-{
-	std::string text = "[Created][Servers]" + ft::to_string(m_servers.size()) + " servers created successfully.\n";
-	ft::log(ServerManager::access_fd, -1, text);
-	return ;
-}
-
-void
-ServerManager::writeServerHealthLog(bool ignore_interval)
-{
-	if (ignore_interval == false && !ft::isRightTime(SERVER_HEALTH_LOG_SECOND))
-		return ;
-	(void)ignore_interval;
-	int fd = ServerManager::access_fd;
-	std::string text = "[HealthCheck][Server][Max_fd:" + ft::to_string(m_max_fd) \
-	+ "][Connection:" + ft::getSetFdString(m_max_fd, &m_read_set) + "][Response:" + ft::getSetFdString(m_max_fd, &m_write_set) + "]\n";
-	ft::log(fd, -1, text);
-	return ;
+ServerManager::openLog() {
+	ServerManager::log_fd = open(SERVER_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755);
 }

@@ -8,11 +8,7 @@
 class ServerManager
 {
 	public:
-		static int error_fd;
-		static int access_fd;
-		static int proxy_fd;
-		static int stdin_fd;
-		static int stdout_fd;
+		static int log_fd;
 	private:
 		std::vector<Server> m_servers;
 		std::set<int> m_server_fdset;
@@ -28,8 +24,8 @@ class ServerManager
 		bool splitConfigString(std::string config_string, std::string& config_block, std::vector<std::string>& server_strings);
         bool splitServerString(std::string server_string, std::string& server_block, std::vector<std::string>& location_blocks);
         bool isValidConfigBlock(std::string& config_block);
-        bool isValidServerBlock(std::string& server_block);
-        bool isValidLocationBlock(std::string& location_block);
+        bool isValidServerBlock(std::string& server_block, Config& config);
+        bool isValidLocationBlock(std::string& location_block, Config& config);
 		// void closeOldConnection(std::vector<Server>::iterator it);
 	public:
 		ServerManager();
@@ -59,7 +55,7 @@ class ServerManager
 
 		/* member function */
 		void createServer(const std::string& configuration_file_path, char **env);
-		void createWorkers(int worker_count = WORKER_COUNT);
+		void createWorkers();
 		void runServer();
 		void runWorkers();
 		void exitServer(const std::string& error_msg);

@@ -1,0 +1,23 @@
+[20201016_14_47_34][Created][Server][127.0.0.1:8081] server created successfully.
+[20201016_14_47_35][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_14_47_35][Detected][Connection][Server:default][127.0.0.1:8081] new connection detected.
+[20201016_14_47_35][Created][Connection][Server:default][127.0.0.1:8081][Client:127.0.0.1:58565] new connection(client fd:5) created and added to job queue.
+[20201016_14_47_35][Started][Server:127.0.0.1:8081][Worker:1/1][Client:5] new work started.
+[20201016_14_47_37][Closed][Connection][Server:127.0.0.1:8081][Worker:1/1][Client:5] client connection closed.
+[20201016_14_47_38][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_14_47_39][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_14_47_40][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_14_47_41][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_14_47_42][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_14_47_43][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_14_47_44][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_14_47_45][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_14_47_46][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_14_47_47][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_14_47_48][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_14_47_49][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_14_47_50][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_14_47_51][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_14_47_52][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_14_47_53][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_14_47_53][Detected] Exit Signal detected.
