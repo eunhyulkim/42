@@ -1106,15 +1106,11 @@ namespace {
 		}
 
 		Py_Initialize();
-		// PyRun_SimpleString ("import sys; sys.path.insert(0, '/Users/jujeong/webserv/bonus')");
 		PyRun_SimpleString (pwd.c_str());
 		pModule = PyImport_ImportModule("cgi");
 		pFunc   = PyObject_GetAttrString(pModule, "cgi_test");
 		(void)env;
-		// pArg = Py_BuildValue("i", 42);
-		// pArg = Py_BuildValue("s", env_str.c_str());
 		pArg = Py_BuildValue("(s)", env_str.c_str());
-		// pArg = Py_BuildValue("(s)", "SERVER_NAMEdefault POSTASF");
 		if(pFunc != NULL) {
 			PyEval_CallObject(pFunc, pArg);
 			Py_Finalize();

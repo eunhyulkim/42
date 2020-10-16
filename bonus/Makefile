@@ -3,7 +3,7 @@ PROXY_NAME = proxy
 CC = clang++
 RM = rm -rf
 INCLUDES = -Iincludes/
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -g
+CFLAGS = -Wall -Wextra -Werror -std=c++98
 
 SRCS_FILES = ServerManager base64 Request Location Response Config HtmlWriter \
 			 Connection libft Server Worker
