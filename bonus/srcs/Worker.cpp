@@ -798,7 +798,7 @@ Worker::executePut()
 	close(fd);
 	if (S_ISREG(buf.st_mode))
 		return (createResponse(connection, 204));
-	
+
 	headers.push_back("Location:" + m_server->get_m_host() + "/" + request.get_m_uri());
 	return (createResponse(connection, 201, headers, request.get_m_content()));
 }
@@ -934,6 +934,41 @@ namespace {
 		if (fd5 != -1)
 			close(fd5);
 	}
+
+	int pythonCGI(char **env)
+	{
+		PyObject *pModule = NULL;
+		PyObject *pFunc = NULL;
+		PyObject *pArg = NULL;
+		std::string pwd = "import sys; sys.path.insert(0, '";
+		std::string env_str;
+		char wd[BUFSIZ];
+
+		getcwd(wd, BUFSIZ);
+		pwd += wd;
+		pwd += "')";
+		for (int i = 0; env[i]; ++i)
+		{
+			env_str += env[i];
+			env_str += " ";
+		}
+
+		Py_Initialize();
+		PyRun_SimpleString (pwd.c_str());
+		pModule = PyImport_ImportModule("cgi");
+		pFunc   = PyObject_GetAttrString(pModule, "cgi_test");
+		(void)env;
+		pArg = Py_BuildValue("(s)", env_str.c_str());
+		if(pFunc != NULL) {
+			PyEval_CallObject(pFunc, pArg);
+			Py_Finalize();
+		}
+		else {
+			exit(EXIT_FAILURE);
+		}
+		return (1);
+	}
+
 	void execveCGI(const Request& request, char **env, int *parent_write_fd, int *child_write_fd)
 	{
 		closes(parent_write_fd[1], child_write_fd[0]);
@@ -945,6 +980,8 @@ namespace {
 		std::string ext = script_name.substr(script_name.rfind(".") + 1);
 		if (ext == "php" && execve("./php-cgi", arg, env) == -1)
 			exit(EXIT_FAILURE);
+		else if (ext == "py" && pythonCGI(env))
+			exit(EXIT_SUCCESS);
 		else if (execve(arg[0], arg, env) == -1)
 			exit(EXIT_FAILURE);
 		exit(EXIT_FAILURE);
@@ -1095,7 +1132,7 @@ namespace {
 	isMethodHasBody(const Request::Method& method) {
 		return (method == Request::POST || method == Request::PUT || method == Request::TRACE);
 	}
-	
+
 	bool
 	isRequestHasBody(Request &request)
 	{
@@ -1175,7 +1212,7 @@ namespace {
 			connection.decreaseRbufFromClient(content_length + 2);
 		}
 	}
-	
+
 	int
 	recvWithoutBody(const Connection& connection, char*buf, int buf_size)
 	{
