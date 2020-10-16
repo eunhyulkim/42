@@ -325,7 +325,7 @@ Server::exit() {
 
 void
 Server::writeCreateServerLog(std::string host, int port)
-{	
+{
 	if (!m_config->is_on_plugin_health_check())
 		return ;
 	std::string text = ft::getTimestamp() + "[Created][Server][" + host + ":" + ft::to_string(port) + "]";

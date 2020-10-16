@@ -26,6 +26,8 @@
 # include <map>
 # include <random>
 
+# include <regex>
+
 # include "base64.hpp"
 # include "HtmlWriter.hpp"
 # include "libft.hpp"

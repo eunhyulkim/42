@@ -70,6 +70,7 @@
         "complex": "cpp",
         "sstream": "cpp",
         "stack": "cpp",
+        "regex": "cpp"
         "__functional_base_03": "cpp",
         "numeric": "cpp",
         "random": "cpp"
