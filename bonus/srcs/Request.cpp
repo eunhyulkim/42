@@ -73,8 +73,9 @@ Request::assignLocationMatchingUri(std::string uri)
 	{
 		if (it->get_m_uri().c_str()[0] == '^')
 		{
+			std::smatch match;
 			std::regex regexp(it->get_m_uri().substr(1), std::regex::icase);
-			if (std::regex_match(uri, regexp))
+			if (std::regex_search(uri, match, regexp) && match.prefix().str().empty())
 			{
 				m_location = const_cast<Location *>(&(*it));
 				return (true);
@@ -130,16 +131,15 @@ std::string
 Request::parseUri()
 {
 	std::string root = m_location->get_m_uri();
-
-	// yopark - 이렇게 했을 때 문제는?
-	if (m_location->get_m_uri().c_str()[0] == '^')
-		root = m_uri;
-
 	std::string uri = (root == "/") ? m_uri : m_uri.substr(m_uri.find(root) + root.size());
 
-	// yopark - 이렇게 했을 때 문제는?
-	if (m_location->get_m_uri().c_str()[0] == '^')
-		uri = m_uri;
+	if (m_location->get_m_uri()[0] == '^') {
+		std::smatch match;
+		std::regex regexp(root.substr(1), std::regex::icase);
+		std::regex_search(m_uri, match, regexp) && match.prefix().str().empty();
+		root = match.str();
+		uri = match.suffix().str();
+	}
 
 	std::string main_path = uri;
 	std::string refer_path = uri;
