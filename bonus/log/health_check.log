@@ -1,23 +1,914 @@
-[20201016_14_47_34][Created][Server][127.0.0.1:8081] server created successfully.
-[20201016_14_47_35][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_35][Detected][Connection][Server:default][127.0.0.1:8081] new connection detected.
-[20201016_14_47_35][Created][Connection][Server:default][127.0.0.1:8081][Client:127.0.0.1:58565] new connection(client fd:5) created and added to job queue.
-[20201016_14_47_35][Started][Server:127.0.0.1:8081][Worker:1/1][Client:5] new work started.
-[20201016_14_47_37][Closed][Connection][Server:127.0.0.1:8081][Worker:1/1][Client:5] client connection closed.
-[20201016_14_47_38][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_39][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_40][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_41][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_42][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_43][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_44][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_45][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_46][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_47][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_48][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_49][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_50][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_51][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_52][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_53][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_53][Detected] Exit Signal detected.
+[20201017_0_13_26][Created][Server][127.0.0.1:8081] server created successfully.
+[20201017_0_13_26][Created][Server][127.0.0.1:8082] server created successfully.
+[20201017_0_13_27][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_27][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_28][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_28][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_28][Detected][Connection][Server:default][127.0.0.1:8081] new connection detected.
+[20201017_0_13_28][Created][Connection][Server:default][127.0.0.1:8081][Client:127.0.0.1:34520] new connection(client fd:6) created and added to job queue.
+[20201017_0_13_28][Started][Server:127.0.0.1:8081][Worker:1/1][Client:6] new work started.
+[20201017_0_13_28][Detected][Connection][Server:default][127.0.0.1:8082] new connection detected.
+[20201017_0_13_28][Created][Connection][Server:default][127.0.0.1:8082][Client:127.0.0.1:34776] new connection(client fd:7) created and added to job queue.
+[20201017_0_13_28][Started][Server:127.0.0.1:8082][Worker:1/1][Client:7] new work started.
+[20201017_0_13_29][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.in of connection
+[20201017_0_13_29][Closed][Connection][Server:127.0.0.1:8081][Worker:1/1][Client:6] client connection closed.
+[20201017_0_13_29][Detected][Connection][Server:default][127.0.0.1:8081] new connection detected.
+[20201017_0_13_29][Created][Connection][Server:default][127.0.0.1:8081][Client:127.0.0.1:36568] new connection(client fd:6) created and added to job queue.
+[20201017_0_13_29][Started][Server:127.0.0.1:8081][Worker:1/1][Client:6] new work started.
+MSG_PEEK:
+FAIL /?SHOW=GAME HTTP/1.1
+Host: 127.0.0.1:8080
+Connection: keep-alive
+Cache-Control: max-age=0
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.80 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en,ko;q=0.9,ko-KR;q=0.8,en-US;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+
+[20201017_0_13_29][Failed][Request][Server:127.0.0.1:8081][Worker:1/1][Client:6][Status:40001] failed to create new request.
+[20201017_0_13_29][Created][Response:400(Bad Request)][Server:127.0.0.1:8081][Worker:1/1][Client:6][Body:625] new response created
+<!DOCTYPE html>
+<!-- saved from url=(0015)http://0.0.0.0/ -->
+<html>
+    <head>
+        <meta charse
+[20201017_0_13_29][Sended][Response:400(Bad Request)][Server:127.0.0.1:8081][Worker:1/1][Client:6][Body:625] response sended
+[20201017_0_13_29][Closed][Connection][Server:127.0.0.1:8081][Worker:1/1][Client:6] client connection closed.
+[20201017_0_13_30][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_30][Closed][Connection][Server:127.0.0.1:8082][Worker:1/1][Client:7] client connection closed.
+[20201017_0_13_31][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_31][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_32][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_32][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_33][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_33][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_34][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_34][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_35][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_36][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_36][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_37][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_38][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_38][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_39][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_39][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_40][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_40][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_41][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_41][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_42][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_42][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_43][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_43][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_44][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_44][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_45][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_45][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_46][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_47][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_47][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_48][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_48][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_49][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_49][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_50][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_50][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_51][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_52][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_52][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_53][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_53][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_54][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_54][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_55][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_55][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_56][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_56][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_57][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_57][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_58][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_58][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_59][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_13_59][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_0][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_0][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_1][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_1][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_2][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_2][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_3][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_3][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_4][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_4][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_5][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_5][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_5][Detected][Connection][Server:default][127.0.0.1:8081] new connection detected.
+[20201017_0_14_5][Created][Connection][Server:default][127.0.0.1:8081][Client:127.0.0.1:9177] new connection(client fd:6) created and added to job queue.
+[20201017_0_14_5][Started][Server:127.0.0.1:8081][Worker:1/1][Client:6] new work started.
+MSG_PEEK:
+GET /?HI=HELLO HTTP/1.1
+Host: 127.0.0.1:8080
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.80 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en,ko;q=0.9,ko-KR;q=0.8,en-US;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+
+
+[20201017_0_14_5][Failed][Request][Server:127.0.0.1:8081][Worker:1/1][Client:6][Status:40402] failed to create new request.
+[20201017_0_14_5][Created][Response:404(Not Found)][Server:127.0.0.1:8081][Worker:1/1][Client:6][Body:621] new response created
+<!DOCTYPE html>
+<!-- saved from url=(0015)http://0.0.0.0/ -->
+<html>
+    <head>
+        <meta charse
+[20201017_0_14_5][Sended][Response:404(Not Found)][Server:127.0.0.1:8081][Worker:1/1][Client:6][Body:621] response sended
+[20201017_0_14_5][Closed][Connection][Server:127.0.0.1:8081][Worker:1/1][Client:6] client connection closed.
+[20201017_0_14_6][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_6][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_7][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_7][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_8][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_8][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_9][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_9][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_10][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_10][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_11][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_11][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_12][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_12][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_13][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_13][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_14][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_14][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_15][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_15][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_16][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_17][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_17][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_18][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_18][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_19][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_19][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_20][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_20][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_21][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_21][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_22][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_22][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_23][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_23][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_24][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_24][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_25][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_25][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_26][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_26][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_27][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_27][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_28][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_28][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_29][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_29][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_30][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_30][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_31][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_31][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_32][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_32][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_33][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_33][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_34][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_34][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_35][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_36][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_36][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_37][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_37][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_38][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_38][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_39][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_39][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_40][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_40][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_41][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_41][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_42][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_42][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_43][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_43][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_44][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_44][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_45][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_45][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_46][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_46][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_47][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_47][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_48][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_48][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_49][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_49][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_50][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_50][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_51][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_51][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_52][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_52][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_53][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_53][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_54][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_54][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_55][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_55][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_56][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_57][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_57][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_58][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_58][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_59][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_14_59][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_0][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_0][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_1][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_1][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_2][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_2][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_3][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_3][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_4][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_4][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_5][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_5][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_6][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_6][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_7][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_7][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_8][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_8][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_9][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_9][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_10][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_10][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_11][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_11][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_12][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_12][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_13][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_13][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_14][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_14][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_15][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_15][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_16][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_16][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_17][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_17][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_18][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_18][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_19][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_19][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_20][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_20][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_21][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_21][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_22][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_22][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_23][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_24][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_24][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_25][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_25][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_26][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_26][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_27][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_27][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_28][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_28][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_29][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_29][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_30][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_30][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_31][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_31][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_32][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_32][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_33][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_33][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_34][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_34][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_35][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_35][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_36][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_36][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_37][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_37][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_38][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_38][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_39][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_39][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_40][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_40][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_41][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_41][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_41][Detected][Connection][Server:default][127.0.0.1:8081] new connection detected.
+[20201017_0_15_41][Created][Connection][Server:default][127.0.0.1:8081][Client:127.0.0.1:46298] new connection(client fd:6) created and added to job queue.
+[20201017_0_15_41][Started][Server:127.0.0.1:8081][Worker:1/1][Client:6] new work started.
+MSG_PEEK:
+GET / HTTP/1.1
+Host: 127.0.0.1:8080
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.80 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en,ko;q=0.9,ko-KR;q=0.8,en-US;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+If-Modified-Since: Tue, 17 Oct 2020 00:00:15 GMT
+
+
+[20201017_0_15_41][Created][Request][Server:127.0.0.1:8081][Worker:1/1][Client:6][Method:GET][URI:index.html][Path:/Users/gim-eunhyul/42seoul/subject/webserv/HelloService/][Query:] new request created.
+[20201017_0_15_41][Created][Response:200(OK)][Server:127.0.0.1:8081][Worker:1/1][Client:6][Body:3194] new response created
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-
+[20201017_0_15_41][Sended][Response:200(OK)][Server:127.0.0.1:8081][Worker:1/1][Client:6][Body:3194] response sended
+[20201017_0_15_41][Closed][Connection][Server:127.0.0.1:8081][Worker:1/1][Client:6] client connection closed.
+[20201017_0_15_41][Detected][Connection][Server:default][127.0.0.1:8081] new connection detected.
+[20201017_0_15_41][Created][Connection][Server:default][127.0.0.1:8081][Client:127.0.0.1:46554] new connection(client fd:6) created and added to job queue.
+[20201017_0_15_41][Started][Server:127.0.0.1:8081][Worker:1/1][Client:6] new work started.
+MSG_PEEK:
+GET /index.css HTTP/1.1
+Host: 127.0.0.1:8080
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.80 Safari/537.36
+Accept: text/css,*/*;q=0.1
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Dest: style
+Referer: http://127.0.0.1:8080/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en,ko;q=0.9,ko-KR;q=0.8,en-US;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+If-Modified-Since: Tue, 17 Oct 2020 00:00:15 GMT
+
+
+[20201017_0_15_41][Detected][Connection][Server:default][127.0.0.1:8082] new connection detected.
+[20201017_0_15_41][Created][Connection][Server:default][127.0.0.1:8082][Client:127.0.0.1:46810] new connection(client fd:7) created and added to job queue.
+[20201017_0_15_41][Started][Server:127.0.0.1:8082][Worker:1/1][Client:7] new work started.
+MSG_PEEK:
+GET /semantic.css HTTP/1.1
+Host: 127.0.0.1:8080
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.80 Safari/537.36
+Accept: text/css,*/*;q=0.1
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Dest: style
+Referer: http://127.0.0.1:8080/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en,ko;q=0.9,ko-KR;q=0.8,en-US;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+If-Modified-Since: Tue, 17 Oct 2020 00:00:15 GMT
+
+
+[20201017_0_15_41][Created][Request][Server:127.0.0.1:8081][Worker:1/1][Client:6][Method:GET][URI:/index.css][Path:/Users/gim-eunhyul/42seoul/subject/webserv/HelloService/index.css][Query:] new request created.
+[20201017_0_15_41][Created][Request][Server:127.0.0.1:8082][Worker:1/1][Client:7][Method:GET][URI:/semantic.css][Path:/Users/gim-eunhyul/42seoul/subject/webserv/HelloService/semantic.css][Query:] new request created.
+[20201017_0_15_41][Created][Response:200(OK)][Server:127.0.0.1:8081][Worker:1/1][Client:6][Body:683] new response created
+#container {
+  width: 100%;
+  height: 100%;
+  padding: 5rem;
+  background-color: rgb(76, 163, 119);
+
+[20201017_0_15_41][Sended][Response:200(OK)][Server:127.0.0.1:8081][Worker:1/1][Client:6][Body:683] response sended
+[20201017_0_15_41][Closed][Connection][Server:127.0.0.1:8081][Worker:1/1][Client:6] client connection closed.
+[20201017_0_15_41][Detected][Connection][Server:default][127.0.0.1:8081] new connection detected.
+[20201017_0_15_41][Started][Server:127.0.0.1:8081][Worker:1/1][Client:6] new work started.
+MSG_PEEK:
+GET /semantic.js HTTP/1.1
+Host: 127.0.0.1:8080
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.80 Safari/537.36
+Accept: */*
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Dest: script
+Referer: http://127.0.0.1:8080/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en,ko;q=0.9,ko-KR;q=0.8,en-US;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+If-Modified-Since: Tue, 17 Oct 2020 00:00:15 GMT
+
+
+[20201017_0_15_41][Created][Connection][Server:default][127.0.0.1:8081][Client:127.0.0.1:47322] new connection(client fd:6) created and added to job queue.
+[20201017_0_15_41][Created][Request][Server:127.0.0.1:8081][Worker:1/1][Client:6][Method:GET][URI:/semantic.js][Path:/Users/gim-eunhyul/42seoul/subject/webserv/HelloService/semantic.js][Query:] new request created.
+[20201017_0_15_41][Created][Response:200(OK)][Server:127.0.0.1:8082][Worker:1/1][Client:7][Body:816298] new response created
+ /*
+ * # Semantic UI - 2.3.1
+ * https://github.com/Semantic-Org/Semantic-UI
+ * http://www.semantic-u
+[20201017_0_15_41][Created][Response:200(OK)][Server:127.0.0.1:8081][Worker:1/1][Client:6][Body:731533] new response created
+ /*
+ * # Semantic UI - 2.3.1
+ * https://github.com/Semantic-Org/Semantic-UI
+ * http://www.semantic-u
+[20201017_0_15_41][Sended][Response:200(OK)][Server:127.0.0.1:8081][Worker:1/1][Client:6][Body:731533] response sended
+[20201017_0_15_41][Sended][Response:200(OK)][Server:127.0.0.1:8082][Worker:1/1][Client:7][Body:816298] response sended
+[20201017_0_15_41][Closed][Connection][Server:127.0.0.1:8082][Worker:1/1][Client:7] client connection closed.
+[20201017_0_15_41][Detected][Connection][Server:default][127.0.0.1:8082] new connection detected.
+[20201017_0_15_41][Created][Connection][Server:default][127.0.0.1:8082][Client:127.0.0.1:47578] new connection(client fd:7) created and added to job queue.
+[20201017_0_15_41][Started][Server:127.0.0.1:8082][Worker:1/1][Client:7] new work started.
+MSG_PEEK:
+GET /basic.js HTTP/1.1
+Host: 127.0.0.1:8080
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.80 Safari/537.36
+Accept: */*
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Dest: script
+Referer: http://127.0.0.1:8080/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en,ko;q=0.9,ko-KR;q=0.8,en-US;q=0.7,ja;q=0.6,it;q=0.5,fr;q=0.4
+If-Modified-Since: Tue, 17 Oct 2020 00:00:15 GMT
+
+
+[20201017_0_15_41][Created][Request][Server:127.0.0.1:8082][Worker:1/1][Client:7][Method:GET][URI:/basic.js][Path:/Users/gim-eunhyul/42seoul/subject/webserv/HelloService/basic.js][Query:] new request created.
+[20201017_0_15_41][Created][Response:200(OK)][Server:127.0.0.1:8082][Worker:1/1][Client:7][Body:20452] new response created
+$(document).ready(function() {
+  $('.ui.dropdown')
+    .dropdown()
+  ;
+
+  $('.ui.Dropdown').dropdown
+[20201017_0_15_41][Sended][Response:200(OK)][Server:127.0.0.1:8082][Worker:1/1][Client:7][Body:20452] response sended
+[20201017_0_15_43][Closed][Connection][Server:127.0.0.1:8081][Worker:1/1][Client:6] client connection closed.
+[20201017_0_15_43][Closed][Connection][Server:127.0.0.1:8082][Worker:1/1][Client:7] client connection closed.
+[20201017_0_15_44][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_44][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_45][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_45][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_46][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_46][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_47][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_47][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_48][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_48][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_49][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_49][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_50][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_50][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_51][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_51][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_52][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_52][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_53][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_53][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_54][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_54][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_55][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_55][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_56][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_56][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_57][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_57][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_58][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_58][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_59][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_15_59][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_0][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_0][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_1][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_1][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_2][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_2][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_3][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_3][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_4][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_4][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_5][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_5][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_6][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_6][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_7][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_7][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_8][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_8][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_9][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_9][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_10][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_10][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_11][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_11][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_12][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_12][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_13][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_13][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_14][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_14][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_15][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_15][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_16][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_16][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_17][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_17][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_18][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_18][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_19][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_20][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_20][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_21][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_21][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_22][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_22][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_23][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_23][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_24][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_24][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_25][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_25][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_26][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_26][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_27][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_28][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_28][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_29][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_29][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_30][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_30][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_31][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_31][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_32][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_32][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_33][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_33][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_34][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_34][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_35][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_35][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_36][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_36][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_37][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_37][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_38][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_38][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_39][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_39][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_40][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_40][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_41][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_41][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_42][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_42][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_43][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_43][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_44][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_44][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_45][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_45][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_46][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_46][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_47][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_47][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_48][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_48][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_49][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_49][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_50][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_50][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_51][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_51][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_52][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_52][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_53][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_53][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_54][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_54][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_55][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_55][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_56][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_56][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_57][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_57][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_58][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_58][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_59][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_16_59][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_0][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_0][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_1][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_1][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_2][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_2][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_3][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_3][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_4][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_4][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_5][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_5][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_6][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_6][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_7][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_7][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_8][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_8][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_9][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_10][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_10][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_11][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_11][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_12][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_12][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_13][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_13][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_14][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_14][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_15][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_15][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_16][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_16][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_17][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_17][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_18][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_18][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_19][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_19][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_20][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_20][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_21][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_22][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_22][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_23][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_23][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_24][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_24][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_25][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_25][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_26][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_26][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_27][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_27][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_28][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_28][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_29][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_29][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_30][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_31][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_31][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_32][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_32][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_33][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_33][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_34][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_34][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_35][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_35][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_36][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_36][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_37][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_37][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_38][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_38][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_39][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_39][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_40][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_40][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_41][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_41][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_42][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_42][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_43][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_43][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_44][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_44][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_45][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_45][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_46][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_46][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_47][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_47][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_48][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_48][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_49][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_49][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_50][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_50][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_51][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_51][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_52][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_52][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_53][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_53][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_54][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_54][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_55][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_55][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_56][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_56][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_57][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_57][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_58][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_58][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_59][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_17_59][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_0][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_0][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_1][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_1][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_2][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_2][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_3][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_3][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_4][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_4][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_5][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_5][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_6][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_6][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_7][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_7][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_8][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_8][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_9][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_9][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_10][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_10][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_11][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_11][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_12][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_12][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_13][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_13][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_14][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_14][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_15][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_15][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_16][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_16][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_17][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_17][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_18][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_18][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_19][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_19][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_20][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_20][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_21][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_21][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_22][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_23][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_23][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_24][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_24][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_25][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_25][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_26][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_26][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_27][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_27][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_28][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_28][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_29][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_30][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_30][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_31][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_31][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_32][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_32][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_33][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_33][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_34][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_34][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_35][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_35][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_36][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_36][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_37][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_37][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_38][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_38][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_39][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_39][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_40][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_40][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_41][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_41][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_42][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_42][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_43][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_43][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_44][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_44][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_45][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_45][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_46][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_46][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_47][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_47][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_49][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_49][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_50][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_50][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_51][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_51][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_52][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_52][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_53][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_53][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_54][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_54][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_55][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_55][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_56][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_56][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_57][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_57][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_58][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_58][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_59][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_18_59][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_0][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_0][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_1][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_2][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_2][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_3][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_3][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_4][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_4][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_5][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_5][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_6][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_6][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_7][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_7][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_8][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_8][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_9][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_9][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_10][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_10][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_11][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_11][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_12][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_12][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_13][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_13][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_14][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_14][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_15][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_15][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_16][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_16][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_17][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_17][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_18][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_18][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_19][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_19][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_20][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_20][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_21][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_22][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_22][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_23][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_23][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_24][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_24][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_25][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_26][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_26][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_27][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_27][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_28][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_28][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_29][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_29][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_30][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_30][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_31][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_31][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_32][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_32][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_33][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_33][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_34][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_34][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_35][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_35][HealthCheck][Server:127.0.0.1:8082][Worker:1/1] worker is live healthy.out of connection
+[20201017_0_19_35][Detected] Exit Signal detected.
