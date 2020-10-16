@@ -469,6 +469,7 @@ Proxy::runSendToClient(Connection& client_connection)
 	Connection& connection = client_connection;
 	Connection::Status status = connection.get_m_status();
 	int client_fd = client_connection.get_m_client_fd();
+	client_connection.set_m_last_request_at();
 
 	if (status == Connection::TO_SEND_CLIENT)
 	{
@@ -485,7 +486,6 @@ Proxy::runSendToClient(Connection& client_connection)
 		connection.set_m_status(Connection::ON_SEND_CLIENT);
 	}
 
-	
 	if (!m_manager->fdIsset(client_fd, ProxyManager::WRITE_SET) || !connection.sendFromWbuf(client_fd))
 	{
 		closeClientConnection(client_fd);
@@ -532,6 +532,7 @@ Proxy::runSendToServer(Connection& client_connection)
 	Connection& connection = client_connection;
 	Connection::Status status = connection.get_m_status();
 	int server_fd = client_connection.get_m_server_fd();
+	client_connection.set_m_last_request_at();
 
 	if (status == Connection::TO_SEND_SERVER)
 	{
@@ -593,6 +594,7 @@ Proxy::runRecvFromServer(Connection& client_connection)
 	Connection& connection = client_connection;
 	Response& response = const_cast<Response&>(client_connection.get_m_response());
 	Response::Phase phase = response.get_m_phase();
+	client_connection.set_m_last_request_at();
 	int server_fd = connection.get_m_server_fd();
 	char buff[BUFFER_SIZE];
 	int count;
@@ -633,6 +635,7 @@ Proxy::runRecvFromClient(Connection& client_connection)
 	Connection& connection = client_connection;
 	Request& request = const_cast<Request&>(client_connection.get_m_request());
 	Request::Phase phase = request.get_m_phase();
+	client_connection.set_m_last_request_at();
 	int client_fd = connection.get_m_client_fd();
 	char buff[BUFFER_SIZE];
 	int count;
@@ -935,6 +938,8 @@ Proxy::run()
 
 		if (m_fd == fd)
 			continue ;
+		if (connection.isOverTime())
+			closeClientConnection(fd);
 		if (hasSendWorkToClient(connection) && !runSendToClient(connection))
 			continue ;
 		if (hasRecvWorkFromServer(connection) && !runRecvFromServer(connection))

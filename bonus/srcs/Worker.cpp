@@ -376,7 +376,8 @@ Worker::runSend(bool& connect)
 		connection.set_m_status(Connection::ON_SEND_CLIENT);
 	}
 
-	connection.sendFromWbuf(connection.get_m_client_fd());
+	if (connection.sendFromWbuf(connection.get_m_client_fd()) == false)
+		connect = false;
 
 	bool ret = connection.isSendCompleted();
 	if (ret)
@@ -1280,7 +1281,7 @@ Worker::parseStartLine()
 	{
 		std::string start_line = connection.get_m_rbuf_from_client().substr(0, new_line);
 		connection.decreaseRbufFromClient(start_line.size() + 2);
-		request.addOrigin(start_line + "\r\n");
+		request.addOrigin(start_line + "\r\n", true);
 		request = Request(&connection, m_server, start_line);
 		return (true);
 	} else if (connection.get_m_rbuf_from_client().size() > REQUEST_URI_LIMIT_SIZE_MAX)
@@ -1328,7 +1329,7 @@ Worker::parseBody()
 	return (false);
 }
 
-void
+bool
 Worker::recvRequest()
 {
 	Connection& connection = m_connection;
@@ -1340,13 +1341,15 @@ Worker::recvRequest()
 	connection.set_m_status(Connection::ON_RECV_CLIENT);
 	if (phase == Request::READY && hasRequest() && (count = recvWithoutBody(connection, buf, sizeof(buf))) > 0)
 		connection.addRbufFromClient(buf, count);
+	if (count < 0) 
+		return (false);
 	if (phase == Request::READY && parseStartLine())
 		phase = Request::ON_HEADER;
 	if (phase == Request::ON_HEADER && parseHeader())
 	{
 		request.set_m_phase(phase = Request::ON_BODY);
 		if (isRequestHasBody(request))
-			return ;
+			return (true);
 	}
 	if (phase == Request::ON_BODY && (count = recvBody(connection, buf, sizeof(buf))) > 0)
 		connection.addRbufFromClient(buf, count);
@@ -1355,15 +1358,17 @@ Worker::recvRequest()
 	if (phase == Request::COMPLETE)
 		connection.set_m_last_request_at();
 	request.set_m_phase(phase);
+	return (true);
 }
 
 bool
-Worker::runRecvAndSolve()
+Worker::runRecvAndSolve(bool& connect)
 {
 	Connection& connection = m_connection;
 	writeWorkerHealthLog("in of RecvAndSolve with data\n" + m_connection.get_m_rbuf_from_client());
 	try {
-		recvRequest();
+		if (!recvRequest())
+			connect = false;
 	} catch (int status_code) {
 		createResponse(connection, status_code);
 		return (true);
@@ -1373,6 +1378,8 @@ Worker::runRecvAndSolve()
 		createResponse(connection, 50001);
 		return (true);
 	}
+	if (!connect)
+		return (false);
 	const Request& request = connection.get_m_request();
 	if (request.get_m_phase() == Request::COMPLETE)
 	{
@@ -1428,7 +1435,7 @@ Worker::runWork()
 		return (connect);
 	}
 	if (hasRequest() || !m_connection.get_m_rbuf_from_client().empty())
-		runRecvAndSolve();
+		runRecvAndSolve(connect);
 	return (connect);
 }
 

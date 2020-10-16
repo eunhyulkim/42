@@ -233,6 +233,8 @@ Connection::sendFromWbuf(int fd)
 	count = send(fd, m_wbuf.c_str() + m_send_data_size, count, 0);
 	if (count > 0)
 		m_send_data_size += count;
+	else
+		return (false);
 	return (true);
 }
 

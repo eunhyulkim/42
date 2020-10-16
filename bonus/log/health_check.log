@@ -1,23 +1,183 @@
-[20201016_14_47_34][Created][Server][127.0.0.1:8081] server created successfully.
-[20201016_14_47_35][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_35][Detected][Connection][Server:default][127.0.0.1:8081] new connection detected.
-[20201016_14_47_35][Created][Connection][Server:default][127.0.0.1:8081][Client:127.0.0.1:58565] new connection(client fd:5) created and added to job queue.
-[20201016_14_47_35][Started][Server:127.0.0.1:8081][Worker:1/1][Client:5] new work started.
-[20201016_14_47_37][Closed][Connection][Server:127.0.0.1:8081][Worker:1/1][Client:5] client connection closed.
-[20201016_14_47_38][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_39][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_40][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_41][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_42][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_43][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_44][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_45][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_46][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_47][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_48][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_49][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_50][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_51][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_52][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_53][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
-[20201016_14_47_53][Detected] Exit Signal detected.
+[20201016_19_43_31][Created][Server][127.0.0.1:8081] server created successfully.
+[20201016_19_43_32][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_32][Detected][Connection][Server:default][127.0.0.1:8081] new connection detected.
+[20201016_19_43_32][Created][Connection][Server:default][127.0.0.1:8081][Client:127.0.0.1:34527] new connection(client fd:5) created and added to job queue.
+[20201016_19_43_32][Started][Server:127.0.0.1:8081][Worker:1/1][Client:5] new work started.
+[20201016_19_43_32][Detected][Connection][Server:default][127.0.0.1:8081] new connection detected.
+MSG_PEEK:
+GET / HTTP/1.1
+Host: 127.0.0.1:8081
+Connection: keep-alive
+Cache-Control: max-age=0
+Authorization: Basic ZXVuaGtpbTplajQy
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36
+Sec-Fetch-User: ?1
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+If-Modified-Since: Mon, 16 Oct 2020 19:41:56 GMT
+
+
+[20201016_19_43_32][Created][Request][Server:127.0.0.1:8081][Worker:1/1][Client:5][Method:GET][URI:index.html][Path:/Users/eunhkim/webserv/HelloService/][Query:] new request created.
+[20201016_19_43_32][Created][Response:200(OK)][Server:127.0.0.1:8081][Worker:1/1][Client:5][Body:3194] new response created
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-
+[20201016_19_43_32][Sended][Response:200(OK)][Server:127.0.0.1:8081][Worker:1/1][Client:5][Body:3194] response sended
+MSG_PEEK:
+GET /index.css HTTP/1.1
+Host: 127.0.0.1:8081
+Connection: keep-alive
+Authorization: Basic ZXVuaGtpbTplajQy
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36
+Accept: text/css,*/*;q=0.1
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: no-cors
+Referer: http://127.0.0.1:8081/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+
+
+[20201016_19_43_32][Created][Request][Server:127.0.0.1:8081][Worker:1/1][Client:5][Method:GET][URI:/index.css][Path:/Users/eunhkim/webserv/HelloService/index.css][Query:] new request created.
+[20201016_19_43_32][Created][Response:200(OK)][Server:127.0.0.1:8081][Worker:1/1][Client:5][Body:683] new response created
+#container {
+  width: 100%;
+  height: 100%;
+  padding: 5rem;
+  background-color: rgb(76, 163, 119);
+
+[20201016_19_43_32][Sended][Response:200(OK)][Server:127.0.0.1:8081][Worker:1/1][Client:5][Body:683] response sended
+MSG_PEEK:
+GET /semantic.js HTTP/1.1
+Host: 127.0.0.1:8081
+Connection: keep-alive
+Authorization: Basic ZXVuaGtpbTplajQy
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36
+Accept: */*
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: no-cors
+Referer: http://127.0.0.1:8081/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+
+
+[20201016_19_43_32][Created][Request][Server:127.0.0.1:8081][Worker:1/1][Client:5][Method:GET][URI:/semantic.js][Path:/Users/eunhkim/webserv/HelloService/semantic.js][Query:] new request created.
+[20201016_19_43_32][Created][Response:200(OK)][Server:127.0.0.1:8081][Worker:1/1][Client:5][Body:731533] new response created
+ /*
+ * # Semantic UI - 2.3.1
+ * https://github.com/Semantic-Org/Semantic-UI
+ * http://www.semantic-u
+[20201016_19_43_32][Sended][Response:200(OK)][Server:127.0.0.1:8081][Worker:1/1][Client:5][Body:731533] response sended
+[20201016_19_43_33][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.in of connection
+[20201016_19_43_34][Closed][Connection][Server:127.0.0.1:8081][Worker:1/1][Client:5] client connection closed.
+[20201016_19_43_34][Created][Connection][Server:default][127.0.0.1:8081][Client:127.0.0.1:34783] new connection(client fd:5) created and added to job queue.
+[20201016_19_43_34][Detected][Connection][Server:default][127.0.0.1:8081] new connection detected.
+[20201016_19_43_34][Started][Server:127.0.0.1:8081][Worker:1/1][Client:5] new work started.
+MSG_PEEK:
+GET /semantic.css HTTP/1.1
+Host: 127.0.0.1:8081
+Connection: keep-alive
+Authorization: Basic ZXVuaGtpbTplajQy
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36
+Accept: text/css,*/*;q=0.1
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: no-cors
+Referer: http://127.0.0.1:8081/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+If-Modified-Since: Mon, 16 Oct 2020 19:41:57 GMT
+
+
+[20201016_19_43_34][Created][Request][Server:127.0.0.1:8081][Worker:1/1][Client:5][Method:GET][URI:/semantic.css][Path:/Users/eunhkim/webserv/HelloService/semantic.css][Query:] new request created.
+[20201016_19_43_34][Created][Response:200(OK)][Server:127.0.0.1:8081][Worker:1/1][Client:5][Body:816298] new response created
+ /*
+ * # Semantic UI - 2.3.1
+ * https://github.com/Semantic-Org/Semantic-UI
+ * http://www.semantic-u
+[20201016_19_43_34][Sended][Response:200(OK)][Server:127.0.0.1:8081][Worker:1/1][Client:5][Body:816298] response sended
+[20201016_19_43_36][Closed][Connection][Server:127.0.0.1:8081][Worker:1/1][Client:5] client connection closed.
+[20201016_19_43_36][Created][Connection][Server:default][127.0.0.1:8081][Client:127.0.0.1:35807] new connection(client fd:5) created and added to job queue.
+[20201016_19_43_36][Started][Server:127.0.0.1:8081][Worker:1/1][Client:5] new work started.
+MSG_PEEK:
+GET /basic.js HTTP/1.1
+Host: 127.0.0.1:8081
+Connection: keep-alive
+Authorization: Basic ZXVuaGtpbTplajQy
+If-Modified-Since: Mon, 16 Oct 2020 19:41:59 GMT
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36
+Accept: */*
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: no-cors
+Referer: http://127.0.0.1:8081/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+
+
+[20201016_19_43_36][Created][Request][Server:127.0.0.1:8081][Worker:1/1][Client:5][Method:GET][URI:/basic.js][Path:/Users/eunhkim/webserv/HelloService/basic.js][Query:] new request created.
+[20201016_19_43_36][Created][Response:200(OK)][Server:127.0.0.1:8081][Worker:1/1][Client:5][Body:20452] new response created
+$(document).ready(function() {
+  $('.ui.dropdown')
+    .dropdown()
+  ;
+
+  $('.ui.Dropdown').dropdown
+[20201016_19_43_36][Sended][Response:200(OK)][Server:127.0.0.1:8081][Worker:1/1][Client:5][Body:20452] response sended
+[20201016_19_43_38][Closed][Connection][Server:127.0.0.1:8081][Worker:1/1][Client:5] client connection closed.
+[20201016_19_43_39][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_40][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_41][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_42][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_43][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_44][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_45][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_46][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_47][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_48][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_49][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_50][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_51][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_52][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_53][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_54][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_55][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_56][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_57][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_43_57][Detected][Connection][Server:default][127.0.0.1:8081] new connection detected.
+[20201016_19_43_57][Created][Connection][Server:default][127.0.0.1:8081][Client:127.0.0.1:62175] new connection(client fd:5) created and added to job queue.
+[20201016_19_43_57][Started][Server:127.0.0.1:8081][Worker:1/1][Client:5] new work started.
+[20201016_19_43_58][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.in of connection
+[20201016_19_43_59][Closed][Connection][Server:127.0.0.1:8081][Worker:1/1][Client:5] client connection closed.
+[20201016_19_44_0][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_1][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_2][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_3][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_4][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_5][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_6][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_7][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_8][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_9][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_10][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_11][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_12][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_13][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_14][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_15][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_16][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_17][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_18][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_19][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_20][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_21][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_22][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_23][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_24][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_25][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_26][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_27][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection
+[20201016_19_44_28][HealthCheck][Server:127.0.0.1:8081][Worker:1/1] worker is live healthy.out of connection

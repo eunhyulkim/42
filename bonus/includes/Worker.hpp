@@ -89,7 +89,7 @@ class Worker
 		bool parseStartLine();
 		bool parseHeader();
 		bool parseBody();
-		void recvRequest();
+		bool recvRequest();
 		void executeAutoindex();
 		void executeEcho();
 		void executeGet();
@@ -102,7 +102,7 @@ class Worker
 		char** createCGIEnv(const Request& request);
 		void executeCGI();
 		void solveRequest();
-		bool runRecvAndSolve();
+		bool runRecvAndSolve(bool& connect);
 		bool hasSendWork();
 		bool hasExecuteWork();
 		bool runSend(bool& connect);
