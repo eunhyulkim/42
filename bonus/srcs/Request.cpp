@@ -164,10 +164,8 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		throw std::runtime_error("gettimeofday function failed in request generator");
 
 	std::vector<std::string> parsed = ft::split(start_line, ' ');
-	if (parsed.size() != 3) {
-		ft::log(ServerManager::access_fd, ServerManager::error_fd, "[StartLine]" + start_line);
+	if (parsed.size() != 3)
 		throw (40000);
-	}
 	if (!parseMethod(parsed[0]))
 		throw (40001);
 	if (parsed[1].length() > m_server->get_m_request_uri_limit_size())
@@ -176,6 +174,8 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 	m_uri = parsed[1];
 	if (!(assignLocationMatchingUri(m_uri)))
 		throw (40401);
+	if (!m_location->get_m_echo_msg().empty())
+		return ;
 	std::string translated_path = parseUri();
 	if (translated_path.empty())
 		throw (40002);

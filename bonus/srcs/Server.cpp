@@ -1,6 +1,8 @@
 #include "Server.hpp"
 #include "ServerManager.hpp"
 
+extern int g_server_live;
+
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
 /* ************************************************************************** */
@@ -32,7 +34,12 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 	m_request_header_limit_size = ft::stoi(server_map["REQUEST_HEADER_LIMIT_SIZE"]);
 	m_limit_client_body_size = ft::stoi(server_map["LIMIT_CLIENT_BODY_SIZE"]);
 	m_default_error_page = ft::getStringFromFile(server_map["DEFAULT_ERROR_PAGE"]);
-
+	m_worker_count = ft::stoi(server_map["WORKER"]);
+	m_health_check_interval = -1;
+	if (ft::hasKey(server_map, "HEALTH_CHECK_INTERVAL"))
+		m_health_check_interval = ft::stoi(server_map["HEALTH_CHECK_INTERVAL"]);
+	if (m_health_check_interval < 1)
+		m_health_check_interval = 5;
 	if((m_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
 		throw std::runtime_error("SOCKET ERROR");
 	int value = true;
@@ -62,6 +69,7 @@ Server::Server(ServerManager* server_manager, const std::string& server_block, s
 	m_job_queue = new std::queue<Job>;
 	pthread_mutex_init(&m_job_mutex, NULL);
 	pthread_mutex_init(&m_live_mutex, NULL);
+	writeCreateServerLog(m_host, m_port);
 }
 
 Server::Server(const Server& copy)
@@ -85,6 +93,8 @@ Server::Server(const Server& copy)
 	m_live_mutex = copy.m_live_mutex;
 	m_uri_mutex = copy.m_uri_mutex;
 	m_workers = copy.m_workers;
+	m_worker_count = copy.m_worker_count;
+	m_health_check_interval = copy.m_health_check_interval;
 }
 
 /* ************************************************************************** */
@@ -120,6 +130,8 @@ Server& Server::operator=(const Server& obj)
 	m_live_mutex = obj.m_live_mutex;
 	m_uri_mutex = obj.m_uri_mutex;
 	m_workers = obj.m_workers;
+	m_worker_count = obj.m_worker_count;
+	m_health_check_interval = obj.m_health_check_interval;
 
 	return (*this);
 }
@@ -172,6 +184,9 @@ const std::map<int, Connection>& Server::get_m_connections() const { return (thi
 const std::queue<Response>& Server::get_m_responses() const { return (this->m_responses); }
 bool Server::get_m_server_live() const { return (*(this->m_server_live)); }
 std::queue<Job>* Server::get_m_job_queue() const { return (this->m_job_queue); }
+int Server::get_m_worker_count() const { return (this->m_worker_count); }
+int Server::get_m_health_check_interval() const { return (this->m_health_check_interval); }
+
 namespace {
 	bool isWorkerFree(Worker* worker)
 	{
@@ -189,36 +204,8 @@ int Server::getFreeWorkerCount() const { return std::count_if(m_workers.begin(),
 /* ************************************************************************** */
 
 /* ************************************************************************** */
-/* ---------------------------------- UTIL ---------------------------------- */
-/* ************************************************************************** */
-
-/* ************************************************************************** */
-/* ----------------------------- SEND OPERATION ----------------------------- */
-/* ************************************************************************** */
-
-/* ************************************************************************** */
-/* ---------------------------- EXECUTE OPERATION --------------------------- */
-/* ************************************************************************** */
-
-/* ************************************************************************** */
 /* -------------------------- CONNECTION MANAGEMENT ------------------------- */
 /* ************************************************************************** */
-
-// bool
-// Server::hasException(int client_fd) {
-// 	return (m_manager->fdIsset(client_fd, ServerManager::ERROR_COPY_SET));
-// }
-
-// int
-// Server::getUnuseConnectionFd()
-// {
-// 	std::map<int, Connection>::iterator it = m_connections.begin();
-// 	for (; it != m_connections.end(); ++it) {
-// 		if (it->second.get_m_status() == Connection::ON_WAIT)
-// 			return (it->first);
-// 	}
-// 	return (-1);
-// }
 
 bool
 Server::hasNewConnection()
@@ -239,8 +226,7 @@ Server::acceptNewConnection()
 	ft::bzero(&client_addr, client_addr_size);
 
 	if ((client_fd = accept(m_fd, (struct sockaddr *)&client_addr, &client_addr_size)) == -1) {
-		ft::log(ServerManager::access_fd, ServerManager::error_fd, \
-		"[Failed][Function]failed to cerate client_fd by accept function");
+		ft::log(ServerManager::log_fd, ft::getTimestamp() + "[Failed][Function]failed to cerate client_fd by accept function");
 		return (ret);
 	}
 	if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1)
@@ -248,7 +234,6 @@ Server::acceptNewConnection()
 	ret.client_fd = client_fd;
 	ret.ip = ft::inet_ntoa(client_addr.sin_addr.s_addr);
 	ret.port = static_cast<int>(client_addr.sin_port);
-	// m_connections[client_fd] = Connection(client_fd, ret.ip, ret.port);
 	return (ret);
 }
 
@@ -263,10 +248,10 @@ Server* Server::clone() { return (new Server(*this)); }
 /* ************************************************************************** */
 
 void
-Server::createWorkers(int worker_count)
+Server::createWorkers()
 {
-	for (int i = 0; i < worker_count; ++i)
-		m_workers.push_back(new Worker(m_manager, this, &m_job_mutex, &m_live_mutex, &m_uri_mutex));
+	for (int i = 0; i < m_worker_count; ++i)
+		m_workers.push_back(new Worker(m_manager, this, &m_job_mutex, &m_live_mutex, &m_uri_mutex, i + 1));
 }
 
 void
@@ -296,8 +281,13 @@ Server::run()
 
 	if (hasNewConnection())
 	{
+		writeDetectNewConnectionLog();
 		while (!isExistFreeWorker())
+		{
 			usleep(100); // change to macro EVERAGE_WORK_USECOND
+			if (!g_server_live)
+				return ;
+		}
 		if ((new_job = acceptNewConnection()).client_fd == -1)
 			reportCreateNewConnectionLog();
 		else {
@@ -331,93 +321,46 @@ Server::exit() {
 /* ************************************************************************** */
 
 void
+Server::writeCreateServerLog(std::string host, int port)
+{	
+	if (!m_config->is_on_plugin_health_check())
+		return ;
+	std::string text = ft::getTimestamp() + "[Created][Server][" + host + ":" + ft::to_string(port) + "]";
+	text += " server created successfully.\n";
+	ft::log(ServerManager::log_fd, text);
+	return ;
+}
+
+void
 Server::writeDetectNewConnectionLog()
 {
-	std::string text = "[Detected][Connection][Server:" + m_server_name + "][Host:" + m_host \
-	+ "] New connection detected.\n";
-	ft::log(ServerManager::access_fd, -1, text);
+	if (!m_config->is_on_plugin_health_check())
+		return ;
+	std::string text = ft::getTimestamp() + "[Detected][Connection][Server:" + m_server_name + "][" + m_host + ":" + ft::to_string(m_port) + "] ";
+	text += "new connection detected.\n";
+	ft::log(ServerManager::log_fd, text);
 	return ;
 }
 
 void
 Server::writeCreateNewConnectionLog(int client_fd, std::string client_ip, int client_port)
 {
-	std::string text = "[Created][Connection][Server:" + m_server_name + "][CFD:" \
-	+ ft::to_string(client_fd) + "][IP:" + client_ip + "][Port:" + ft::to_string(client_port) + "]\n";
-	ft::log(ServerManager::access_fd, -1, text);
+	if (!m_config->is_on_plugin_health_check())
+		return ;
+	std::string text = ft::getTimestamp() + "[Created][Connection][Server:" + m_server_name + "][" + m_host + ":" + ft::to_string(m_port) + "]";
+	text += "[Client:" + client_ip + ":" + ft::to_string(client_port) + "] new connection(client fd:" + ft::to_string(client_fd);
+	text += ") created and added to job queue.\n";
+	ft::log(ServerManager::log_fd, text);
 	return ;
 }
 
 void
 Server::reportCreateNewConnectionLog()
 {
-	std::string text = "[Failed][Connection][Server:" + m_server_name + "][Host:" + m_host \
-	+ "] Failed to create new connection.\n";
-	ft::log(ServerManager::access_fd, ServerManager::error_fd, text);
-	return ;
-}
-
-void
-Server::writeDetectNewRequestLog(const Connection& connection)
-{
-	std::string text = "[Detected][Request][Server:" + m_server_name + "][CIP:"
-	+ connection.get_m_client_ip() + "][CFD:" + ft::to_string(connection.get_m_client_fd()) + "]"
-	+ " New request detected.\n";
-	ft::log(ServerManager::access_fd, -1, text);
-	return ;
-}
-
-void
-Server::writeCreateNewRequestLog(const Request& request)
-{
-	std::string text = "[Created][Request][Server:" + m_server_name + "][Method:" \
-	+ request.get_m_method_to_string() + "][URI:" + request.get_m_uri() + "][Path:" + request.get_m_script_translated() + "]";
-	if (request.get_m_method() == Request::GET)
-		text.append("[Query:" + request.get_m_query() + "]");
-	text.append(" New request created.\n");
-	ft::log(ServerManager::access_fd, -1, text);
-	return ;
-}
-
-void
-Server::reportCreateNewRequestLog(const Connection& connection, int status)
-{
-	std::string text = "[Failed][Request][Server:" + m_server_name + "][CIP:"
-	+ connection.get_m_client_ip() + "][CFD:" + ft::to_string(connection.get_m_client_fd()) + "]["
-	+ ft::to_string(status) + "][" + Response::status[status] + "] Failed to create new Request.\n";
-	ft::log(ServerManager::access_fd, ServerManager::error_fd, text);
-	return ;
-}
-
-void
-Server::writeCreateNewResponseLog(const Response& response)
-{
-	std::string text = ft::getTimestamp() + "[Created][Response][Server:" + m_server_name + "][" \
-	+ ft::to_string(response.get_m_status_code()) + "][" + response.get_m_status_description() + "][CFD:" \
-	+ ft::to_string(response.get_m_connection()->get_m_client_fd()) + "][headers:" \
-	+ ft::to_string(response.get_m_headers().size()) + "][body:" + ft::to_string(response.get_m_content().size()) + "]";
-	text.append(" New response created.\n");
-	ft::log(ServerManager::access_fd, -1, text);
-	return ;
-}
-
-void
-Server::writeSendResponseLog(const Response& response)
-{
-	std::string text = ft::getTimestamp() + "[Sended][Response][Server:" + m_server_name + "][" \
-	+ ft::to_string(response.get_m_status_code()) + "][" + response.get_m_status_description() + "][CFD:" \
-	+ ft::to_string(response.get_m_connection()->get_m_client_fd()) + "][headers:" \
-	+ ft::to_string(response.get_m_headers().size()) + "][body:" + ft::to_string(response.get_m_content().size()) + "]";
-	text.append(" Response sended\n");
-	ft::log(ServerManager::access_fd, -1, text);
-	return ;
-}
-
-void
-Server::writeCloseConnectionLog(int client_fd)
-{
-	std::string text = "[Deleted][Connection][Server:" + m_server_name + "][CFD:" \
-	+ ft::to_string(client_fd) + "] Connection closed.\n";
-	ft::log(ServerManager::access_fd, -1, text);
+	if (!m_config->is_on_plugin_health_check() || !ft::isRightTime(m_health_check_interval))
+		return ;
+	std::string text = ft::getTimestamp() + "[Detected][Connection][Server:" + m_server_name + "][" + m_host + ":" + ft::to_string(m_port) + "] ";
+	text += "new connection failed.\n";
+	ft::log(ServerManager::log_fd, text);
 	return ;
 }

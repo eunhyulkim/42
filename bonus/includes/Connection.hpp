@@ -12,7 +12,7 @@ class Worker;
 class Connection
 {
 	public:
-		enum Status { ON_WAIT, TO_SEND, ON_SEND, TO_EXECUTE, ON_EXECUTE, ON_RECV };
+		enum Status { ON_WAIT, ON_RECV_CLIENT, TO_SEND_SERVER, ON_SEND_SERVER, ON_RECV_SERVER, ON_EXECUTE, TO_SEND_CLIENT, ON_SEND_CLIENT };
 	private:
 		Status m_status;
 		int m_client_fd;

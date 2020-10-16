@@ -24,14 +24,15 @@
 # include <queue>
 # include <set>
 # include <map>
+# include <random>
 
 # include "base64.hpp"
 # include "HtmlWriter.hpp"
 # include "libft.hpp"
 
 # define DEFAULT_CONFIG_FILE_PATH "config/default.conf"
-# define ACCESS_LOG_PATH "log/access.log"
-# define ERROR_LOG_PATH "log/error.log"
+# define BONUS_CONFIG_FILE_PATH "config/bonus.conf"
+# define SERVER_LOG_PATH "log/health_check.log"
 # define PROXY_LOG_PATH "log/proxy.log"
 # define SERVER_ALLOW_METHODS "GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE"
 

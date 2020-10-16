@@ -57,8 +57,9 @@ std::map<std::string, std::string> Worker::mime_types = makeMimeType();
 /* ************************************************************************** */
 
 Worker::Worker() {}
-Worker::Worker(ServerManager* server_manager, Server* server, pthread_mutex_t* job_mutex, pthread_mutex_t* live_mutex, std::map<std::string, pthread_mutex_t> *uri_mutex)
+Worker::Worker(ServerManager* server_manager, Server* server, pthread_mutex_t* job_mutex, pthread_mutex_t* live_mutex, std::map<std::string, pthread_mutex_t> *uri_mutex, int idx)
 {
+	m_idx = idx;
 	m_manager = m_param.manager = server_manager;
 	m_config = m_manager->configClone();
 	m_server = m_param.server = server->clone();
@@ -77,6 +78,7 @@ Worker::Worker(ServerManager* server_manager, Server* server, pthread_mutex_t* j
 
 Worker::Worker(const Worker& copy)
 {
+	m_idx = copy.m_idx;
 	m_param.manager = copy.m_param.manager;
 	m_config = copy.m_config;
 	m_server = m_param.server = copy.m_param.server;
@@ -109,6 +111,7 @@ Worker& Worker::operator=(const Worker& obj)
 {
 	if (this == &obj)
 		return (*this);
+	m_idx = obj.m_idx;
 	m_param.manager = obj.m_param.manager;
 	m_config = obj.m_config;
 	m_server = m_param.server = obj.m_param.server;
@@ -137,7 +140,10 @@ operator<<(std::ostream& out, const Worker&)
 /* --------------------------------- GETTER --------------------------------- */
 /* ************************************************************************** */
 
-/* getter code */
+const Connection& Worker::get_m_connection() const { return (m_connection); }
+bool Worker::isFree() const { return (m_work_status == false); }
+int Worker::get_m_idx() const { return (m_idx); }
+Config* Worker::get_m_config() const { return (m_config); }
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */
@@ -150,10 +156,91 @@ void Worker::set_m_client_fd(int fd) { m_client_fd = fd; }
 /* ------------------------------- EXCEPTION -------------------------------- */
 /* ************************************************************************** */
 
-/* exception code */
+/* ************************************************************************** */
+/* ---------------------------------- UTIL ---------------------------------- */
+/* ************************************************************************** */
+
+void
+Worker::fdSet(int fd, SetType fdset)
+{
+	if (fdset == WRITE_SET)
+		ft::fdSet(fd, &this->m_fdset.write_set);
+	else if (fdset == WRITE_COPY_SET)
+		ft::fdSet(fd, &this->m_fdset.write_copy_set);
+	else if (fdset == READ_SET)
+		ft::fdSet(fd, &this->m_fdset.read_set);
+	else if (fdset == READ_COPY_SET)
+		ft::fdSet(fd, &this->m_fdset.read_copy_set);
+}
+
+void
+Worker::fdZero(SetType fdset)
+{
+	if (fdset == WRITE_SET || fdset == ALL_SET)
+		ft::fdZero(&this->m_fdset.write_set);
+	if (fdset == WRITE_COPY_SET || fdset == ALL_SET)
+		ft::fdZero(&this->m_fdset.write_copy_set);
+	if (fdset == READ_SET || fdset == ALL_SET)
+		ft::fdZero(&this->m_fdset.read_set);
+	if (fdset == READ_COPY_SET || fdset == ALL_SET)
+		ft::fdZero(&this->m_fdset.read_copy_set);
+}
+
+void
+Worker::fdClear(int fd, SetType fdset)
+{
+	if (fdset == WRITE_SET || fdset == ALL_SET)
+		ft::fdClr(fd, &this->m_fdset.write_set);
+	if (fdset == WRITE_COPY_SET || fdset == ALL_SET)
+		ft::fdClr(fd, &this->m_fdset.write_copy_set);
+	if (fdset == READ_SET || fdset == ALL_SET)
+		ft::fdClr(fd, &this->m_fdset.read_set);
+	if (fdset == READ_COPY_SET || fdset == ALL_SET)
+		ft::fdClr(fd, &this->m_fdset.read_copy_set);
+}
+
+bool
+Worker::fdIsset(int fd, SetType fdset)
+{
+	bool ret = false;
+
+	if (fdset == WRITE_SET || (fdset == false && fdset == ALL_SET))
+		ret = ft::fdIsset(fd, &this->m_fdset.write_set);
+	if (fdset == WRITE_COPY_SET || (fdset == false && fdset == ALL_SET))
+		ret = ft::fdIsset(fd, &this->m_fdset.write_copy_set);
+	if (fdset == READ_SET || (fdset == false && fdset == ALL_SET))
+		ret = ft::fdIsset(fd, &this->m_fdset.read_set);
+	if (fdset == READ_COPY_SET || (fdset == false && fdset == ALL_SET))
+		ret = ft::fdIsset(fd, &this->m_fdset.read_copy_set);
+	return (ret);
+}
+
+void
+Worker::fdCopy(SetType fdset)
+{
+	if (fdset == WRITE_SET || fdset == ALL_SET) {
+		ft::fdZero(&this->m_fdset.write_copy_set);
+		this->m_fdset.write_copy_set = this->m_fdset.write_set;
+	}
+	if (fdset == READ_SET || fdset == ALL_SET) {
+		ft::fdZero(&this->m_fdset.read_copy_set);
+		this->m_fdset.read_copy_set = this->m_fdset.read_set;
+	}
+}
+
+int
+Worker::get_max_fd()
+{
+	for (int i = 512; i >= 0; --i)
+	{
+		if (ft::fdIsset(i, &m_fdset.read_set) || ft::fdIsset(i, &m_fdset.write_set))
+			return (i);
+	}
+	return (-1);
+}
 
 /* ************************************************************************** */
-/* ---------------------------- MEMBER FUNCTION ----------------------------- */
+/* ----------------------------- SEND OPERATION ----------------------------- */
 /* ************************************************************************** */
 
 /*
@@ -224,7 +311,7 @@ void
 Worker::createResponse(Connection& connection, int status, headers_t headers, std::string body)
 {
 	if (status >= 40000) {
-		// reportCreateNewRequestLog(connection, status);
+		reportCreateNewRequestLog(status);
 		status /= 100;
 	}
 
@@ -261,15 +348,10 @@ Worker::createResponse(Connection& connection, int status, headers_t headers, st
 		std::string value = ft::ltrim((*it).substr((*it).find(":") + 1), " ");
 		response.addHeader(key, value);
 	}
-	// writeCreateNewResponseLog(response);
+	writeCreateNewResponseLog(response);
 	const_cast<Request&>(connection.get_m_request()).set_m_phase(Request::COMPLETE);
-	connection.set_m_status(Connection::TO_SEND);
+	connection.set_m_status(Connection::TO_SEND_CLIENT);
 	this->fdSet(response.get_m_connection()->get_m_client_fd(), Worker::WRITE_SET);
-}
-
-bool isOverTime()
-{
-	return (false);
 }
 
 bool
@@ -277,7 +359,7 @@ Worker::hasSendWork()
 {
 	Connection::Status status = m_connection.get_m_status();
 	int fd = m_connection.get_m_client_fd();
-	if (status != Connection::TO_SEND && status != Connection::ON_SEND)
+	if (status != Connection::TO_SEND_CLIENT&& status != Connection::ON_SEND_CLIENT)
 		return (false);
 	return (this->fdIsset(fd, Worker::WRITE_COPY_SET));
 }
@@ -288,10 +370,10 @@ Worker::runSend(bool& connect)
 	Connection& connection = m_connection;
 
 	Connection::Status status = connection.get_m_status();
-	if (status == Connection::TO_SEND)
+	if (status == Connection::TO_SEND_CLIENT)
 	{
 		connection.set_m_wbuf_for_send();
-		connection.set_m_status(Connection::ON_SEND);
+		connection.set_m_status(Connection::ON_SEND_CLIENT);
 	}
 
 	connection.sendFromWbuf(connection.get_m_client_fd());
@@ -301,7 +383,7 @@ Worker::runSend(bool& connect)
 	{
 		connection.set_m_status(Connection::ON_WAIT);
 		this->fdClear(connection.get_m_client_fd(), Worker::WRITE_SET);
-		// writeSendResponseLog(connection.get_m_response());
+		writeSendResponseLog(connection.get_m_response());
 		if (connection.get_m_response().get_m_status_code() / 100 != 2)
 			connect = false;
 		else
@@ -310,6 +392,10 @@ Worker::runSend(bool& connect)
 	}
 	return (ret);
 }
+
+/* ************************************************************************** */
+/* ---------------------------- EXECUTE OPERATION --------------------------- */
+/* ************************************************************************** */
 
 bool
 Worker::hasExecuteWork()
@@ -472,296 +558,41 @@ Worker::runExecute(bool& connect)
 		}
 		else
 			createResponse(connection, 200, headers_t(), body);
-		connection.set_m_status(Connection::TO_SEND);
+		connection.set_m_status(Connection::TO_SEND_CLIENT);
 		return (true);
 	}
 	return (false);
 }
 
-bool
-Worker::hasRequest()
-{
-	Connection::Status status = m_connection.get_m_status();
-
-	int fd = m_connection.get_m_client_fd();
-
-	if (status != Connection::ON_WAIT && status != Connection::ON_RECV)
-		return (false);
-	if (!this->fdIsset(fd, Worker::READ_COPY_SET))
-		return (false);
-	return (true);
-}
-
 namespace {
-
-	bool
-	isMethodHasBody(const Request::Method& method) {
-		return (method == Request::POST || method == Request::PUT || method == Request::TRACE);
-	}
-	
-	bool
-	isRequestHasBody(Request &request)
+	std::string getAcceptLanguagePath(std::string path, std::map<std::string, std::string> headers)
 	{
-		if (isMethodHasBody(request.get_m_method()))
-		{
-			if (request.get_m_transfer_type() == Request::CHUNKED)
-				return (true);
-			if (ft::hasKey(request.get_m_headers(), "Content-Length")
-				&& ft::stoi(request.get_m_headers().find("Content-Length")->second) > 0)
-					return (true);
-		}
-		return (false);
-	}
-
-	bool
-	readGeneralBody(Connection& connection, Request& request)
-	{
-		std::string& buf = const_cast<std::string&>(connection.get_m_rbuf_from_client());
-
-		if (!ft::hasKey(request.get_m_headers(), "Content-Length"))
-			throw (41101);
-		connection.set_m_token_size(ft::stoi(request.get_m_headers().find("Content-Length")->second));
-
-		if (connection.get_m_readed_size() + static_cast<int>(buf.size()) <= connection.get_m_token_size())
-		{
-			request.addContent(buf);
-			request.addOrigin(buf);
-			connection.set_m_readed_size(connection.get_m_readed_size() + buf.size());
-			connection.decreaseRbufFromClient(buf.size());
-		}
-		else
-		{
-			std::string part = buf.substr(0, connection.get_m_token_size() - connection.get_m_readed_size());
-			request.addContent(part);
-			request.addOrigin(part);
-			connection.decreaseRbufFromClient(part.size());
-			connection.set_m_readed_size(connection.get_m_token_size());
-		}
-		return (connection.get_m_readed_size() == connection.get_m_token_size());
-	}
-
-	bool
-	readChunkedBody(Connection& connection, Request& request)
-	{
-		std::string& buf = const_cast<std::string&>(connection.get_m_rbuf_from_client());
-
-		while (true)
-		{
-			std::string len;
-			int content_length = getChunkedSize(buf, len);
-			if (content_length == -1)
-				return (false);
-			if (content_length == 0)
-			{
-				if (buf.find("\r\n") == std::string::npos)
-				{
-					buf.insert(0, len + "\r\n");
-					return (false);
-				}
-				if (buf.size() >= 2 && buf[0] == '\r' && buf[1] == '\n')
-				{
-					connection.decreaseRbufFromClient(2);
-					return (true);
-				}
-				throw (40018);
+		if (!ft::hasKey(headers, "Accept-Language"))
+			return (path);
+		std::vector<std::string> langs = ft::split(headers["Accept-Language"], ',');
+		if (langs.empty() || langs[0].substr(0, 2) == "ko")
+			return (path);
+		std::string new_path;
+		for (size_t i = 0; i < langs.size(); ++i) {
+			if (langs[i].find(";") != std::string::npos)
+				langs[i] = langs[i].substr(0, langs[i].find(";"));
+			if (langs[i].find("-") != std::string::npos)
+				langs[i] = langs[i].substr(0, langs[i].find("-"));
+			if (path.find(".") != std::string::npos) {
+				new_path = path;
+				new_path.insert(path.rfind("."), "_" + langs[i]);
 			}
-			if (static_cast<int>(buf.size()) < content_length + 2)
-			{
-				buf.insert(0, len + "\r\n");
-				return (false);
-			}
-			if (buf.substr(content_length, 2) != "\r\n")
-				throw (40021);
-			request.addContent(buf.substr(0, content_length));
-			request.addOrigin(len + "\r\n");
-			request.addOrigin(buf.substr(0, content_length + 2));
-			connection.decreaseRbufFromClient(content_length + 2);
-		}
-	}
-	
-	int
-	recvWithoutBody(const Connection& connection, char*buf, int buf_size)
-	{
-		int count;
-		int i = 0;
-		if ((count = recv(connection.get_m_client_fd(), buf, buf_size, MSG_PEEK)) > 0)
-		{
-			while (i < count)
-			{
-				if (buf[i] == '\r' && i + 3 < count && buf[i + 1] == '\n' && buf[i + 2] == '\r' && buf[i + 3] == '\n')
-					break ;
-				++i;
-			}
-			if (i == count)
-				return (0);
 			else
-			{
-				recv(connection.get_m_client_fd(), buf, i + 4, 0);
-				return (i + 4);
-			}
+				new_path = path + "_" + langs[i];
+			if (ft::isFile(new_path))
+				break ;
+			new_path.clear();
 		}
+		if (new_path.empty())
+			return (path);
 		else
-			return (-1);
+			return (new_path);
 	}
-
-	int
-	recvBody(const Connection& connection, char*buf, int buf_size)
-	{
-		int count;
-		const Request& request = connection.get_m_request();
-
-		if (request.get_m_method() == Request::POST && request.get_m_transfer_type() == Request::CHUNKED)
-			return (0);
-		if (!isMethodHasBody(request.get_m_method()))
-			return (0);
-
-		if ((count = recv(connection.get_m_client_fd(), buf, buf_size, MSG_PEEK)) > 0)
-		{
-			recv(connection.get_m_client_fd(), buf, count, 0);
-			return (count);
-		}
-		else
-			return (-1);
-	}
-}
-
-std::string
-Worker::getExtension(std::string path)
-{
-	std::string ret;
-
-	if (path.find(".") != std::string::npos)
-	{
-		size_t idx = path.rfind(".");
-		if (idx != path.size() - 1)
-			ret = path.substr(idx + 1);
-	}
-	return (ret);
-}
-
-std::string
-Worker::getMimeTypeHeader(std::string path)
-{
-	std::string extension = getExtension(path);
-	std::string ret;
-	if (!extension.empty() && ft::hasKey(mime_types, extension))
-		ret = "Content-type:" + mime_types[extension];
-	else
-		ret = "Content-type:test-for-evaluation";
-	return (ret);
-}
-
-time_t
-Worker::getLastModified(std::string path)
-{
-	struct stat buf;
-	ft::bzero(&buf, sizeof(struct stat));
-	stat(path.c_str(), &buf);
-	return (buf.st_mtimespec.tv_sec);
-}
-
-std::string
-Worker::getLastModifiedHeader(std::string path)
-{
-	time_t modified = getLastModified(path);
-	struct tm t;
-	char buff[1024];
-
-	ft::convertTimespecToTm(modified, &t);
-	strftime(buff, sizeof(buff), "%a, %d %b %Y %X GMT", &t);
-	return ("Last-Modified:" + std::string(buff));
-}
-
-bool
-Worker::parseStartLine()
-{
-	Connection& connection = m_connection;
-	Request& request = const_cast<Request&>(connection.get_m_request());
-	size_t new_line;
-
-	if ((new_line = connection.get_m_rbuf_from_client().find("\r\n")) != std::string::npos)
-	{
-		std::string start_line = connection.get_m_rbuf_from_client().substr(0, new_line);
-		connection.decreaseRbufFromClient(start_line.size() + 2);
-		request.addOrigin(start_line + "\r\n");
-		request = Request(&connection, m_server, start_line);
-		return (true);
-	} else if (connection.get_m_rbuf_from_client().size() > REQUEST_URI_LIMIT_SIZE_MAX)
-		throw (40006);
-	return (false);
-}
-
-bool
-Worker::parseHeader()
-{
-	Connection& connection = m_connection;
-	Request& request = const_cast<Request&>(connection.get_m_request());
-	std::string& rbuf = const_cast<std::string&>(connection.get_m_rbuf_from_client());
-	std::string line;
-
-	while (ft::getline(rbuf, line, REQUEST_HEADER_LIMIT_SIZE_MAX) >= 0)
-	{
-		if (line == "")
-		{
-			if (!ft::hasKey(request.get_m_headers(), "Host"))
-				throw (40011);
-			return (true);
-		}
-		if (!request.isValidHeader(line))
-			throw (40010);
-		request.addHeader(line);
-	}
-	return (false);
-}
-
-bool
-Worker::parseBody()
-{
-	Connection& connection = m_connection;
-	Request& request = const_cast<Request&>(connection.get_m_request());
-
-	if (!isMethodHasBody(request.get_m_method()))
-		return (true);
-	if (request.get_m_method() == Request::POST && request.get_m_transfer_type() == Request::CHUNKED)
-		return (true);
-	if (request.get_m_transfer_type() == Request::GENERAL)
-		return (readGeneralBody(connection, request));
-	if (request.get_m_transfer_type() == Request::CHUNKED)
-		return (readChunkedBody(connection, request));
-	return (false);
-}
-
-void
-Worker::recvRequest()
-{
-	Connection& connection = m_connection;
-	Request& request = const_cast<Request&>(connection.get_m_request());
-
-	char buf[BUFFER_SIZE];
-	int count = BUFFER_SIZE - connection.get_m_rbuf_from_client().size();
-	Request::Phase phase = request.get_m_phase();
-	connection.set_m_status(Connection::ON_RECV);
-	if (phase == Request::READY && hasRequest() && (count = recvWithoutBody(connection, buf, sizeof(buf))) > 0)
-		connection.addRbufFromClient(buf, count);
-	if (phase == Request::READY && parseStartLine())
-		phase = Request::ON_HEADER;
-	if (phase == Request::ON_HEADER && parseHeader())
-	{
-		request.set_m_phase(phase = Request::ON_BODY);
-		if (isRequestHasBody(request))
-			return ;
-	}
-	if (phase == Request::ON_BODY && (count = recvBody(connection, buf, sizeof(buf))) > 0)
-		connection.addRbufFromClient(buf, count);
-	if (phase == Request::ON_BODY && parseBody())
-		phase = Request::COMPLETE;
-	if (phase == Request::COMPLETE)
-		connection.set_m_last_request_at();
-	request.set_m_phase(phase);
-}
-
-
-namespace {
 	bool makeAutoindexContent(HtmlWriter& html, std::string cwd)
 	{
 		DIR *dir = NULL;
@@ -806,7 +637,7 @@ namespace {
 		html.add_tag("/h1>\n", "hr", "", true);
 		html.add_tag("hr>\n", "pre", "", true);
 	}
-	int getValidIndexFd(const Request& request)
+	int getValidIndexFd(Worker* worker, const Request& request)
 	{
 		std::set<std::string> index = request.get_m_location()->get_m_index();
 		std::set<std::string>::iterator it = index.begin();
@@ -816,9 +647,13 @@ namespace {
 		for (; it != index.end(); ++it)
 		{
 			path = request.get_m_script_translated();
+
 			if (path[path.size() - 1] != '/')
 				path.push_back('/');
 			path.append(*it);
+			if (worker->get_m_config()->is_on_plugin_alm())
+				path = getAcceptLanguagePath(path, worker->get_m_connection().get_m_request().get_m_headers());
+
 			stat(path.c_str(), &buf);
 			if (S_ISREG(buf.st_mode) && (fd = open(path.c_str(), O_RDONLY)) > -1)
 				break ;
@@ -826,12 +661,6 @@ namespace {
 		return (fd);
 	}
 }
-
-/*
-** function: executeAutoindex
-** d_type(4) : DIRECTORY
-** d_type(8) : REGULAR_FILE
-*/
 
 void
 Worker::executeAutoindex()
@@ -851,7 +680,7 @@ Worker::executeAutoindex()
 	}
 	else
 	{
-		int fd = getValidIndexFd(request);
+		int fd = getValidIndexFd(this, request);
 		if (fd == -1)
 			return (createResponse(connection, 40403));
 		return (createResponse(connection, 200, headers_t(), ft::getStringFromFd(fd)));
@@ -859,12 +688,31 @@ Worker::executeAutoindex()
 }
 
 void
+Worker::executeEcho()
+{
+	Connection& connection = m_connection;
+	Request& request = const_cast<Request&>(connection.get_m_request());
+	std::string path = request.get_m_uri();
+	std::string body;
+
+	body = request.get_m_location()->get_m_echo_msg();
+	headers_t headers(1, getMimeTypeHeader(path));
+	if (headers[0].empty())
+		return (createResponse(connection, 41501));
+	headers.push_back(getLastModifiedHeader(path));
+	return (createResponse(connection, 200, headers, body));
+}
+
+void
 Worker::executeGet()
 {
 	Connection& connection = m_connection;
 	Request& request = const_cast<Request&>(connection.get_m_request());
-	std::string path = request.get_m_path_translated();
+	std::string path = request.get_m_script_translated();
 	std::string body;
+
+	if (m_config->is_on_plugin_alm())
+		path = getAcceptLanguagePath(path, m_connection.get_m_request().get_m_headers());
 
 	try {
 		body = ft::getStringFromFile(path, m_server->get_m_limit_client_body_size());
@@ -964,7 +812,6 @@ Worker::executeDelete() {
 	else
 		return (createResponse(connection, 204));
 }
-
 
 namespace {
 	int	setEnv(char **env, int idx, std::string key, std::string val)
@@ -1158,8 +1005,8 @@ namespace {
 	{
 		std::string key, value;
 		basic_decode(credential[1], key, value);
-		return (key.empty() || value.empty() || !ft::hasKey(location->get_m_auth_basic_file(), key)
-		|| location->get_m_auth_basic_file().find(key)->second != value);
+		return (!(key.empty() || value.empty() || !ft::hasKey(location->get_m_auth_basic_file(), key)
+		|| location->get_m_auth_basic_file().find(key)->second != value));
 	}
 	void makeResponse401(Worker* worker, const Request& request, Connection& connection) {
 		std::string header = "WWW-Authenticate:Basic realm=\"";
@@ -1168,6 +1015,12 @@ namespace {
 		return (worker->createResponse(connection, 40101, headers_t(1, header)));
 	}
 }
+
+/*
+** function: executeAutoindex
+** d_type(4) : DIRECTORY
+** d_type(8) : REGULAR_FILE
+*/
 
 void
 Worker::solveRequest()
@@ -1178,11 +1031,13 @@ Worker::solveRequest()
 	Request::Method method = request.get_m_method();
 	std::string methodString = request.get_m_method_to_string();
 
+	if (!request.get_m_location()->get_m_echo_msg().empty())
+		return (executeEcho());
 	if (!ft::hasKey(location->get_m_allow_method(), methodString)) {
 		headers_t headers(1, "Allow:" + ft::containerToString(location->get_m_allow_method(), ", "));
 		return (createResponse(connection, 40501, headers));
 	}
-	if (isAuthorizationRequired(location)) {
+	if (m_config->is_on_plugin_basic_auth() && isAuthorizationRequired(location)) {
 		if (!hasCredential(request)) {
 			return (makeResponse401(this, request, connection));
 		} else {
@@ -1215,17 +1070,305 @@ Worker::solveRequest()
 		throw (400);
 }
 
+/* ************************************************************************** */
+/* ----------------------------- READ OPERATION ----------------------------- */
+/* ************************************************************************** */
+
+bool
+Worker::hasRequest()
+{
+	Connection::Status status = m_connection.get_m_status();
+
+	int fd = m_connection.get_m_client_fd();
+
+	if (status != Connection::ON_WAIT && status != Connection::ON_RECV_CLIENT)
+		return (false);
+	if (!this->fdIsset(fd, Worker::READ_COPY_SET))
+		return (false);
+	return (true);
+}
+
+namespace {
+
+	bool
+	isMethodHasBody(const Request::Method& method) {
+		return (method == Request::POST || method == Request::PUT || method == Request::TRACE);
+	}
+	
+	bool
+	isRequestHasBody(Request &request)
+	{
+		if (isMethodHasBody(request.get_m_method()))
+		{
+			if (request.get_m_transfer_type() == Request::CHUNKED)
+				return (true);
+			if (ft::hasKey(request.get_m_headers(), "Content-Length")
+				&& ft::stoi(request.get_m_headers().find("Content-Length")->second) > 0)
+					return (true);
+		}
+		return (false);
+	}
+
+	bool
+	readGeneralBody(Connection& connection, Request& request)
+	{
+		std::string& buf = const_cast<std::string&>(connection.get_m_rbuf_from_client());
+
+		if (!ft::hasKey(request.get_m_headers(), "Content-Length"))
+			throw (41101);
+		connection.set_m_token_size(ft::stoi(request.get_m_headers().find("Content-Length")->second));
+
+		if (connection.get_m_readed_size() + static_cast<int>(buf.size()) <= connection.get_m_token_size())
+		{
+			request.addContent(buf);
+			request.addOrigin(buf);
+			connection.set_m_readed_size(connection.get_m_readed_size() + buf.size());
+			connection.decreaseRbufFromClient(buf.size());
+		}
+		else
+		{
+			std::string part = buf.substr(0, connection.get_m_token_size() - connection.get_m_readed_size());
+			request.addContent(part);
+			request.addOrigin(part);
+			connection.decreaseRbufFromClient(part.size());
+			connection.set_m_readed_size(connection.get_m_token_size());
+		}
+		return (connection.get_m_readed_size() == connection.get_m_token_size());
+	}
+
+	bool
+	readChunkedBody(Connection& connection, Request& request)
+	{
+		std::string& buf = const_cast<std::string&>(connection.get_m_rbuf_from_client());
+
+		while (true)
+		{
+			std::string len;
+			int content_length = getChunkedSize(buf, len);
+			if (content_length == -1)
+				return (false);
+			if (content_length == 0)
+			{
+				if (buf.find("\r\n") == std::string::npos)
+				{
+					buf.insert(0, len + "\r\n");
+					return (false);
+				}
+				if (buf.size() >= 2 && buf[0] == '\r' && buf[1] == '\n')
+				{
+					connection.decreaseRbufFromClient(2);
+					return (true);
+				}
+				throw (40018);
+			}
+			if (static_cast<int>(buf.size()) < content_length + 2)
+			{
+				buf.insert(0, len + "\r\n");
+				return (false);
+			}
+			if (buf.substr(content_length, 2) != "\r\n")
+				throw (40021);
+			request.addContent(buf.substr(0, content_length));
+			request.addOrigin(len + "\r\n");
+			request.addOrigin(buf.substr(0, content_length + 2));
+			connection.decreaseRbufFromClient(content_length + 2);
+		}
+	}
+	
+	int
+	recvWithoutBody(const Connection& connection, char*buf, int buf_size)
+	{
+		int count;
+		int i = 0;
+		if ((count = recv(connection.get_m_client_fd(), buf, buf_size, MSG_PEEK)) > 0)
+		{
+			ft::log(ServerManager::log_fd, "MSG_PEEK:\n" + std::string(buf, count) + "\n");
+			while (i < count)
+			{
+				if (buf[i] == '\r' && i + 3 < count && buf[i + 1] == '\n' && buf[i + 2] == '\r' && buf[i + 3] == '\n')
+					break ;
+				++i;
+			}
+			if (i == count)
+				return (0);
+			else
+			{
+				recv(connection.get_m_client_fd(), buf, i + 4, 0);
+				return (i + 4);
+			}
+		}
+		else
+			return (-1);
+	}
+
+	int
+	recvBody(const Connection& connection, char*buf, int buf_size)
+	{
+		int count;
+		const Request& request = connection.get_m_request();
+
+		if (request.get_m_method() == Request::POST && request.get_m_transfer_type() == Request::CHUNKED)
+			return (0);
+		if (!isMethodHasBody(request.get_m_method()))
+			return (0);
+
+		if ((count = recv(connection.get_m_client_fd(), buf, buf_size, MSG_PEEK)) > 0)
+		{
+			recv(connection.get_m_client_fd(), buf, count, 0);
+			return (count);
+		}
+		else
+			return (-1);
+	}
+}
+
+std::string
+Worker::getExtension(std::string path)
+{
+	std::string ret;
+
+	if (path.find(".") != std::string::npos)
+	{
+		size_t idx = path.rfind(".");
+		if (idx != path.size() - 1)
+			ret = path.substr(idx + 1);
+	}
+	return (ret);
+}
+
+std::string
+Worker::getMimeTypeHeader(std::string path)
+{
+	std::string extension = getExtension(path);
+	std::string ret;
+	if (!extension.empty() && ft::hasKey(mime_types, extension))
+		ret = "Content-type:" + mime_types[extension];
+	else
+		ret = "Content-type:test-for-evaluation";
+	return (ret);
+}
+
+time_t
+Worker::getLastModified(std::string path)
+{
+	struct stat buf;
+	ft::bzero(&buf, sizeof(struct stat));
+	stat(path.c_str(), &buf);
+	return (buf.st_mtimespec.tv_sec);
+}
+
+std::string
+Worker::getLastModifiedHeader(std::string path)
+{
+	time_t modified = getLastModified(path);
+	struct tm t;
+	char buff[1024];
+
+	ft::convertTimespecToTm(modified, &t);
+	strftime(buff, sizeof(buff), "%a, %d %b %Y %X GMT", &t);
+	return ("Last-Modified:" + std::string(buff));
+}
+
+bool
+Worker::parseStartLine()
+{
+	Connection& connection = m_connection;
+	Request& request = const_cast<Request&>(connection.get_m_request());
+	size_t new_line;
+
+	if ((new_line = connection.get_m_rbuf_from_client().find("\r\n")) != std::string::npos)
+	{
+		std::string start_line = connection.get_m_rbuf_from_client().substr(0, new_line);
+		connection.decreaseRbufFromClient(start_line.size() + 2);
+		request.addOrigin(start_line + "\r\n");
+		request = Request(&connection, m_server, start_line);
+		return (true);
+	} else if (connection.get_m_rbuf_from_client().size() > REQUEST_URI_LIMIT_SIZE_MAX)
+		throw (40006);
+	return (false);
+}
+
+bool
+Worker::parseHeader()
+{
+	Connection& connection = m_connection;
+	Request& request = const_cast<Request&>(connection.get_m_request());
+	std::string& rbuf = const_cast<std::string&>(connection.get_m_rbuf_from_client());
+	std::string line;
+
+	while (ft::getline(rbuf, line, REQUEST_HEADER_LIMIT_SIZE_MAX) >= 0)
+	{
+		if (line == "")
+		{
+			if (!ft::hasKey(request.get_m_headers(), "Host"))
+				throw (40011);
+			return (true);
+		}
+		if (!request.isValidHeader(line))
+			throw (40010);
+		request.addHeader(line);
+	}
+	return (false);
+}
+
+bool
+Worker::parseBody()
+{
+	Connection& connection = m_connection;
+	Request& request = const_cast<Request&>(connection.get_m_request());
+
+	if (!isMethodHasBody(request.get_m_method()))
+		return (true);
+	if (request.get_m_method() == Request::POST && request.get_m_transfer_type() == Request::CHUNKED)
+		return (true);
+	if (request.get_m_transfer_type() == Request::GENERAL)
+		return (readGeneralBody(connection, request));
+	if (request.get_m_transfer_type() == Request::CHUNKED)
+		return (readChunkedBody(connection, request));
+	return (false);
+}
+
+void
+Worker::recvRequest()
+{
+	Connection& connection = m_connection;
+	Request& request = const_cast<Request&>(connection.get_m_request());
+
+	char buf[BUFFER_SIZE];
+	int count = BUFFER_SIZE - connection.get_m_rbuf_from_client().size();
+	Request::Phase phase = request.get_m_phase();
+	connection.set_m_status(Connection::ON_RECV_CLIENT);
+	if (phase == Request::READY && hasRequest() && (count = recvWithoutBody(connection, buf, sizeof(buf))) > 0)
+		connection.addRbufFromClient(buf, count);
+	if (phase == Request::READY && parseStartLine())
+		phase = Request::ON_HEADER;
+	if (phase == Request::ON_HEADER && parseHeader())
+	{
+		request.set_m_phase(phase = Request::ON_BODY);
+		if (isRequestHasBody(request))
+			return ;
+	}
+	if (phase == Request::ON_BODY && (count = recvBody(connection, buf, sizeof(buf))) > 0)
+		connection.addRbufFromClient(buf, count);
+	if (phase == Request::ON_BODY && parseBody())
+		phase = Request::COMPLETE;
+	if (phase == Request::COMPLETE)
+		connection.set_m_last_request_at();
+	request.set_m_phase(phase);
+}
+
 bool
 Worker::runRecvAndSolve()
 {
 	Connection& connection = m_connection;
+	writeWorkerHealthLog("in of RecvAndSolve with data\n" + m_connection.get_m_rbuf_from_client());
 	try {
 		recvRequest();
 	} catch (int status_code) {
 		createResponse(connection, status_code);
 		return (true);
 	} catch (std::exception& e) {
-		ft::log(ServerManager::access_fd, ServerManager::error_fd, std::string("[Failed][Request] Failed to create request because ") + e.what());
+		ft::log(ServerManager::log_fd, std::string(ft::getTimestamp() + "[Failed][Request] Failed to create request because ") + e.what());
 		fdClear(m_client_fd, READ_SET);
 		createResponse(connection, 50001);
 		return (true);
@@ -1233,7 +1376,7 @@ Worker::runRecvAndSolve()
 	const Request& request = connection.get_m_request();
 	if (request.get_m_phase() == Request::COMPLETE)
 	{
-		// writeCreateNewRequestLog(request);
+		writeCreateNewRequestLog(request);
 		connection.set_m_status(Connection::ON_EXECUTE);
 		solveRequest();
 		return (true);
@@ -1241,11 +1384,41 @@ Worker::runRecvAndSolve()
 	return (false);
 }
 
+/* ************************************************************************** */
+/* -------------------------- CONNECTION MANAGEMENT ------------------------- */
+/* ************************************************************************** */
+
+void
+Worker::createConnection(Job job) {
+	m_connection = Connection(job.client_fd, job.ip, job.port);
+	m_connection.set_m_last_request_at();
+}
+
+void
+Worker::clearConnection() {
+	m_connection.clear();
+}
+
+int
+Worker::workerSelect()
+{
+	timeval timeout;
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 0;
+
+	return (select(get_max_fd() + 1, &m_fdset.read_copy_set, &m_fdset.write_copy_set, NULL, &timeout));
+}
+
+/* ************************************************************************** */
+/* ---------------------------- MEMBER FUNCTION ----------------------------- */
+/* ************************************************************************** */
+
 bool
 Worker::runWork()
 {
 	bool connect = true;
 
+	writeWorkerHealthLog("in of selection");
 	m_connection.set_m_last_request_at();
 	if (hasSendWork() && (!runSend(connect) || !connect))
 		return (connect);
@@ -1259,10 +1432,26 @@ Worker::runWork()
 	return (connect);
 }
 
+namespace {
+	void
+	writeCloseClientConnection(ServerManager* manager, Server* server, int idx, int fd)
+	{
+		if (!manager->get_m_config().is_on_plugin_health_check())
+			return ;
+		std::string text = ft::getTimestamp() + "[Closed][Connection]";
+		text += "[Server:" + server->get_m_host() + ":" + ft::to_string(server->get_m_port()) + "]";
+		text += "[Worker:" + ft::to_string(idx) + "/" + ft::to_string(server->get_m_worker_count()) + "]";
+		text += "[Client:" + ft::to_string(fd) + "]";
+		text += " client connection closed.\n";
+		ft::log(ServerManager::log_fd, text);
+		return ;
+	}
+}
+
 void
 workWithConnection(Worker::threadParam *param)
 {
-	// ServerManager* manager = param->manager;
+	ServerManager* manager = param->manager;
 	Server* server = param->server;
 	Worker* worker = param->worker;
 	pthread_mutex_t* live_mutex = param->live_mutex;
@@ -1279,6 +1468,7 @@ workWithConnection(Worker::threadParam *param)
 	// SELECT AND PROCESS WITH OLD SERVER FUNCTION; WHEN END, CLOSE CONNECTION FD;
 	while (server_live)
 	{
+		worker->writeWorkerHealthLog("in of connection");
 		pthread_mutex_lock(live_mutex);
 		server_live = server->get_m_server_live();
 		pthread_mutex_unlock(live_mutex);
@@ -1296,11 +1486,11 @@ workWithConnection(Worker::threadParam *param)
 				break ;
 			continue ;
 		}
-		// writeServerHealthLog();
 		if (!worker->runWork())
 			break ;
 	}
 	close(client_fd);
+	writeCloseClientConnection(manager, server, worker->get_m_idx(), client_fd);
 	return ;
 }
 
@@ -1320,6 +1510,7 @@ void
 
 	while (server_live)
 	{
+		worker->writeWorkerHealthLog("out of connection");
 		pthread_mutex_lock(live_mutex);
 		server_live = server->get_m_server_live();
 		pthread_mutex_unlock(live_mutex);
@@ -1335,15 +1526,11 @@ void
 		pthread_mutex_unlock(job_mutex);
 		worker->set_m_client_fd(param->job.client_fd);
 		worker->createConnection(param->job);
+		worker->writeWorkStartLog();
 		workWithConnection(param);
 		worker->set_m_work_status(false);
 	}
 	exit(EXIT_SUCCESS);
-}
-
-bool
-Worker::isFree() const {
-	return (m_work_status == false);
 }
 
 void
@@ -1359,104 +1546,97 @@ Worker::exit() {
 	delete m_server;
 }
 
-void
-Worker::createConnection(Job job) {
-	m_connection = Connection(job.client_fd, job.ip, job.port);
-	m_connection.set_m_last_request_at();
-}
+/* ************************************************************************** */
+/* ------------------------------ LOG FUNCTION ------------------------------ */
+/* ************************************************************************** */
 
 void
-Worker::clearConnection() {
-	m_connection.clear();
-}
-
-void
-Worker::fdSet(int fd, SetType fdset)
+Worker::writeWorkerHealthLog(std::string msg)
 {
-	if (fdset == WRITE_SET)
-		ft::fdSet(fd, &this->m_fdset.write_set);
-	else if (fdset == WRITE_COPY_SET)
-		ft::fdSet(fd, &this->m_fdset.write_copy_set);
-	else if (fdset == READ_SET)
-		ft::fdSet(fd, &this->m_fdset.read_set);
-	else if (fdset == READ_COPY_SET)
-		ft::fdSet(fd, &this->m_fdset.read_copy_set);
+	if (!m_config->is_on_plugin_health_check() || !ft::isRightTime(m_server->get_m_health_check_interval()))
+		return ;
+	std::string text = ft::getTimestamp() + "[HealthCheck]";
+	text += "[Server:" + m_server->get_m_host() + ":" + ft::to_string(m_server->get_m_port()) + "]";
+	text += "[Worker:" + ft::to_string(m_idx) + "/" + ft::to_string(m_server->get_m_worker_count()) + "]";
+	text += " worker is live healthy." + msg + "\n";
+	ft::log(ServerManager::log_fd, text);
+	return ;
 }
 
 void
-Worker::fdZero(SetType fdset)
+Worker::writeWorkStartLog()
 {
-	if (fdset == WRITE_SET || fdset == ALL_SET)
-		ft::fdZero(&this->m_fdset.write_set);
-	if (fdset == WRITE_COPY_SET || fdset == ALL_SET)
-		ft::fdZero(&this->m_fdset.write_copy_set);
-	if (fdset == READ_SET || fdset == ALL_SET)
-		ft::fdZero(&this->m_fdset.read_set);
-	if (fdset == READ_COPY_SET || fdset == ALL_SET)
-		ft::fdZero(&this->m_fdset.read_copy_set);
+	if (!m_config->is_on_plugin_health_check())
+		return ;
+	std::string text = ft::getTimestamp() + "[Started]";
+	text += "[Server:" + m_server->get_m_host() + ":" + ft::to_string(m_server->get_m_port()) + "]";
+	text += "[Worker:" + ft::to_string(m_idx) + "/" + ft::to_string(m_server->get_m_worker_count()) + "]";
+	text += "[Client:" + ft::to_string(m_client_fd) + "]";
+	text += " new work started.\n";
+	ft::log(ServerManager::log_fd, text);
+	return ;
 }
 
 void
-Worker::fdClear(int fd, SetType fdset)
+Worker::writeCreateNewRequestLog(const Request& request)
 {
-	if (fdset == WRITE_SET || fdset == ALL_SET)
-		ft::fdClr(fd, &this->m_fdset.write_set);
-	if (fdset == WRITE_COPY_SET || fdset == ALL_SET)
-		ft::fdClr(fd, &this->m_fdset.write_copy_set);
-	if (fdset == READ_SET || fdset == ALL_SET)
-		ft::fdClr(fd, &this->m_fdset.read_set);
-	if (fdset == READ_COPY_SET || fdset == ALL_SET)
-		ft::fdClr(fd, &this->m_fdset.read_copy_set);
-}
-
-bool
-Worker::fdIsset(int fd, SetType fdset)
-{
-	bool ret = false;
-
-	if (fdset == WRITE_SET || (fdset == false && fdset == ALL_SET))
-		ret = ft::fdIsset(fd, &this->m_fdset.write_set);
-	if (fdset == WRITE_COPY_SET || (fdset == false && fdset == ALL_SET))
-		ret = ft::fdIsset(fd, &this->m_fdset.write_copy_set);
-	if (fdset == READ_SET || (fdset == false && fdset == ALL_SET))
-		ret = ft::fdIsset(fd, &this->m_fdset.read_set);
-	if (fdset == READ_COPY_SET || (fdset == false && fdset == ALL_SET))
-		ret = ft::fdIsset(fd, &this->m_fdset.read_copy_set);
-	return (ret);
+	if (!m_config->is_on_plugin_health_check())
+		return ;
+	std::string text = ft::getTimestamp() + "[Created][Request][Server:" + m_server->get_m_host() + ":" + ft::to_string(m_server->get_m_port()) + "]";
+	text += "[Worker:" + ft::to_string(m_idx) + "/" + ft::to_string(m_server->get_m_worker_count()) + "]";
+	text += "[Client:" + ft::to_string(m_client_fd) + "]";
+	text += "[Method:" + request.get_m_method_to_string() + "]";
+	text += "[URI:" + request.get_m_uri() + "]";
+	text += "[Path:" + request.get_m_script_translated() + "]";
+	if (request.get_m_method() == Request::GET)
+		text.append("[Query:" + request.get_m_query() + "]");
+	text += " new request created.\n";
+	ft::log(ServerManager::log_fd, text);
+	return ;
 }
 
 void
-Worker::fdCopy(SetType fdset)
+Worker::reportCreateNewRequestLog(int status)
 {
-	if (fdset == WRITE_SET || fdset == ALL_SET) {
-		ft::fdZero(&this->m_fdset.write_copy_set);
-		this->m_fdset.write_copy_set = this->m_fdset.write_set;
-	}
-	if (fdset == READ_SET || fdset == ALL_SET) {
-		ft::fdZero(&this->m_fdset.read_copy_set);
-		this->m_fdset.read_copy_set = this->m_fdset.read_set;
-	}
+	if (!m_config->is_on_plugin_health_check())
+		return ;
+	std::string text = ft::getTimestamp() + "[Failed][Request][Server:" + m_server->get_m_host() + ":" + ft::to_string(m_server->get_m_port()) + "]";
+	text += "[Worker:" + ft::to_string(m_idx) + "/" + ft::to_string(m_server->get_m_worker_count()) + "]";
+	text += "[Client:" + ft::to_string(m_client_fd) + "]";
+	text += "[Status:" + ft::to_string(status) + "]";
+	text += " failed to create new request.\n";
+	ft::log(ServerManager::log_fd, text);
+	return ;
 }
 
-int
-Worker::get_max_fd()
+void
+Worker::writeCreateNewResponseLog(const Response& response)
 {
-	for (int i = 512; i >= 0; --i)
-	{
-		if (ft::fdIsset(i, &m_fdset.read_set) || ft::fdIsset(i, &m_fdset.write_set))
-			return (i);
-	}
-	return (-1);
+	if (!m_config->is_on_plugin_health_check())
+		return ;
+	std::string text = ft::getTimestamp() + "[Created][Response:" + ft::to_string(response.get_m_status_code());
+	text += "(" + response.get_m_status_description() + ")]";
+	text += "[Server:" + m_server->get_m_host() + ":" + ft::to_string(m_server->get_m_port()) + "]";
+	text += "[Worker:" + ft::to_string(m_idx) + "/" + ft::to_string(m_server->get_m_worker_count()) + "]";
+	text += "[Client:" + ft::to_string(m_client_fd) + "]";
+	text += "[Body:" + ft::to_string(response.get_m_content().size()) + "] new response created\n";
+	text += response.get_m_content().substr(0, 100) + "\n";
+	ft::log(ServerManager::log_fd, text);
+	return ;
 }
 
-const Connection& Worker::get_m_connection() const { return (m_connection); }
-
-int
-Worker::workerSelect()
+void
+Worker::writeSendResponseLog(const Response& response)
 {
-	timeval timeout;
-	timeout.tv_sec = 0;
-	timeout.tv_usec = 0;
-
-	return (select(get_max_fd() + 1, &m_fdset.read_copy_set, &m_fdset.write_copy_set, NULL, &timeout));
+	if (!m_config->is_on_plugin_health_check())
+		return ;
+	std::string text = ft::getTimestamp() + "[Sended][Response:" + ft::to_string(response.get_m_status_code());
+	text += "(" + response.get_m_status_description() + ")]";
+	text += "[Server:" + m_server->get_m_host() + ":" + ft::to_string(m_server->get_m_port()) + "]";
+	text += "[Worker:" + ft::to_string(m_idx) + "/" + ft::to_string(m_server->get_m_worker_count()) + "]";
+	text += "[Client:" + ft::to_string(m_client_fd) + "]";
+	text += "[Body:" + ft::to_string(response.get_m_content().size()) + "] response sended\n";
+	ft::log(ServerManager::log_fd, text);
+	return ;
 }
+
