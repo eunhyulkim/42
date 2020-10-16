@@ -5,16 +5,12 @@ RM = rm -rf
 INCLUDES = -Iincludes/
 CFLAGS = -Wall -Wextra -Werror -std=c++98
 
-SRCS_FILES = ServerManager base64 Request Location Response Config HtmlWriter \
-			 Connection libft Server
-PROXY_FILES = ProxyBase base_proxy_test
+SRCS_FILES = libft base64 Config Connection HtmlWriter \
+			 Config Location Request Response Server \
+			 ServerManager main
 
 SRCS = $(addprefix srcs/, $(addsuffix .cpp, $(SRCS_FILES)))
-MSRCS = srcs/main.cpp
-BSRCS = $(addprefix srcs/, $(addsuffix .cpp, $(PROXY_FILES)))
 OBJS = $(addsuffix .o, $(SRCS_FILES))
-MOBJS = main.o
-BOBJS = $(addsuffix .o, $(PROXY_FILES))
 
 GREEN = \033[0;32m
 RED = \033[0;31m
@@ -25,33 +21,20 @@ all: $(NAME)
 ${OBJS}: ${SRCS}
 	@${CC} ${CFLAGS} ${INCLUDES} -c ${SRCS}
 
-${BOBJS}: ${BSRCS}
-	@${CC} ${CFLAGS} ${INCLUDES} -c ${BSRCS}
-
-${MOBJS}: ${MSRCS}
-	@${CC} ${CFLAGS} ${INCLUDES} -c ${MSRCS}
-
-${NAME}: ${OBJS} ${MOBJS}
+${NAME}: ${OBJS}
 	@echo "$(GREEN)$(NAME) START$(RESET)"
 	@echo "$(RESET)Compiling ${NAME} to root."
-	@${CC} ${CFLAGS} ${INCLUDES} ${OBJS} ${MOBJS} -o ${NAME}
-	@echo "$(GREEN)DONE$(RESET)"
-
-
-${PROXY_NAME}: ${OBJS} ${BOBJS}
-	@echo "$(GREEN)$(NAME) START$(RESET)"
-	@echo "$(RESET)Compiling ${NAME} to root."
-	@${CC} ${CFLAGS} ${INCLUDES} ${OBJS} ${BOBJS} -o ${PROXY_NAME}
+	@${CC} ${CFLAGS} ${INCLUDES} ${OBJS} -o ${NAME}
 	@echo "$(GREEN)DONE$(RESET)"
 
 clean:
 	@echo "$(RESET)Cleaning your .o files$(RESET)"
-	@${RM} $(OBJS) $(MOBJS) $(BOBJS)
+	@${RM} $(OBJS)
 	@echo "$(RED)clean DONE$(RESET)"
 
 fclean: clean
 	@echo "$(RESET)Removing $(NAME)"
-	@${RM} $(NAME) $(PROXY_NAME)
+	@${RM} $(NAME)
 	@echo "$(RED)fclean DONE$(RESET)"
 
 re: fclean all proxy

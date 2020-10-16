@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Connection.cpp                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/17 04:57:10 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/10/17 05:24:43 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Connection.hpp"
 
 /* ************************************************************************** */
@@ -149,7 +161,20 @@ void Connection::set_m_last_request_at()
 	return ;
 }
 
+/*
+** execute is send/recv operation with cgi program using pipe,
+** set message to send from response body
+** @param: void
+** @return: void
+*/
 void Connection::set_m_wbuf_for_execute() { m_wbuf = m_request.get_m_content(); }
+
+/*
+** set response message to client by collecting variables,
+** and set request message to server(bonus)
+** @param: message content if exist
+** @return: void
+*/
 void Connection::set_m_wbuf_for_send(std::string wbuf_string) {
 	if (wbuf_string.empty())
 		m_wbuf = m_response.getString();
@@ -159,6 +184,13 @@ void Connection::set_m_wbuf_for_send(std::string wbuf_string) {
 	m_send_data_size = 0;
 }
 void Connection::set_m_status(Status status) { m_status = status; }
+
+/*
+** In connection with client and cgi-process when chunked request,
+** using to compare chunked token and readed size 
+** @param: token size or readed size
+** @return: void
+*/
 void Connection::set_m_token_size(int token_size) { m_token_size = token_size; }
 void Connection::set_m_readed_size(int readed_size) { m_readed_size = readed_size; }
 void Connection::decreaseWbuf(int size) { m_wbuf.erase(0, size); }
@@ -191,12 +223,15 @@ void Connection::clear()
 /* ------------------------------- EXCEPTION -------------------------------- */
 /* ************************************************************************** */
 
-/* exception code */
-
 /* ************************************************************************** */
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
 /* ************************************************************************** */
 
+/*
+** Check if the latest operation on the connection is out of time
+** @param: no param
+** @return: Whether the connection was old
+*/
 bool Connection::isOverTime() const
 {
 	timeval now;
@@ -208,6 +243,12 @@ bool Connection::isOverTime() const
 	return ((now_nbr - start_nbr) >= CONNECTION_OLD_SECOND);
 }
 
+/*
+** send response message to client form server using wbuf
+** and send request message to server from proxy(bonus)
+** @param: client or server fd to send
+** @return: Whether the send operation return success
+*/
 bool
 Connection::sendFromWbuf(int fd)
 {

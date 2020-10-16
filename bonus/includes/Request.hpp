@@ -92,7 +92,6 @@ public:
 
 	/* member function */
 	bool isValidHeader(std::string header);
-	bool isOverTime() const;
 };
 
 /* global operator overload */

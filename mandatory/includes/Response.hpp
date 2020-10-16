@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Response.hpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/17 04:40:30 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/10/17 04:40:31 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef Response_HPP
 # define Response_HPP
 
@@ -10,8 +22,8 @@ class Response
 	public:
 		enum ConnectionType { CLOSE, KEEP_ALIVE, };
 		enum TransferType { GENERAL, CHUNKED };
-		static std::map<int, std::string> status; // 확인
 		enum Phase { READY, ON_HEADER, ON_BODY, COMPLETE };
+		static std::map<int, std::string> status;
 	private:
 		Connection* m_connection;
 		ConnectionType m_connection_type;

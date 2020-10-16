@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   libft.hpp                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/17 04:40:24 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/10/17 04:40:25 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef LIBFT_HPP
 # define LIBFT_HPP
 
@@ -18,7 +30,7 @@
 
 namespace ft
 {
-    /* OLD LIBFT */
+    /* C LIBFT */
     void bzero(void *data, size_t len);
     void *memcpy(void *dest, const void *src, size_t len);
     void *calloc(size_t size, size_t count);
@@ -60,19 +72,18 @@ namespace ft
 	unsigned short ws_htons(unsigned short x);
     std::string inet_ntoa(unsigned int address);
 
+    /* FD SET operator */
+	void fdZero(fd_set *x);
+	void fdSet(int fd, fd_set *x);
+	int fdIsset(int fd, fd_set *x);
+	void fdClr(int fd, fd_set *x);
+    std::string getSetFdString(int max_fd, fd_set* fset);
 
     /* Log util function */
     bool isRightTime(int second);
     void log(int access_fd, int error_fd, std::string text);
     std::string	getTimestamp(void);
     std::string getSpeed(timeval from);
-
-    /* Fdset operator */
-	void fdZero(fd_set *x);
-	void fdSet(int fd, fd_set *x);
-	int fdIsset(int fd, fd_set *x);
-	void fdClr(int fd, fd_set *x);
-    std::string getSetFdString(int max_fd, fd_set* fset);
 
     /* Template function */
     template <typename T, typename V>

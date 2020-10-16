@@ -1,180 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Response.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/17 04:39:12 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/10/17 04:39:13 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Response.hpp"
 
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
 /* ************************************************************************** */
-
-std::map<int, std::string> Response::status = make_status();
-
-/* ************************************************************************** */
-/* ------------------------------ CONSTRUCTOR ------------------------------- */
-/* ************************************************************************** */
-
-Response::Response()
-{
-	this->m_connection_type = KEEP_ALIVE;
-	this->m_transfer_type = GENERAL;
-	this->m_phase = READY;
-}
-
-Response::Response(Connection* connection, int status_code, std::string body)
-{
-	this->m_connection = connection;
-	this->m_connection_type = KEEP_ALIVE;
-	this->m_status_code = status_code;
-	this->m_status_description = Response::status[status_code];
-	this->m_content = body;
-	this->m_transfer_type = GENERAL;
-	this->m_phase = READY;
-}
-
-Response::Response(const Response& copy)
-{
-	this->m_connection = copy.get_m_connection();
-	this->m_connection_type = copy.get_m_connection_type();
-	this->m_status_code = copy.get_m_status_code();
-	this->m_status_description = copy.get_m_status_description();
-	this->m_transfer_type = copy.get_m_transfer_type();
-	this->m_content = copy.get_m_content();
-	this->m_headers = copy.get_m_headers();
-	this->m_phase = copy.get_m_phase();
-}
-
-/* ************************************************************************** */
-/* ------------------------------- DESTRUCTOR ------------------------------- */
-/* ************************************************************************** */
-
-Response::~Response() {}
-
-/* ************************************************************************** */
-/* -------------------------------- OVERLOAD -------------------------------- */
-/* ************************************************************************** */
-
-Response&
-Response::operator=(const Response& obj)
-{
-	if (this == &obj)
-		return (*this);
-	this->m_connection = obj.get_m_connection();
-	this->m_connection_type = obj.get_m_connection_type();
-	this->m_status_code = obj.get_m_status_code();
-	this->m_status_description = obj.get_m_status_description();
-	this->m_transfer_type = obj.get_m_transfer_type();
-	this->m_content = obj.get_m_content();
-	this->m_headers = obj.get_m_headers();
-	this->m_phase = obj.get_m_phase();
-	return (*this);
-}
-
-std::ostream&
-operator<<(std::ostream& out, const Response& Response)
-{
-	size_t len = 0;
-	std::map<std::string, std::string>::const_iterator it = Response.get_m_headers().begin();
-	out << "STATUS_CODE: " << Response.get_m_status_code() << std::endl
-	<< "STATUS_DESCRIPTION: " << Response.get_m_status_description() << std::endl
-	<< "TRANSFER_TYPE: " << Response.get_m_transfer_type() << std::endl
-	<< "CONTENT: " << Response.get_m_content() << std::endl;
-	std::cout << "size :" << Response.get_m_headers().size() << std::endl;
-	for (; len < Response.get_m_headers().size(); ++len)
-	{
-		out << "HEADER KEY: " << it->first << " VALUE : " << it->second << std::endl;
-		++it;
-	}
-	return (out);
-}
-
-/* ************************************************************************** */
-/* --------------------------------- GETTER --------------------------------- */
-/* ************************************************************************** */
-
-Connection *Response::get_m_connection() const { return (this->m_connection); }
-Response::ConnectionType Response::get_m_connection_type() const { return (this->m_connection_type); }
-int Response::get_m_status_code() const { return (this->m_status_code); }
-std::string Response::get_m_status_description() const { return (this->m_status_description); }
-const std::map<std::string, std::string>& Response::get_m_headers() const { return (this->m_headers); }
-Response::TransferType Response::get_m_transfer_type() const { return (this->m_transfer_type); }
-std::string Response::get_m_content() const { return (this->m_content); }
-Response::Phase Response::get_m_phase() const { return (this->m_phase); }
-
-/* ************************************************************************** */
-/* --------------------------------- SETTER --------------------------------- */
-/* ************************************************************************** */
-
-void Response::clear()
-{
-	m_status_code = -1;
-	m_status_description.clear();
-	m_headers.clear();
-	m_transfer_type = GENERAL;
-	m_content.clear();
-	m_phase = READY;
-}
-
-void Response::set_m_phase(Phase phase) { m_phase = phase; }
-void Response::set_m_transfer_type(TransferType transfer_type) { m_transfer_type = transfer_type; }
-
-/* ************************************************************************** */
-/* ------------------------------- EXCEPTION -------------------------------- */
-/* ************************************************************************** */
-
-/* ************************************************************************** */
-/* ---------------------------- MEMBER FUNCTION ----------------------------- */
-/* ************************************************************************** */
-
-void Response::addHeader(std::string header_key, std::string header_value)
-{
-	if (header_key == "Transfer-Encoding" && header_value.find("chunked") != std::string::npos)
-		this->m_transfer_type = CHUNKED;
-	else if (header_key == "Connection" && header_value == "close")
-		this->m_connection_type = CLOSE;
-	else
-		this->m_headers[header_key] = header_value;
-}
-
-void Response::addContent(const std::string& body) { m_content += body; }
-
-void Response::set_m_status_code(int status_code) { m_status_code = status_code; }
-
-std::string Response::getString() const
-{	
-	std::string message;
-	std::map<std::string, std::string>::const_iterator it = this->m_headers.begin();
-
-	message = "HTTP/1.1 " + ft::to_string(this->m_status_code) + " " + this->m_status_description + "\r\n";
-	for (; it != this->m_headers.end(); ++it)
-		message += it->first + ": " + it->second + "\r\n";
-	if (m_connection_type == CLOSE || m_status_code < 200 || m_status_code > 299)
-		message += "Connection: close\r\n";
-	else
-		message += "Connection: Keep-Alive\r\n";
-	if (m_transfer_type == CHUNKED) {
-		message += "Transfer-Encoding: chunked\r\n\r\n";
-		int size = this->m_content.size();
-		int count;
-		std::string data = m_content;
-		int added = 0;
-		while (size > 0)
-		{
-			if (size > BUFFER_SIZE)
-				count = BUFFER_SIZE;
-			else
-				count = size;
-			message += ft::itos(ft::to_string(count), 10, 16) + "\r\n";
-			message += data.substr(added, count) + "\r\n";
-			size -= count;
-			added += count;
-		}
-		data.clear();
-		message += "0\r\n\r\n";
-	}
-	else
-	{
-		message += "\r\n";
-		message += this->m_content;
-	}
-	return (message);
-}
 
 std::map<int, std::string>
 make_status ()
@@ -274,4 +114,189 @@ make_status ()
 	status_map[50501] = "HTTP Version Not Supported";
 
 	return (status_map);
+}
+
+std::map<int, std::string> Response::status = make_status();
+
+/* ************************************************************************** */
+/* ------------------------------ CONSTRUCTOR ------------------------------- */
+/* ************************************************************************** */
+
+Response::Response()
+{
+	this->m_connection_type = KEEP_ALIVE;
+	this->m_transfer_type = GENERAL;
+	this->m_phase = READY;
+}
+
+Response::Response(Connection* connection, int status_code, std::string body)
+{
+	this->m_connection = connection;
+	this->m_connection_type = KEEP_ALIVE;
+	this->m_status_code = status_code;
+	this->m_status_description = Response::status[status_code];
+	this->m_content = body;
+	this->m_transfer_type = GENERAL;
+	this->m_phase = READY;
+}
+
+Response::Response(const Response& copy)
+{
+	this->m_connection = copy.get_m_connection();
+	this->m_connection_type = copy.get_m_connection_type();
+	this->m_status_code = copy.get_m_status_code();
+	this->m_status_description = copy.get_m_status_description();
+	this->m_transfer_type = copy.get_m_transfer_type();
+	this->m_content = copy.get_m_content();
+	this->m_headers = copy.get_m_headers();
+	this->m_phase = copy.get_m_phase();
+}
+
+/* ************************************************************************** */
+/* ------------------------------- DESTRUCTOR ------------------------------- */
+/* ************************************************************************** */
+
+Response::~Response() {}
+
+/* ************************************************************************** */
+/* -------------------------------- OVERLOAD -------------------------------- */
+/* ************************************************************************** */
+
+Response&
+Response::operator=(const Response& obj)
+{
+	if (this == &obj)
+		return (*this);
+	this->m_connection = obj.get_m_connection();
+	this->m_connection_type = obj.get_m_connection_type();
+	this->m_status_code = obj.get_m_status_code();
+	this->m_status_description = obj.get_m_status_description();
+	this->m_transfer_type = obj.get_m_transfer_type();
+	this->m_content = obj.get_m_content();
+	this->m_headers = obj.get_m_headers();
+	this->m_phase = obj.get_m_phase();
+	return (*this);
+}
+
+std::ostream&
+operator<<(std::ostream& out, const Response& Response)
+{
+	size_t len = 0;
+	std::map<std::string, std::string>::const_iterator it = Response.get_m_headers().begin();
+	out << "STATUS_CODE: " << Response.get_m_status_code() << std::endl
+	<< "STATUS_DESCRIPTION: " << Response.get_m_status_description() << std::endl
+	<< "TRANSFER_TYPE: " << Response.get_m_transfer_type() << std::endl
+	<< "CONTENT: " << Response.get_m_content() << std::endl;
+	std::cout << "size :" << Response.get_m_headers().size() << std::endl;
+	for (; len < Response.get_m_headers().size(); ++len)
+	{
+		out << "HEADER KEY: " << it->first << " VALUE : " << it->second << std::endl;
+		++it;
+	}
+	return (out);
+}
+
+/* ************************************************************************** */
+/* --------------------------------- GETTER --------------------------------- */
+/* ************************************************************************** */
+
+Connection *Response::get_m_connection() const { return (this->m_connection); }
+Response::ConnectionType Response::get_m_connection_type() const { return (this->m_connection_type); }
+int Response::get_m_status_code() const { return (this->m_status_code); }
+std::string Response::get_m_status_description() const { return (this->m_status_description); }
+const std::map<std::string, std::string>& Response::get_m_headers() const { return (this->m_headers); }
+Response::TransferType Response::get_m_transfer_type() const { return (this->m_transfer_type); }
+std::string Response::get_m_content() const { return (this->m_content); }
+Response::Phase Response::get_m_phase() const { return (this->m_phase); }
+
+/* ************************************************************************** */
+/* --------------------------------- SETTER --------------------------------- */
+/* ************************************************************************** */
+
+void
+Response::addHeader(std::string header_key, std::string header_value)
+{
+	if (header_key == "Transfer-Encoding" && header_value.find("chunked") != std::string::npos)
+		this->m_transfer_type = CHUNKED;
+	else if (header_key == "Connection" && header_value == "close")
+		this->m_connection_type = CLOSE;
+	else
+		this->m_headers[header_key] = header_value;
+}
+
+void
+Response::addContent(const std::string& body) { m_content += body; }
+
+void
+Response::set_m_status_code(int status_code) { m_status_code = status_code; }
+
+void
+Response::set_m_transfer_type(TransferType transfer_type) { m_transfer_type = transfer_type; }
+
+void
+Response::set_m_phase(Phase phase) { m_phase = phase; }
+
+void
+Response::clear()
+{
+	m_status_code = -1;
+	m_status_description.clear();
+	m_headers.clear();
+	m_transfer_type = GENERAL;
+	m_content.clear();
+	m_phase = READY;
+}
+
+/* ************************************************************************** */
+/* ------------------------------- EXCEPTION -------------------------------- */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/* ---------------------------- MEMBER FUNCTION ----------------------------- */
+/* ************************************************************************** */
+
+/*
+** Converts the variables of the response object into response messages
+** @param: no param
+** @return: response message 
+*/
+std::string
+Response::getString() const
+{	
+	std::string message;
+	std::map<std::string, std::string>::const_iterator it = this->m_headers.begin();
+
+	message = "HTTP/1.1 " + ft::to_string(this->m_status_code) + " " + this->m_status_description + "\r\n";
+	for (; it != this->m_headers.end(); ++it)
+		message += it->first + ": " + it->second + "\r\n";
+	if (m_connection_type == CLOSE || m_status_code < 200 || m_status_code > 299)
+		message += "Connection: close\r\n";
+	else
+		message += "Connection: Keep-Alive\r\n";
+	if (m_transfer_type == CHUNKED) {
+		message += "Transfer-Encoding: chunked\r\n\r\n";
+		int size = this->m_content.size();
+		int count;
+		std::string data = m_content;
+		int added = 0;
+		while (size > 0)
+		{
+			if (size > BUFFER_SIZE)
+				count = BUFFER_SIZE;
+			else
+				count = size;
+			message += ft::itos(ft::to_string(count), 10, 16) + "\r\n";
+			message += data.substr(added, count) + "\r\n";
+			size -= count;
+			added += count;
+		}
+		data.clear();
+		message += "0\r\n\r\n";
+	}
+	else
+	{
+		message += "\r\n";
+		message += this->m_content;
+	}
+	return (message);
 }

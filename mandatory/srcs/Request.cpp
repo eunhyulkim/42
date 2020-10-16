@@ -58,6 +58,11 @@ Request::parseMethod(std::string methodString)
 	return (true);
 }
 
+/*
+** Search for a location matching uri and assign it
+** @param: full uri that includes path info and querys
+** @return: Whether the location was found
+*/
 bool
 Request::assignLocationMatchingUri(std::string uri)
 {
@@ -76,6 +81,11 @@ Request::assignLocationMatchingUri(std::string uri)
 }
 
 namespace {
+/*
+** merge location root and uri to create resource path
+** @param: location root path and request uri without path info and query
+** @return: real request resource path in server
+*/
 	std::string getTranslatedPath(std::string root, std::string uri)
 	{
 		if (uri.empty())
@@ -86,9 +96,12 @@ namespace {
 			uri.insert(0, 1, '/');
 		return (root + uri);
 	}
-}
-
-namespace {
+/*
+** if uri is directory, find resource that actually exists in the server
+** @param1: list of index files
+** @param2: directory of index file exists
+** @return: path of location index file
+*/
 	std::string getIndexPath(const std::set<std::string>& index_set, std::string base_path)
 	{
 		std::set<std::string>::const_iterator it = index_set.begin();
@@ -157,7 +170,7 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 
 	std::vector<std::string> parsed = ft::split(start_line, ' ');
 	if (parsed.size() != 3) {
-		ft::log(ServerManager::access_fd, ServerManager::error_fd, "[StartLine]" + start_line);
+		ft::log(ServerManager::log_fd, "[StartLine]" + start_line);
 		throw (40000);
 	}
 	if (!parseMethod(parsed[0]))
@@ -312,18 +325,34 @@ int						Request::get_m_special_header_count() const { return (m_special_header_
 /* --------------------------------- SETTER --------------------------------- */
 /* ************************************************************************** */
 
-void Request::addContent(std::string added_content)
+/*
+** Request Body = Content
+** in chunked request or large body, add readed data to content
+** @param: body data by read/recv function
+** @return: void
+*/
+void
+Request::addContent(std::string added_content)
 {
 	if (m_content.size() + added_content.size() > m_location->get_m_limit_client_body_size())
 		throw (41301);
 	m_content.append(added_content);
 }
 
-void Request::addOrigin(std::string added_origin, bool limit_ignore)
+/*
+** Request Message = Origin
+** for TRACE method, save original request message
+** @param1: data by read/recv function includes '\r', '\n' characters
+** @param2: Before limit size is allocated,
+** internal condition check is ignored and this function can be used.
+** @return: void
+*/
+void
+Request::addOrigin(std::string added_origin, bool limit_ignore)
 {
-	if (limit_ignore && m_method != TRACE)
+	if (!limit_ignore && m_method != TRACE)
 		return ;
-	if (limit_ignore && m_origin.size() + added_origin.size() > m_server->get_m_limit_client_body_size())
+	if (!limit_ignore && m_origin.size() + added_origin.size() > m_server->get_m_limit_client_body_size())
 		throw (41302);
 	m_origin.append(added_origin);
 }
@@ -377,6 +406,7 @@ void Request::clear()
 	m_path_info.clear();
 	m_origin.clear();
 }
+
 /* ************************************************************************** */
 /* ------------------------------- EXCEPTION -------------------------------- */
 /* ************************************************************************** */
@@ -392,17 +422,4 @@ bool Request::isValidHeader(std::string header)
 	if (header.find(":") == std::string::npos)
 		return (false);
 	return (true);
-}
-
-bool Request::isOverTime() const
-{
-	timeval now;
-
-	if (gettimeofday(&now, NULL) == -1)
-		throw std::runtime_error("gettimeofday error");
-
-	long now_nbr = now.tv_sec + now.tv_usec / 1000000;
-	long start_nbr = m_start_at.tv_sec + m_start_at.tv_usec / 1000000;
-
-	return ((now_nbr - start_nbr) >= REQUEST_TIMEOVER_SECOND);
 }
