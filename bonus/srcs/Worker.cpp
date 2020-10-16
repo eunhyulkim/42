@@ -1089,12 +1089,17 @@ namespace {
 
 	int pythonCGI()
 	{
-		std::cout << "PYTHON CGI\n";
-		Py_Initialize();
-		PyRun_SimpleString ("import sys; sys.path.insert(0, '/Users/juhyeon/webserv/bonus')");
 		PyObject * pModule = NULL;
 		PyObject * pFunc   = NULL;
+		std::string pwd = "import sys; sys.path.insert(0, '";
+		char wd[BUFSIZ];
+		getcwd(wd, BUFSIZ);
+		pwd += wd;
+		pwd += "')";
 
+		Py_Initialize();
+		// PyRun_SimpleString ("import sys; sys.path.insert(0, '/Users/jujeong/webserv/bonus')");
+		PyRun_SimpleString (pwd.c_str());
 		pModule = PyImport_ImportModule("cgi");
 		pFunc   = PyObject_GetAttrString(pModule, "cgi_test");
 		if(pFunc != NULL) {
@@ -1138,7 +1143,6 @@ Worker::executeCGI()
 	Request::Method method = request.get_m_method();
 	std::string body;
 
-	std::cout << "CGI\n";
 	if ((env = createCGIEnv(request)) == NULL)
 		return (createResponse(connection, 50005));
 	pipe(parent_write_fd);
