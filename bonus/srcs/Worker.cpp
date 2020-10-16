@@ -552,7 +552,7 @@ Worker::runExecute(bool& connect)
 		connection.clearWbuf();
 		if (connection.get_m_request().get_m_uri_type() == Request::CGI_PROGRAM)
 		{
-			if (body.size() - body.find("\r\n\r\n") - 4 > request.get_m_location()->get_m_limit_client_body_size())
+			if (body.size() > request.get_m_location()->get_m_limit_client_body_size() + body.find("\r\n\r\n") + 4)
 				createResponse(connection, 41301);
 			else
 				createResponse(connection, CGI_SUCCESS_CODE, headers_t(), body);

@@ -209,6 +209,8 @@ void Proxy::add_m_cache(Connection &connection)
 	std::string request = methodToString(connection.get_m_request().get_m_method()) + " " + connection.get_m_request().get_m_uri() + "?" + connection.get_m_request().get_m_query();
 	std::string response = connection.get_m_rbuf_from_server();
 
+	if (m_caches.size() >= CACHE_SIZE)
+		m_caches.clear();
 	m_caches.insert(std::pair<std::string, std::string>(request, response));
 }
 
@@ -362,11 +364,11 @@ namespace
 		{
 			int count = requestString.size() - 5;
 			count = (count <= 0) ? 0 : count;
-			request.addOrigin(requestString.substr(0, count));
+			request.addOrigin(requestString.substr(0, count), true);
 			connection.decreaseRbufFromClient(count);
             return (false);
 		}
-		request.addOrigin(requestString.substr(0, body_end_idx + 5));
+		request.addOrigin(requestString.substr(0, body_end_idx + 5), true);
 		connection.decreaseRbufFromClient(body_end_idx + 5);
         return (true);
     }
@@ -436,16 +438,19 @@ void
 Proxy::resetConnectionServer(Connection& client_connection)
 {
 	Connection& connection = client_connection;
-	int server_fd = client_connection.get_m_server_fd();
+	int old_fd = client_connection.get_m_server_fd();
 
-	std::string host = m_server_connections[server_fd].host;
-	int port = m_server_connections[server_fd].port;
-	m_manager->fdClear(server_fd, ProxyManager::READ_SET);
-	m_manager->fdClear(server_fd, ProxyManager::WRITE_SET);
-	close(server_fd);
-	m_server_connections.erase(server_fd);
-	connection.set_m_server_fd(connectServer(host, port));
-	resetConnectionsFd(server_fd, connection.get_m_server_fd());
+	std::string host = m_server_connections[old_fd].host;
+	int port = m_server_connections[old_fd].port;
+	m_manager->fdClear(old_fd, ProxyManager::READ_SET);
+	m_manager->fdClear(old_fd, ProxyManager::WRITE_SET);
+	close(old_fd);
+	Proxy::ServerConnectionStatus stat = m_server_connections[old_fd].status;
+	m_server_connections.erase(old_fd);
+	int new_fd = connectServer(host, port);
+	connection.set_m_server_fd(new_fd);
+	m_server_connections[new_fd].status = stat;
+	resetConnectionsFd(old_fd, new_fd);
 }
 
 /* ************************************************************************** */
@@ -540,14 +545,13 @@ Proxy::runSendToServer(Connection& client_connection)
 
 		resetConnectionServer(connection);
 		server_fd = connection.get_m_server_fd();
-		m_manager->fdSet(server_fd, ProxyManager::WRITE_SET);
 		if (connection.get_m_is_filtered())
 		{
 			std::string origin = connection.get_m_request().get_m_origin();
 
 			origin.erase(0, origin.find(" "));
 			origin.insert(0, "FAIL");
-			Request request = const_cast<Request&>(connection.get_m_request());
+			Request& request = const_cast<Request&>(connection.get_m_request());
 			request.set_m_origin(origin);
 		}
 
@@ -562,9 +566,6 @@ Proxy::runSendToServer(Connection& client_connection)
 	bool ret = connection.isSendCompleted();
 	if (ret)
 	{
-		m_manager->fdClear(server_fd, ProxyManager::WRITE_SET);
-		std::cout << "clear server fd " << server_fd << std::endl;
-		m_manager->fdSet(server_fd, ProxyManager::READ_SET);
 		connection.set_m_status(Connection::ON_RECV_SERVER);
 		writeSendRequestLog(connection);
 		timeflag("3. End Send To Server");
@@ -609,7 +610,6 @@ Proxy::runRecvFromServer(Connection& client_connection)
 	{
 		connection.set_m_status(Connection::TO_SEND_CLIENT);
 		m_server_connections[server_fd].status = WAIT;
-		m_manager->fdClear(server_fd, ProxyManager::READ_SET);
 		m_manager->fdSet(client_connection.get_m_client_fd(), ProxyManager::WRITE_SET);
 		writeRecvResponseLog(connection);
 		timeflag("4. End Recv From Server");
@@ -656,7 +656,7 @@ Proxy::runRecvFromClient(Connection& client_connection)
 	{
 		if (!isMethodHasBody(request.get_m_method()) || request.get_m_transfer_type() == Request::GENERAL)
 		{
-			request.addOrigin(connection.get_m_rbuf_from_client().substr(0, connection.get_m_token_size()));
+			request.addOrigin(connection.get_m_rbuf_from_client().substr(0, connection.get_m_token_size()), true);
 			connection.decreaseRbufFromClient(request.get_m_origin().size());
 		}
 		writeRecvRequestLog(connection);
@@ -758,7 +758,7 @@ Proxy::writeLogIfCase(Connection& client_connection)
 	text += "[Method:" + request.get_m_method_to_string() + "]";
 	text += "[URI:" + request.get_m_uri() + "]";
 	text += "[Query:" + request.get_m_query() + "]";
-	text += " Request return cached data\n";
+	text += " Request is satisfied to log-if query.\n";
 	ft::log(ProxyManager::log_fd, text);
 }
 
@@ -804,29 +804,26 @@ Proxy::runLoadBalancing(Connection& client_connection)
 		server_fd = m_server_connections.begin()->first;
 	else {
 		int idx = getRandomServerIdx(m_server_connections.size() - 1);
-		std::cout << "idx:" << idx << std::endl;
 		std::map<int, Proxy::ServerConnection>::iterator it = m_server_connections.begin();
 		while (idx-- > 0)
 			++it;
 		server_fd = it->first;
 	}
-	std::cout << "server_fd: " << server_fd << std::endl;
 	client_connection.set_m_server_fd(server_fd);
-	m_manager->fdSet(server_fd, ProxyManager::WRITE_SET);
 }
 
 void
 Proxy::runProxyAction(Connection& client_connection)
 {
-	// if (m_plugin_log_if)
-	// 	runLogIf(client_connection);
-	// if (m_plugin_filter)
-	// 	runFiltering(client_connection);
-	// Request::Method method = client_connection.get_m_request().get_m_method();
-	// if (m_plugin_cache && (method == Request::GET || method == Request::HEAD)) {
-	// 	if (runCaching(client_connection))
-	// 		return ;
-	// }
+	if (m_plugin_log_if)
+		runLogIf(client_connection);
+	if (m_plugin_filter)
+		runFiltering(client_connection);
+	Request::Method method = client_connection.get_m_request().get_m_method();
+	if (m_plugin_cache && (method == Request::GET || method == Request::HEAD)) {
+		if (runCaching(client_connection))
+			return ;
+	}
 	runLoadBalancing(client_connection);
 }
 
@@ -844,7 +841,6 @@ Proxy::connectServer(std::string host, int port)
 	if((fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
 		throw std::runtime_error("SOCKET ERROR");
 	int value = true;
-	std::cout << "create server: " << fd << std::endl;
 	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(int)) == -1)
 		throw std::runtime_error("SOCKET_OPTION ERROR");
 	ft::bzero(&server_addr, sizeof(server_addr));
@@ -865,6 +861,8 @@ Proxy::connectServer(std::string host, int port)
 	server_connection.port = port;
 	server_connection.status = Proxy::WAIT;
 	m_server_connections.insert(std::pair<int, Proxy::ServerConnection>(fd, server_connection));
+	m_manager->fdSet(fd, ProxyManager::WRITE_SET);
+	m_manager->fdSet(fd, ProxyManager::READ_SET);
 	return (fd);
 }
 
