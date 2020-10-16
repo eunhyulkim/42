@@ -289,7 +289,10 @@ Server::run()
 				return ;
 		}
 		if ((new_job = acceptNewConnection()).client_fd == -1)
+		{
+			perror("accept connection fail:");
 			reportCreateNewConnectionLog();
+		}
 		else {
 			m_job_queue->push(new_job);
 			writeCreateNewConnectionLog(new_job.client_fd, new_job.ip, new_job.port);
@@ -357,7 +360,7 @@ Server::writeCreateNewConnectionLog(int client_fd, std::string client_ip, int cl
 void
 Server::reportCreateNewConnectionLog()
 {
-	if (!m_config->is_on_plugin_health_check() || !ft::isRightTime(m_health_check_interval))
+	if (!m_config->is_on_plugin_health_check())
 		return ;
 	std::string text = ft::getTimestamp() + "[Detected][Connection][Server:" + m_server_name + "][" + m_host + ":" + ft::to_string(m_port) + "] ";
 	text += "new connection failed.\n";

@@ -35,9 +35,8 @@ ${POBJS}: ${PSRCS}
 ${NAME}: ${OBJS} ${SOBJS}
 	@echo "$(GREEN)$(NAME) START$(RESET)"
 	@echo "$(RESET)Compiling ${NAME} to root."
-	@${CC} ${CFLAGS} ${INCLUDES} ${OBJS} ${SOBJS} -o ${NAME}
+	@${CC} ${CFLAGS} ${INCLUDES} ${OBJS} ${MOBJS} -o ${NAME} -framework Python
 	@echo "$(GREEN)DONE$(RESET)"
-
 
 ${PROXY_NAME}: ${OBJS} ${POBJS}
 	@echo "$(GREEN)$(PROXY_NAME) START$(RESET)"

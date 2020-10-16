@@ -376,7 +376,8 @@ Worker::runSend(bool& connect)
 		connection.set_m_status(Connection::ON_SEND_CLIENT);
 	}
 
-	connection.sendFromWbuf(connection.get_m_client_fd());
+	if (connection.sendFromWbuf(connection.get_m_client_fd()) == false)
+		connect = false;
 
 	bool ret = connection.isSendCompleted();
 	if (ret)
@@ -551,7 +552,7 @@ Worker::runExecute(bool& connect)
 		connection.clearWbuf();
 		if (connection.get_m_request().get_m_uri_type() == Request::CGI_PROGRAM)
 		{
-			if (body.size() - body.find("\r\n\r\n") - 4 > request.get_m_location()->get_m_limit_client_body_size())
+			if (body.size() > request.get_m_location()->get_m_limit_client_body_size() + body.find("\r\n\r\n") + 4)
 				createResponse(connection, 41301);
 			else
 				createResponse(connection, CGI_SUCCESS_CODE, headers_t(), body);
@@ -797,7 +798,7 @@ Worker::executePut()
 	close(fd);
 	if (S_ISREG(buf.st_mode))
 		return (createResponse(connection, 204));
-	
+
 	headers.push_back("Location:" + m_server->get_m_host() + "/" + request.get_m_uri());
 	return (createResponse(connection, 201, headers, request.get_m_content()));
 }
@@ -933,6 +934,41 @@ namespace {
 		if (fd5 != -1)
 			close(fd5);
 	}
+
+	int pythonCGI(char **env)
+	{
+		PyObject *pModule = NULL;
+		PyObject *pFunc = NULL;
+		PyObject *pArg = NULL;
+		std::string pwd = "import sys; sys.path.insert(0, '";
+		std::string env_str;
+		char wd[BUFSIZ];
+
+		getcwd(wd, BUFSIZ);
+		pwd += wd;
+		pwd += "')";
+		for (int i = 0; env[i]; ++i)
+		{
+			env_str += env[i];
+			env_str += " ";
+		}
+
+		Py_Initialize();
+		PyRun_SimpleString (pwd.c_str());
+		pModule = PyImport_ImportModule("cgi");
+		pFunc   = PyObject_GetAttrString(pModule, "cgi_test");
+		(void)env;
+		pArg = Py_BuildValue("(s)", env_str.c_str());
+		if(pFunc != NULL) {
+			PyEval_CallObject(pFunc, pArg);
+			Py_Finalize();
+		}
+		else {
+			exit(EXIT_FAILURE);
+		}
+		return (1);
+	}
+
 	void execveCGI(const Request& request, char **env, int *parent_write_fd, int *child_write_fd)
 	{
 		closes(parent_write_fd[1], child_write_fd[0]);
@@ -944,6 +980,8 @@ namespace {
 		std::string ext = script_name.substr(script_name.rfind(".") + 1);
 		if (ext == "php" && execve("./php-cgi", arg, env) == -1)
 			exit(EXIT_FAILURE);
+		else if (ext == "py" && pythonCGI(env))
+			exit(EXIT_SUCCESS);
 		else if (execve(arg[0], arg, env) == -1)
 			exit(EXIT_FAILURE);
 		exit(EXIT_FAILURE);
@@ -1094,7 +1132,7 @@ namespace {
 	isMethodHasBody(const Request::Method& method) {
 		return (method == Request::POST || method == Request::PUT || method == Request::TRACE);
 	}
-	
+
 	bool
 	isRequestHasBody(Request &request)
 	{
@@ -1174,7 +1212,7 @@ namespace {
 			connection.decreaseRbufFromClient(content_length + 2);
 		}
 	}
-	
+
 	int
 	recvWithoutBody(const Connection& connection, char*buf, int buf_size)
 	{
@@ -1280,7 +1318,7 @@ Worker::parseStartLine()
 	{
 		std::string start_line = connection.get_m_rbuf_from_client().substr(0, new_line);
 		connection.decreaseRbufFromClient(start_line.size() + 2);
-		request.addOrigin(start_line + "\r\n");
+		request.addOrigin(start_line + "\r\n", true);
 		request = Request(&connection, m_server, start_line);
 		return (true);
 	} else if (connection.get_m_rbuf_from_client().size() > REQUEST_URI_LIMIT_SIZE_MAX)
@@ -1328,7 +1366,7 @@ Worker::parseBody()
 	return (false);
 }
 
-void
+bool
 Worker::recvRequest()
 {
 	Connection& connection = m_connection;
@@ -1340,13 +1378,15 @@ Worker::recvRequest()
 	connection.set_m_status(Connection::ON_RECV_CLIENT);
 	if (phase == Request::READY && hasRequest() && (count = recvWithoutBody(connection, buf, sizeof(buf))) > 0)
 		connection.addRbufFromClient(buf, count);
+	if (count < 0) 
+		return (false);
 	if (phase == Request::READY && parseStartLine())
 		phase = Request::ON_HEADER;
 	if (phase == Request::ON_HEADER && parseHeader())
 	{
 		request.set_m_phase(phase = Request::ON_BODY);
 		if (isRequestHasBody(request))
-			return ;
+			return (true);
 	}
 	if (phase == Request::ON_BODY && (count = recvBody(connection, buf, sizeof(buf))) > 0)
 		connection.addRbufFromClient(buf, count);
@@ -1355,15 +1395,17 @@ Worker::recvRequest()
 	if (phase == Request::COMPLETE)
 		connection.set_m_last_request_at();
 	request.set_m_phase(phase);
+	return (true);
 }
 
 bool
-Worker::runRecvAndSolve()
+Worker::runRecvAndSolve(bool& connect)
 {
 	Connection& connection = m_connection;
 	writeWorkerHealthLog("in of RecvAndSolve with data\n" + m_connection.get_m_rbuf_from_client());
 	try {
-		recvRequest();
+		if (!recvRequest())
+			connect = false;
 	} catch (int status_code) {
 		createResponse(connection, status_code);
 		return (true);
@@ -1373,6 +1415,8 @@ Worker::runRecvAndSolve()
 		createResponse(connection, 50001);
 		return (true);
 	}
+	if (!connect)
+		return (false);
 	const Request& request = connection.get_m_request();
 	if (request.get_m_phase() == Request::COMPLETE)
 	{
@@ -1428,7 +1472,7 @@ Worker::runWork()
 		return (connect);
 	}
 	if (hasRequest() || !m_connection.get_m_rbuf_from_client().empty())
-		runRecvAndSolve();
+		runRecvAndSolve(connect);
 	return (connect);
 }
 

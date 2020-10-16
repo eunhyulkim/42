@@ -3,6 +3,7 @@
 
 # include <string>
 # include <iostream>
+# include <Python/Python.h>
 # include "webserv.hpp"
 # include "Request.hpp"
 # include "Response.hpp"
@@ -89,7 +90,7 @@ class Worker
 		bool parseStartLine();
 		bool parseHeader();
 		bool parseBody();
-		void recvRequest();
+		bool recvRequest();
 		void executeAutoindex();
 		void executeEcho();
 		void executeGet();
@@ -102,7 +103,7 @@ class Worker
 		char** createCGIEnv(const Request& request);
 		void executeCGI();
 		void solveRequest();
-		bool runRecvAndSolve();
+		bool runRecvAndSolve(bool& connect);
 		bool hasSendWork();
 		bool hasExecuteWork();
 		bool runSend(bool& connect);
@@ -110,7 +111,7 @@ class Worker
 		void createResponse(Connection& connection, int status, headers_t headers = headers_t(), std::string body = "");
 		void createCGIResponse(int& status, headers_t& headers, std::string& body);
 
-		void clearConnection();		
+		void clearConnection();
 		bool isFree() const;
 		void exit();
 
