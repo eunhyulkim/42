@@ -73,7 +73,7 @@ Request::assignLocationMatchingUri(std::string uri)
 	{
 		if (it->get_m_uri().c_str()[0] == '^')
 		{
-			std::regex regexp(it->get_m_uri().substr(1));
+			std::regex regexp(it->get_m_uri().substr(1), std::regex::icase);
 			if (std::regex_match(uri, regexp))
 			{
 				m_location = const_cast<Location *>(&(*it));
