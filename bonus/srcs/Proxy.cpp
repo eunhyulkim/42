@@ -362,7 +362,7 @@ namespace
         body_end_idx = requestString.find("0\r\n\r\n");
         if (body_end_idx == std::string::npos)
 		{
-			int count = requestString.size() - 5;
+			int count = static_cast<int>(requestString.size()) - 5;
 			count = (count <= 0) ? 0 : count;
 			request.addOrigin(requestString.substr(0, count), true);
 			connection.decreaseRbufFromClient(count);
