@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ServerManager.hpp                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/17 20:52:12 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/10/17 20:53:08 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef SERVER_MANAGER_HPP
 # define SERVER_MANAGER_HPP
 
@@ -8,11 +20,7 @@
 class ServerManager
 {
 	public:
-		static int error_fd;
-		static int access_fd;
-		static int proxy_fd;
-		static int stdin_fd;
-		static int stdout_fd;
+		static int log_fd;
 	private:
 		std::vector<Server> m_servers;
 		std::set<int> m_server_fdset;
@@ -37,11 +45,13 @@ class ServerManager
 		ServerManager& operator=(const ServerManager& obj);
 		virtual ~ServerManager();
 
-		/* getter & setter */
+		/* getter */
 		const std::vector<Server>& get_m_servers() const;
 		const std::set<int>& get_m_server_fdset() const;
 		Config get_m_config() const;
 		int get_m_max_fd() const;
+
+		/* setter */
 		void set_m_max_fd(int max_fd);
 		void set_m_config(const Config& config);
 		

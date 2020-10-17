@@ -29,8 +29,7 @@
 # include "libft.hpp"
 
 # define DEFAULT_CONFIG_FILE_PATH "config/default.conf"
-# define ACCESS_LOG_PATH "log/access.log"
-# define ERROR_LOG_PATH "log/error.log"
+# define HEALTH_LOG_PATH "log/health.log"
 # define PROXY_LOG_PATH "log/proxy.log"
 # define SERVER_ALLOW_METHODS "GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE"
 

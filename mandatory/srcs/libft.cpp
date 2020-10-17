@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 04:39:04 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/17 04:39:06 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/17 20:46:16 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -605,11 +605,9 @@ namespace ft
 /* --------------------------- LOG UTIL FUNCTION ---------------------------- */
 /* ************************************************************************** */
 
-	void log(int access_fd, int error_fd, std::string text) {
-		if (access_fd != -1)
-			write(access_fd, text.c_str(), text.size());
-		if (error_fd != -1)
-			write(error_fd, text.c_str(), text.size());
+	void log(int log_fd, std::string text) {
+		if (log_fd != -1)
+			write(log_fd, text.c_str(), text.size());
 	}
 
 	bool isRightTime(int second) {

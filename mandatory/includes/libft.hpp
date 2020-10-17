@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 04:40:24 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/17 04:40:25 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/17 20:46:25 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ namespace ft
 
     /* Log util function */
     bool isRightTime(int second);
-    void log(int access_fd, int error_fd, std::string text);
+    void log(int log_fd, std::string text);
     std::string	getTimestamp(void);
     std::string getSpeed(timeval from);
 
