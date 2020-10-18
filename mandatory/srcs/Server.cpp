@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 20:22:56 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/18 13:08:13 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/18 19:14:13 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,10 +212,11 @@ operator<<(std::ostream& out, const Server& server)
 /* ************************************************************************** */
 
 Server::IOError::IOError() throw () : std::exception(){}
-Server::IOError::IOError(const IOError&) throw () : std::exception(){}
-Server::IOError& Server::IOError::operator=(const Server::IOError&) throw() { return (*this); }
+Server::IOError::IOError(const char *msg) throw () : std::exception(){ m_msg = std::string(msg); }
+Server::IOError::IOError(const IOError& copy) throw () : std::exception(){ m_msg = copy.m_msg; }
+Server::IOError& Server::IOError::operator=(const Server::IOError& obj) throw() { m_msg = obj.m_msg; return (*this); }
 Server::IOError::~IOError() throw (){}
-const char* Server::IOError::what() const throw () { return ("read/write operation return fail"); }
+const char* Server::IOError::what() const throw () { return ((("read/write operation return fail:") + m_msg).c_str()); }
 
 /* ************************************************************************** */
 /* ---------------------------------- UTIL ---------------------------------- */
@@ -276,9 +277,21 @@ Server::closeConnection(int client_fd)
 		ft::log(ServerManager::log_fd,
 		"[Failed][Function] close function failed in closeConnection method");
 	m_manager->fdClear(client_fd, ServerManager::READ_SET);
+	// int cgi_read_fd = m_connections[client_fd].get_m_read_from_server_fd();
+	// int cgi_write_fd = m_connections[client_fd].get_m_write_to_server_fd();
+	// if (cgi_read_fd > 0) {
+	// 	m_manager->fdClear(cgi_read_fd, ServerManager::READ_SET);
+	// 	m_manager->fdClear(cgi_read_fd, ServerManager::READ_COPY_SET);
+	// 	std::cout << "cgi_read_fd: " << cgi_read_fd << std::endl;
+	// 	close(cgi_read_fd);
+	// }
+	// if (cgi_write_fd > 0) {
+	// 	m_manager->fdClear(cgi_write_fd, ServerManager::WRITE_SET);
+	// 	m_manager->fdClear(cgi_write_fd, ServerManager::WRITE_COPY_SET);
+	// 	std::cout << "cgi_write_fd: " << cgi_write_fd << std::endl;
+	// 	close(cgi_write_fd);
+	// }
 	m_connections.erase(client_fd);
-	if (m_manager->get_m_max_fd() == client_fd)
-		m_manager->resetMaxFd();
 }
 
 int
@@ -406,6 +419,7 @@ namespace {
 	{
 		int count;
 		int i = 0;
+		// usleep(100);
 		if ((count = recv(connection.get_m_client_fd(), buf, buf_size, MSG_PEEK)) > 0)
 		{
 			while (i < count)
@@ -418,13 +432,18 @@ namespace {
 				return (0);
 			else
 			{
-				if (recv(connection.get_m_client_fd(), buf, i + 4, 0) <= 0)
-					throw (Server::IOError());
+				int err;
+				if ((err = recv(connection.get_m_client_fd(), buf, i + 4, 0)) <= 0) {
+					perror((ft::to_string(err) + " ret:").c_str());
+					throw (Server::IOError(("recvWithoutBody, client_fd:" + ft::to_string(connection.get_m_client_fd())).c_str()));
+				}
 				return (i + 4);
 			}
 		}
-		else
-			throw (Server::IOError());
+		else{
+			perror((ft::to_string(count) + " ret:").c_str());
+			throw (Server::IOError(("recvWithoutBody(msg_peek), client_fd:" + ft::to_string(connection.get_m_client_fd())).c_str()));
+		}
 	}
 	
 	int
@@ -441,12 +460,16 @@ namespace {
 		if ((count = recv(connection.get_m_client_fd(), buf, buf_size, MSG_PEEK)) > 0)
 		{
 			int err = recv(connection.get_m_client_fd(), buf, count, 0);
-			if (err <= 0)
-				throw (Server::IOError());
+			if (err <= 0) {
+				perror((ft::to_string(err) + " ret:").c_str());
+				throw (Server::IOError(("recvBody, client_fd:" + ft::to_string(connection.get_m_client_fd())).c_str()));
+			}
 			return (count);
 		}
-		else
-			throw (Server::IOError());
+		else {
+			perror((ft::to_string(count) + " ret:").c_str());
+			throw (Server::IOError(("recvBody(msg_peek), client_fd:" + ft::to_string(connection.get_m_client_fd())).c_str()));
+		}
 	}
 	
 	bool
@@ -624,9 +647,10 @@ namespace
 		{
 			if ((count = recv(client_fd, buff, sizeof(buff), 0)) > 0)
 				connection.addRbufFromClient(buff, count);
-			else
-				throw (Server::IOError());
-
+			else {
+				perror((ft::to_string(count) + " ret:").c_str());
+				throw (Server::IOError(("writeChunkedBodyToCGIScript, client_fd:" + ft::to_string(connection.get_m_client_fd())).c_str()));
+			}
 		}
 		while (true)
 		{
@@ -644,7 +668,6 @@ namespace
 					close(to_child_fd);
 					manager->fdClear(to_child_fd, ServerManager::WRITE_SET);
 					manager->fdClear(to_child_fd, ServerManager::WRITE_COPY_SET);
-					manager->resetMaxFd();
 				}
 				break ;
 			}
@@ -682,7 +705,6 @@ namespace
 		{
 			close(to_child_fd);
 			manager->fdClear(to_child_fd, ServerManager::WRITE_SET);
-			manager->resetMaxFd();
 		}
 	}
 }
@@ -743,7 +765,6 @@ Server::runExecute(Connection& connection)
 		else
 			createResponse(connection, 200, headers_t(), body);
 		connection.set_m_status(Connection::TO_SEND);
-		m_manager->resetMaxFd();
 		return (true);
 	}
 	return (false);
@@ -1031,21 +1052,25 @@ Server::run()
 
 		if (m_fd == fd)
 			continue ;
-		try {
-			if (hasSendWork(it2->second) && !runSend(it2->second))
-				continue ;
-			if (hasExecuteWork(it2->second))
-			{
-				runExecute(it2->second);
-				continue ;
-			}
-			if (hasRequest(it2->second)) {
-				
+			try {
+				if (hasSendWork(it2->second))
+				{
+					runSend(it2->second);
+					continue ;
+				}
+				if (hasExecuteWork(it2->second))
+				{
+					runExecute(it2->second);
+					continue ;
+				}
+				if (hasRequest(it2->second) || !it2->second.get_m_rbuf_from_client().empty()) {				
 					runRecvAndSolve(it2->second);
+				}
+			} catch (Server::IOError& e) {
+				ft::log(ServerManager::log_fd, ft::getTimestamp() + e.what() + std::string("\n"));
+				std::cout << e.what() << std::endl;
+				closeConnection(fd);
 			}
-		} catch (Server::IOError& e) {
-			closeConnection(fd);
-		}
 
 		// if (hasRequest(it2->second) || !it2->second.get_m_rbuf_from_client().empty())
 		// 	runRecvAndSolve(it2->second);
@@ -1383,7 +1408,6 @@ Server::executeCGI(Connection& connection, const Request& request)
 		close(parent_write_fd[1]);
 	connection.set_m_read_from_server_fd(child_write_fd[0]);
 	m_manager->fdSet(connection.get_m_read_from_server_fd(), ServerManager::READ_SET);
-	m_manager->resetMaxFd(std::max(parent_write_fd[1], child_write_fd[0]));
 	ft::freeDoublestr(&env);
 	usleep(200000);
 }

@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 20:52:06 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/18 12:43:24 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/18 19:16:50 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -449,7 +449,7 @@ ServerManager::resetMaxFd(int new_max_fd)
 		set_m_max_fd(new_max_fd);
 	else
 	{
-		for (int i = get_m_max_fd(); i >= 0; --i)
+		for (int i = 512; i >= 0; --i)
 		{
 			if (fdIsset(i, READ_SET) || fdIsset(i, WRITE_SET))
 			{
@@ -533,13 +533,14 @@ ServerManager::runServer()
 	timeout.tv_usec = 0;
 
 	g_live = true;
+	resetMaxFd();
 	while (g_live)
 	{
 		int cnt;
 		fdCopy(ALL_SET);
 
 		if ((cnt = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, \
-		&this->m_error_copy_set, &timeout)) == -1)
+		NULL, &timeout)) == -1)
 		{
 			perror("why?");
 			ft::log(ServerManager::log_fd, "[Failed][Function]Select function failed(return -1)");
@@ -553,6 +554,7 @@ ServerManager::runServer()
 			it->run();
 			closeOldConnection(it);
 		}
+		resetMaxFd();
 	}
 	exitServer("server exited.\n");
 }
