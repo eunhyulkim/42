@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 20:52:06 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/17 21:21:33 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/18 12:43:24 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -577,8 +577,14 @@ ServerManager::exitServer(const std::string& error_msg)
 void
 ServerManager::openLog()
 {
-	if ((ServerManager::log_fd = open(HEALTH_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
+	std::string date = ft::getTimestamp();
+	date = date.substr(1, date.size() - 2);
+	std::string log_path = "log/" + date + "_log";
+	if ((ServerManager::log_fd = open(log_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
 		return ;
+
+	// if ((ServerManager::log_fd = open(HEALTH_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
+	// 	return ;
 }
 
 void

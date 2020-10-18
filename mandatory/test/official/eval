@@ -1,0 +1,67 @@
+# 코드를 체크하고 아래의 사항들을 질문하세요. 
+- launch the installation of siege with homebrew
+- select 함수가 어떻게 동작하는지 질문하세요.
+- select를 오직 한 번만 사용하였는지, 어떻게 클라이언트와의 read/write 작업을 처리하고 있는지 물어보세요.
+- select 함수가 main loop에서 사용되고, read fdset과 wirte fdset을 같은 위계에서 한 번에 처리하고 있는지 확인하세요.
+- select 함수를 실행한 후 한 번의 read 혹은 write 작업만 실행되어야 합니다. 두 작업이 한 차례에 수행되거나, 한 작업이 두 번 이상 수행되면 안 됩니다.
+- 모든 read/recv/write/send 함수를 확인하고, 문제가 생겼을 경우 클라이언트가 제거되는지 확인하세요.
+- Search for all read/recv/write/send and check if the returned value is well checked. (checking only -1 or 0 is not good you should check both)
+- If a check of errno is done after read/recv/write/send. Please stop the evaluation and put a mark to 0
+- Writing or reading ANY file descriptor without going through the select is stricly FORBIDDEN
+ Yes
+ No
+
+Configuration
+- In the configuration file check if you can do the following and test the result:
+- setup multiple servers with different port
+- setup multiple servers with different host name (use something like: curl --resolve example.com:80:127.0.0.1 http://example.com/)
+- setup default error page (try to change the error 404)
+- limit the client body (use curl -X POST -H "Content-Type: plain/text" --data "BODY IS HERE write something shorter or longer than body limit")
+- setup routes in a server to different directories
+- setup a default file to search for if you ask for a directory
+- setup a list of method accepted for a certain route (ex: setup only HEAD on a route and use curl with and without option -X HEAD)
+ Yes
+ No
+Run the tester
+- Download the tester in attachments and run it. It should not fail.
+ Yes
+ No
+Check Headers
+- Open the RFC 7231 and check the list of header of the subject, ask questions about it.
+- Use a browser, open the network part of it and try to connect to the server with it
+- Look at the request header and response header
+- Try wrong URL on the server
+- Try things
+ Yes
+ No
+Port issues
+- In the configuration file setup multiple port and use different website, use a browser to check that the configuration is working as expected and show the right website.
+- In the configuration try to setup the same port multiple times. It should not work.
+- Launch multiple server at the same time with different configuration but with common ports. Is it working? If it is working, ask why the server should work if one of the configuration isnt working. keep going
+ Yes
+ No
+Siege
+- Use Siege to run some stress test.
+- Check if there is no memory leak
+- Check if there is no hanging connection
+- You should be able to use siege indefinitly without restarting the server (look at siege -b)
+- Availability should be above 99.5% for a simple get on an empty page with a siege -b on that page
+ Yes
+ No
+Bonus Part
+Loadable plugins
+Plugins are loadable directly on the server. Each plugin brings one point up to 5.
+Rate it from 0 (failed) through 5 (excellent)
+Workers
+Webserv has available workers in the form of threads or processes.
+They function as per the subject, and can take as many requests as needed.
+ Yes
+ No
+Configuration File
+The configuration file allows:
+- to specify the number of workers
+- to specify plugins to load
+- routes defined with regexp
+- to configure a proxy to another http/https server
+- to use an internal module for a backend language (PHP/Python/Ruby...)
+Add one point per valid bonus

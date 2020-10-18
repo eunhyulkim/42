@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 20:23:03 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/17 20:23:04 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/18 02:05:30 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,16 @@ class Server
 		void writeCreateNewResponseLog(const Response& response);
 		void writeSendResponseLog(const Response& response);
 		void writeCloseConnectionLog(int client_fd);
+
+		class IOError : public std::exception {
+			public:
+				IOError() throw ();
+				IOError(const IOError&) throw ();
+				IOError& operator= (const IOError&) throw ();
+				virtual ~IOError() throw ();
+				virtual const char* what() const throw ();
+		};
+
 };
 
 /* global operator overload */

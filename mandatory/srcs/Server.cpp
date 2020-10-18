@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 20:22:56 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/17 21:45:37 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/18 13:08:13 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,6 +211,12 @@ operator<<(std::ostream& out, const Server& server)
 /* ------------------------------- EXCEPTION -------------------------------- */
 /* ************************************************************************** */
 
+Server::IOError::IOError() throw () : std::exception(){}
+Server::IOError::IOError(const IOError&) throw () : std::exception(){}
+Server::IOError& Server::IOError::operator=(const Server::IOError&) throw() { return (*this); }
+Server::IOError::~IOError() throw (){}
+const char* Server::IOError::what() const throw () { return ("read/write operation return fail"); }
+
 /* ************************************************************************** */
 /* ---------------------------------- UTIL ---------------------------------- */
 /* ************************************************************************** */
@@ -245,8 +251,10 @@ namespace {
 		} catch (std::exception& e) {
 			throw (40017);
 		}
-		if (content_length < 0)
+		if (content_length < 0) {
+			std::cout << "len token " << len << ", content_length " << content_length << std::endl;
 			throw (40016);
+		}
 		if (content_length == 0)
 		{
 			if (len[0] != '0')
@@ -263,7 +271,7 @@ namespace {
 void
 Server::closeConnection(int client_fd)
 {
-	writeCloseConnectionLog(client_fd);
+	// writeCloseConnectionLog(client_fd);
 	if (close(client_fd) == -1)
 		ft::log(ServerManager::log_fd,
 		"[Failed][Function] close function failed in closeConnection method");
@@ -410,12 +418,13 @@ namespace {
 				return (0);
 			else
 			{
-				recv(connection.get_m_client_fd(), buf, i + 4, 0);
+				if (recv(connection.get_m_client_fd(), buf, i + 4, 0) <= 0)
+					throw (Server::IOError());
 				return (i + 4);
 			}
 		}
 		else
-			return (-1);
+			throw (Server::IOError());
 	}
 	
 	int
@@ -431,11 +440,13 @@ namespace {
 	
 		if ((count = recv(connection.get_m_client_fd(), buf, buf_size, MSG_PEEK)) > 0)
 		{
-			recv(connection.get_m_client_fd(), buf, count, 0);
+			int err = recv(connection.get_m_client_fd(), buf, count, 0);
+			if (err <= 0)
+				throw (Server::IOError());
 			return (count);
 		}
 		else
-			return (-1);
+			throw (Server::IOError());
 	}
 	
 	bool
@@ -555,6 +566,8 @@ Server::runRecvAndSolve(Connection& connection)
 	} catch (int status_code) {
 		createResponse(connection, status_code);
 		return (true);
+	} catch (Server::IOError& e) {
+		throw (e);
 	} catch (std::exception& e) {
 		ft::log(ServerManager::log_fd, std::string("[Failed][Request] Failed to create request because ") + e.what());
 		createResponse(connection, 50001);
@@ -563,7 +576,8 @@ Server::runRecvAndSolve(Connection& connection)
 	const Request& request = connection.get_m_request();
 	if (request.get_m_phase() == Request::COMPLETE)
 	{
-		writeCreateNewRequestLog(request);
+		if (request.get_m_method() == Request::POST)
+			writeCreateNewRequestLog(request);
 		connection.set_m_status(Connection::ON_EXECUTE);
 		solveRequest(connection, connection.get_m_request());
 		return (true);
@@ -610,6 +624,9 @@ namespace
 		{
 			if ((count = recv(client_fd, buff, sizeof(buff), 0)) > 0)
 				connection.addRbufFromClient(buff, count);
+			else
+				throw (Server::IOError());
+
 		}
 		while (true)
 		{
@@ -763,11 +780,12 @@ Server::runSend(Connection& connection)
 	{
 		connection.set_m_status(Connection::ON_WAIT);
 		m_manager->fdClear(connection.get_m_client_fd(), ServerManager::WRITE_SET);
-		writeSendResponseLog(connection.get_m_response());
+		if (connection.get_m_request().get_m_method() == Request::POST)
+			writeSendResponseLog(connection.get_m_response());
 		if (connection.get_m_response().get_m_status_code() / 100 != 2)
 		{
-			// std::cout << "close connection because error response" << std::endl;
 			closeConnection(connection.get_m_client_fd());
+			return (false);
 		}
 		else
 			connection.clear();
@@ -1013,24 +1031,28 @@ Server::run()
 
 		if (m_fd == fd)
 			continue ;
-		// if (hasException(fd)) {
-		// 	std::cout << "close connection because exception" << std::endl;
-		// 	closeConnection(fd);
-		// 	continue ;
-		// }
-		if (hasSendWork(it2->second) && !runSend(it2->second))
-			continue ;
-		if (hasExecuteWork(it2->second))
-		{
-			runExecute(it2->second);
-			continue ;
+		try {
+			if (hasSendWork(it2->second) && !runSend(it2->second))
+				continue ;
+			if (hasExecuteWork(it2->second))
+			{
+				runExecute(it2->second);
+				continue ;
+			}
+			if (hasRequest(it2->second)) {
+				
+					runRecvAndSolve(it2->second);
+			}
+		} catch (Server::IOError& e) {
+			closeConnection(fd);
 		}
-		if (hasRequest(it2->second) || !it2->second.get_m_rbuf_from_client().empty())
-			runRecvAndSolve(it2->second);
+
+		// if (hasRequest(it2->second) || !it2->second.get_m_rbuf_from_client().empty())
+		// 	runRecvAndSolve(it2->second);
 	}
 	if (hasNewConnection())
 	{
-		writeDetectNewConnectionLog();
+		// writeDetectNewConnectionLog();
 		if (m_connections.size() >= (1024 / m_manager->get_m_servers().size()))
 		{
 			int fd = getUnuseConnectionFd();
@@ -1110,7 +1132,7 @@ Server::solveRequest(Connection& connection, const Request& request)
 }
 
 namespace {
-	bool makeAutoindexContent(HtmlWriter& html, std::string cwd)
+	bool makeAutoindexContent(HtmlWriter& html, std::string cwd, std::string directory_uri)
 	{
 		DIR *dir = NULL;
 		struct dirent *de = NULL;
@@ -1126,7 +1148,7 @@ namespace {
 			if (de->d_type == 4 || de->d_type == 8) // 4 dir, 8 file
 			{
 				std::string content;
-				content.append(html.makeLink(name));
+				content.append(html.makeLink(directory_uri + "/" + name, name));
 				content.append(std::string(51 - std::string(name).size(), ' '));
 
 				struct stat buf;
@@ -1185,7 +1207,10 @@ Server::executeAutoindex(Connection& connection, const Request& request)
 	{
 		HtmlWriter html;
 		makeAutoindexForm(html, request);
-		if (!makeAutoindexContent(html, request.get_m_script_translated()))
+		std::string directory_uri = request.get_m_uri();
+		if (directory_uri[directory_uri.size() - 1] != '/')
+			directory_uri.push_back('/');
+		if (!makeAutoindexContent(html, request.get_m_script_translated(), directory_uri))
 			return (createResponse(connection, 50002));
 		return (createResponse(connection, 200, headers_t(), html.get_m_body()));
 	}
@@ -1406,6 +1431,7 @@ Server::createResponse(Connection& connection, int status, headers_t headers, st
 		body.replace(body.find("#ERROR_CODE"), 11, ft::to_string(status));
 		body.replace(body.find("#ERROR_DESCRIPTION"), 18, Response::status[status]);
 		body.replace(body.find("#ERROR_DESCRIPTION"), 18, Response::status[status]);
+		body.replace(body.find("#PORT"), 5, ft::to_string(m_port));
 	}
 	if (!ft::hasKey(ft::stringVectorToMap(headers), "Transfer-Encoding"))
 		headers.push_back("Content-Length:" + ft::to_string(body.size()));
@@ -1428,7 +1454,7 @@ Server::createResponse(Connection& connection, int status, headers_t headers, st
 		std::string value = ft::ltrim((*it).substr((*it).find(":") + 1), " ");
 		response.addHeader(key, value);
 	}
-	writeCreateNewResponseLog(response);
+	// writeCreateNewResponseLog(response);
 	const_cast<Request&>(connection.get_m_request()).set_m_phase(Request::COMPLETE);
 	connection.set_m_status(Connection::TO_SEND);
 	m_manager->fdSet(response.get_m_connection()->get_m_client_fd(), ServerManager::WRITE_SET);
@@ -1468,7 +1494,7 @@ Server::reportCreateNewConnectionLog()
 void
 Server::writeDetectNewRequestLog(const Connection& connection)
 {
-	std::string text = "[Detected][Request][Server:" + m_server_name + "][CIP:"
+	std::string text = ft::getTimestamp() + "[Detected][Request][Server:" + m_server_name + "][CIP:"
 	+ connection.get_m_client_ip() + "][CFD:" + ft::to_string(connection.get_m_client_fd()) + "]"
 	+ " New request detected.\n";
 	ft::log(ServerManager::log_fd, text);
@@ -1478,8 +1504,8 @@ Server::writeDetectNewRequestLog(const Connection& connection)
 void
 Server::writeCreateNewRequestLog(const Request& request)
 {
-	std::string text = "[Created][Request][Server:" + m_server_name + "][Method:" \
-	+ request.get_m_method_to_string() + "][URI:" + request.get_m_uri() + "][Path:" + request.get_m_script_translated() + "]";
+	std::string text = ft::getTimestamp() + "[Created][Request][Server:" + m_server_name + "][Method:" \
+	+ request.get_m_method_to_string() + "][URI:" + request.get_m_uri() + "]";
 	if (request.get_m_method() == Request::GET)
 		text.append("[Query:" + request.get_m_query() + "]");
 	text.append(" New request created.\n");
