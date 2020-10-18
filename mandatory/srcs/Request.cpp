@@ -177,7 +177,7 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		throw (40001);
 	if (parsed[1].length() > m_server->get_m_request_uri_limit_size())
 		throw (41401);
-
+	m_uri_type = FILE;
 	m_uri = parsed[1];
 	if (!(assignLocationMatchingUri(m_uri)))
 		throw (40401);
@@ -231,8 +231,8 @@ Request::~Request()
 	m_phase = READY;
 	m_start_at.tv_sec = 0;
 	m_start_at.tv_usec = 0;
-
 	m_uri.clear();
+	m_uri_type = FILE;
 	m_protocol.clear();
 	m_headers.clear();
 	m_content.clear();

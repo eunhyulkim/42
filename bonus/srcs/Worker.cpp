@@ -481,8 +481,10 @@ namespace
 			else
 			{
 				count = write(to_child_fd, rbuf.c_str(), content_length);
-				if (count != -1)
+				if (count > 0)
 					connection.decreaseRbufFromClient(content_length + 2);
+				else
+					rbuf.insert(0, len + "\r\n");
 				usleep(1200);
 			}
 		}

@@ -3,7 +3,6 @@
         {
             "name": "Mac",
             "includePath": [
-                // "${workspaceFolder}/bonus/includes",
                 "${workspaceFolder}/mandatory/includes"
             ],
             "defines": [],
