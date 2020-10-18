@@ -528,6 +528,8 @@ Worker::runExecute(bool& connect)
 			read_end = true;
 		else if (count > 0)
 			connection.addRbufFromServer(buff, count);
+		else
+			std::cout << "(errno) execute read operation return " << count << std::endl;
 	}
 
 	if (to_child_fd != -1 && this->fdIsset(to_child_fd, Worker::WRITE_COPY_SET))
