@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 20:22:56 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/19 14:05:51 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/19 15:31:45 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -304,13 +304,11 @@ Server::closeConnection(int client_fd)
 	if (cgi_read_fd > 0) {
 		m_manager->fdClear(cgi_read_fd, ServerManager::READ_SET);
 		m_manager->fdClear(cgi_read_fd, ServerManager::READ_COPY_SET);
-		std::cout << "cgi_read_fd: " << cgi_read_fd << std::endl;
 		close(cgi_read_fd);
 	}
 	if (cgi_write_fd > 0) {
 		m_manager->fdClear(cgi_write_fd, ServerManager::WRITE_SET);
 		m_manager->fdClear(cgi_write_fd, ServerManager::WRITE_COPY_SET);
-		std::cout << "cgi_write_fd: " << cgi_write_fd << std::endl;
 		close(cgi_write_fd);
 	}
 	m_connections.erase(client_fd);
@@ -451,22 +449,14 @@ namespace {
 			}
 			if (i == count)
 				return (0);
-			else
-			{
-				int err;
-				if ((err = recv(connection.get_m_client_fd(), buf, i + 4, 0)) <= 0) {
-					perror((ft::to_string(err) + " ret:").c_str());
-					throw (Server::IOError(("recvWithoutBody, client_fd:" + ft::to_string(connection.get_m_client_fd())).c_str()));
-				}
-				if (err != i + 4)
-					std::cout << "err(" << err << ")" << " and " << "peek(" << i + 4 << ") diff." << std::endl;
+			else if ((count = recv(connection.get_m_client_fd(), buf, i + 4, 0)) > 0)
 				return (i + 4);
-			}
 		}
-		else {
-			perror((ft::to_string(count) + " ret:").c_str());
-			throw (Server::IOError(("recvWithoutBody(msg_peek), client_fd:" + ft::to_string(connection.get_m_client_fd())).c_str()));
-		}
+		
+		if (count == -1) 
+			throw (Server::IOError((("IO error detected to read reqeust message without body for client ") + ft::to_string(connection.get_m_client_fd())).c_str()));
+		else
+			throw (Server::IOError((("Connection close detected by client ") + ft::to_string(connection.get_m_client_fd())).c_str()));			
 	}
 	
 	int
@@ -479,20 +469,12 @@ namespace {
 			return (0);
 		if (!isMethodHasBody(request.get_m_method()))
 			return (0);
-	
-		if ((count = recv(connection.get_m_client_fd(), buf, buf_size, MSG_PEEK)) > 0)
-		{
-			int err = recv(connection.get_m_client_fd(), buf, count, 0);
-			if (err <= 0) {
-				perror((ft::to_string(err) + " ret:").c_str());
-				throw (Server::IOError(("recvBody, client_fd:" + ft::to_string(connection.get_m_client_fd())).c_str()));
-			}
+		if ((count = recv(connection.get_m_client_fd(), buf, buf_size, 0)) > 0)
 			return (count);
-		}
-		else {
-			perror((ft::to_string(count) + " ret:").c_str());
-			throw (Server::IOError(("recvBody(msg_peek), client_fd:" + ft::to_string(connection.get_m_client_fd())).c_str()));
-		}
+		else if (count == -1)
+			throw (Server::IOError((("IO error detected to read reqeust message without body for client ") + ft::to_string(connection.get_m_client_fd())).c_str()));
+		else
+			throw (Server::IOError((("Connection close detected by client ") + ft::to_string(connection.get_m_client_fd())).c_str()));
 	}
 	
 	bool
@@ -670,10 +652,10 @@ namespace
 		{
 			if ((count = recv(client_fd, buff, sizeof(buff), 0)) > 0)
 				connection.addRbufFromClient(buff, count);
-			else {
-				perror((ft::to_string(count) + " ret:").c_str());
-				throw (Server::IOError(("writeChunkedBodyToCGIScript, client_fd:" + ft::to_string(connection.get_m_client_fd())).c_str()));
-			}
+			else if (count == -1)
+				throw (Server::IOError((("IO error detected to read reqeust message without body for client ") + ft::to_string(connection.get_m_client_fd())).c_str()));
+			else
+				throw (Server::IOError((("Connection close detected by client ") + ft::to_string(connection.get_m_client_fd())).c_str()));
 		}
 
 		std::string len;
@@ -704,6 +686,8 @@ namespace
 			count = write(to_child_fd, rbuf.c_str(), content_length);
 			if (count > 0)
 				connection.decreaseRbufFromClient(content_length + 2);
+			else if (count == 0 || count == -1)
+				throw (Server::IOError((("IO error detected from write body to child process ") + ft::to_string(to_child_fd)).c_str()));
 			else
 				rbuf.insert(0, len + "\r\n");
 		}
@@ -720,6 +704,8 @@ namespace
 			int count = (data.size() > BUFFER_SIZE) ? BUFFER_SIZE : data.size();
 			count = write(to_child_fd, data.c_str(), count);
 			connection.decreaseWbuf(count);
+			if (count == 0 || count == -1)
+				throw (Server::IOError((("IO error detected from write body to child process ") + ft::to_string(to_child_fd)).c_str()));
 		}
 		else
 		{
@@ -752,6 +738,8 @@ Server::runExecute(Connection& connection)
 			read_end = true;
 		else if (count > 0)
 			connection.addRbufFromServer(buff, count);
+		else
+			throw (IOError("IO error detected to read from child process."));
 	}
 
 	if (to_child_fd != -1 && m_manager->fdIsset(to_child_fd, ServerManager::WRITE_COPY_SET))
@@ -1085,7 +1073,6 @@ Server::run()
 				}
 			} catch (Server::IOError& e) {
 				ft::log(ServerManager::log_fd, ft::getTimestamp() + e.what() + std::string("\n"));
-				std::cout << e.what() << std::endl;
 				closeConnection(fd);
 			}
 
@@ -1331,6 +1318,7 @@ Server::executePut(Connection& connection, const Request& request)
 {
 	int fd;
 	struct stat buf;
+	int count;
 
 	stat(request.get_m_script_translated().c_str(), &buf);
 	headers_t headers(1, getMimeTypeHeader(request.get_m_path_translated()));
@@ -1338,8 +1326,13 @@ Server::executePut(Connection& connection, const Request& request)
 	// 	return (createResponse(request.get_m_connection(), 41503));
 	if ((fd = open(request.get_m_script_translated().c_str(), O_RDWR | O_CREAT | O_TRUNC, 0777)) == -1)
 		return (createResponse(connection, 50003));
-	if (write(fd, request.get_m_content().c_str(), request.get_m_content().size()) == -1)
+	if (!request.get_m_content().empty() && (count = write(fd, request.get_m_content().c_str(), request.get_m_content().size()) <= 0))
+	{
+		close(fd);
+		if (count == 0 || count == -1)
+			throw (Server::IOError((("IO error detected to write body in executePut") + ft::to_string(fd)).c_str()));
 		return (createResponse(connection, 50004));
+	}
 	close(fd);
 	if (S_ISREG(buf.st_mode))
 		return (createResponse(connection, 204));

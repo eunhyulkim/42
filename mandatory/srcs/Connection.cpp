@@ -6,11 +6,12 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 04:57:10 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/19 03:41:44 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/19 15:26:33 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Connection.hpp"
+#include "ServerManager.hpp"
 
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
@@ -256,8 +257,8 @@ Connection::sendFromWbuf(int fd)
 	if (count > BUFFER_SIZE)
 		count = BUFFER_SIZE;
 	count = send(fd, m_wbuf.c_str() + m_send_data_size, count, 0);
-	if (count == -1)
-		return (false);
+	if (count == 0 || count == -1) 
+		throw (Server::IOError((("IO error detected to send response message to client ") + ft::to_string(fd)).c_str()));
 	m_send_data_size += count;
 	return (true);
 }

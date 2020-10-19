@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 04:39:04 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/19 03:58:04 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/19 15:22:41 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -634,12 +634,38 @@ namespace ft
 		std::time_t	t = std::time(0);
 		std::tm* now = std::localtime(&t);
 		std::string ret;
-		ret.append("[" + ft::to_string(now->tm_year + 1900));
-		ret.append(ft::to_string(now->tm_mon + 1));
-		ret.append(ft::to_string(now->tm_mday) + "_");
-		ret.append(ft::to_string(now->tm_hour) + "_");
-		ret.append(ft::to_string(now->tm_min) + "_");
-		ret.append(ft::to_string(now->tm_sec) + "]");
+		std::string data;
+		ret.append("[" + ft::to_string(now->tm_year + 1900) + "_");
+		
+		data = ft::to_string(now->tm_mon + 1);
+		if (data.size() == 1)
+			ret.append("0" + data);
+		else
+			ret.append(data);
+
+		data = ft::to_string(now->tm_mday);
+		if (data.size() == 1)
+			ret.append("0" + data + "_");
+		else
+			ret.append(data + "_");
+
+		data = ft::to_string(now->tm_hour);
+		if (data.size() == 1)
+			ret.append("0" + data);
+		else
+			ret.append(data);
+
+		data = ft::to_string(now->tm_min);
+		if (data.size() == 1)
+			ret.append("0" + data + "_");
+		else
+			ret.append(data + "_");
+
+		data = ft::to_string(now->tm_sec);
+		if (data.size() == 1)
+			ret.append("0" + data + "]");
+		else
+			ret.append(data + "]");
 		return (ret);
 	}
 

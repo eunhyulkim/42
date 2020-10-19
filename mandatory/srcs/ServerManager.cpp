@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 20:52:06 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/18 19:16:50 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/19 14:39:41 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -542,7 +542,7 @@ ServerManager::runServer()
 		if ((cnt = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, \
 		NULL, &timeout)) == -1)
 		{
-			perror("why?");
+			perror("Select Error:");
 			ft::log(ServerManager::log_fd, "[Failed][Function]Select function failed(return -1)");
 			throw std::runtime_error("select error");
 		}
