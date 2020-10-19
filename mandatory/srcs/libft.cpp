@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 04:39:04 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/19 01:16:04 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/19 03:58:04 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -441,6 +441,17 @@ namespace ft
 		return (1);
 	}
 
+	int getline(std::string& data, int& readed_size, std::string& line)
+	{
+		size_t pos = data.find('\n', readed_size);
+		if (pos == std::string::npos)
+			return (0);
+		line = data.substr(readed_size, pos - readed_size);
+		line = rtrim(line, "\r");
+		readed_size += (pos - readed_size + 1);
+		return (1);
+	}
+	
 	bool isFile(std::string path)
 	{
 		struct stat buf;

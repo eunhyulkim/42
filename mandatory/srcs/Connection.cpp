@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 04:57:10 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/17 05:24:43 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/19 03:41:44 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ int Connection::get_m_read_from_server_fd() const { return (this->m_read_from_se
 int Connection::get_m_write_to_server_fd() const { return (this->m_write_to_server_fd); }
 const Request& Connection::get_m_request() const { return (this->m_request); }
 int Connection::get_m_token_size() const { return (this->m_token_size); }
-int Connection::get_m_readed_size() const { return (this->m_readed_size); }
+const int& Connection::get_m_readed_size() const { return (this->m_readed_size); }
 const std::string& Connection::get_m_rbuf_from_client() const { return (this->m_rbuf_from_client); }
 const std::string& Connection::get_m_rbuf_from_server() const { return (this->m_rbuf_from_server); }
 const std::string& Connection::get_m_wbuf() const { return (this->m_wbuf); }

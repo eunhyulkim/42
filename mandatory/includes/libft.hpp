@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 04:40:24 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/17 20:46:25 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/19 03:39:00 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ namespace ft
     int getline(int fd, char *line, int max_buffer_size);
     int getline(std::string& data, std::string& line, size_t max_buffer_size);
 	int getline(std::string& data, std::string& line);
+	int getline(std::string& data, int& readed_size, std::string& line);
     bool isFile(std::string path);
     bool isDirectory(std::string path);
 

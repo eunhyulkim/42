@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 20:22:56 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/19 03:04:09 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/19 14:05:51 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,6 +241,28 @@ void basic_decode(std::string data, std::string& key, std::string& value)
 }
 
 namespace {	
+	// int
+	// getChunkedSize(std::string& buf, int& readed_size, std::string& len)
+	// {
+	// 	int content_length;
+	// 	if (!ft::getline(buf, readed_size, len))
+	// 		return (-1);
+	// 	try {
+	// 		content_length = ft::stoi(len, 16);
+	// 	} catch (std::exception& e) {
+	// 		throw (40017);
+	// 	}
+	// 	if (content_length < 0) {
+	// 		std::cout << "len token " << len << ", content_length " << content_length << std::endl;
+	// 		throw (40016);
+	// 	}
+	// 	if (content_length == 0)
+	// 	{
+	// 		if (len[0] != '0')
+	// 			throw (40017);
+	// 	}
+	// 	return (content_length);
+	// }
 	int
 	getChunkedSize(std::string& buf, std::string& len)
 	{
@@ -631,7 +653,7 @@ Server::hasExecuteWork(Connection& connection)
 
 	return (false);
 }
-
+		
 namespace
 {
 	void
@@ -642,8 +664,9 @@ namespace
 		int to_child_fd = connection.get_m_write_to_server_fd();
 		char buff[BUFFER_SIZE];
 		int count;
+		(void)connection_count;
 
-		if (manager->fdIsset(client_fd, ServerManager::READ_COPY_SET))
+		if (connection.get_m_rbuf_from_client().size() < 70000 && manager->fdIsset(client_fd, ServerManager::READ_COPY_SET))
 		{
 			if ((count = recv(client_fd, buff, sizeof(buff), 0)) > 0)
 				connection.addRbufFromClient(buff, count);
@@ -652,10 +675,11 @@ namespace
 				throw (Server::IOError(("writeChunkedBodyToCGIScript, client_fd:" + ft::to_string(connection.get_m_client_fd())).c_str()));
 			}
 		}
+
 		std::string len;
 		int content_length = getChunkedSize(rbuf, len);
 		if (content_length == -1)
-			;
+			return ;
 		else if (content_length == 0)
 		{
 			if (rbuf.find("\r\n") == std::string::npos)
@@ -666,21 +690,22 @@ namespace
 				close(to_child_fd);
 				manager->fdClear(to_child_fd, ServerManager::WRITE_SET);
 				manager->fdClear(to_child_fd, ServerManager::WRITE_COPY_SET);
+				manager->resetMaxFd();
 			}
+			return ;
 		}
 		else if (static_cast<int>(rbuf.size()) < content_length + 2)
+		{
 			rbuf.insert(0, len + "\r\n");
+			return ;
+		}
 		else
 		{
 			count = write(to_child_fd, rbuf.c_str(), content_length);
 			if (count > 0)
 				connection.decreaseRbufFromClient(content_length + 2);
-			else {
+			else
 				rbuf.insert(0, len + "\r\n");
-				perror("errno:");
-				ft::log(ServerManager::log_fd, ft::getTimestamp() + "[Error:" + ft::to_string(count) + "]write function in cgi return 0 or -1");
-				std::cout << ft::getTimestamp() + "[Error:" + ft::to_string(count) + "]write function in cgi return 0 or -1" << std::endl;
-			}
 		}
 	}
 
@@ -1401,7 +1426,7 @@ Server::executeCGI(Connection& connection, const Request& request)
 	connection.set_m_read_from_server_fd(child_write_fd[0]);
 	m_manager->fdSet(connection.get_m_read_from_server_fd(), ServerManager::READ_SET);
 	ft::freeDoublestr(&env);
-	usleep(200000);
+	// usleep(200000);
 }
 
 namespace {

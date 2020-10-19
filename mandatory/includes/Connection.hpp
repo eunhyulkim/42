@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 04:56:50 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/17 04:56:50 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/19 03:41:57 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ class Connection
 		int get_m_write_to_server_fd() const;
 		const Request& get_m_request() const;
 		int get_m_token_size() const;
-		int get_m_readed_size() const;
+		const int& get_m_readed_size() const;
 		const Response& get_m_response() const;
 		const std::string& get_m_rbuf_from_client() const;
 		const std::string& get_m_rbuf_from_server() const;
