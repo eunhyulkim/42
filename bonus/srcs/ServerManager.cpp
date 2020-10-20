@@ -550,23 +550,6 @@ changeSignal(int sig)
 	(void)sig;
 }
 
-// void
-// ServerManager::closeOldConnection(std::vector<Server>::iterator server_it)
-// {
-// 	std::map<int, Connection>::const_iterator it = server_it->get_m_connections().begin();
-// 	while (it != server_it->get_m_connections().end())
-// 	{
-// 		int fd = it->first;
-// 		if (!ft::hasKey(m_server_fdset, fd) && it->second.isOverTime())
-// 		{
-// 			++it;
-// 			// std::cout << "close connection because connection old" << std::endl;
-// 			server_it->closeConnection(fd);
-// 		} else
-// 			++it;
-// 	}
-// }
-
 void
 ServerManager::runServer()
 {
@@ -587,7 +570,7 @@ ServerManager::runServer()
 		if ((cnt = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, \
 		NULL, &timeout)) == -1)
 		{
-			perror("why?");
+			perror("Server select error: ");
 			ft::log(ServerManager::log_fd, "[Failed][Function]Select function failed(return -1)");
 			throw std::runtime_error("select error");
 		}
@@ -611,8 +594,7 @@ void
 ServerManager::exitServer(const std::string& error_msg)
 {
 	close(ServerManager::log_fd);
-	(void)error_msg;
-	// std::cout << error_msg << std::endl;
+	std::cout << error_msg << std::endl;
 	std::vector<Server>::iterator it = m_servers.begin();
 	for (; it != m_servers.end(); ++it)
 		it->exit();

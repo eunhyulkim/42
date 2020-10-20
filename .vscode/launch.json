@@ -21,14 +21,13 @@
             "name": "webserv_bonus",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bonus/webserv",
-            "args": ["config/bonus.conf"],
+            "program": "${workspaceFolder}/bonus/webserv_bonus",
+            "args": ["config/default.conf"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/bonus",
             "environment": [],
             "externalConsole": false,
             "MIMode": "lldb",
-            "preLaunchTask": "webserv_bonus"
         },
         {
             "name": "proxy",

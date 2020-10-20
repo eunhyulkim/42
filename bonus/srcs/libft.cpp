@@ -200,10 +200,11 @@ namespace ft
         return (str);
 	}
 
-	int stoi(std::string str, int base)
+	int stoi(std::string str, size_t base)
 	{
         int sign = 1;
-        int value = 0;
+        long long value = 0;
+		long long int_max = INT_MAX;
 		std::string digit = "0123456789abcdefghijklmnopqrstuvwxyz";
 
         if (str.empty())
@@ -214,13 +215,15 @@ namespace ft
 			str.erase(str.begin());
         if (str.empty() || digit.find(str[0]) == std::string::npos)
             return (0);
-        while (!str.empty() && digit.find(str[0]) != std::string::npos)
+        while (!str.empty() && digit.find(str[0]) < base)
         {
             value *= base;
             value += digit.find(str[0]);
+			if ((sign == 1 && value > int_max) || (sign == -1 && value > int_max + 1))
+				throw (std::overflow_error("stoi overflow"));
             str.erase(str.begin());
         }
-        return (sign * value);
+        return (static_cast<int>(sign * value));
 	}
 
 	std::string

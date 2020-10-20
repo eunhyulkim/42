@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 04:40:24 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/19 03:39:00 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/20 02:33:08 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ namespace ft
     size_t pow(size_t root, size_t square);
     long long int abs(long long int num);
     std::string to_string(long long int n);
-    int stoi(std::string str, int base = 10);
+    int stoi(std::string str, size_t base = 10);
     std::string itos(std::string number, size_t from, size_t to);
 
     /* C++ LIBFT */

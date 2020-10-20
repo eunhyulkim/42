@@ -156,6 +156,13 @@ void Worker::set_m_client_fd(int fd) { m_client_fd = fd; }
 /* ------------------------------- EXCEPTION -------------------------------- */
 /* ************************************************************************** */
 
+Worker::IOError::IOError() throw () : std::exception(){}
+Worker::IOError::IOError(const char *msg) throw () : std::exception(){ m_msg = std::string(msg); }
+Worker::IOError::IOError(const IOError& copy) throw () : std::exception(){ m_msg = copy.m_msg; }
+Worker::IOError& Worker::IOError::operator=(const Worker::IOError& obj) throw() { m_msg = obj.m_msg; return (*this); }
+Worker::IOError::~IOError() throw (){}
+const char* Worker::IOError::what() const throw () { return ((("read/write operation return fail:") + m_msg).c_str()); }
+
 /* ************************************************************************** */
 /* ---------------------------------- UTIL ---------------------------------- */
 /* ************************************************************************** */
@@ -365,7 +372,7 @@ Worker::hasSendWork()
 }
 
 bool
-Worker::runSend(bool& connect)
+Worker::runSend()
 {
 	Connection& connection = m_connection;
 
@@ -376,9 +383,7 @@ Worker::runSend(bool& connect)
 		connection.set_m_status(Connection::ON_SEND_CLIENT);
 	}
 
-	if (connection.sendFromWbuf(connection.get_m_client_fd()) == false)
-		connect = false;
-
+	connection.sendFromWbuf(connection.get_m_client_fd());
 	bool ret = connection.isSendCompleted();
 	if (ret)
 	{
@@ -386,12 +391,12 @@ Worker::runSend(bool& connect)
 		this->fdClear(connection.get_m_client_fd(), Worker::WRITE_SET);
 		writeSendResponseLog(connection.get_m_response());
 		if (connection.get_m_response().get_m_status_code() / 100 != 2)
-			connect = false;
+			return (false);
 		else
 			connection.clear();
 		connection.set_m_last_request_at();
 	}
-	return (ret);
+	return (true);
 }
 
 /* ************************************************************************** */
@@ -449,46 +454,50 @@ namespace
 		char buff[BUFFER_SIZE];
 		int count;
 
-		if (worker->fdIsset(client_fd, Worker::READ_COPY_SET))
+		if (rbuf.size() < 70000 && worker->fdIsset(client_fd, Worker::READ_COPY_SET))
 		{
 			if ((count = recv(client_fd, buff, sizeof(buff), 0)) > 0)
 				connection.addRbufFromClient(buff, count);
-		}
-		while (true)
-		{
-			std::string len;
-			int content_length = getChunkedSize(rbuf, len);
-			if (content_length == -1)
-				break ;
-			else if (content_length == 0)
-			{
-				if (rbuf.find("\r\n") == std::string::npos)
-					rbuf.insert(0, len + "\r\n");
-				else if (rbuf.size() >= 2 && rbuf[0] == '\r' && rbuf[1] == '\n')
-				{
-					connection.decreaseRbufFromClient(2);
-					close(to_child_fd);
-					worker->fdClear(to_child_fd, Worker::WRITE_SET);
-					worker->fdClear(to_child_fd, Worker::WRITE_COPY_SET);
-				}
-				break ;
-			}
-			else if (static_cast<int>(rbuf.size()) < content_length + 2)
-			{
-				rbuf.insert(0, len + "\r\n");
-				break ;
-			}
+			else if (count == -1)
+				throw (Worker::IOError((("IO error detected to read reqeust message without body for client ") + ft::to_string(connection.get_m_client_fd())).c_str()));
 			else
+				throw (Worker::IOError((("Connection close detected by client ") + ft::to_string(connection.get_m_client_fd())).c_str()));
+		}
+
+		std::string len;
+		int content_length = getChunkedSize(rbuf, len);
+		if (content_length == -1)
+			return ;
+		else if (content_length == 0)
+		{
+			if (rbuf.find("\r\n") == std::string::npos)
+				rbuf.insert(0, len + "\r\n");
+			else if (rbuf.size() >= 2 && rbuf[0] == '\r' && rbuf[1] == '\n')
 			{
-				count = write(to_child_fd, rbuf.c_str(), content_length);
-				if (count > 0)
-					connection.decreaseRbufFromClient(content_length + 2);
-				else
-					rbuf.insert(0, len + "\r\n");
-				usleep(1200);
+				connection.decreaseRbufFromClient(2);
+				close(to_child_fd);
+				worker->fdClear(to_child_fd, Worker::WRITE_SET);
+				worker->fdClear(to_child_fd, Worker::WRITE_COPY_SET);
 			}
+			return ;
+		}
+		else if (static_cast<int>(rbuf.size()) < content_length + 2)
+		{
+			rbuf.insert(0, len + "\r\n");
+			return ;
+		}
+		else
+		{
+			count = write(to_child_fd, rbuf.c_str(), content_length);
+			if (count > 0)
+				connection.decreaseRbufFromClient(content_length + 2);
+			else if (count == 0 || count == -1)
+				throw (Worker::IOError((("IO error detected from write body to child process ") + ft::to_string(to_child_fd)).c_str()));
+			else
+				rbuf.insert(0, len + "\r\n");
 		}
 	}
+
 
 	void
 	writeSavedBodyToCGIScript(Worker* worker, Connection& connection)
@@ -500,6 +509,8 @@ namespace
 		{
 			int count = (data.size() > BUFFER_SIZE) ? BUFFER_SIZE : data.size();
 			count = write(to_child_fd, data.c_str(), count);
+			if (count == 0 || count == -1)
+				throw (Worker::IOError((("IO error detected from write body to child process ") + ft::to_string(to_child_fd)).c_str()));
 			connection.decreaseWbuf(count);
 		}
 		else
@@ -511,7 +522,7 @@ namespace
 }
 
 bool
-Worker::runExecute(bool& connect)
+Worker::runExecute()
 {
 	Connection& connection = m_connection;
 	int from_child_fd = connection.get_m_read_from_server_fd();
@@ -520,7 +531,7 @@ Worker::runExecute(bool& connect)
 	bool read_end = false;
 
 	const Request& request = connection.get_m_request();
-	(void)connect;
+	connection.set_m_status(Connection::TO_SEND_CLIENT);
 
 	if (from_child_fd != -1 && this->fdIsset(from_child_fd, Worker::READ_COPY_SET))
 	{
@@ -531,7 +542,7 @@ Worker::runExecute(bool& connect)
 		else if (count > 0)
 			connection.addRbufFromServer(buff, count);
 		else
-			std::cout << "(errno) execute read operation return " << count << std::endl;
+			throw (IOError("IO error detected to read from child process."));
 	}
 
 	if (to_child_fd != -1 && this->fdIsset(to_child_fd, Worker::WRITE_COPY_SET))
@@ -563,10 +574,9 @@ Worker::runExecute(bool& connect)
 		}
 		else
 			createResponse(connection, 200, headers_t(), body);
-		connection.set_m_status(Connection::TO_SEND_CLIENT);
 		return (true);
 	}
-	return (false);
+	return (true);
 }
 
 namespace {
@@ -598,7 +608,7 @@ namespace {
 		else
 			return (new_path);
 	}
-	bool makeAutoindexContent(HtmlWriter& html, std::string cwd)
+	bool makeAutoindexContent(HtmlWriter& html, std::string cwd, std::string directory_uri)
 	{
 		DIR *dir = NULL;
 		struct dirent *de = NULL;
@@ -614,7 +624,7 @@ namespace {
 			if (de->d_type == 4 || de->d_type == 8) // 4 dir, 8 file
 			{
 				std::string content;
-				content.append(html.makeLink(name));
+				content.append(html.makeLink(directory_uri + "/" + name, name));
 				content.append(std::string(51 - std::string(name).size(), ' '));
 
 				struct stat buf;
@@ -679,7 +689,10 @@ Worker::executeAutoindex()
 	{
 		HtmlWriter html;
 		makeAutoindexForm(html, request);
-		if (!makeAutoindexContent(html, request.get_m_script_translated()))
+		std::string directory_uri = request.get_m_uri();
+		if (directory_uri[directory_uri.size() - 1] != '/')
+			directory_uri.push_back('/');
+		if (!makeAutoindexContent(html, request.get_m_script_translated(), directory_uri))
 			return (createResponse(connection, 50002));
 		return (createResponse(connection, 200, headers_t(), html.get_m_body()));
 	}
@@ -787,6 +800,7 @@ Worker::executePut()
 {
 	int fd;
 	struct stat buf;
+	int count;
 
 	Connection& connection = m_connection;
 	Request& request = const_cast<Request&>(connection.get_m_request());
@@ -797,12 +811,16 @@ Worker::executePut()
 	// 	return (createResponse(request.get_m_connection(), 41503));
 	if ((fd = open(request.get_m_script_translated().c_str(), O_RDWR | O_CREAT | O_TRUNC, 0777)) == -1)
 		return (createResponse(connection, 50003));
-	if (write(fd, request.get_m_content().c_str(), request.get_m_content().size()) == -1)
+	if (!request.get_m_content().empty() && (count = write(fd, request.get_m_content().c_str(), request.get_m_content().size()) <= 0))
+	{
+		close(fd);
+		if (count == 0 || count == -1)
+			throw (Worker::IOError((("IO error detected to write body in executePut") + ft::to_string(fd)).c_str()));
 		return (createResponse(connection, 50004));
+	}
 	close(fd);
 	if (S_ISREG(buf.st_mode))
 		return (createResponse(connection, 204));
-
 	headers.push_back("Location:" + m_server->get_m_host() + "/" + request.get_m_uri());
 	return (createResponse(connection, 201, headers, request.get_m_content()));
 }
@@ -1034,7 +1052,6 @@ Worker::executeCGI()
 	connection.set_m_read_from_server_fd(child_write_fd[0]);
 	this->fdSet(connection.get_m_read_from_server_fd(), Worker::READ_SET);
 	ft::freeDoublestr(&env);
-	usleep(200000);
 }
 
 namespace {
@@ -1224,7 +1241,6 @@ namespace {
 		int i = 0;
 		if ((count = recv(connection.get_m_client_fd(), buf, buf_size, MSG_PEEK)) > 0)
 		{
-			ft::log(ServerManager::log_fd, "MSG_PEEK:\n" + std::string(buf, count) + "\n");
 			while (i < count)
 			{
 				if (buf[i] == '\r' && i + 3 < count && buf[i + 1] == '\n' && buf[i + 2] == '\r' && buf[i + 3] == '\n')
@@ -1233,14 +1249,13 @@ namespace {
 			}
 			if (i == count)
 				return (0);
-			else
-			{
-				recv(connection.get_m_client_fd(), buf, i + 4, 0);
+			else if ((count = recv(connection.get_m_client_fd(), buf, i + 4, 0)) > 0)
 				return (i + 4);
-			}
 		}
+		if (count == -1) 
+			throw (Worker::IOError((("IO error detected to read reqeust message without body for client ") + ft::to_string(connection.get_m_client_fd())).c_str()));
 		else
-			return (-1);
+			throw (Worker::IOError((("Connection close detected by client ") + ft::to_string(connection.get_m_client_fd())).c_str()));			
 	}
 
 	int
@@ -1253,14 +1268,12 @@ namespace {
 			return (0);
 		if (!isMethodHasBody(request.get_m_method()))
 			return (0);
-
-		if ((count = recv(connection.get_m_client_fd(), buf, buf_size, MSG_PEEK)) > 0)
-		{
-			recv(connection.get_m_client_fd(), buf, count, 0);
+		if ((count = recv(connection.get_m_client_fd(), buf, buf_size, 0)) > 0)
 			return (count);
-		}
+		else if (count == -1)
+			throw (Worker::IOError((("IO error detected to read reqeust message without body for client ") + ft::to_string(connection.get_m_client_fd())).c_str()));
 		else
-			return (-1);
+			throw (Worker::IOError((("Connection close detected by client ") + ft::to_string(connection.get_m_client_fd())).c_str()));
 	}
 }
 
@@ -1403,24 +1416,22 @@ Worker::recvRequest()
 }
 
 bool
-Worker::runRecvAndSolve(bool& connect)
+Worker::runRecvAndSolve()
 {
 	Connection& connection = m_connection;
 	writeWorkerHealthLog("in of RecvAndSolve with data\n" + m_connection.get_m_rbuf_from_client());
 	try {
-		if (!recvRequest())
-			connect = false;
+		recvRequest();
 	} catch (int status_code) {
 		createResponse(connection, status_code);
 		return (true);
+	} catch (Worker::IOError& e) {
+		throw (e);
 	} catch (std::exception& e) {
 		ft::log(ServerManager::log_fd, std::string(ft::getTimestamp() + "[Failed][Request] Failed to create request because ") + e.what());
-		fdClear(m_client_fd, READ_SET);
 		createResponse(connection, 50001);
 		return (true);
 	}
-	if (!connect)
-		return (false);
 	const Request& request = connection.get_m_request();
 	if (request.get_m_phase() == Request::COMPLETE)
 	{
@@ -1429,7 +1440,7 @@ Worker::runRecvAndSolve(bool& connect)
 		solveRequest();
 		return (true);
 	}
-	return (false);
+	return (true);
 }
 
 /* ************************************************************************** */
@@ -1440,6 +1451,17 @@ void
 Worker::createConnection(Job job) {
 	m_connection = Connection(job.client_fd, job.ip, job.port);
 	m_connection.set_m_last_request_at();
+}
+
+void
+Worker::closeConnection()
+{
+	// int fd[3];
+	// fd[0] =  m_connection.get_m_write_to_server_fd();
+	// fd[1] =  m_connection.get_m_read_from_server_fd();
+	// fd[2] = m_connection.get_m_client_fd();
+
+	// closes(fd[0], fd[1], fd[2]);
 }
 
 void
@@ -1464,20 +1486,14 @@ Worker::workerSelect()
 bool
 Worker::runWork()
 {
-	bool connect = true;
-
-	writeWorkerHealthLog("in of selection");
 	m_connection.set_m_last_request_at();
-	if (hasSendWork() && (!runSend(connect) || !connect))
-		return (connect);
+	if (hasSendWork())
+		return (runSend());
 	if (hasExecuteWork())
-	{
-		runExecute(connect);
-		return (connect);
-	}
-	if (hasRequest() || !m_connection.get_m_rbuf_from_client().empty())
-		runRecvAndSolve(connect);
-	return (connect);
+		return (runExecute());
+	if (hasRequest())
+		return (runRecvAndSolve());
+	return (false);
 }
 
 namespace {
@@ -1524,20 +1540,19 @@ workWithConnection(Worker::threadParam *param)
 
 		if ((cnt = worker->workerSelect()) == -1)
 		{
-			perror("why?");
-			// ft::log(ServerManager::access_fd, ServerManager::error_fd, "[Failed][Function]Select function failed(return -1)");
+			perror("Worker select error: ");
 			throw std::runtime_error("select error");
 		}
 		else if (cnt == 0)
-		{
-			if (worker->get_m_connection().isOverTime())
-				break ;
 			continue ;
-		}
-		if (!worker->runWork())
+		try {
+			if (!worker->runWork())
+				break ;
+		} catch (Worker::IOError& e) {
 			break ;
+		}
 	}
-	close(client_fd);
+	worker->closeConnection();
 	writeCloseClientConnection(manager, server, worker->get_m_idx(), client_fd);
 	return ;
 }
@@ -1558,7 +1573,7 @@ void
 
 	while (server_live)
 	{
-		worker->writeWorkerHealthLog("out of connection");
+		worker->writeWorkerHealthLog("");
 		pthread_mutex_lock(live_mutex);
 		server_live = server->get_m_server_live();
 		pthread_mutex_unlock(live_mutex);

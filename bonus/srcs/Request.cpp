@@ -205,6 +205,7 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 
 	if (translated_path.empty())
 		throw (40002);
+	m_uri_type = FILE;
 	if (ft::isFile(translated_path) && m_uri_type != CGI_PROGRAM)
 		m_uri_type = FILE;
 	else if (ft::isDirectory(translated_path))
@@ -440,17 +441,4 @@ bool Request::isValidHeader(std::string header)
 	if (header.find(":") == std::string::npos)
 		return (false);
 	return (true);
-}
-
-bool Request::isOverTime() const
-{
-	timeval now;
-
-	if (gettimeofday(&now, NULL) == -1)
-		throw std::runtime_error("gettimeofday error");
-
-	long now_nbr = now.tv_sec + now.tv_usec / 1000000;
-	long start_nbr = m_start_at.tv_sec + m_start_at.tv_usec / 1000000;
-
-	return ((now_nbr - start_nbr) >= REQUEST_TIMEOVER_SECOND);
 }

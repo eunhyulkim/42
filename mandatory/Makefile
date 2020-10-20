@@ -84,7 +84,7 @@ $(DIR_OBJS):
 
 $(OBJS):		| $(DIR_OBJS)
 
-${NAME}: ${OBJS}
+${NAME}: 		${OBJS}
 				@printf "$(_BACK)All $(_BOLD)object files$(_END) compiled into '$(_YELLOW)$(_BOLD)$(DIR_OBJS)$(_END)'✅\n"
 				@${CC} ${CFLAGS} -I ${DIR_HEADERS} ${OBJS} -o ${NAME}
 				@printf "Executable '$(_GREEN)$(_BOLD)$(NAME)$(_END)' program created. go!👻\n"

@@ -85,6 +85,7 @@ class Worker
 		/* declare member function */
 		void run();
 		void createConnection(Job job);
+		void closeConnection();
 		bool runWork();
 		bool hasRequest();
 		bool parseStartLine();
@@ -103,11 +104,11 @@ class Worker
 		char** createCGIEnv(const Request& request);
 		void executeCGI();
 		void solveRequest();
-		bool runRecvAndSolve(bool& connect);
+		bool runRecvAndSolve();
 		bool hasSendWork();
 		bool hasExecuteWork();
-		bool runSend(bool& connect);
-		bool runExecute(bool& connect);
+		bool runSend();
+		bool runExecute();
 		void createResponse(Connection& connection, int status, headers_t headers = headers_t(), std::string body = "");
 		void createCGIResponse(int& status, headers_t& headers, std::string& body);
 
@@ -122,6 +123,18 @@ class Worker
 		void reportCreateNewRequestLog(int status);
 		void writeCreateNewResponseLog(const Response& response);
 		void writeSendResponseLog(const Response& response);
+
+		class IOError : public std::exception {
+			private:
+				std::string m_msg;
+			public:
+				IOError() throw ();
+				IOError(const char *msg) throw();
+				IOError(const IOError& copy) throw ();
+				IOError& operator= (const IOError& obj) throw ();
+				virtual ~IOError() throw ();
+				virtual const char* what() const throw ();
+		};
 };
 
 /* global operator overload */

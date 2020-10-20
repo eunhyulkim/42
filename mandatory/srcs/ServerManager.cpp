@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 20:52:06 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/19 14:39:41 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/20 02:08:38 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,6 +235,11 @@ ServerManager::isValidServerBlock(std::string& server_block)
 	int port = std::atoi(map_block.find(key[1])->second.c_str());
 	if (port != 80 && port != 443 && (port < 1024 || port > 49151))
 		return (false);
+	std::vector<Server>::iterator it = m_servers.begin();
+	for (; it != m_servers.end(); ++it) {
+		if (it->get_m_port() == port)
+			return (false);
+	}
 
 	int uri_limit = std::atoi(map_block.find(key[2])->second.c_str());
 	if (uri_limit < REQUEST_URI_LIMIT_SIZE_MIN || uri_limit > REQUEST_URI_LIMIT_SIZE_MAX)
@@ -542,7 +547,7 @@ ServerManager::runServer()
 		if ((cnt = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, \
 		NULL, &timeout)) == -1)
 		{
-			perror("Select Error:");
+			perror("Server select error: ");
 			ft::log(ServerManager::log_fd, "[Failed][Function]Select function failed(return -1)");
 			throw std::runtime_error("select error");
 		}

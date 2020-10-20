@@ -1,4 +1,6 @@
 #include "Connection.hpp"
+#include "Config.hpp"
+#include "Worker.hpp"
 
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
@@ -231,10 +233,8 @@ Connection::sendFromWbuf(int fd)
 	if (count > BUFFER_SIZE)
 		count = BUFFER_SIZE;
 	count = send(fd, m_wbuf.c_str() + m_send_data_size, count, 0);
-	if (count > 0)
-		m_send_data_size += count;
-	else
-		return (false);
+	if (count == 0 || count == -1) 
+		throw (Worker::IOError((("IO error detected to send response message to client ") + ft::to_string(fd)).c_str()));
 	return (true);
 }
 

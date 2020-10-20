@@ -1,59 +1,120 @@
-NAME = webserv
-PROXY_NAME = proxy
-CC = clang++
-RM = rm -rf
-INCLUDES = -Iincludes/
-CFLAGS = -Wall -Wextra -Werror -std=c++98
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: eunhkim, Juejeong, Yopark            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2020/10/17 21:55:32 by eunhkim           #+#    #+#              #
+#    Updated: 2020/10/17 21:55:37 by eunhkim          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
-SRCS_FILES = base64 Request Location Response Config HtmlWriter \
-			 Connection libft Worker Server ServerManager
-SERVER_FILES = main
-PROXY_FILES = Proxy ProxyManager proxy_main
+# ********************************** COLOR *********************************** #
 
-SRCS = $(addprefix srcs/, $(addsuffix .cpp, $(SRCS_FILES)))
-SSRCS = $(addprefix srcs/, $(addsuffix .cpp, $(SERVER_FILES)))
-PSRCS = $(addprefix srcs/, $(addsuffix .cpp, $(PROXY_FILES)))
-OBJS = $(addsuffix .o, $(SRCS_FILES))
-SOBJS = $(addsuffix .o, $(SERVER_FILES))
-POBJS = $(addsuffix .o, $(PROXY_FILES))
+# Basic
+_END		=	\e[0m
+_BOLD		=	\e[1m
+_UNDER		=	\e[4m
+_REV		=	\e[7m
+_BACK		=	\033[2K\r
 
-GREEN = \033[0;32m
-RED = \033[0;31m
-RESET = \033[0m
+# Colors
+_GREY		=	\e[30m
+_RED		=	\e[31m
+_GREEN		=	\e[32m
+_YELLOW		=	\e[33m
+_BLUE		=	\e[34m
+_PURPLE		=	\e[35m
+_CYAN		=	\e[36m
+_WHITE		=	\e[37m
 
-all: $(NAME)
+# Inverted
+_IGREY		=	\e[40m
+_IRED		=	\e[41m
+_IGREEN		=	\e[42m
+_IYELLOW	=	\e[43m
+_IBLUE		=	\e[44m
+_IPURPLE	=	\e[45m
+_ICYAN		=	\e[46m
+_IWHITE		=	\e[47m
 
-${OBJS}: ${SRCS}
-	@${CC} ${CFLAGS} ${INCLUDES} -c ${SRCS}
+# ******************************* SET VARIABLE ******************************* #
 
-${SOBJS}: ${SSRCS}
-	@${CC} ${CFLAGS} ${INCLUDES} -c ${SSRCS}
+# Command
+RM			=	rm -rf
+MKDIR		=	mkdir
 
-${POBJS}: ${PSRCS}
-	@${CC} ${CFLAGS} ${INCLUDES} -c ${PSRCS}
+# Compile
+CC			=	clang++
+CFLAGS		=	-Wall -Wextra -Werror
+PFLAGS		=	-framework Python
+NAME		=	webserv_bonus
+PROXY		=	proxy
 
-${NAME}: ${OBJS} ${SOBJS}
-	@echo "$(GREEN)$(NAME) START$(RESET)"
-	@echo "$(RESET)Compiling ${NAME} to root."
-	@${CC} ${CFLAGS} ${INCLUDES} ${OBJS} ${MOBJS} -o ${NAME} -framework Python
-	@echo "$(GREEN)DONE$(RESET)"
+# Directories
+DIR_HEADERS	=	./includes/
+DIR_SRCS	=	./srcs/
+DIR_OBJS	=	./objs/
 
-${PROXY_NAME}: ${OBJS} ${POBJS}
-	@echo "$(GREEN)$(PROXY_NAME) START$(RESET)"
-	@echo "$(RESET)Compiling ${PROXY_NAME} to root."
-	@${CC} ${CFLAGS} ${INCLUDES} ${OBJS} ${POBJS} -o ${PROXY_NAME}
-	@echo "$(GREEN)DONE$(RESET)"
+# Files
+COMMON_FILE	=	libft \
+				base64 \
+				Config \
+				Connection \
+				HtmlWriter \
+				Location \
+				Request \
+				Response \
+				Server \
+				ServerManager \
+				Worker
+SERVER_FILE	=	main
+PROXY_FILE	=	Proxy ProxyManager proxy_main
+
+COMMON_SRCS	=	$(addprefix $(DIR_SRCS), $(addsuffix .cpp, $(COMMON_FILE)))
+COMMON_OBJS	=	$(addprefix $(DIR_OBJS), $(addsuffix .o, $(COMMON_FILE)))
+SERVER_SRCS	=	$(addprefix $(DIR_SRCS), $(addsuffix .cpp, $(SERVER_FILE)))
+SERVER_OBJS	=	$(addprefix $(DIR_OBJS), $(addsuffix .o, $(SERVER_FILE)))
+PROXY_SRCS	=	$(addprefix $(DIR_SRCS), $(addsuffix .cpp, $(PROXY_FILE)))
+PROXY_OBJS	=	$(addprefix $(DIR_OBJS), $(addsuffix .o, $(PROXY_FILE)))
+
+# Resources
+CONFIG		=	config/bonus.conf
+
+# ********************************* COMMAND ********************************** #
+
+all:			$(NAME) $(CONFIG)
+
+$(DIR_OBJS):
+				@$(MKDIR) $(DIR_OBJS)
+
+$(COMMON_OBJS):	| $(DIR_OBJS)
+
+${NAME}:		${COMMON_OBJS} ${SERVER_OBJS}
+				@printf "$(_BACK)All $(_BOLD)server object files$(_END) compiled into '$(_YELLOW)$(_BOLD)$(DIR_OBJS)$(_END)'✅\n"
+				@${CC} -g ${CFLAGS} ${PFLAGS} -I ${DIR_HEADERS} ${COMMON_OBJS} ${SERVER_OBJS} -o ${NAME}
+				@printf "Executable '$(_GREEN)$(_BOLD)$(NAME)$(_END)' program created. go!👻\n"
+
+${PROXY}:		${COMMON_OBJS} ${PROXY_OBJS}
+				@printf "$(_BACK)All $(_BOLD)server object files$(_END) compiled into '$(_YELLOW)$(_BOLD)$(DIR_OBJS)$(_END)'✅\n"
+				@${CC} ${CFLAGS} -I ${DIR_HEADERS} ${COMMON_OBJS} ${PROXY_OBJS} -o ${PROXY}
+				@printf "Executable '$(_GREEN)$(_BOLD)$(PROXY)$(_END)' program created. go!👻\n"
+
+$(DIR_OBJS)%.o: $(DIR_SRCS)%.cpp
+				@$(CC) $(CFLAGS) -I$(DIR_HEADERS) -c $< -o $@
+				@printf "$(_BACK) $(_YELLOW)Compiling $(_BOLD)$< $(_END)⌛"
 
 clean:
-	@echo "$(RESET)Cleaning your .o files$(RESET)"
-	@${RM} $(OBJS) $(SOBJS) $(POBJS)
-	@echo "$(RED)clean DONE$(RESET)"
+	@printf "Removing $(_BOLD)object files$(_END) in '$(_YELLOW)$(_BOLD)$(DIR_OBJS)$(_END)'⌛"
+	@$(RM) ${COMMON_OBJS} ${SERVER_OBJS} ${PROXY_OBJS}
+	@printf "$(_BACK)All $(_BOLD)object files$(_END) removed in '$(_YELLOW)$(_BOLD)$(DIR_OBJS)$(_END)'✅\n"
 
 fclean: clean
-	@echo "$(RESET)Removing $(NAME)"
-	@${RM} $(NAME) $(PROXY_NAME)
-	@echo "$(RED)fclean DONE$(RESET)"
+	@printf "Removing $(_BOLD)executable prgoram '$(_RED)$(NAME)/$(PROXY)$(_END)'⌛"
+	@${RM} $(NAME) $(PROXY)
+	@printf "$(_BACK)$(_BOLD)executable prgoram '$(_RED)$(_BOLD)$(NAME)/$(PROXY)$(_END)' removed⌛\n"
 
-re: fclean all proxy
+re: fclean all
 
 .PHONY:	all clean fclean re bonus
