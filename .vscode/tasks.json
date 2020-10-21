@@ -40,8 +40,9 @@
             "label": "webserv_bonus",
             "command": "/usr/bin/clang++",
             "args": [
-                "-framework Python",
-                "-I ./includes",
+                "-framework",
+                "Python",
+                "-I./includes",
                 "-g",
                 "srcs/libft.cpp",
                 "srcs/base64.cpp",

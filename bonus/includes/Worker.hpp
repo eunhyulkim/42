@@ -104,11 +104,11 @@ class Worker
 		char** createCGIEnv(const Request& request);
 		void executeCGI();
 		void solveRequest();
-		bool runRecvAndSolve();
+		void runRecvAndSolve();
 		bool hasSendWork();
 		bool hasExecuteWork();
 		bool runSend();
-		bool runExecute();
+		void runExecute();
 		void createResponse(Connection& connection, int status, headers_t headers = headers_t(), std::string body = "");
 		void createCGIResponse(int& status, headers_t& headers, std::string& body);
 
@@ -132,6 +132,7 @@ class Worker
 				IOError(const char *msg) throw();
 				IOError(const IOError& copy) throw ();
 				IOError& operator= (const IOError& obj) throw ();
+				std::string location() const throw();
 				virtual ~IOError() throw ();
 				virtual const char* what() const throw ();
 		};

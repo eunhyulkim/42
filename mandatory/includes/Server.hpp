@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 20:23:03 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/18 16:36:23 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/21 21:27:48 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,6 +135,7 @@ class Server
 				IOError& operator= (const IOError& obj) throw ();
 				virtual ~IOError() throw ();
 				virtual const char* what() const throw ();
+				std::string location() const throw ();
 		};
 
 };

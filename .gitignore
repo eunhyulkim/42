@@ -4,3 +4,5 @@ webserv
 log/
 .vscode/
 .DS_Store
+*.pyc
+*.dSYM/

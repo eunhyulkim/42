@@ -235,6 +235,7 @@ Connection::sendFromWbuf(int fd)
 	count = send(fd, m_wbuf.c_str() + m_send_data_size, count, 0);
 	if (count == 0 || count == -1) 
 		throw (Worker::IOError((("IO error detected to send response message to client ") + ft::to_string(fd)).c_str()));
+	m_send_data_size += count;
 	return (true);
 }
 

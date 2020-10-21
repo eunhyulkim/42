@@ -28,6 +28,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "lldb",
+            "preLaunchTask": "webserv_bonus"
         },
         {
             "name": "proxy",

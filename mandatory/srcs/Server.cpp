@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 20:22:56 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/20 03:10:17 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/21 21:30:21 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,7 +216,8 @@ Server::IOError::IOError(const char *msg) throw () : std::exception(){ m_msg = s
 Server::IOError::IOError(const IOError& copy) throw () : std::exception(){ m_msg = copy.m_msg; }
 Server::IOError& Server::IOError::operator=(const Server::IOError& obj) throw() { m_msg = obj.m_msg; return (*this); }
 Server::IOError::~IOError() throw (){}
-const char* Server::IOError::what() const throw () { return ((("read/write operation return fail:") + m_msg).c_str()); }
+const char* Server::IOError::what() const throw () { return ("read/write operation return fail:"); }
+std::string Server::IOError::location() const throw () { return (("read/write operation return fail: ") + m_msg); }
 
 /* ************************************************************************** */
 /* ---------------------------------- UTIL ---------------------------------- */
@@ -783,8 +784,8 @@ Server::runSend(Connection& connection)
 	{
 		connection.set_m_status(Connection::ON_WAIT);
 		m_manager->fdClear(connection.get_m_client_fd(), ServerManager::WRITE_SET);
-		if (connection.get_m_request().get_m_method() == Request::POST)
-			writeSendResponseLog(connection.get_m_response());
+		// if (connection.get_m_request().get_m_method() == Request::POST)
+		writeSendResponseLog(connection.get_m_response());
 		if (connection.get_m_response().get_m_status_code() / 100 != 2)
 			throw (IOError("send error response."));
 		else
@@ -1046,7 +1047,7 @@ Server::run()
 					runRecvAndSolve(it2->second);
 				}
 			} catch (Server::IOError& e) {
-				ft::log(ServerManager::log_fd, ft::getTimestamp() + e.what() + std::string("\n"));
+				ft::log(ServerManager::log_fd, ft::getTimestamp() + e.location() + std::string("\n"));
 				closeConnection(fd);
 			} catch (...) {
 				ft::log(ServerManager::log_fd, ft::getTimestamp() + "detected some error" + std::string("\n"));

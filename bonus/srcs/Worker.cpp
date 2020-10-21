@@ -161,7 +161,9 @@ Worker::IOError::IOError(const char *msg) throw () : std::exception(){ m_msg = s
 Worker::IOError::IOError(const IOError& copy) throw () : std::exception(){ m_msg = copy.m_msg; }
 Worker::IOError& Worker::IOError::operator=(const Worker::IOError& obj) throw() { m_msg = obj.m_msg; return (*this); }
 Worker::IOError::~IOError() throw (){}
-const char* Worker::IOError::what() const throw () { return ((("read/write operation return fail:") + m_msg).c_str()); }
+const char* Worker::IOError::what() const throw () { return ("read/write operation return fail:"); }
+std::string Worker::IOError::location() const throw () { return ("read/write operation return fail:" + m_msg); }
+
 
 /* ************************************************************************** */
 /* ---------------------------------- UTIL ---------------------------------- */
@@ -418,7 +420,6 @@ Worker::hasExecuteWork()
 		return (true);
 	if (to_child_fd != -1 && this->fdIsset(to_child_fd, Worker::WRITE_COPY_SET))
 		return (true);
-
 	return (false);
 }
 
@@ -521,7 +522,7 @@ namespace
 	}
 }
 
-bool
+void
 Worker::runExecute()
 {
 	Connection& connection = m_connection;
@@ -531,7 +532,6 @@ Worker::runExecute()
 	bool read_end = false;
 
 	const Request& request = connection.get_m_request();
-	connection.set_m_status(Connection::TO_SEND_CLIENT);
 
 	if (from_child_fd != -1 && this->fdIsset(from_child_fd, Worker::READ_COPY_SET))
 	{
@@ -553,9 +553,8 @@ Worker::runExecute()
 			writeSavedBodyToCGIScript(this, connection);
 	}
 
-	waitpid(m_child_pid, &stat, WNOHANG);
-	if (WIFEXITED(stat) && !this->fdIsset(to_child_fd, Worker::WRITE_SET)
-	&& read_end == true)
+	waitpid(m_connection.get_m_server_fd(), &stat, WNOHANG);
+	if (WIFEXITED(stat) && read_end && !this->fdIsset(to_child_fd, Worker::WRITE_SET))
 	{
 		if (from_child_fd != -1)
 		{
@@ -574,9 +573,9 @@ Worker::runExecute()
 		}
 		else
 			createResponse(connection, 200, headers_t(), body);
-		return (true);
+		connection.set_m_status(Connection::TO_SEND_CLIENT);
 	}
-	return (true);
+	return ;
 }
 
 namespace {
@@ -957,7 +956,7 @@ namespace {
 			close(fd5);
 	}
 
-	int pythonCGI(char **env)
+	int pythonCGI(std::string path, char **env)
 	{
 		PyObject *pModule = NULL;
 		PyObject *pFunc = NULL;
@@ -967,7 +966,7 @@ namespace {
 		char wd[BUFSIZ];
 
 		getcwd(wd, BUFSIZ);
-		pwd += wd;
+		pwd += (wd + std::string("/cgi-bin"));
 		pwd += "')";
 		for (int i = 0; env[i]; ++i)
 		{
@@ -977,8 +976,10 @@ namespace {
 
 		Py_Initialize();
 		PyRun_SimpleString (pwd.c_str());
-		pModule = PyImport_ImportModule("cgi");
-		pFunc   = PyObject_GetAttrString(pModule, "cgi_test");
+		path.erase(0, path.rfind("/") + 1);
+		path.erase(path.rfind(".py"), 3);
+		pModule = PyImport_ImportModule(path.c_str());
+		pFunc   = PyObject_GetAttrString(pModule, "cgi");
 		(void)env;
 		pArg = Py_BuildValue("(s)", env_str.c_str());
 		if(pFunc != NULL) {
@@ -1002,7 +1003,7 @@ namespace {
 		std::string ext = script_name.substr(script_name.rfind(".") + 1);
 		if (ext == "php" && execve("./php-cgi", arg, env) == -1)
 			exit(EXIT_FAILURE);
-		else if (ext == "py" && pythonCGI(env))
+		else if (ext == "py" && pythonCGI(request.get_m_script_translated(), env))
 			exit(EXIT_SUCCESS);
 		else if (execve(arg[0], arg, env) == -1)
 			exit(EXIT_FAILURE);
@@ -1415,22 +1416,19 @@ Worker::recvRequest()
 	return (true);
 }
 
-bool
+void
 Worker::runRecvAndSolve()
 {
 	Connection& connection = m_connection;
-	writeWorkerHealthLog("in of RecvAndSolve with data\n" + m_connection.get_m_rbuf_from_client());
 	try {
 		recvRequest();
 	} catch (int status_code) {
-		createResponse(connection, status_code);
-		return (true);
+		return (createResponse(connection, status_code));
 	} catch (Worker::IOError& e) {
 		throw (e);
 	} catch (std::exception& e) {
 		ft::log(ServerManager::log_fd, std::string(ft::getTimestamp() + "[Failed][Request] Failed to create request because ") + e.what());
-		createResponse(connection, 50001);
-		return (true);
+		return (createResponse(connection, 50001));
 	}
 	const Request& request = connection.get_m_request();
 	if (request.get_m_phase() == Request::COMPLETE)
@@ -1438,9 +1436,8 @@ Worker::runRecvAndSolve()
 		writeCreateNewRequestLog(request);
 		connection.set_m_status(Connection::ON_EXECUTE);
 		solveRequest();
-		return (true);
 	}
-	return (true);
+	return ;
 }
 
 /* ************************************************************************** */
@@ -1456,12 +1453,12 @@ Worker::createConnection(Job job) {
 void
 Worker::closeConnection()
 {
-	// int fd[3];
-	// fd[0] =  m_connection.get_m_write_to_server_fd();
-	// fd[1] =  m_connection.get_m_read_from_server_fd();
-	// fd[2] = m_connection.get_m_client_fd();
+	int fd[3];
+	fd[0] =  m_connection.get_m_write_to_server_fd();
+	fd[1] =  m_connection.get_m_read_from_server_fd();
+	fd[2] = m_connection.get_m_client_fd();
 
-	// closes(fd[0], fd[1], fd[2]);
+	closes(fd[0], fd[1], fd[2]);
 }
 
 void
@@ -1487,13 +1484,17 @@ bool
 Worker::runWork()
 {
 	m_connection.set_m_last_request_at();
-	if (hasSendWork())
-		return (runSend());
-	if (hasExecuteWork())
-		return (runExecute());
-	if (hasRequest())
-		return (runRecvAndSolve());
-	return (false);
+	if (hasSendWork()) {
+		if (!runSend())
+			return (false);
+	}
+	else if (hasExecuteWork()) {
+		runExecute();
+	}
+	if (hasRequest()) {
+		runRecvAndSolve();
+	}
+	return (true);
 }
 
 namespace {
@@ -1543,12 +1544,17 @@ workWithConnection(Worker::threadParam *param)
 			perror("Worker select error: ");
 			throw std::runtime_error("select error");
 		}
-		else if (cnt == 0)
-			continue ;
-		try {
-			if (!worker->runWork())
+		else if (cnt == 0) {
+			if (worker->get_m_connection().isOverTime())
 				break ;
+			continue ;
+		}
+		try {
+			if (!worker->runWork()) {
+				break ;
+			}
 		} catch (Worker::IOError& e) {
+			ft::log(ServerManager::log_fd, e.location());
 			break ;
 		}
 	}

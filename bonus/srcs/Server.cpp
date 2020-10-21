@@ -282,12 +282,12 @@ Server::run()
 	if (hasNewConnection())
 	{
 		writeDetectNewConnectionLog();
-		while (!isExistFreeWorker())
-		{
-			usleep(100); // change to macro EVERAGE_WORK_USECOND
-			if (!g_server_live)
-				return ;
-		}
+		// while (!isExistFreeWorker())
+		// {
+		// 	usleep(100); // change to macro EVERAGE_WORK_USECOND
+		// 	if (!g_server_live)
+		// 		return ;
+		// }
 		if ((new_job = acceptNewConnection()).client_fd == -1)
 		{
 			perror("accept connection fail:");

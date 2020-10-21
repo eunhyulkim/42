@@ -194,18 +194,15 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		throw (40001);
 	if (parsed[1].length() > m_server->get_m_request_uri_limit_size())
 		throw (41401);
-
+	m_uri_type = FILE;
 	m_uri = parsed[1];
 	if (!(assignLocationMatchingUri(m_uri)))
 		throw (40401);
 	if (!m_location->get_m_echo_msg().empty())
 		return ;
-
 	std::string translated_path = parseUri();
-
 	if (translated_path.empty())
 		throw (40002);
-	m_uri_type = FILE;
 	if (ft::isFile(translated_path) && m_uri_type != CGI_PROGRAM)
 		m_uri_type = FILE;
 	else if (ft::isDirectory(translated_path))
@@ -355,11 +352,7 @@ int						Request::get_m_special_header_count() const { return (m_special_header_
 void Request::addContent(std::string added_content)
 {
 	if (m_content.size() + added_content.size() > m_location->get_m_limit_client_body_size())
-	{
-		std::cout << "m_limit_client_body_size: " << std::endl;
-		std::cout << m_location->get_m_limit_client_body_size() << std::endl;
 		throw (41301);
-	}
 	m_content.append(added_content);
 }
 
