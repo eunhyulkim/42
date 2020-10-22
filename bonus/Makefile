@@ -93,12 +93,12 @@ $(COMMON_OBJS):	| $(DIR_OBJS)
 
 ${NAME}:		${COMMON_OBJS} ${SERVER_OBJS}
 				@printf "$(_BACK)All $(_BOLD)server object files$(_END) compiled into '$(_YELLOW)$(_BOLD)$(DIR_OBJS)$(_END)'✅\n"
-				@${CC} -g ${CFLAGS} ${PFLAGS} -I ${DIR_HEADERS} ${COMMON_OBJS} ${SERVER_OBJS} -o ${NAME}
+				@${CC} ${CFLAGS} ${PFLAGS} -I ${DIR_HEADERS} ${COMMON_OBJS} ${SERVER_OBJS} -o ${NAME}
 				@printf "Executable '$(_GREEN)$(_BOLD)$(NAME)$(_END)' program created. go!👻\n"
 
 ${PROXY}:		${COMMON_OBJS} ${PROXY_OBJS}
 				@printf "$(_BACK)All $(_BOLD)server object files$(_END) compiled into '$(_YELLOW)$(_BOLD)$(DIR_OBJS)$(_END)'✅\n"
-				@${CC} ${CFLAGS} -I ${DIR_HEADERS} ${COMMON_OBJS} ${PROXY_OBJS} -o ${PROXY}
+				@${CC} ${CFLAGS} ${PFLAGS} -I ${DIR_HEADERS} ${COMMON_OBJS} ${PROXY_OBJS} -o ${PROXY}
 				@printf "Executable '$(_GREEN)$(_BOLD)$(PROXY)$(_END)' program created. go!👻\n"
 
 $(DIR_OBJS)%.o: $(DIR_SRCS)%.cpp
@@ -115,6 +115,6 @@ fclean: clean
 	@${RM} $(NAME) $(PROXY)
 	@printf "$(_BACK)$(_BOLD)executable prgoram '$(_RED)$(_BOLD)$(NAME)/$(PROXY)$(_END)' removed⌛\n"
 
-re: fclean all
+re: fclean all proxy
 
 .PHONY:	all clean fclean re bonus

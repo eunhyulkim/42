@@ -1,6 +1,6 @@
 import sys
 
-def cgi(env):
+def cgi_test(env):
 	content_length = 0
 	for i in env.split(' '):
 		if (i.find("CONTENT_LENGTH=") != -1):

@@ -6,7 +6,7 @@
 /*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 20:22:56 by eunhkim           #+#    #+#             */
-/*   Updated: 2020/10/21 21:30:21 by eunhkim          ###   ########.fr       */
+/*   Updated: 2020/10/22 01:25:07 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -742,8 +742,10 @@ Server::runExecute(Connection& connection)
 			int body_size = request.get_m_location()->get_m_limit_client_body_size();
 			if (body.size() > body_size + body.find("\r\n\r\n") + 4)
 				createResponse(connection, 41301);
-			else
+			else {
+				std::cout << body << std::endl;
 				createResponse(connection, CGI_SUCCESS_CODE, headers_t(), body);
+			}
 		}
 		else
 			createResponse(connection, 200, headers_t(), body);
@@ -927,6 +929,7 @@ Server::createCGIResponse(int& status, headers_t& headers, std::string& body)
 	{
 		key = ft::trim(it->substr(0, it->find(":")), " \t");
 		value = ft::trim(it->substr(it->find(":") + 1), " \r\n\t");
+		std::cout << key << " : " << value << std::endl;
 		if (key == "Status" || key == "status")
 			status = ft::stoi(value);
 		else if (!key.empty() && !value.empty())
@@ -1151,7 +1154,7 @@ namespace {
 			if (de->d_type == 4 || de->d_type == 8) // 4 dir, 8 file
 			{
 				std::string content;
-				content.append(html.makeLink(directory_uri + "/" + name, name));
+				content.append(html.makeLink(directory_uri + name, name));
 				content.append(std::string(51 - std::string(name).size(), ' '));
 
 				struct stat buf;

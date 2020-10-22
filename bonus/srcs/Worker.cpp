@@ -319,6 +319,8 @@ Worker::createCGIResponse(int& status, headers_t& headers, std::string& body)
 void
 Worker::createResponse(Connection& connection, int status, headers_t headers, std::string body)
 {
+	bool is_cgi = false;
+
 	if (status >= 40000) {
 		reportCreateNewRequestLog(status);
 		status /= 100;
@@ -327,14 +329,17 @@ Worker::createResponse(Connection& connection, int status, headers_t headers, st
 	headers.push_back(getDateHeader());
 	headers.push_back(getServerHeader(m_server));
 
-	if (status == CGI_SUCCESS_CODE)
+	if (status == CGI_SUCCESS_CODE) {
+		is_cgi = true;
 		createCGIResponse(status, headers, body);
+	}
 	if (status >= 400 && status <= 599) {
 		body = m_server->get_m_default_error_page();
 		body.replace(body.find("#ERROR_CODE"), 11, ft::to_string(status));
 		body.replace(body.find("#ERROR_CODE"), 11, ft::to_string(status));
 		body.replace(body.find("#ERROR_DESCRIPTION"), 18, Response::status[status]);
 		body.replace(body.find("#ERROR_DESCRIPTION"), 18, Response::status[status]);
+		body.replace(body.find("#PORT"), 5, ft::to_string(8080));
 	}
 	if (!ft::hasKey(ft::stringVectorToMap(headers), "Transfer-Encoding"))
 		headers.push_back("Content-Length:" + ft::to_string(body.size()));
@@ -342,7 +347,7 @@ Worker::createResponse(Connection& connection, int status, headers_t headers, st
 		headers.push_back("Content-Language:ko-KR");
 	if (status / 100 != 2)
 		headers.push_back("Connection:close");
-	if (status / 100 == 3)
+	if (status / 100 == 3 && !is_cgi)
 		headers.push_back("Location:/");
 	if (status == 504)
 		headers.push_back("Retry-After:3600");
@@ -539,7 +544,7 @@ Worker::runExecute()
 		int count = read(from_child_fd, buff, sizeof(buff));
 		if (count == 0)
 			read_end = true;
-		else if (count > 0)
+		else if (count > 0) 
 			connection.addRbufFromServer(buff, count);
 		else
 			throw (IOError("IO error detected to read from child process."));
@@ -623,7 +628,7 @@ namespace {
 			if (de->d_type == 4 || de->d_type == 8) // 4 dir, 8 file
 			{
 				std::string content;
-				content.append(html.makeLink(directory_uri + "/" + name, name));
+				content.append(html.makeLink(directory_uri + name, name));
 				content.append(std::string(51 - std::string(name).size(), ' '));
 
 				struct stat buf;

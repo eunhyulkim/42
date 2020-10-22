@@ -153,7 +153,7 @@ Request::parseUri()
 		{
 			int idx = uri.find(*it);
 			m_uri_type = CGI_PROGRAM;
-			if ((m_method == GET || m_method == HEAD) && uri.find("?") != std::string::npos) {
+			if (uri.find("?") != std::string::npos) {
 				m_query = uri.substr(uri.find("?") + 1);
 				uri = uri.substr(0, uri.find("?"));
 				m_path_info = m_uri.substr(0, uri.find("?"));

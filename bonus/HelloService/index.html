@@ -1,73 +1,86 @@
-<html>
+<!DOCTYPE html>
+<!-- saved from url=(0015)http://0.0.0.0/ -->
+<html><head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&family=Noto+Sans+KR:wght@300&family=Song+Myung&display=swap" rel="stylesheet">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <?php if (preg_match('/(facebook|kakaotalk)/',$_SERVER['HTTP_USER_AGENT']) == true) { ?>
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="바카라 시뮬레이터">
-  <meta property="og:description" content="황금의 미래를 만듭니다.">
-  <meta property="og:image" content="{% static 'img/thumb_2.png' %}">
-  <?php } ?>
-  <title>바카라 시뮬레이터</title>
-  <!-- reset -->
-  <link rel="stylesheet" href="index.css">
-  <!-- favicon -->
-  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-  <!-- 2 line semantic -->
-  <link rel="stylesheet" type="text/css" href="semantic.css">
-  <script src="semantic.js"></script>
+<title>42 Cadets</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+    #name_input {
+        border: none;
+        outline: none;
+    }
+    #name_input:focus {
+        outline: none;
+        padding-left: 1rem;
+        font-size: 1.1rem;
+        font-weight: 400;
+    }
+    ::placeholder {
+        padding-left: 1rem;
+        opacity: 0.7;
+        font-size: 1.1rem;
+        font-weight: 400;
+    }
+    #footbar {
+        background-color: navy;
+        position: fixed;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        z-index: 999;
+        opacity: 1;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+    .back {
+        color: white;
+        font-size: 1rem;
+    }
+    #back-button {
+        display: inline-block;
+        margin-left: 20px;
+        font-size: 0.8rem;
+        padding: 10px 20px;
+        line-height: normal;
+        background-color: #49c5b6;
+        color: #fff;
+        font-weight: bold;
+        border-radius: 30px;
+        cursor: pointer;
+    }
+</style>
 </head>
-
 <body>
-  <div id="container">
-    <div>
-      <div>내가 매일 <div class="ui transparent input budget">
-          <input class="budget_v" type="text" placeholder="100..">
-        </div>만원의 예산으로,</div>
-      <div>미니멈 베팅 <div class="ui transparent input minbet">
-          <input class="minbet_v" type="text" placeholder="1000..">
-        </div>원의 바카라를,</div>
-      <div class="strategy-container">
-        <div class="ui compact selection dropdown strategy">
-          <input type="hidden" name="전략 선택">
-          <i class="dropdown icon"></i>
-          <div class="default text">전략 선택</div>
-          <div class="menu">
-            <div class="item" data-value="0">마틴게일</div>
-            <div class="item" data-value="1">마틴게일+</div>
-            <div class="item" data-value="2">다니엘</div>
-            <div class="item" data-value="3">다니엘 리턴</div>
-            <div class="item" data-value="4">파로리8</div>
-            <div class="item" data-value="5">파로리7</div>
-            <div class="item" data-value="6">파로리6</div>
-            <div class="item" data-value="7">파로리5</div>
-            <div class="item" data-value="8">클럽 파로리5</div>
-            <div class="item" data-value="9">클럽 파로리4</div>
-            <div class="item" data-value="10">굿맨</div>
-          </div>
-        </div> 배팅전략을 기반으로,
-      </div>
-      <div>
-        <div class="ui transparent input day">
-          <input class="day_v" type="text" placeholder="10">
-        </div>일간 매일 <div class="ui transparent input time">
-          <input class="time_v" type="text" placeholder="10">
-        </div>시간씩 한다면-
-      </div>
-    </div>
-    <div class="ui large button play">나의 인생은 어떻게 될까?</div>
-    <div class="ui large button replay">다시 시뮬레이션하기</div>
-    <div class="strategy description"></div>
-    <div id="result_container">
-      <div><span id="allday"></span>일 중 <span id="ruinday"></span>일은 파산하겠지만,</div>
-      <div>나머지 날에는 평균 <span id="gain"></span>만원을 벌거야.</div>
-      <div>총 <span id="result"></span>원을 <span id="result_bool"></span> 셈이지.</div>
-      <div><span id="judge"></span></div>
-    </div>
-  </div>
-</body>
-<script src="basic.js"></script>
+<h1 style="margin-top: 10rem;">42 Cadets에 오신 것을 환영합니다!</h1>
+<p style="
+    color: grey;
+    font-weight: 100;
+">If you see this page, the our web server is successfully installed and
+working.</p>
+<p>우리는 실제로 동작하는 웹서버를 만들기 위해 2달의 여정을 거쳐왔습니다. 이 페이지는 bonus part를
+    테스트하기 위해 디자인된 서비스입니다. 42 카뎃들의 스토리를 공유하는 서비스로, 아주 간단한 기능으로만
+    구성되어 있습니다.
+</p>
+    
+<p>우리의 코드나 지난 작업이 궁금하다면 팀의
+<a href="http://github.com/eunhyulkim/webserv">github</a>를 참고하면 될 거에요.
 
-</html>
+<form method="get" action="http://127.0.0.1:8080/python/get_story_cgi.py" style="display: flex; justify-content: center; margin-top: 3rem;">
+    <input id="name_input" type="text" name="intra_id" placeholder="궁금한 카뎃의 intra id를 입력해보세요." id="name" style="width:80%; border-radius: 20px; height: 50px; background-color: #eaeaea;">
+</form>
+<div id="footbar">
+    <p class="back">당신의 이야기를 등록해보세요.</p>
+    <div><a id="back-button" href="/register.html">Register</a></div>
+</div>
+
+</body></html>
