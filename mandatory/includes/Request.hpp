@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yopar <yopar@student.42seoulseoul.kr>       +#+  +:+       +#+        */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/19 16:42:22 by yopark            #+#    #+#             */
-/*   Updated: 2020/10/02 21:36:435 by yopar           ###   ########.fr       */
+/*   Updated: 2020/10/17 04:41:30 by eunhkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ private:
 	URIType m_uri_type;
 	std::string m_protocol;
 	std::map<std::string, std::string> m_headers;
-	int m_speical_header_count;
+	int m_special_header_count;
 	TransferType m_transfer_type;
 	std::string m_content;
 	std::string m_query;
@@ -79,9 +79,11 @@ public:
 
 	/* setter */
 	void addContent(std::string added_content);
-	void addOrigin(std::string added_origin);
+	void addOrigin(std::string added_origin, bool limit_ignore = false);
 	void addHeader(std::string header);
+	void set_m_method(Method method);
 	void set_m_phase(Phase phase);
+	void set_m_transfer_type(TransferType transfer_type);
 	void addSpecialHeaderCount();
 	void clear();
 

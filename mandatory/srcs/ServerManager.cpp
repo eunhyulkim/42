@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ServerManager.cpp                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/17 20:52:06 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/10/20 02:08:38 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ServerManager.hpp"
 #include <errno.h>
 
@@ -5,10 +17,7 @@
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
 /* ************************************************************************** */
 
-int ServerManager::error_fd = -1;
-int ServerManager::access_fd = -1;
-int ServerManager::stdin_fd = dup(0);
-int ServerManager::stdout_fd = dup(1);
+int ServerManager::log_fd = -1;
 
 /* ************************************************************************** */
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
@@ -77,34 +86,22 @@ operator<<(std::ostream& out, const ServerManager&) {
 }
 
 /* ************************************************************************** */
-/* --------------------------------- GETTER --------------------------------- */
-/* ************************************************************************** */
-
-const std::vector<Server>& ServerManager::get_m_servers() const { return (this->m_servers); }
-const std::set<int>& ServerManager::get_m_server_fdset() const { return (this->m_server_fdset); }
-Config ServerManager::get_m_config() const { return (this->m_config); }
-int ServerManager::get_m_max_fd() const { return (this->m_max_fd); }
-
-/* ************************************************************************** */
-/* --------------------------------- SETTER --------------------------------- */
-/* ************************************************************************** */
-
-void ServerManager::set_m_max_fd(int max_fd) { this->m_max_fd = max_fd; }
-void ServerManager::set_m_config(const Config& config) { this->m_config = config; }
-
-/* ************************************************************************** */
-/* ------------------------------- EXCEPTION -------------------------------- */
-/* ************************************************************************** */
-
-/* exception code */
-
-/* ************************************************************************** */
 /* ---------------- FUNCTIONS FOR PARSE CONFIGURATION FILE ------------------ */
 /* ************************************************************************** */
 
 namespace {
+/*
+** Collect lines that meet certain conditions into one string
+** and Collect those strings into vectors
+** @param1: start line condition
+** @param2: end line condition
+** @param3: Whether to include the start and end lines in the string
+** @return: block(server or location block in configuration file) vector
+** @ref: Find line that begins with a given condition
+** @ref: Empty lines are removed
+** @ref: Only lines not included in the condition remain in the lines variable(param1)
+*/
 	enum IncludeMode { INCLUDE_START, INCLUDE_END, INCLUDE_BOTH, INCLUDE_NOT, };
-
 	std::vector<std::string> groupLineWithCondition(std::vector<std::string>& lines, \
 	const std::string& start_line, const std::string& end_line, IncludeMode mode = INCLUDE_BOTH)
 	{
@@ -174,12 +171,13 @@ std::vector<std::string>& location_blocks)
 }
 
 /*
-** function: isValidConfigBlock
-** 1. check every entity without duplicate
-** 2. check 'SOFTWARE_NAME' and 'SOFTWARE_VERSION' NOT EMPTY
-** 3. check 'HTTP_VERSION' and 'CGI_VERSION' is 1.1
+** Valid check config block on top of configuration file
+** @param: config block
+** @ret: wether config block is valid
+** @check1: check every entity without duplicate
+** @check2: check 'SOFTWARE_NAME' and 'SOFTWARE_VERSION' NOT EMPTY
+** @check3: check 'HTTP_VERSION' and 'CGI_VERSION' is 1.1
 */
-
 bool
 ServerManager::isValidConfigBlock(std::string& config_block)
 {
@@ -203,15 +201,17 @@ ServerManager::isValidConfigBlock(std::string& config_block)
 }
 
 /*
-** function: isValidServerBlock
-** 1. check entity count without duplicate
-** 2. check ip range ([0~255] * 4)
-** 3. check port range (80, 443, 1024 ~ 49151)
-** 4. check uri limit size
-** 5. check header limit size
-** 6. check body limit size
+** Valid check server block in configuration file
+** @param: server block(server {})
+** @ret: wether server block is valid
+** @check1: key name/count without duplicate, and value exist
+** @check2: ip range ([0~255] * 4)
+** @check3: port range (80, 443, 1024 ~ 49151(beause not reserved port))
+** @check4: uri limit size
+** @check5: request header limit size
+** @check6: default error page exist
+** @check7: request body limit size
 */
-
 bool
 ServerManager::isValidServerBlock(std::string& server_block)
 {
@@ -235,6 +235,11 @@ ServerManager::isValidServerBlock(std::string& server_block)
 	int port = std::atoi(map_block.find(key[1])->second.c_str());
 	if (port != 80 && port != 443 && (port < 1024 || port > 49151))
 		return (false);
+	std::vector<Server>::iterator it = m_servers.begin();
+	for (; it != m_servers.end(); ++it) {
+		if (it->get_m_port() == port)
+			return (false);
+	}
 
 	int uri_limit = std::atoi(map_block.find(key[2])->second.c_str());
 	if (uri_limit < REQUEST_URI_LIMIT_SIZE_MIN || uri_limit > REQUEST_URI_LIMIT_SIZE_MAX)
@@ -257,15 +262,16 @@ ServerManager::isValidServerBlock(std::string& server_block)
 }
 
 /*
-** function: isValidLocationBlock
-** 1. check entity count without duplicate or empty value
-** 2. check location expression count and start with '/'
-** 3. check root path is valid directory and end without '/'
-** 4. check auth file path is valid file with realm string
-** 5. check header limit size
-** 6. check body limit size
+** Valid check location block in configuration file
+** @param: location block(location {})
+** @ret: wether location block is valid
+** @check1: key name/count without duplicate, and value exist
+** @check2: location expression count and start with '/'
+** @check3: root path is valid directory and end without '/'
+** @check4: auth file path is valid file with realm string
+** @check5: cgi, autoindex, body limit size value format
+** @ref: if request body limit size, overload server value
 */
-
 bool
 ServerManager::isValidLocationBlock(std::string& location_block)
 {
@@ -337,6 +343,25 @@ ServerManager::isValidLocationBlock(std::string& location_block)
 	return (true);
 }
 
+/* ************************************************************************** */
+/* --------------------------------- GETTER --------------------------------- */
+/* ************************************************************************** */
+
+const std::vector<Server>& ServerManager::get_m_servers() const { return (this->m_servers); }
+const std::set<int>& ServerManager::get_m_server_fdset() const { return (this->m_server_fdset); }
+Config ServerManager::get_m_config() const { return (this->m_config); }
+int ServerManager::get_m_max_fd() const { return (this->m_max_fd); }
+
+/* ************************************************************************** */
+/* --------------------------------- SETTER --------------------------------- */
+/* ************************************************************************** */
+
+void ServerManager::set_m_max_fd(int max_fd) { this->m_max_fd = max_fd; }
+void ServerManager::set_m_config(const Config& config) { this->m_config = config; }
+
+/* ************************************************************************** */
+/* ------------------------------- EXCEPTION -------------------------------- */
+/* ************************************************************************** */
 
 /* ************************************************************************** */
 /* ------------------------------ FD FUNCTION ------------------------------- */
@@ -429,7 +454,7 @@ ServerManager::resetMaxFd(int new_max_fd)
 		set_m_max_fd(new_max_fd);
 	else
 	{
-		for (int i = get_m_max_fd(); i >= 0; --i)
+		for (int i = 512; i >= 0; --i)
 		{
 			if (fdIsset(i, READ_SET) || fdIsset(i, WRITE_SET))
 			{
@@ -470,6 +495,8 @@ ServerManager::createServer(const std::string& configuration_file_path, char **e
 				+ "-" + ft::to_string(j) + ") is not valid."));
 		}
 		m_servers.push_back(Server(this, server_block, location_blocks, &this->m_config));
+		// for (int i = 0; i < getPortCount(sever_block); ++i)
+		// 	m_servers.push_back(Server(this, convert(server_block, i), location_blocks, &this->m_config));
 		m_server_fdset.insert(m_servers.back().get_m_fd());
 	}
 	writeCreateServerLog();
@@ -480,7 +507,7 @@ bool g_live;
 void
 changeSignal(int sig)
 {
-	ft::log(ServerManager::access_fd, -1, "signal execute");
+	ft::log(ServerManager::log_fd, "signal execute");
 	(void)sig;
 	g_live = false;
 }
@@ -495,7 +522,6 @@ ServerManager::closeOldConnection(std::vector<Server>::iterator server_it)
 		if (!ft::hasKey(m_server_fdset, fd) && it->second.isOverTime())
 		{
 			++it;
-			// std::cout << "close connection because connection old" << std::endl;
 			server_it->closeConnection(fd);
 		} else
 			++it;
@@ -512,16 +538,17 @@ ServerManager::runServer()
 	timeout.tv_usec = 0;
 
 	g_live = true;
+	resetMaxFd();
 	while (g_live)
 	{
 		int cnt;
 		fdCopy(ALL_SET);
 
 		if ((cnt = select(this->m_max_fd + 1, &this->m_read_copy_set, &this->m_write_copy_set, \
-		&this->m_error_copy_set, &timeout)) == -1)
+		NULL, &timeout)) == -1)
 		{
-			perror("why?");
-			ft::log(ServerManager::access_fd, ServerManager::error_fd, "[Failed][Function]Select function failed(return -1)");
+			perror("Server select error: ");
+			ft::log(ServerManager::log_fd, "[Failed][Function]Select function failed(return -1)");
 			throw std::runtime_error("select error");
 		}
 		else if (cnt == 0)
@@ -532,6 +559,7 @@ ServerManager::runServer()
 			it->run();
 			closeOldConnection(it);
 		}
+		resetMaxFd();
 	}
 	exitServer("server exited.\n");
 }
@@ -540,8 +568,7 @@ void
 ServerManager::exitServer(const std::string& error_msg)
 {
 	std::cout << error_msg << std::endl;
-	close(ServerManager::access_fd);
-	close(ServerManager::error_fd);
+	close(ServerManager::log_fd);
 	for (int i = 0; i < m_max_fd; ++i)
 	{
 		if (fdIsset(i, READ_SET))
@@ -557,17 +584,21 @@ ServerManager::exitServer(const std::string& error_msg)
 void
 ServerManager::openLog()
 {
-	if ((ServerManager::access_fd = open(ACCESS_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
+	std::string date = ft::getTimestamp();
+	date = date.substr(1, date.size() - 2);
+	std::string log_path = "log/" + date + "_log";
+	if ((ServerManager::log_fd = open(log_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
 		return ;
-	if ((ServerManager::error_fd = open(ERROR_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
-		return ;
+
+	// if ((ServerManager::log_fd = open(HEALTH_LOG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
+	// 	return ;
 }
 
 void
 ServerManager::writeCreateServerLog()
 {
 	std::string text = "[Created][Servers]" + ft::to_string(m_servers.size()) + " servers created successfully.\n";
-	ft::log(ServerManager::access_fd, -1, text);
+	ft::log(ServerManager::log_fd, text);
 	return ;
 }
 
@@ -577,9 +608,9 @@ ServerManager::writeServerHealthLog(bool ignore_interval)
 	if (ignore_interval == false && !ft::isRightTime(SERVER_HEALTH_LOG_SECOND))
 		return ;
 	(void)ignore_interval;
-	int fd = ServerManager::access_fd;
+	int fd = ServerManager::log_fd;
 	std::string text = "[HealthCheck][Server][Max_fd:" + ft::to_string(m_max_fd) \
 	+ "][Connection:" + ft::getSetFdString(m_max_fd, &m_read_set) + "][Response:" + ft::getSetFdString(m_max_fd, &m_write_set) + "]\n";
-	ft::log(fd, -1, text);
+	ft::log(fd, text);
 	return ;
 }

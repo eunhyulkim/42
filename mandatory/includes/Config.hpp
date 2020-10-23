@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Config.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/17 04:40:20 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/10/17 04:40:20 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CONFIG_HPP
 # define CONFIG_HPP
 
@@ -10,7 +22,7 @@ class Config
 		std::string m_software_version;
 		std::string m_http_version;
 		std::string m_cgi_version;
-		char **m_base_env;
+		char**		m_base_env;
 	public:
 		Config();
 		Config(std::string config_block, char **env);

@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   libft.cpp                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/17 04:39:04 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/10/20 02:34:28 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.hpp"
 
 namespace ft
 {
 
 /* ************************************************************************** */
-/* -------------------------------- OLD LIBFT ------------------------------- */
+/* ---------------------------------- C LIBFT ------------------------------- */
 /* ************************************************************************** */
 
 	void
@@ -200,10 +212,11 @@ namespace ft
         return (str);
 	}
 
-	int stoi(std::string str, int base)
+	int stoi(std::string str, size_t base)
 	{
         int sign = 1;
-        int value = 0;
+        long long value = 0;
+		long long int_max = INT_MAX;
 		std::string digit = "0123456789abcdefghijklmnopqrstuvwxyz";
 
         if (str.empty())
@@ -214,13 +227,15 @@ namespace ft
 			str.erase(str.begin());
         if (str.empty() || digit.find(str[0]) == std::string::npos)
             return (0);
-        while (!str.empty() && digit.find(str[0]) != std::string::npos)
+        while (!str.empty() && digit.find(str[0]) < base)
         {
             value *= base;
             value += digit.find(str[0]);
+			if ((sign == 1 && value > int_max) || (sign == -1 && value > int_max + 1))
+				throw (std::overflow_error("stoi overflow"));
             str.erase(str.begin());
         }
-        return (sign * value);
+        return (static_cast<int>(sign * value));
 	}
 
 	std::string
@@ -245,6 +260,7 @@ namespace ft
 		}
 		return (ret);
 	}
+
 /* ************************************************************************** */
 /* -------------------------------- C++ LIBFT ------------------------------- */
 /* ************************************************************************** */
@@ -428,6 +444,17 @@ namespace ft
 		return (1);
 	}
 
+	int getline(std::string& data, int& readed_size, std::string& line)
+	{
+		size_t pos = data.find('\n', readed_size);
+		if (pos == std::string::npos)
+			return (0);
+		line = data.substr(readed_size, pos - readed_size);
+		line = rtrim(line, "\r");
+		readed_size += (pos - readed_size + 1);
+		return (1);
+	}
+	
 	bool isFile(std::string path)
 	{
 		struct stat buf;
@@ -441,6 +468,7 @@ namespace ft
 		stat(path.c_str(), &buf);
 		return (S_ISDIR(buf.st_mode));
 	}
+
 /* ************************************************************************** */
 /* ------------------------------ TCP FUNCTION ------------------------------ */
 /* ************************************************************************** */
@@ -523,6 +551,18 @@ namespace ft
 		return ((x & 0x00ffU) << 8 | (x & 0xff00U) >> 8);
 	}
 
+	std::string
+	inet_ntoa(unsigned int address)
+	{
+		std::string ret;
+
+		ret = ft::to_string(address & 0xFF) + ".";
+		ret.append(ft::to_string((address >> 8) & 0xFF) + ".");
+		ret.append(ft::to_string((address >> 16) & 0xFF) + ".");
+		ret.append(ft::to_string((address >> 24) & 0xFF));
+		return (ret);
+	}
+
 /* ************************************************************************** */
 /* ---------------------------- FDSET OPERATOR ------------------------------ */
 /* ************************************************************************** */
@@ -579,11 +619,9 @@ namespace ft
 /* --------------------------- LOG UTIL FUNCTION ---------------------------- */
 /* ************************************************************************** */
 
-	void log(int access_fd, int error_fd, std::string text) {
-		if (access_fd != -1)
-			write(access_fd, text.c_str(), text.size());
-		if (error_fd != -1)
-			write(error_fd, text.c_str(), text.size());
+	void log(int log_fd, std::string text) {
+		if (log_fd != -1)
+			write(log_fd, text.c_str(), text.size());
 	}
 
 	bool isRightTime(int second) {
@@ -599,12 +637,38 @@ namespace ft
 		std::time_t	t = std::time(0);
 		std::tm* now = std::localtime(&t);
 		std::string ret;
-		ret.append("[" + ft::to_string(now->tm_year + 1900));
-		ret.append(ft::to_string(now->tm_mon + 1));
-		ret.append(ft::to_string(now->tm_mday) + "_");
-		ret.append(ft::to_string(now->tm_hour) + "_");
-		ret.append(ft::to_string(now->tm_min) + "_");
-		ret.append(ft::to_string(now->tm_sec) + "]");
+		std::string data;
+		ret.append("[" + ft::to_string(now->tm_year + 1900) + "_");
+		
+		data = ft::to_string(now->tm_mon + 1);
+		if (data.size() == 1)
+			ret.append("0" + data);
+		else
+			ret.append(data);
+
+		data = ft::to_string(now->tm_mday);
+		if (data.size() == 1)
+			ret.append("0" + data + "_");
+		else
+			ret.append(data + "_");
+
+		data = ft::to_string(now->tm_hour);
+		if (data.size() == 1)
+			ret.append("0" + data);
+		else
+			ret.append(data);
+
+		data = ft::to_string(now->tm_min);
+		if (data.size() == 1)
+			ret.append("0" + data + "_");
+		else
+			ret.append(data + "_");
+
+		data = ft::to_string(now->tm_sec);
+		if (data.size() == 1)
+			ret.append("0" + data + "]");
+		else
+			ret.append(data + "]");
 		return (ret);
 	}
 

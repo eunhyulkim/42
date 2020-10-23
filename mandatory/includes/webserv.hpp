@@ -29,8 +29,8 @@
 # include "libft.hpp"
 
 # define DEFAULT_CONFIG_FILE_PATH "config/default.conf"
-# define ACCESS_LOG_PATH "log/access.log"
-# define ERROR_LOG_PATH "log/error.log"
+# define HEALTH_LOG_PATH "log/health.log"
+# define PROXY_LOG_PATH "log/proxy.log"
 # define SERVER_ALLOW_METHODS "GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE"
 
 # define REQUEST_URI_LIMIT_SIZE_MIN 64
@@ -39,8 +39,8 @@
 # define REQUEST_HEADER_LIMIT_SIZE_MAX 8192
 # define LIMIT_CLIENT_BODY_SIZE_MAX 200000000
 
-# define CONNECTION_OLD_SECOND 500 // 10 // 60000
-# define REQUEST_TIMEOVER_SECOND 30 // 30 // 45000
+# define CONNECTION_OLD_SECOND 500
+# define REQUEST_TIMEOVER_SECOND 30
 # define SEND_RESPONSE_AT_ONCE 5
 # define CGI_SUCCESS_CODE 299
 # define CGI_META_VARIABLE_COUNT 15

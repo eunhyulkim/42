@@ -32,7 +32,7 @@ Request::Request()
 	m_phase = READY;
 	m_method = DEFAULT;
 	m_uri_type = FILE;
-	m_speical_header_count = 0;
+	m_special_header_count = 0;
 	m_transfer_type = GENERAL;
 }
 
@@ -58,6 +58,11 @@ Request::parseMethod(std::string methodString)
 	return (true);
 }
 
+/*
+** Search for a location matching uri and assign it
+** @param: full uri that includes path info and querys
+** @return: Whether the location was found
+*/
 bool
 Request::assignLocationMatchingUri(std::string uri)
 {
@@ -76,6 +81,11 @@ Request::assignLocationMatchingUri(std::string uri)
 }
 
 namespace {
+/*
+** merge location root and uri to create resource path
+** @param: location root path and request uri without path info and query
+** @return: real request resource path in server
+*/
 	std::string getTranslatedPath(std::string root, std::string uri)
 	{
 		if (uri.empty())
@@ -86,9 +96,12 @@ namespace {
 			uri.insert(0, 1, '/');
 		return (root + uri);
 	}
-}
-
-namespace {
+/*
+** if uri is directory, find resource that actually exists in the server
+** @param1: list of index files
+** @param2: directory of index file exists
+** @return: path of location index file
+*/
 	std::string getIndexPath(const std::set<std::string>& index_set, std::string base_path)
 	{
 		std::set<std::string>::const_iterator it = index_set.begin();
@@ -121,7 +134,7 @@ Request::parseUri()
 		{
 			int idx = uri.find(*it);
 			m_uri_type = CGI_PROGRAM;
-			if ((m_method == GET || m_method == HEAD) && uri.find("?") != std::string::npos) {
+			if (uri.find("?") != std::string::npos) {
 				m_query = uri.substr(uri.find("?") + 1);
 				uri = uri.substr(0, uri.find("?"));
 				m_path_info = m_uri.substr(0, uri.find("?"));
@@ -156,15 +169,13 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		throw std::runtime_error("gettimeofday function failed in request generator");
 
 	std::vector<std::string> parsed = ft::split(start_line, ' ');
-	if (parsed.size() != 3) {
-		ft::log(ServerManager::access_fd, ServerManager::error_fd, "[StartLine]" + start_line);
+	if (parsed.size() != 3)
 		throw (40000);
-	}
 	if (!parseMethod(parsed[0]))
 		throw (40001);
 	if (parsed[1].length() > m_server->get_m_request_uri_limit_size())
 		throw (41401);
-
+	m_uri_type = FILE;
 	m_uri = parsed[1];
 	if (!(assignLocationMatchingUri(m_uri)))
 		throw (40401);
@@ -181,6 +192,7 @@ Request::Request(Connection *connection, Server *server, std::string start_line)
 		throw (40402);
 	if ((m_protocol = parsed[2]) != "HTTP/1.1")
 		throw (50501);
+	m_special_header_count = 0;
 }
 
 Request::Request(const Request &x)
@@ -217,8 +229,8 @@ Request::~Request()
 	m_phase = READY;
 	m_start_at.tv_sec = 0;
 	m_start_at.tv_usec = 0;
-
 	m_uri.clear();
+	m_uri_type = FILE;
 	m_protocol.clear();
 	m_headers.clear();
 	m_content.clear();
@@ -305,24 +317,40 @@ std::string 			Request::get_m_method_to_string() const
 	return (std::string(""));
 }
 Request::Phase			Request::get_m_phase() const { return (m_phase); }
-int						Request::get_m_special_header_count() const { return (m_speical_header_count); }
+int						Request::get_m_special_header_count() const { return (m_special_header_count); }
 
 /* ************************************************************************** */
 /* --------------------------------- SETTER --------------------------------- */
 /* ************************************************************************** */
 
-void Request::addContent(std::string added_content)
+/*
+** Request Body = Content
+** in chunked request or large body, add readed data to content
+** @param: body data by read/recv function
+** @return: void
+*/
+void
+Request::addContent(std::string added_content)
 {
 	if (m_content.size() + added_content.size() > m_location->get_m_limit_client_body_size())
 		throw (41301);
 	m_content.append(added_content);
 }
 
-void Request::addOrigin(std::string added_origin)
+/*
+** Request Message = Origin
+** for TRACE method, save original request message
+** @param1: data by read/recv function includes '\r', '\n' characters
+** @param2: Before limit size is allocated,
+** internal condition check is ignored and this function can be used.
+** @return: void
+*/
+void
+Request::addOrigin(std::string added_origin, bool limit_ignore)
 {
-	if (m_method != TRACE)
+	if (!limit_ignore && m_method != TRACE)
 		return ;
-	if (m_origin.size() + added_origin.size() > m_server->get_m_limit_client_body_size())
+	if (!limit_ignore && m_origin.size() + added_origin.size() > m_server->get_m_limit_client_body_size())
 		throw (41302);
 	m_origin.append(added_origin);
 }
@@ -350,12 +378,14 @@ void Request::addHeader(std::string header)
 			throw (40004);
 	}
 	if (key[0] == 'X')
-		++m_speical_header_count;
+		++m_special_header_count;
 	return ;
 }
 
 void Request::set_m_phase(Phase phase) { m_phase = phase; }
-void Request::addSpecialHeaderCount() { ++m_speical_header_count; }
+void Request::set_m_method(Method method) { m_method = method; }
+void Request::set_m_transfer_type(TransferType transfer_type) { m_transfer_type = transfer_type; }
+void Request::addSpecialHeaderCount() { ++m_special_header_count; }
 
 void Request::clear()
 {
@@ -365,7 +395,7 @@ void Request::clear()
 	m_uri_type = FILE;
 	m_protocol.clear();
 	m_headers.clear();
-	m_speical_header_count = 0;
+	m_special_header_count = 0;
 	m_transfer_type = GENERAL;
 	m_content.clear();
 	m_query.clear();
@@ -374,6 +404,7 @@ void Request::clear()
 	m_path_info.clear();
 	m_origin.clear();
 }
+
 /* ************************************************************************** */
 /* ------------------------------- EXCEPTION -------------------------------- */
 /* ************************************************************************** */
@@ -389,17 +420,4 @@ bool Request::isValidHeader(std::string header)
 	if (header.find(":") == std::string::npos)
 		return (false);
 	return (true);
-}
-
-bool Request::isOverTime() const
-{
-	timeval now;
-
-	if (gettimeofday(&now, NULL) == -1)
-		throw std::runtime_error("gettimeofday error");
-
-	long now_nbr = now.tv_sec + now.tv_usec / 1000000;
-	long start_nbr = m_start_at.tv_sec + m_start_at.tv_usec / 1000000;
-
-	return ((now_nbr - start_nbr) >= REQUEST_TIMEOVER_SECOND);
 }

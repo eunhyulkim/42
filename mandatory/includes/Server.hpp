@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/17 20:23:03 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/10/21 21:27:48 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
@@ -30,44 +42,35 @@ class Server
 		std::map<int, Connection> m_connections;
 		std::queue<Response> m_responses;
 	private:
-		/* util */
+		/* authenticate util */
 		void basic_decode(std::string data, std::string& key, std::string& value);
-		std::string inet_ntoa(unsigned int address);
-
-
-		/* send operation */
-		bool hasSendWork(Connection& connection);
-		bool runSend(Connection& connection);
-		bool hasExecuteWork(Connection& connection);
-		bool runExecute(Connection& connection);
 
 		/* connection management */
-		// bool hasException(int client_fd);
 		int getUnuseConnectionFd();
 		bool hasNewConnection();
 		bool acceptNewConnection();
 
 		/* read operation */
 		bool hasRequest(Connection& connection);
-
-		void revertStdInOut();
-		void createCGIResponse(int& status, headers_t& headers, std::string& body);
 		bool parseStartLine(Connection& connection, Request& request);
 		bool parseHeader(Connection& connection, Request& request);
-
 		bool parseBody(Connection& connection, Request& request);
-
-
-		int getHeaderLine(int client_fd, std::string& line);
-		void headerParsing(Request &request, std::string& origin_message, int client_fd);
-		std::string readBodyMessage(Request &request, std::string& origin_message, int client_fd);
 		void recvRequest(Connection& connection, const Request& request);
 		bool runRecvAndSolve(Connection& connection);
 
-		/* cgi */
-		char** createCGIEnv(const Request& request);
+		/* execute operation */
+		bool hasExecuteWork(Connection& connection);
+		bool runExecute(Connection& connection);
 
-		/* create response */
+		/* send operation */
+		bool hasSendWork(Connection& connection);
+		bool runSend(Connection& connection);
+
+		/* cgi util */
+		char** createCGIEnv(const Request& request);
+		void createCGIResponse(int& status, headers_t& headers, std::string& body);
+
+		/* create response util */
 		std::string getExtension(std::string path);
 		std::string getMimeTypeHeader(std::string path);
 		time_t getLastModified(std::string path);
@@ -94,11 +97,11 @@ class Server
 		const std::map<int, Connection>& get_m_connections() const;
 		const std::queue<Response>& get_m_responses() const;
 
-		/* declare member function */
-		void run();
-
+		/* connection management */
 		void closeConnection(int client_fd);
 
+		/* declare member function */
+		void run();
 		void solveRequest(Connection& connection, const Request& request);
 		void executeAutoindex(Connection& connection, const Request& request);
 		void executeGet(Connection& connection, const Request& request);
@@ -109,7 +112,6 @@ class Server
 		void executeOptions(Connection& connection, const Request& request);
 		void executeTrace(Connection& connection, const Request& request);
 		void executeCGI(Connection& connection, const Request& request);
-
 		void createResponse(Connection& connection, int status, headers_t headers = headers_t(), std::string body = "");
 
 		/* log function */
@@ -122,6 +124,20 @@ class Server
 		void writeCreateNewResponseLog(const Response& response);
 		void writeSendResponseLog(const Response& response);
 		void writeCloseConnectionLog(int client_fd);
+
+		class IOError : public std::exception {
+			private:
+				std::string m_msg;
+			public:
+				IOError() throw ();
+				IOError(const char *msg) throw();
+				IOError(const IOError& copy) throw ();
+				IOError& operator= (const IOError& obj) throw ();
+				virtual ~IOError() throw ();
+				virtual const char* what() const throw ();
+				std::string location() const throw ();
+		};
+
 };
 
 /* global operator overload */

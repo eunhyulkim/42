@@ -1,0 +1,73 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <?php if (preg_match('/(facebook|kakaotalk)/',$_SERVER['HTTP_USER_AGENT']) == true) { ?>
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="바카라 시뮬레이터">
+  <meta property="og:description" content="황금의 미래를 만듭니다.">
+  <meta property="og:image" content="{% static 'img/thumb_2.png' %}">
+  <?php } ?>
+  <title>baccarat</title>
+  <!-- reset -->
+  <link rel="stylesheet" href="index.css">
+  <!-- favicon -->
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <!-- 2 line semantic -->
+  <link rel="stylesheet" type="text/css" href="semantic.css">
+  <script src="semantic.js"></script>
+</head>
+
+<body>
+  <div id="container">
+    <div>
+      <div>Everyday, If I spend <div class="ui transparent input budget">
+          <input class="budget_v" type="text" placeholder="100..">
+        </div>Doller budget,</div>
+      <div>to minimum bet <div class="ui transparent input minbet">
+          <input class="minbet_v" type="text" placeholder="1000..">
+        </div>cent baccarat game,</div>
+      <div class="strategy-container">
+        <div class="ui compact selection dropdown strategy">
+          <input type="hidden" name="전략 선택">
+          <i class="dropdown icon"></i>
+          <div class="default text">choice strategy</div>
+          <div class="menu">
+            <div class="item" data-value="0">마틴게일</div>
+            <div class="item" data-value="1">마틴게일+</div>
+            <div class="item" data-value="2">다니엘</div>
+            <div class="item" data-value="3">다니엘 리턴</div>
+            <div class="item" data-value="4">파로리8</div>
+            <div class="item" data-value="5">파로리7</div>
+            <div class="item" data-value="6">파로리6</div>
+            <div class="item" data-value="7">파로리5</div>
+            <div class="item" data-value="8">클럽 파로리5</div>
+            <div class="item" data-value="9">클럽 파로리4</div>
+            <div class="item" data-value="10">굿맨</div>
+          </div>
+        </div> strategy based on,
+      </div>
+      <div>
+        <div class="ui transparent input day">
+          <input class="day_v" type="text" placeholder="10">
+        </div>day, <div class="ui transparent input time">
+          <input class="time_v" type="text" placeholder="10">
+        </div> hours everyday,
+      </div>
+    </div>
+    <div class="ui large button play">What will my life be like?</div>
+    <div class="ui large button replay">Simulate again</div>
+    <div class="strategy description"></div>
+    <div id="result_container">
+      <div><span id="allday"></span>of day, <span id="ruinday"></span>day will go bankrupt,</div>
+      <div>but the rest of the day, you will earn an average of<span id="gain"></span>won.</div>
+      <div>It's a total of <span id="result"></span>won <span id="result_bool"></span>, result.</div>
+      <div><span id="judge"></span></div>
+    </div>
+  </div>
+</body>
+<script src="basic.js"></script>
+
+</html>

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Config.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/17 04:39:26 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/10/17 04:39:26 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Config.hpp"
 
 /* ************************************************************************** */
@@ -8,9 +20,12 @@
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
-Config::Config() {
-	this->m_base_env = NULL;
-}
+Config::Config() 
+: m_software_name(),
+m_software_version(),
+m_http_version(),
+m_cgi_version(),
+m_base_env(NULL) {}
 
 Config::Config(std::string config_block, char** env)
 {
@@ -65,9 +80,10 @@ operator<<(std::ostream& out, const Config& config)
 	out << "SOFTWARE_NAME: " << config.get_m_software_name() << std::endl
 	<< "SOFTWARE_VERSION: " << config.get_m_software_version() << std::endl
 	<< "HTTP_VERSION: " << config.get_m_http_version() << std::endl
-	<< "CGI_VERSION: " << config.get_m_cgi_version() << std::endl;
+	<< "CGI_VERSION: " << config.get_m_cgi_version() << std::endl
+	<< "CGI_ENVARIABLE:" << std::endl;
 	char **env = config.get_m_base_env();
-	while (*env) {
+	while (env && *env) {
 		std::cout << *env << std::endl;
 		++env;
 	}

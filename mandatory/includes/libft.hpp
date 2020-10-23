@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   libft.hpp                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/17 04:40:24 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/10/20 02:33:08 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef LIBFT_HPP
 # define LIBFT_HPP
 
@@ -18,7 +30,7 @@
 
 namespace ft
 {
-    /* OLD LIBFT */
+    /* C LIBFT */
     void bzero(void *data, size_t len);
     void *memcpy(void *dest, const void *src, size_t len);
     void *calloc(size_t size, size_t count);
@@ -35,7 +47,7 @@ namespace ft
     size_t pow(size_t root, size_t square);
     long long int abs(long long int num);
     std::string to_string(long long int n);
-    int stoi(std::string str, int base = 10);
+    int stoi(std::string str, size_t base = 10);
     std::string itos(std::string number, size_t from, size_t to);
 
     /* C++ LIBFT */
@@ -51,6 +63,7 @@ namespace ft
     int getline(int fd, char *line, int max_buffer_size);
     int getline(std::string& data, std::string& line, size_t max_buffer_size);
 	int getline(std::string& data, std::string& line);
+	int getline(std::string& data, int& readed_size, std::string& line);
     bool isFile(std::string path);
     bool isDirectory(std::string path);
 
@@ -58,19 +71,20 @@ namespace ft
     void convertTimespecToTm(time_t s, struct tm* t);
 	unsigned long ws_htonl(unsigned long x);
 	unsigned short ws_htons(unsigned short x);
+    std::string inet_ntoa(unsigned int address);
 
-    /* Log util function */
-    bool isRightTime(int second);
-    void log(int access_fd, int error_fd, std::string text);
-    std::string	getTimestamp(void);
-    std::string getSpeed(timeval from);
-
-    /* Fdset operator */
+    /* FD SET operator */
 	void fdZero(fd_set *x);
 	void fdSet(int fd, fd_set *x);
 	int fdIsset(int fd, fd_set *x);
 	void fdClr(int fd, fd_set *x);
     std::string getSetFdString(int max_fd, fd_set* fset);
+
+    /* Log util function */
+    bool isRightTime(int second);
+    void log(int log_fd, std::string text);
+    std::string	getTimestamp(void);
+    std::string getSpeed(timeval from);
 
     /* Template function */
     template <typename T, typename V>

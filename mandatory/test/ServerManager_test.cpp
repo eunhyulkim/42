@@ -17,7 +17,6 @@ int test_main(int ac, char *av[], char **env)
         manager.fdSet(6, ServerManager::WRITE_COPY_SET);
         manager.fdCopy(ServerManager::READ_SET);
         manager.set_m_max_fd(6);
-        manager.printFdSets();
         std::cout << manager.get_m_config() << std::endl;
     }
 

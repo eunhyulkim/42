@@ -1,14 +1,30 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   HtmlWriter.cpp                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eunhkim <eunhkim@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/17 04:43:08 by eunhkim           #+#    #+#             */
+/*   Updated: 2020/10/17 04:55:17 by eunhkim          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "HtmlWriter.hpp"
 
 /* ************************************************************************** */
 /* ---------------------------- STATIC VARIABLE ----------------------------- */
 /* ************************************************************************** */
 
-
 /* ************************************************************************** */
 /* ------------------------------ CONSTRUCTOR ------------------------------- */
 /* ************************************************************************** */
 
+/*
+** make html form tag by constructor
+** @param: no param
+** @return: void
+*/
 HtmlWriter::HtmlWriter()
 : m_body("<html>\n<body>\n</body>\n</html>\n") {}
 
@@ -64,6 +80,11 @@ void HtmlWriter::set_m_body(std::string body) { this->m_body = body; }
 /* ---------------------------- MEMBER FUNCTION ----------------------------- */
 /* ************************************************************************** */
 
+/*
+** add title tag in header section
+** @param: tilte content
+** @return: void
+*/
 void
 HtmlWriter::add_title(std::string title_content)
 {
@@ -74,6 +95,11 @@ HtmlWriter::add_title(std::string title_content)
 	m_body.insert(m_body.find("<head>") + 6, token);
 }
 
+/*
+** add inline color css in body open tag
+** @param: color of background
+** @return: void
+*/
 void
 HtmlWriter::add_bgcolor(std::string bg_color)
 {
@@ -88,6 +114,13 @@ HtmlWriter::add_bgcolor(std::string bg_color)
 	m_body.insert(idx, token);
 }
 
+/*
+** add pair tag
+** @param1: position to insert
+** @param2: tag name
+** @param3: content between tag
+** @return: void
+*/
 void
 HtmlWriter::add_tag(std::string front_token, std::string tag, std::string content, bool newline)
 {
@@ -102,6 +135,11 @@ HtmlWriter::add_tag(std::string front_token, std::string tag, std::string conten
 	m_body.insert(m_body.find(front_token) + front_token.size(), token);
 }
 
+/*
+** insert text with '\n' to back of token(using rfind)
+** @param: text to insert
+** @return: void
+*/
 void
 HtmlWriter::add_text(std::string front_token, std::string content, bool newline)
 {
@@ -112,6 +150,12 @@ HtmlWriter::add_text(std::string front_token, std::string content, bool newline)
 	m_body.insert(m_body.rfind(front_token) + front_token.size(), token);
 }
 
+/*
+** make a tag token with address and content
+** @param1: relative/absolute path
+** @param2: content in a tag
+** @return: <a> token
+*/
 std::string
 HtmlWriter::makeLink(std::string address, std::string content)
 {
@@ -124,6 +168,12 @@ HtmlWriter::makeLink(std::string address, std::string content)
 	return (token);
 }
 
+/*
+** insert text with '\n' by line number
+** @param1: line index to insert
+** @param2: line to insert
+** @return: void
+*/
 void
 HtmlWriter::add_line(int line_idx, std::string line)
 {
