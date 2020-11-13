@@ -16,6 +16,7 @@ int ft_atoi(char *av)
 
 int main(int ac, char *av[])
 {
+    (void)ac;
     int **map;
     int col = ft_atoi(av[1]);
     int row = ft_atoi(av[2]);
