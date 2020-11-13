@@ -1,20 +1,4 @@
 #include <stdio.h>
-
-int main()
-{
-    for (int i = 0; i < 5; ++i)
-    {
-        if (i == 4)
-            printf("4444422222\n");
-        else
-        {
-            for (int j = 0; j < 4 - i; ++j)
-                printf(" ");
-            printf("4");
-            for (int j = 0; j < 2 * i; ++j)
-                printf(" ");        
-            printf("2\n");
-        }
-    }
-    return (0);
-}
+int i, j;
+#define A(x,y) for(j=0;j<y;++j)printf(x);
+int main(){for (;i<5;++i){if (i==4) {A("4",5);A("2",5);}else{A(" ",4-i);A("4",1);A(" ",2*i);A("2",1);}A("\n",1);}}
