@@ -1,0 +1,22 @@
+[ARG PARSE]
+[numbers: 3][time_die: 450]	[time_eat: 220000][time_sleep: 100000][must_eat: 3]
+
+[philosophy]philosophy_two start
+[philosophy]init_semaphores passed
+[philosophy]init_philosophers passed
+[START TIME]
+[1595260329 sec][162403 usec]
+
+[philosophy]set_start_time passed
+[philosophy]moniter_count passed
+[philosophy]moniter_heart passed
+1 sopher's simulation start
+2 sopher's simulation start
+3 sopher's simulation start
+[philosophy]simulation passed
+[safe_secape]safe_escpae function start
+[safe_secape]dead_s is wait and post success
+[safe_secape]close_and_unlink_semaphore_end
+[safe_secape]close_and_unlink_semaphore success
+[safe_secape]free_semaphore success
+[safe_secape]safe_escpae function end
