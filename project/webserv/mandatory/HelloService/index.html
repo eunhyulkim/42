@@ -1,0 +1,73 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <?php if (preg_match('/(facebook|kakaotalk)/',$_SERVER['HTTP_USER_AGENT']) == true) { ?>
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="바카라 시뮬레이터">
+  <meta property="og:description" content="황금의 미래를 만듭니다.">
+  <meta property="og:image" content="{% static 'img/thumb_2.png' %}">
+  <?php } ?>
+  <title>바카라 시뮬레이터</title>
+  <!-- reset -->
+  <link rel="stylesheet" href="index.css">
+  <!-- favicon -->
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <!-- 2 line semantic -->
+  <link rel="stylesheet" type="text/css" href="semantic.css">
+  <script src="semantic.js"></script>
+</head>
+
+<body>
+  <div id="container">
+    <div>
+      <div>내가 매일 <div class="ui transparent input budget">
+          <input class="budget_v" type="text" placeholder="100..">
+        </div>만원의 예산으로,</div>
+      <div>미니멈 베팅 <div class="ui transparent input minbet">
+          <input class="minbet_v" type="text" placeholder="1000..">
+        </div>원의 바카라를,</div>
+      <div class="strategy-container">
+        <div class="ui compact selection dropdown strategy">
+          <input type="hidden" name="전략 선택">
+          <i class="dropdown icon"></i>
+          <div class="default text">전략 선택</div>
+          <div class="menu">
+            <div class="item" data-value="0">마틴게일</div>
+            <div class="item" data-value="1">마틴게일+</div>
+            <div class="item" data-value="2">다니엘</div>
+            <div class="item" data-value="3">다니엘 리턴</div>
+            <div class="item" data-value="4">파로리8</div>
+            <div class="item" data-value="5">파로리7</div>
+            <div class="item" data-value="6">파로리6</div>
+            <div class="item" data-value="7">파로리5</div>
+            <div class="item" data-value="8">클럽 파로리5</div>
+            <div class="item" data-value="9">클럽 파로리4</div>
+            <div class="item" data-value="10">굿맨</div>
+          </div>
+        </div> 배팅전략을 기반으로,
+      </div>
+      <div>
+        <div class="ui transparent input day">
+          <input class="day_v" type="text" placeholder="10">
+        </div>일간 매일 <div class="ui transparent input time">
+          <input class="time_v" type="text" placeholder="10">
+        </div>시간씩 한다면-
+      </div>
+    </div>
+    <div class="ui large button play">나의 인생은 어떻게 될까?</div>
+    <div class="ui large button replay">다시 시뮬레이션하기</div>
+    <div class="strategy description"></div>
+    <div id="result_container">
+      <div><span id="allday"></span>일 중 <span id="ruinday"></span>일은 파산하겠지만,</div>
+      <div>나머지 날에는 평균 <span id="gain"></span>만원을 벌거야.</div>
+      <div>총 <span id="result"></span>원을 <span id="result_bool"></span> 셈이지.</div>
+      <div><span id="judge"></span></div>
+    </div>
+  </div>
+</body>
+<script src="basic.js"></script>
+
+</html>

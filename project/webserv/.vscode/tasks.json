@@ -1,0 +1,106 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "proxy",
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-std=c++17",
+                "-stdlib=libc++",
+                "-g",
+                "srcs/base64.cpp",
+                "srcs/Config.cpp",
+                "srcs/Connection.cpp",
+                "srcs/HtmlWriter.cpp",
+                "srcs/libft.cpp",
+                "srcs/Location.cpp",
+                "srcs/proxy_main.cpp",
+                "srcs/Proxy.cpp",
+                "srcs/ProxyManager.cpp",
+                "srcs/Request.cpp",
+                "srcs/Response.cpp",
+                "srcs/Server.cpp",
+                "srcs/ServerManager.cpp",
+                "srcs/Worker.cpp",
+                "-Iincludes",
+                "-o",
+                "proxy"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/bonus"
+            },
+            "problemMatcher": ["$gcc"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "webserv_bonus",
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-framework",
+                "Python",
+                "-I./includes",
+                "-g",
+                "srcs/libft.cpp",
+                "srcs/base64.cpp",
+                "srcs/Config.cpp",
+                "srcs/Connection.cpp",
+                "srcs/HtmlWriter.cpp",
+                "srcs/Location.cpp",
+                "srcs/Request.cpp",
+                "srcs/Response.cpp",
+                "srcs/Server.cpp",
+                "srcs/ServerManager.cpp",
+                "srcs/Worker.cpp",
+                "srcs/main.cpp",
+                "-o",
+                "webserv"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/bonus"
+            },
+            "problemMatcher": ["$gcc"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "webserv_mandatory",
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-std=c++17",
+                "-stdlib=libc++",
+                "-g",
+                "srcs/base64.cpp",
+                "srcs/Config.cpp",
+                "srcs/Connection.cpp",
+                "srcs/HtmlWriter.cpp",
+                "srcs/libft.cpp",
+                "srcs/Location.cpp",
+                "srcs/main.cpp",
+                "srcs/Request.cpp",
+                "srcs/Response.cpp",
+                "srcs/Server.cpp",
+                "srcs/ServerManager.cpp",
+                "-Iincludes",
+                "-o",
+                "webserv"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/mandatory"
+            },
+            "problemMatcher": ["$gcc"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ],
+
+    "version": "2.0.0"
+}

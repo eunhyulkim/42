@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<!-- saved from url=(0015)http://0.0.0.0/ -->
+<html><head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&family=Noto+Sans+KR:wght@300&family=Song+Myung&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/semantic.min.css">
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous"></script>
+    <script src="Semantic-UI-CSS-master/semantic.min.js"></script>
+<title>Cadet Register</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+    #name_input {
+        border: none;
+        outline: none;
+    }
+    #name_input:focus {
+        outline: none;
+        padding-left: 1rem;
+        font-size: 1.1rem;
+        font-weight: 400;
+    }
+    ::placeholder {
+        padding-left: 1rem;
+        opacity: 0.7;
+        font-size: 1.1rem;
+        font-weight: 400;
+    }
+    #footbar {
+        background-color: black;
+        position: fixed;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        z-index: 999;
+        opacity: 1;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem 0;
+    }
+    .back {
+        color: white;
+        font-size: 1rem;
+        margin-bottom: 0;
+    }
+    #back-button {
+        display: inline-block;
+        margin-left: 20px;
+        font-size: 0.8rem;
+        padding: 10px 20px;
+        line-height: normal;
+        background-color: #49c5b6;
+        color: #fff;
+        font-weight: bold;
+        border-radius: 30px;
+        cursor: pointer;
+    }
+    #profile_image {
+        margin-bottom: 2rem;
+    }
+    p {
+        font-size: 1.1rem;
+        line-height: 2rem;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+</style>
+</head>
+<body>
+<h1 style="margin-top: 10rem;">새로운 이야기를 나누어주시다니!</h1>
+<p style="
+    color: grey;
+    font-weight: 100;
+">Oh, it's the new hitchhiker! Welcome!</p>
+<p style = "
+margin-bottom: 4rem;
+">당신의 이야기는 git에 push되지 않을 것이고, 평가하는 동안 당신만 보게 될 거에요.
+    당신이 보는 앞에서 당신의 디렉토리는 삭제될 거에요. 걱정하지 말고 작성해보세요!
+</p>
+<form class="ui form" method="POST" accept-charset="UTF-8" action="http://127.0.0.1:8080/python/register_cgi.py">
+    <div class="field">
+      <label>Intra ID</label>
+      <input type="text" name="intra_id" placeholder="input your intra id...">
+    </div>
+    <div class="field">
+        <label>Nickname</label>
+        <input type="text" name="nick" placeholder="input your nickname...">
+    </div>  
+    <div class="field">
+        <label>Coalation</label>
+        <input type="text" name="guild" placeholder="input your Coalation...">
+    </div>  
+    <div class="field">
+        <label>Introduce</label>
+        <textarea type="text" name="introduce"></textarea>
+    </div>
+    <button class="ui button" type="submit">Submit</button>
+  </form>
+
+  <div id="footbar">
+    <p class="back">평가용 페이지이므로 특별한 기능을 따로 제공하고 있지는 않습니다.</p>
+    <div><a id="back-button" href="/">뒤로 돌아가기</a></div>
+</div>
+
+</body>
+<script>
+    $('.ui.radio.checkbox').checkbox();
+</script>
+</html>

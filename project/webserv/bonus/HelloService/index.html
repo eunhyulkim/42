@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<!-- saved from url=(0015)http://0.0.0.0/ -->
+<html><head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&family=Noto+Sans+KR:wght@300&family=Song+Myung&display=swap" rel="stylesheet">
+
+<title>42 Cadets</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+    #name_input {
+        border: none;
+        outline: none;
+    }
+    #name_input:focus {
+        outline: none;
+        padding-left: 1rem;
+        font-size: 1.1rem;
+        font-weight: 400;
+    }
+    ::placeholder {
+        padding-left: 1rem;
+        opacity: 0.7;
+        font-size: 1.1rem;
+        font-weight: 400;
+    }
+    #footbar {
+        background-color: navy;
+        position: fixed;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        z-index: 999;
+        opacity: 1;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+    .back {
+        color: white;
+        font-size: 1rem;
+    }
+    #back-button {
+        display: inline-block;
+        margin-left: 20px;
+        font-size: 0.8rem;
+        padding: 10px 20px;
+        line-height: normal;
+        background-color: #49c5b6;
+        color: #fff;
+        font-weight: bold;
+        border-radius: 30px;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+<h1 style="margin-top: 10rem;">42 Cadets에 오신 것을 환영합니다!</h1>
+<p style="
+    color: grey;
+    font-weight: 100;
+">If you see this page, the our web server is successfully installed and
+working.</p>
+<p>우리는 실제로 동작하는 웹서버를 만들기 위해 2달의 여정을 거쳐왔습니다. 이 페이지는 bonus part를
+    테스트하기 위해 디자인된 서비스입니다. 42 카뎃들의 스토리를 공유하는 서비스로, 아주 간단한 기능으로만
+    구성되어 있습니다.
+</p>
+    
+<p>우리의 코드나 지난 작업이 궁금하다면 팀의
+<a href="http://github.com/eunhyulkim/webserv">github</a>를 참고하면 될 거에요.
+
+<form method="get" action="http://127.0.0.1:8080/python/get_story_cgi.py" style="display: flex; justify-content: center; margin-top: 3rem;">
+    <input id="name_input" type="text" name="intra_id" placeholder="궁금한 카뎃의 intra id를 입력해보세요." id="name" style="width:80%; border-radius: 20px; height: 50px; background-color: #eaeaea;">
+</form>
+<div id="footbar">
+    <p class="back">당신의 이야기를 등록해보세요.</p>
+    <div><a id="back-button" href="/register.html">Register</a></div>
+</div>
+
+</body></html>

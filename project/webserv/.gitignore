@@ -1,0 +1,8 @@
+.cppgit
+multiple_same
+webserv
+log/
+.vscode/
+.DS_Store
+*.pyc
+*.dSYM/
