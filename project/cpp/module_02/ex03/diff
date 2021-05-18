@@ -1,0 +1,27 @@
+3c3
+< RM = rm -rf
+---
+> RM = rm -f
+7,8c7,8
+< MAIN_FILES = parse Fixed.class main eval
+< 
+---
+> MAIN_FILES = main parse eval
+> CLASS_FILES = Fixed
+10c10
+< 
+---
+> SRCS += $(addsuffix .class.cpp, $(CLASS_FILES))
+11a12
+> OBJS += $(addsuffix .class.o, $(CLASS_FILES))
+36c37,39
+< 	@echo "$(RED)clean DONE$(RESET)"
+---
+> 	@echo "$(RED)fclean DONE$(RESET)"
+> 
+> re: fclean all
+38c41,42
+< re: flcean all
+---
+> test: $(NAME)
+> 	@./$(NAME)

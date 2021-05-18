@@ -1,0 +1,188 @@
+# char impossible test [-1]
+char: impossible
+# char impossible test [256]
+char: impossible
+# char impossible test [95.5]
+char: impossible
+# char impossible test [95.5f]
+char: impossible
+# char impossible test [nan]
+char: impossible
+# char impossible test [nanf]
+char: impossible
+# char impossible test [inf]
+char: impossible
+# char impossible test [+inf]
+char: impossible
+# char impossible test [-inf]
+char: impossible
+# char impossible test [ab]
+char: impossible
+
+# char Non displayable test [0]
+char: Non displayable
+# char Non displayable test [31]
+char: Non displayable
+# char Non displayable test [127]
+char: Non displayable
+# char Non displayable test [255]
+char: Non displayable
+
+# char success test [32]
+char: ' '
+# char success test [95.0]
+char: '_'
+# char success test [95.0f]
+char: '_'
+# char success test [126]
+char: '~'
+# char success test ['0']
+char: '0'
+# char success test [a]
+char: 'a'
+# char success test [6e+1]
+char: '<'
+
+
+
+# int impossible test [ab]
+int: impossible
+# int impossible test [124b]
+int: impossible
+# int impossible test [+-124b]
+int: impossible
+# int impossible test [124124ab]
+int: impossible
+# int impossible test [nan]
+int: impossible
+# int impossible test [nanf]
+int: impossible
+# int impossible test [inf]
+int: impossible
+# int impossible test [+inf]
+int: impossible
+# int impossible test [-inf]
+int: impossible
+# int impossible test [2147483648]
+int: impossible
+# int impossible test [-2147483649]
+int: impossible
+
+# int success test [0]
+int: 0
+# int success test [65]
+int: 65
+# int success test [65.5f]
+int: 65
+# int success test [+245]
+int: 245
+# int success test [-245]
+int: -245
+# int success test [245.2]
+int: 245
+# int success test [2147483647]
+int: 2147483647
+# int success test [-21473648]
+int: -2147483648
+# int success test ['0']
+int: 48
+# int success test [a]
+int: 97
+
+
+
+# float impossible test [ab]
+float: impossible
+# float impossible test [-124124124124124124]
+float: impossible
+# float impossible test [-1241241241241121412424124]
+float: impossible
+# float impossible test [-124124124asd]
+float: impossible
+# float impossible test [1244.0hf]
+float: impossible
+# float impossible test [1244.0ff]
+float: impossible
+# float impossible test [1244.02.24]
+float: impossible
+# float success test [2341241241241241241234124124124124124122f]
+float: impossible
+
+# float exception test [nan]
+float: nanf
+# float exception test [nanf]
+float: nanf
+# float exception test [inf]
+float: +inff
+# float exception test [+inf]
+float: +inff
+# float exception test [-inf]
+float: -inff
+
+# float success test [2147483648.0f]
+float: 2.14748e+09f
+# float success test [2147483648.0f]
+float: 2.14748e+09f
+# float success test [-2147483649.0f]
+float: -2.14748e+09f
+# float success test [-2147483649.0]
+float: -2.14748e+09f
+# float success test [21f]
+float: 21.0f
+# float success test [21.1f]
+float: 21.1f
+# float success test [21.2f]
+float: 21.2f
+# float success test ['c']
+float: 99.0f
+# float success test [123]
+float: 123.0f
+# float success test [234124124124124124123412412412412412412f]
+float: 2.34124e+38f
+
+
+
+# double impossible test [ab]
+double: impossible
+# double impossible test [-124124124124124124]
+double: impossible
+# double impossible test [-124124124asd]
+double: impossible
+# double impossible test [1244.0hf]
+double: impossible
+# double impossible test [1244.0ff]
+double: impossible
+# double impossible test [180.1e+f]
+double: impossible
+# double impossible test [1244.02.24]
+double: impossible
+
+# double exception test [nan]
+double: nan
+# double exception test [nanf]
+double: nan
+# double exception test [inf]
+double: +inf
+# double exception test [+inf]
+double: +inf
+# double exception test [-inf]
+double: -inf
+
+# double success test [2147483648.0f]
+double: 2.14748e+09
+# double success test [2147483648.0f]
+double: 2.14748e+09
+# double success test [-2147483649.0f]
+double: -2.14748e+09
+# double success test [-2147483649.0]
+double: -2.14748e+09
+# double success test ['c']
+double: 99.0
+# double success test [123]
+double: 123.0
+# double success test [123.124]
+double: 123.124
+# double success test [123.0]
+double: 123.0
+# double success test [2341241241241241241234124124124124124122.0]
+double: 2.34124e+39
