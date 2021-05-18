@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ftps
+spec:
+  ports:
+    - name: ftps
+      protocol: TCP
+      port: 21
+      targetPort: 21
+      nodePort: 21
+    - name: ftps-data
+      protocol: TCP
+      port: 20
+      targetPort: 20
+      nodePort: 20
+    - name: ftps-psv1
+      protocol: TCP
+      port: 30021
+      targetPort: 30021
+      nodePort: 30021
+    - name: ftps-psv2
+      protocol: TCP
+      port: 30020
+      targetPort: 30020
+      nodePort: 30020
+  selector:
+    app: ft_services
+    tier: ftps
+  type: NodePort
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ftps-deployment
+  labels:
+    app: ft_services
+spec:
+  selector:
+    matchLabels:
+      app: ft_services
+      tier: ftps
+  strategy:
+    type: Recreate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ft_services
+        tier: ftps
+    spec:
+      containers:
+      - name: ftps
+        image: ft_ftps
+        imagePullPolicy: Never
+        env:
+        - name: FTP_USER
+          valueFrom:
+            secretKeyRef:
+              name: ftps
+              key: username
+        - name: FTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ftps
+              key: password
